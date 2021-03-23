@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc8586acece82d948b41d84c828f79f4, type: 3}
+  m_Name: Ice Gun
+  m_EditorClassIdentifier: 
+  baseDamage: 1
+  runtimeDamage: 1
+  baseKnockForce: 0.5
+  runtimeKnockForce: 0.5
+  baseKnockDuration: 0.2
+  runtimeKnockDuration: 0.2
+  baseStunDuration: 0.6
+  runtimeStunDuration: 0.6
+  attackProperties:
+  - {fileID: 11400000, guid: a815516e8ba20684db27b8356ef0b85a, type: 2}
