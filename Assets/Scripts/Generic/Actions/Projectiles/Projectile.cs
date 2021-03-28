@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using System;
 
 public class Projectile : MonoBehaviour
 {
@@ -9,13 +10,13 @@ public class Projectile : MonoBehaviour
     public GameObject impactPrefab;
     [Header("Speed")]
     public float speed;
-    [HideInInspector] public float attackPower;
+    public Vector3 direction;
     [Header("Lifetime")]
     public float lifetime;
     [HideInInspector] public float lifetimeCounter;
-    [SerializeField] private AttackStats attack;
-    private CharacterStats characterStats;
-    public string otherTag;
+    [SerializeField] private HitboxSO hitboxSO;
+    private float damage;
+    private string damageTag;
 
     // Start is called before the first frame update
     void Awake()
@@ -33,10 +34,22 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    public void Launch(Vector2 velocity, CharacterStats userStats)
+    public void SetDamage(CharacterInfo characterInfo)
     {
-        characterStats = userStats;
-        projectileRB.velocity = velocity.normalized * speed;
+        if(hitboxSO.isSpecial)
+        {
+            damage = characterInfo.special.GetValue() * hitboxSO.damageMultiplier;
+        }
+        else
+        {
+            damage = characterInfo.attack.GetValue() * hitboxSO.damageMultiplier;
+        }
+    }
+
+    public void Launch(Vector3 _direction)
+    {
+        direction = _direction;
+        projectileRB.velocity = direction * speed;
         // transform.rotation = Quaternion.Euler(direction);
     }
 
@@ -48,27 +61,14 @@ public class Projectile : MonoBehaviour
 
     public virtual void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.gameObject.CompareTag(otherTag) && other.isTrigger)
+        if(other.gameObject.CompareTag(damageTag) && other.isTrigger)
         {
             Rigidbody2D hitObject = other.GetComponentInParent<Rigidbody2D>();
             if(hitObject != null)
             {
-                Vector3 direction = hitObject.transform.position - transform.position;
-                hitObject.DOMove((Vector3)hitObject.transform.position + direction.normalized * attack.knockForce, attack.knockDuration);
-                other.GetComponent<HealthManager>().TakeDamage(CalculateDamage(), attack.stunDuration);
+                hitObject.DOMove((Vector3)hitObject.transform.position + direction * hitboxSO.knockForce, hitboxSO.knockDuration);
+                other.GetComponent<Hurtbox>().TakeDamage(damage, hitboxSO);
             }
-        }
-    }
-
-    private float CalculateDamage()
-    {
-        if(attack.isSpecial)
-        {
-            return characterStats.special.GetValue() * attack.damageMultiplier; 
-        } 
-        else
-        {
-            return characterStats.attack.GetValue() * attack.damageMultiplier;    
         }
     }
 }

@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: TestAccessory
   m_EditorClassIdentifier: 
   itemName: Test Accessory
+  itemDescription: It's a test accessory. Use to increase special by 2.
   icon: {fileID: 21300000, guid: 73a9f38f28e0d434a827f78b4823e377, type: 3}
   numHeld: 0
-  equipmentType: 2
   attackModifier: 0
-  defenseModifier: 0
+  defenseModifier: 1
   specialModifier: 2
+  equipmentType: 2

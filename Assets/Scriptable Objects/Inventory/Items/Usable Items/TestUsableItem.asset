@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 745030f2470b7f24999d8ce79e770542, type: 3}
   m_Name: TestUsableItem
   m_EditorClassIdentifier: 
-  itemName: New Item
+  itemName: Test Item
+  itemDescription: 'It''s a test item! Use it to recover 5 HP. '
   icon: {fileID: 21300000, guid: 62776a6102330f142856b34b144d9885, type: 3}
   numHeld: 0
   healthRecovery: 0

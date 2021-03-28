@@ -22,7 +22,7 @@ public class PlayerAttackState : PlayerState
     public override void OnEnter()
     {
         nextState = "";
-        animator.SetBool("Attacking", true);
+        character.animator.SetBool("Attacking", true);
         StartCoroutine(AttackCo());
     }
 
@@ -38,7 +38,7 @@ public class PlayerAttackState : PlayerState
 
     public override void OnExit()
     {
-        animator.SetBool("Attacking", false);
+        character.animator.SetBool("Attacking", false);
     }
 
     private void HandleInputs()
@@ -54,13 +54,13 @@ public class PlayerAttackState : PlayerState
 
     private IEnumerator AttackCo()
     {
-        playerRB.velocity = new Vector3(animator.GetFloat("Horizontal") * attackMomentum, animator.GetFloat("Vertical") * attackMomentum, 0);
+        character.rigidbody.velocity = new Vector3(character.animator.GetFloat("Horizontal") * attackMomentum, character.animator.GetFloat("Vertical") * attackMomentum, 0);
         yield return new WaitForSeconds(attackDuration);
         if(willCombo)
         {
             willCombo = false;
             attackNum++;
-            animator.SetTrigger("Combo Trigger");
+            character.animator.SetTrigger("Combo Trigger");
             StartCoroutine(AttackCo());
         } 
         else 

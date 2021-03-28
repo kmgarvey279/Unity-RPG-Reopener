@@ -4,33 +4,20 @@ using UnityEngine;
 
 public class NPCMoveManager : MoveManager
 {
-    [SerializeField] private GetObjectsInRange getObjects;
-    private List<GameObject> targetsInRange = new List<GameObject>();
-    // private NPCTargetManager targetManager;
-    private BoolValue aggro;
-    // private GameObject[] targets;
-    private GameObject currentTarget;
-    private Vector3 distanceFromTarget;
-    [SerializeField] private string otherTag;
-
-    public virtual void Start()
-    {
-        myRB = GetComponent<Rigidbody2D>();
-        myAnimator = GetComponent<Animator>();
-        lookDirection = new Vector3(0,-1,0); 
-        moveDirection = new Vector3(0,0,0);
-        currentTarget = GameObject.FindGameObjectWithTag(otherTag);
-    }
-
     public override void HandleMoveLogic()
     {     
-        if(currentTarget != null)
+        if(character.targeter.currentTarget != null)
         {
-            lookDirection = currentTarget.transform.position - transform.position;
-            lookDirection.Normalize();
-            Vector3 tempVector = Vector3.MoveTowards(transform.position, currentTarget.transform.position, moveSpeed * Time.deltaTime);
-            myRB.MovePosition(tempVector);
-            moveDirection = tempVector.normalized;
+            Vector3 targetLocation = character.targeter.currentTarget.transform.position;
+            
+            Vector3 lookTemp = targetLocation - transform.position;
+            lookTemp.Normalize();
+            character.ChangeLookDirection(lookTemp);
+
+            Vector3 moveTemp = Vector3.MoveTowards(transform.position, targetLocation, character.characterInfo.moveSpeed.GetValue() * Time.deltaTime);
+            character.rigidbody.MovePosition(moveTemp);
+            moveTemp.Normalize();
+            moveDirection = moveTemp;
         } 
     }
 

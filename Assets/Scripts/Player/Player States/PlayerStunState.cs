@@ -9,11 +9,11 @@ public class PlayerStunState : PlayerState
 
     public override void OnEnter()
     {
-        animator.SetBool("Stun", true);
+        character.animator.SetBool("Stun", true);
     }
 
     public override void OnExit()
     {
-        animator.SetBool("Stun", false);
+        character.animator.SetBool("Stun", false);
     }
 }

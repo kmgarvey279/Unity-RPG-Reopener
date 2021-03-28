@@ -14,12 +14,12 @@ public class PlayerMoveState : PlayerState
     public override void StateUpdate()
     {
         HandleInput();
-        playerMoveManager.HandleMoveLogic();
+        character.moveManager.HandleMoveLogic();
     }
 
     public override void StateFixedUpdate()
     {
-         playerMoveManager.HandleMovePhysics();  
+        character.moveManager.HandleMovePhysics();  
     }
 
 
@@ -43,7 +43,7 @@ public class PlayerMoveState : PlayerState
         } else if (Input.GetButtonDown("Shoot")) {
             nextState = "ShootState";
         } else if (Input.GetButtonDown("Guard")) {
-           nextState = "ShieldState";
+            nextState = "ShieldState";
         }
     }
 

@@ -9,7 +9,7 @@ public class PlayerDieState : PlayerState
 
     public override void OnEnter()
     {
-        animator.SetTrigger("Die");
+        character.animator.SetTrigger("Die");
     }
 
     public override void OnExit()

@@ -10,8 +10,7 @@ public class ActionManager : MonoBehaviour
         waiting
     } 
     private TurnState turnState;
-    private NPCMoveManager moveManager;
-    [Header("Lists of Potental Actions")]
+    [Header("Lists of Potential Actions")]
     [SerializeField] private List<Action> actions = new List<Action>(); 
     [SerializeField] private List<Action> specialActions = new List<Action>(); 
     [Header("Queued Actions")]
@@ -22,12 +21,12 @@ public class ActionManager : MonoBehaviour
     private float turnGaugeCurrent;
     [SerializeField] private float specialGaugeMax;
     private float specialGaugeCurrent;
+
     public string targetTag;
 
     // Start is called before the first frame update
     public virtual void Awake()
     {
-        moveManager = GetComponentInParent<NPCMoveManager>();
         turnState = TurnState.waiting; 
         previousAction = null;
         turnGaugeCurrent = 0;
@@ -75,7 +74,7 @@ public class ActionManager : MonoBehaviour
             bool repeatAction = false; 
             foreach (Action action in actions)
             {
-                if(action.CheckConditions(transform.position, moveManager.lookDirection, targetTag))
+                if(action.CheckConditions())
                 {
                     if(previousAction != null && action == previousAction)
                     {
@@ -105,7 +104,7 @@ public class ActionManager : MonoBehaviour
             foreach(Action special in specialActions)
             {
                 //if there is a special Action to use
-                if(special.CheckConditions(transform.position, moveManager.lookDirection, targetTag))
+                if(special.CheckConditions())
                 {
                     specialGaugeCurrent = 0;
                     currentAction = special;

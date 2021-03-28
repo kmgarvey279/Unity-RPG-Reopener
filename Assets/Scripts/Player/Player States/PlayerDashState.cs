@@ -20,8 +20,6 @@ public class PlayerDashState : PlayerState
     private bool cooldown = false;
     public float cooldownDuration;
     private float cooldownTimer;
-    [Header("Afterimage Effect")]
-    public Afterimage afterimage;
     [Header("Dash Attack")]
     public float dashAttackDuration;
     // public string OnPlayerShootState = "ShootState";
@@ -34,7 +32,7 @@ public class PlayerDashState : PlayerState
         nextState = "";
         cooldownTimer = cooldownDuration;
         dashTimer = dashDuration;
-        if(animator.GetFloat("Speed") <= 0.01)
+        if(character.animator.GetFloat("Speed") <= 0.01)
         {
             dashType = DashType.backstep; 
         } 
@@ -67,8 +65,8 @@ public class PlayerDashState : PlayerState
 
     public override void OnExit()
     {
-        animator.SetTrigger("End Action");
-        afterimage.createAfterimage = false;
+        character.animator.SetTrigger("End Action");
+        character.afterimage.createAfterimage = false;
     }
 
     void HandleInputs()
@@ -84,16 +82,16 @@ public class PlayerDashState : PlayerState
         float speedTemp = dashSpeed;
         if(dashType == DashType.dash)
         {
-            animator.SetTrigger("Dashing");  
+            character.animator.SetTrigger("Dashing");  
         }
         else 
         {
-            animator.SetTrigger("Backstepping");
+            character.animator.SetTrigger("Backstepping");
             speedTemp = -speedTemp;  
         }
-        playerRB.velocity = new Vector3(animator.GetFloat("Look X") * dashSpeed,
-            animator.GetFloat("Look Y") * dashSpeed, 0); 
-        afterimage.createAfterimage = true;
+        character.rigidbody.velocity = new Vector3(character.animator.GetFloat("Look X") * dashSpeed,
+            character.animator.GetFloat("Look Y") * dashSpeed, 0); 
+        character.afterimage.createAfterimage = true;
     }
 }
 

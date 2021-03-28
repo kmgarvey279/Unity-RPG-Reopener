@@ -9,11 +9,11 @@ public class NPCStunState : NPCState
 
     public override void OnEnter()
     {
-        myAnimator.SetBool("Stun", true);
+        character.animator.SetBool("Stun", true);
     }
 
     public override void OnExit()
     {
-        myAnimator.SetBool("Stun", false);
+        character.animator.SetBool("Stun", false);
     }
 }

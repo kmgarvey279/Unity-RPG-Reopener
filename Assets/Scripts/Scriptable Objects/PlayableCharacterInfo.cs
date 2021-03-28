@@ -6,10 +6,10 @@ using UnityEngine;
 public class PlayableCharacterInfo : CharacterInfo
 {
     [Header("Equipment")]
-    public EquipmentObject weapon;
-    public EquipmentObject armor;
-    public EquipmentObject accessory;
-    public Dictionary<EquipmentType, EquipmentObject> equipmentDict = new Dictionary<EquipmentType, EquipmentObject>();
+    public Weapon weapon;
+    public Armor armor;
+    public Accessory accessory;
+    public Dictionary<EquipmentType, EquipmentObject> equipmentDict;
 
     public override void OnEnable()
     {
@@ -21,20 +21,25 @@ public class PlayableCharacterInfo : CharacterInfo
 
     public void ChangeEquipment(EquipmentType equipmentType, EquipmentObject newEquipment)
     {
-        //check if anything is currently equiped
+        //check if anything is currently equipped
         if(equipmentDict[equipmentType] != null)
         {
-            attack.RemoveModifier(newEquipment.attackModifier);
-            defense.RemoveModifier(newEquipment.defenseModifier);
-            special.RemoveModifier(newEquipment.specialModifier);
+            attack.RemoveModifier(equipmentDict[equipmentType].attackModifier);
+            defense.RemoveModifier(equipmentDict[equipmentType].defenseModifier);
+            special.RemoveModifier(equipmentDict[equipmentType].specialModifier);
+            
+            equipmentDict[equipmentType] = null;
         }
         //assign new equipment to selected slot (or set to null if just removing equipment)
-        equipmentDict[equipmentType] = newEquipment;
         if(newEquipment != null)
         {
+            // maxHealth.AddModifier(newEquipment.healthModifier)
+            // maxMana.AddModifier(newEquipment.manaModifier)
             attack.AddModifier(newEquipment.attackModifier);
             defense.AddModifier(newEquipment.defenseModifier);
             special.AddModifier(newEquipment.specialModifier);
+            
+            equipmentDict[equipmentType] = newEquipment;
         }
     }
 }

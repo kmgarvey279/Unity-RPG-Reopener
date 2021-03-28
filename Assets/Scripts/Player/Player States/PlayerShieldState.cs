@@ -13,8 +13,8 @@ public class PlayerShieldState : PlayerState
     public override void OnEnter()
     {
         nextState = "";
-        playerRB.velocity = Vector2.zero;
-        animator.SetBool("Defending", true);
+        character.rigidbody.velocity = Vector2.zero;
+        character.animator.SetBool("Defending", true);
         parryTimer = parryDuration;
         isParrying = true;
     }
@@ -27,7 +27,7 @@ public class PlayerShieldState : PlayerState
             if(parryTimer <= 0)
             {
                 isParrying = false;
-                animator.SetTrigger("End Parry");
+                character.animator.SetTrigger("End Parry");
             }
             else
             {
@@ -43,7 +43,7 @@ public class PlayerShieldState : PlayerState
 
     public override void OnExit()
     {
-        animator.SetBool("Defending", false);
+        character.animator.SetBool("Defending", false);
     }
 
     void HandleInputs()

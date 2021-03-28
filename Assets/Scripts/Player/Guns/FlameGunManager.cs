@@ -22,7 +22,7 @@ public class FlameGunManager : GunFireManager
             GameObject projectileObject = Instantiate(explosivePrefab, firePoint.position, Quaternion.identity);
             Projectile projectile = projectileObject.GetComponent<Projectile>();
             Vector3 projectileDirection = new Vector3(playerAnimator.GetFloat("Look X"), playerAnimator.GetFloat("Look Y"));
-            projectile.Launch(projectileDirection, characterStats);
+            projectile.Launch(projectileDirection);
             Vector3 recoilVector = new Vector3((projectileDirection.x * -1.0f) * gunRecoil, (projectileDirection.y * -1.0f) * gunRecoil);
             playerRB.AddForce(recoilVector);
         // }

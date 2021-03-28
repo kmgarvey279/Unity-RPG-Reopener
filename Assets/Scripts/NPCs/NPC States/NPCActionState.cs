@@ -6,12 +6,12 @@ using StateMachineNamespace;
 [System.Serializable]
 public class NPCActionState : NPCState
 {
-    private string animatorTrigger;   
+    private string animatorTrigger;  
 
     public override void OnEnter()
     {
         nextState = "";
-        actionManager.currentAction.TakeAction(moveManager.lookDirection);
+        character.actionManager.currentAction.TakeAction();
     }
 
     public override void StateUpdate()
@@ -29,8 +29,8 @@ public class NPCActionState : NPCState
 
     public override void OnExit()
     {
-        myAnimator.SetTrigger("End Action");
-        actionManager.FinishAction();
+        character.animator.SetTrigger("End Action");
+        character.actionManager.FinishAction();
     }
 
 

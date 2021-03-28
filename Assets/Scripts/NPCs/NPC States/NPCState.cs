@@ -5,22 +5,12 @@ using StateMachineNamespace;
 
 public class NPCState : StateMachine.State
 {
-    [HideInInspector]
-    public Animator myAnimator;
-    [HideInInspector]
-    public Rigidbody2D myRB;
-    // [HideInInspector]
-    public ActionManager actionManager;
-    [HideInInspector]
-    public NPCMoveManager moveManager;
+    public Character character;
 
     // Start is called before the first frame update
     public void Awake()
     {
-        myRB = GetComponent<Rigidbody2D>();
-        myAnimator = GetComponent<Animator>(); 
-        actionManager = gameObject.transform.parent.gameObject.GetComponentInChildren<ActionManager>();
-        moveManager = GetComponentInParent<NPCMoveManager>();
+        character = transform.root.gameObject.GetComponent<Character>();
     }
 
     public override void OnEnter()

@@ -18,8 +18,9 @@ public class Stat
 
     public void AddModifier(float modifier)
     {
-        if (modifier != 0)
+        if(modifier != 0)
             modifiers.Add(modifier);
+        
     }
 
     public void RemoveModifier(float modifier)

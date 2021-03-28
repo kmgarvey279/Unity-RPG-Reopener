@@ -10,7 +10,7 @@ public class NPCDieState : NPCState
 
     public override void OnEnter()
     {
-        myAnimator.SetBool("Die", true);
+        character.animator.SetBool("Die", true);
         StartCoroutine(DieCo());
     }
 

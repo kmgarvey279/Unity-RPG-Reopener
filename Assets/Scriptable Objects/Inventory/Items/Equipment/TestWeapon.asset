@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d60841806187fe7448bdd835df63eadb, type: 3}
   m_Name: TestWeapon
   m_EditorClassIdentifier: 
-  itemName: Test Accessory
+  itemName: Test Weapon
+  itemDescription: It's a test weapon. Use to increase attack by 2.
   icon: {fileID: 21300000, guid: a2c6f6d826b925a47956c0b33a527b42, type: 3}
   numHeld: 0
-  equipmentType: 0
   attackModifier: 2
   defenseModifier: 0
   specialModifier: 1
+  equipmentType: 0

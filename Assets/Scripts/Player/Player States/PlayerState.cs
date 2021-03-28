@@ -7,17 +7,11 @@ using StateMachineNamespace;
 public class PlayerState : StateMachine.State
 {
     [HideInInspector]
-    public Rigidbody2D playerRB;
-    [HideInInspector]
-    public Animator animator;
-    [HideInInspector]
-    public PlayerMoveManager playerMoveManager;
+    public Character character;
 
     private void Start()
     {
-        playerRB = GetComponentInParent<Rigidbody2D>();
-        animator = GetComponentInParent<Animator>();
-        playerMoveManager = GetComponentInParent<PlayerMoveManager>();
+        character = transform.root.gameObject.GetComponent<Character>();
     }
 
     public override void OnEnter()

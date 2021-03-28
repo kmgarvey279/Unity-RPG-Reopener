@@ -13,18 +13,18 @@ public class NPCMoveState : NPCState
 
     public override void StateUpdate()
     {
-        moveManager.HandleMoveLogic();
+        character.moveManager.HandleMoveLogic();
     }
 
     public override void StateFixedUpdate()
     {
-        moveManager.HandleMovePhysics();  
+        character.moveManager.HandleMovePhysics();  
     }
 
 
     public override string CheckConditions()
     {
-        if(actionManager.currentAction != null)
+        if(character.actionManager.currentAction != null)
         {
             return "ActionState";
         }

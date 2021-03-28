@@ -14,7 +14,7 @@ public class PlayerShootState : PlayerState
     public override void OnEnter()
     {
         nextState = "";
-        animator.SetBool("Shooting", true);
+        character.animator.SetBool("Shooting", true);
         Shoot();
     }
 
@@ -30,7 +30,7 @@ public class PlayerShootState : PlayerState
 
     public override void OnExit()
     {
-        animator.SetBool("Shooting", false);
+        character.animator.SetBool("Shooting", false);
     }
 
     void HandleInputs()
@@ -43,7 +43,7 @@ public class PlayerShootState : PlayerState
 
     private void Shoot()
     {
-        playerRB.velocity = Vector3.zero;
+        character.rigidbody.velocity = Vector3.zero;
         if(activeGun.runtimeGun == GunType.normalGun)
         {
             StartCoroutine(GetComponentInChildren<NormalGunManager>().FireGunCo());

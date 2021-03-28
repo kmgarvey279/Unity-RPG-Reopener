@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class PlayerMoveManager : MoveManager
 {
-    [SerializeField] private Transform firePoint;
-
     public override void HandleMoveLogic()
     {            
         //check first axis (move)
@@ -18,17 +16,12 @@ public class PlayerMoveManager : MoveManager
         //if look/aim is being held down, use to define look direction, otherwise just use move direction
         if(!Mathf.Approximately(lookX, 0.0f) || !Mathf.Approximately(lookY, 0.0f))
         {
-            lookDirection = new Vector3(lookX, lookY).normalized;    
+            Vector3 lookTemp = new Vector3(lookX, lookY).normalized;    
+            character.ChangeLookDirection(lookTemp);
         }
         else if(!Mathf.Approximately(moveX, 0.0f) || !Mathf.Approximately(moveY, 0.0f))
         {
-            lookDirection = moveDirection;
-        }
-        //move line of fire
-        if(!Mathf.Approximately(lookDirection.x, 0.0f) || !Mathf.Approximately(lookDirection.y, 0.0f))
-        {
-            float angle = Mathf.Atan2(lookDirection.x, -lookDirection.y) * Mathf.Rad2Deg;
-            firePoint.rotation = Quaternion.Euler(0, 0, angle);
+            character.ChangeLookDirection(moveDirection);
         }
     }
 }

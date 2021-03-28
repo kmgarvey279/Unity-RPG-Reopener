@@ -13,24 +13,27 @@ MonoBehaviour:
   m_Name: ClaireInfo
   m_EditorClassIdentifier: 
   name: Claire
-  level: 0
+  level: 1
   maxHealth:
-    baseValue: 0
+    baseValue: 10
     modifiers: []
-  currentHealth: 0
-  maxMagic:
-    baseValue: 0
+  currentHealth: 10
+  maxMana:
+    baseValue: 5
     modifiers: []
-  currentMagic: 0
+  currentMana: 5
   attack:
-    baseValue: 0
+    baseValue: 5
     modifiers: []
   defense:
-    baseValue: 0
+    baseValue: 5
     modifiers: []
   special:
-    baseValue: 0
+    baseValue: 5
     modifiers: []
-  weapon: {fileID: 0}
-  armor: {fileID: 0}
-  accessory: {fileID: 0}
+  moveSpeed:
+    baseValue: 5
+    modifiers: []
+  weapon: {fileID: 11400000, guid: ca6054b4a6a0c544387eb43541c82b58, type: 2}
+  armor: {fileID: 11400000, guid: a2181b43058d38c4d83c95b8a914b476, type: 2}
+  accessory: {fileID: 11400000, guid: f2d4ebceb3af9f64fa7c06463d4f1fe8, type: 2}
