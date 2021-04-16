@@ -85,6 +85,66 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &115635077
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 115635078}
+  m_Layer: 8
+  m_Name: GameObject (5)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &115635078
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 115635077}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1103721955}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &318030059
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 318030060}
+  m_Layer: 8
+  m_Name: GameObject (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &318030060
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318030059}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1103721955}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1103721954
 GameObject:
   m_ObjectHideFlags: 0
@@ -104,7 +164,7 @@ GameObject:
   - component: {fileID: 697567403914124610}
   m_Layer: 8
   m_Name: StateMachine
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -119,7 +179,14 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 1859672545}
+  - {fileID: 318030060}
+  - {fileID: 1586994865}
+  - {fileID: 1232554676}
+  - {fileID: 1259740580}
+  - {fileID: 115635078}
+  - {fileID: 1354685393}
   m_Father: {fileID: 7887917972336964155}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -159,9 +226,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: MoveState
   nextState: 
-  playerRB: {fileID: 0}
+  character: {fileID: 0}
+  rigidbody: {fileID: 0}
   animator: {fileID: 0}
-  playerMoveManager: {fileID: 0}
+  moveDirection: {x: 0, y: 0, z: 0}
+  lookDirection: {x: 0, y: 0, z: 0}
 --- !u!114 &1198270504124555218
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -176,13 +245,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: DashState
   nextState: 
-  playerRB: {fileID: 0}
+  character: {fileID: 0}
+  rigidbody: {fileID: 0}
   animator: {fileID: 0}
-  playerMoveManager: {fileID: 0}
   dashSpeed: 20
   dashDuration: 0.3
   cooldownDuration: 0
-  afterimage: {fileID: 7887917972336964175}
   dashAttackDuration: 0.4
 --- !u!114 &537146131638663385
 MonoBehaviour:
@@ -198,9 +266,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: AttackState
   nextState: 
-  playerRB: {fileID: 0}
+  character: {fileID: 0}
+  rigidbody: {fileID: 0}
   animator: {fileID: 0}
-  playerMoveManager: {fileID: 0}
   attackDuration: 0.4
   attackMomentum: 1
 --- !u!114 &3167778247973730378
@@ -217,9 +285,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: ShootState
   nextState: 
-  playerRB: {fileID: 7887917972336964152}
+  character: {fileID: 0}
+  rigidbody: {fileID: 0}
   animator: {fileID: 0}
-  playerMoveManager: {fileID: 0}
   activeGun: {fileID: 11400000, guid: 9dec5efe1f78f1f40803865c00125a16, type: 2}
 --- !u!114 &6197744771398330094
 MonoBehaviour:
@@ -235,9 +303,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: ShieldState
   nextState: 
-  playerRB: {fileID: 0}
+  character: {fileID: 0}
+  rigidbody: {fileID: 0}
   animator: {fileID: 0}
-  playerMoveManager: {fileID: 0}
   parryDuration: 0.4
 --- !u!114 &3951101318714104152
 MonoBehaviour:
@@ -253,9 +321,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: StunState
   nextState: 
-  playerRB: {fileID: 0}
+  character: {fileID: 0}
+  rigidbody: {fileID: 0}
   animator: {fileID: 0}
-  playerMoveManager: {fileID: 0}
 --- !u!114 &697567403914124610
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,9 +338,99 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: DieState
   nextState: 
-  playerRB: {fileID: 0}
+  character: {fileID: 0}
+  rigidbody: {fileID: 0}
   animator: {fileID: 0}
-  playerMoveManager: {fileID: 0}
+--- !u!1 &1232554675
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1232554676}
+  m_Layer: 8
+  m_Name: GameObject (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1232554676
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1232554675}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1103721955}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1259740579
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1259740580}
+  m_Layer: 8
+  m_Name: GameObject (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1259740580
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259740579}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1103721955}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1354685392
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1354685393}
+  m_Layer: 8
+  m_Name: GameObject (6)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1354685393
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1354685392}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1103721955}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1473729035
 GameObject:
   m_ObjectHideFlags: 0
@@ -348,7 +506,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   otherTag: Enemy
---- !u!1 &1523732299252966204
+--- !u!1 &1586994864
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -356,43 +514,58 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1350360364605716230}
-  - component: {fileID: 7322818829814461857}
+  - component: {fileID: 1586994865}
   m_Layer: 8
-  m_Name: Movement
+  m_Name: GameObject (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1350360364605716230
+--- !u!4 &1586994865
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1523732299252966204}
+  m_GameObject: {fileID: 1586994864}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 7887917972336964155}
-  m_RootOrder: 4
+  m_Father: {fileID: 1103721955}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7322818829814461857
-MonoBehaviour:
+--- !u!1 &1859672544
+GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1523732299252966204}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64186d0ed21b0694d96497b897dc2317, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  character: {fileID: 0}
-  moveDirection: {x: 0, y: 0, z: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1859672545}
+  m_Layer: 8
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1859672545
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1859672544}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1103721955}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2532197306050878479
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -405,6 +578,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9b9ed025a8cae54a9a60a45a58491dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  character: {fileID: 0}
+  damagePopup: {fileID: 0}
 --- !u!1 &2737192772070652806
 GameObject:
   m_ObjectHideFlags: 0
@@ -438,7 +613,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5853267905953449744}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -517,6 +692,7 @@ MonoBehaviour:
   popupText: {fileID: 527683902788398234}
   damageColor: {r: 0.31132078, g: 0.012922736, b: 0.012922736, a: 0}
   healColor: {r: 0.122763164, g: 0.2830189, b: 0.062477745, a: 0}
+  popupDuration: 2
 --- !u!222 &7488669416632416882
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -545,7 +721,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 0
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -738,21 +914,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7a75b1278f62274eab8b3f029c2403e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxSO: {fileID: 0}
-  damage: 0
---- !u!114 &4039714942125497041
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4315874368986188092}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f22155029e163754b9fd74365d0377a8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  slider: {fileID: 7410317818917626771}
+  attackData:
+    attackPower: 0
+    attackMultiplier: 0
+    direction: {x: 0, y: 0, z: 0}
+    knockDuration: 0
+    knockForce: 0
+    isHeal: 0
+    isSpecial: 0
+    properties: []
+    statusEffects: []
+    damageTag: 
 --- !u!1 &6269451120668419026
 GameObject:
   m_ObjectHideFlags: 0
@@ -873,7 +1045,7 @@ GameObject:
   - component: {fileID: 8754409007978723462}
   m_Layer: 8
   m_Name: Attack Southeast
-  m_TagString: Player Attack
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -982,10 +1154,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3adc2140d9ad7d34bb3b0077b7c0b4a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxSO: {fileID: 0}
-  damage: 0
-  characterInfo: {fileID: 0}
-  attackDirection: {x: 0, y: 0, z: 0}
+  attackData:
+    attackPower: 0
+    attackMultiplier: 0
+    direction: {x: 0, y: 0, z: 0}
+    knockDuration: 0
+    knockForce: 0
+    isHeal: 0
+    isSpecial: 0
+    properties: []
+    statusEffects: []
+    damageTag: 
+  character: {fileID: 0}
 --- !u!1 &7887917972134750331
 GameObject:
   m_ObjectHideFlags: 0
@@ -1000,7 +1180,7 @@ GameObject:
   - component: {fileID: 5961551567544666911}
   m_Layer: 8
   m_Name: Attack South
-  m_TagString: Player Attack
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1109,10 +1289,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3adc2140d9ad7d34bb3b0077b7c0b4a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxSO: {fileID: 0}
-  damage: 0
-  characterInfo: {fileID: 0}
-  attackDirection: {x: 0, y: 0, z: 0}
+  attackData:
+    attackPower: 0
+    attackMultiplier: 0
+    direction: {x: 0, y: 0, z: 0}
+    knockDuration: 0
+    knockForce: 0
+    isHeal: 0
+    isSpecial: 0
+    properties: []
+    statusEffects: []
+    damageTag: 
+  character: {fileID: 0}
 --- !u!1 &7887917972201085904
 GameObject:
   m_ObjectHideFlags: 0
@@ -1125,8 +1313,8 @@ GameObject:
   - component: {fileID: 7887917972201085907}
   - component: {fileID: 1778068648}
   m_Layer: 8
-  m_Name: Hitbox & Health
-  m_TagString: Player
+  m_Name: Hurtbox
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1184,10 +1372,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa3dea3998776154dbf7e75d9624f2ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  character: {fileID: 0}
-  stunState: {fileID: 0}
-  moveState: {fileID: 0}
-  dieState: {fileID: 0}
+  characterInfo: {fileID: 0}
+  stateMachine: {fileID: 0}
   healthDisplay: {fileID: 0}
   deathDelay: 0.3
 --- !u!1 &7887917972336964174
@@ -1205,6 +1391,7 @@ GameObject:
   - component: {fileID: 7887917972336964167}
   - component: {fileID: 7887917972336964175}
   - component: {fileID: 5870403357228423150}
+  - component: {fileID: 1863175779}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -1227,7 +1414,6 @@ Transform:
   - {fileID: 7887917973713919723}
   - {fileID: 1103721955}
   - {fileID: 1268470412104155553}
-  - {fileID: 1350360364605716230}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1377,16 +1563,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfd4a77aef38dfa40af18e50a7c96eaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterInfo: {fileID: 0}
-  moveManager: {fileID: 0}
-  actionManager: {fileID: 0}
-  stateMachine: {fileID: 0}
+  characterInfo: {fileID: 11400000, guid: c86eb926f7a72e04fa5932e070cac635, type: 2}
   lookDirection: {x: 0, y: 0, z: 0}
+  afterimage: {fileID: 0}
+  firePoint: {fileID: 7887917973713919723}
+--- !u!114 &1863175779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7887917972336964174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ed38df87be19674088c575e0843dff3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetTag: Enemy
   currentTarget: {fileID: 0}
-  animator: {fileID: 0}
-  rigidbody: {fileID: 0}
-  targetTags: []
-  firePoint: {fileID: 63102585}
+  targetLock: 0
 --- !u!1 &7887917972736612484
 GameObject:
   m_ObjectHideFlags: 0
@@ -1401,7 +1596,7 @@ GameObject:
   - component: {fileID: 5595456888483524166}
   m_Layer: 8
   m_Name: Attack North
-  m_TagString: Player Attack
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1510,10 +1705,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3adc2140d9ad7d34bb3b0077b7c0b4a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxSO: {fileID: 0}
-  damage: 0
-  characterInfo: {fileID: 0}
-  attackDirection: {x: 0, y: 0, z: 0}
+  attackData:
+    attackPower: 0
+    attackMultiplier: 1
+    direction: {x: 0, y: 0, z: 0}
+    knockDuration: 0
+    knockForce: 0
+    isHeal: 0
+    isSpecial: 0
+    properties: []
+    statusEffects: []
+    damageTag: 
+  character: {fileID: 0}
 --- !u!1 &7887917972883870827
 GameObject:
   m_ObjectHideFlags: 0
@@ -1528,7 +1731,7 @@ GameObject:
   - component: {fileID: 6584517087406042023}
   m_Layer: 8
   m_Name: Attack Northwest
-  m_TagString: Player Attack
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1637,10 +1840,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3adc2140d9ad7d34bb3b0077b7c0b4a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxSO: {fileID: 0}
-  damage: 0
-  characterInfo: {fileID: 0}
-  attackDirection: {x: 0, y: 0, z: 0}
+  attackData:
+    attackPower: 0
+    attackMultiplier: 0
+    direction: {x: 0, y: 0, z: 0}
+    knockDuration: 0
+    knockForce: 0
+    isHeal: 0
+    isSpecial: 0
+    properties: []
+    statusEffects: []
+    damageTag: 
+  character: {fileID: 0}
 --- !u!1 &7887917973018387563
 GameObject:
   m_ObjectHideFlags: 0
@@ -1655,7 +1866,7 @@ GameObject:
   - component: {fileID: 5266418060880831824}
   m_Layer: 8
   m_Name: Attack Northeast
-  m_TagString: Player Attack
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1764,10 +1975,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3adc2140d9ad7d34bb3b0077b7c0b4a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxSO: {fileID: 0}
-  damage: 0
-  characterInfo: {fileID: 0}
-  attackDirection: {x: 0, y: 0, z: 0}
+  attackData:
+    attackPower: 0
+    attackMultiplier: 0
+    direction: {x: 0, y: 0, z: 0}
+    knockDuration: 0
+    knockForce: 0
+    isHeal: 0
+    isSpecial: 0
+    properties: []
+    statusEffects: []
+    damageTag: 
+  character: {fileID: 0}
 --- !u!1 &7887917973254318550
 GameObject:
   m_ObjectHideFlags: 0
@@ -1782,7 +2001,7 @@ GameObject:
   - component: {fileID: 110191236426037084}
   m_Layer: 8
   m_Name: Attack Southwest
-  m_TagString: Player Attack
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1891,10 +2110,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3adc2140d9ad7d34bb3b0077b7c0b4a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxSO: {fileID: 0}
-  damage: 0
-  characterInfo: {fileID: 0}
-  attackDirection: {x: 0, y: 0, z: 0}
+  attackData:
+    attackPower: 0
+    attackMultiplier: 0
+    direction: {x: 0, y: 0, z: 0}
+    knockDuration: 0
+    knockForce: 0
+    isHeal: 0
+    isSpecial: 0
+    properties: []
+    statusEffects: []
+    damageTag: 
+  character: {fileID: 0}
 --- !u!1 &7887917973318389076
 GameObject:
   m_ObjectHideFlags: 0
@@ -1906,7 +2133,7 @@ GameObject:
   - component: {fileID: 7887917973318389077}
   m_Layer: 8
   m_Name: Melee Hitboxes
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1949,7 +2176,7 @@ GameObject:
   - component: {fileID: 979342667}
   m_Layer: 8
   m_Name: Ranged Attacks
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1961,7 +2188,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7887917973713919722}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1983,7 +2210,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gunStats: {fileID: 11400000, guid: a988da4b0f0b6ec478b9044f00ae3987, type: 2}
   firePoint: {fileID: 63102585}
-  characterStats: {fileID: 0}
   gunRecoil: 0
   gunDelay: 0
   playerRB: {fileID: 0}
@@ -2003,7 +2229,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gunStats: {fileID: 11400000, guid: bd7659664ee0dbd4aa7c077a93080cba, type: 2}
   firePoint: {fileID: 63102585}
-  characterStats: {fileID: 0}
   gunRecoil: 0
   gunDelay: 0
   playerRB: {fileID: 0}
@@ -2029,7 +2254,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gunStats: {fileID: 11400000, guid: b5bd2bc830d4df54aaa20bc0d468f756, type: 2}
   firePoint: {fileID: 63102585}
-  characterStats: {fileID: 0}
   gunRecoil: 0
   gunDelay: 0
   playerRB: {fileID: 0}
@@ -2050,7 +2274,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gunStats: {fileID: 11400000, guid: 61e58b07d0542584fbab5002edcadff6, type: 2}
   firePoint: {fileID: 63102585}
-  characterStats: {fileID: 0}
   gunRecoil: 0
   gunDelay: 0
   playerRB: {fileID: 0}
@@ -2085,7 +2308,7 @@ GameObject:
   - component: {fileID: 2436055715990209869}
   m_Layer: 8
   m_Name: Attack West
-  m_TagString: Player Attack
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2194,10 +2417,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3adc2140d9ad7d34bb3b0077b7c0b4a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxSO: {fileID: 0}
-  damage: 0
-  characterInfo: {fileID: 0}
-  attackDirection: {x: 0, y: 0, z: 0}
+  attackData:
+    attackPower: 0
+    attackMultiplier: 0
+    direction: {x: 0, y: 0, z: 0}
+    knockDuration: 0
+    knockForce: 0
+    isHeal: 0
+    isSpecial: 0
+    properties: []
+    statusEffects: []
+    damageTag: 
+  character: {fileID: 0}
 --- !u!1 &7887917974009482401
 GameObject:
   m_ObjectHideFlags: 0
@@ -2212,7 +2443,7 @@ GameObject:
   - component: {fileID: 2806941364747125049}
   m_Layer: 8
   m_Name: Attack East
-  m_TagString: Player Attack
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2321,10 +2552,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3adc2140d9ad7d34bb3b0077b7c0b4a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxSO: {fileID: 0}
-  damage: 0
-  characterInfo: {fileID: 0}
-  attackDirection: {x: 0, y: 0, z: 0}
+  attackData:
+    attackPower: 0
+    attackMultiplier: 0
+    direction: {x: 0, y: 0, z: 0}
+    knockDuration: 0
+    knockForce: 0
+    isHeal: 0
+    isSpecial: 0
+    properties: []
+    statusEffects: []
+    damageTag: 
+  character: {fileID: 0}
 --- !u!1001 &1261334877086323714
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2539,33 +2778,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: deb1bb15e2a4eda4cb1aa605719d6470, type: 3}
---- !u!224 &5853267905953449744 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 4664556332710777618, guid: deb1bb15e2a4eda4cb1aa605719d6470,
-    type: 3}
-  m_PrefabInstance: {fileID: 1261334877086323714}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &7410317818917626771 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8599506563329144721, guid: deb1bb15e2a4eda4cb1aa605719d6470,
-    type: 3}
-  m_PrefabInstance: {fileID: 1261334877086323714}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4315874368986188092}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!1 &4315874368986188092 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3054629927034297662, guid: deb1bb15e2a4eda4cb1aa605719d6470,
-    type: 3}
-  m_PrefabInstance: {fileID: 1261334877086323714}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2699060538558684669 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3816189498532432383, guid: deb1bb15e2a4eda4cb1aa605719d6470,
+    type: 3}
+  m_PrefabInstance: {fileID: 1261334877086323714}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &5853267905953449744 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4664556332710777618, guid: deb1bb15e2a4eda4cb1aa605719d6470,
     type: 3}
   m_PrefabInstance: {fileID: 1261334877086323714}
   m_PrefabAsset: {fileID: 0}

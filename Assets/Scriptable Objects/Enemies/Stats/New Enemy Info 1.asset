@@ -14,35 +14,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: 
   level: 0
-  maxHealth:
-    baseValue: 0
+  health:
+    baseValue: 5
+    statType: 0
     modifiers: []
-  currentHealth: 0
-  maxMana:
+    currentValue: 0
+  mana:
     baseValue: 0
+    statType: 1
     modifiers: []
-  currentMana: 0
+    currentValue: 0
   attack:
     baseValue: 0
+    statType: 2
     modifiers: []
   defense:
     baseValue: 0
+    statType: 3
     modifiers: []
   special:
     baseValue: 0
+    statType: 4
     modifiers: []
-  moveSpeed:
-    baseValue: 0
-    modifiers: []
-  fire:
-    attackProperty: {fileID: 0}
-    value: 1
-  ice:
-    attackProperty: {fileID: 0}
-    value: 1
-  electric:
-    attackProperty: {fileID: 0}
-    value: 1
-  dark:
-    attackProperty: {fileID: 0}
-    value: 1
+  moveSpeed: 5
+  fire: 0
+  ice: 0
+  electric: 0
+  dark: 0

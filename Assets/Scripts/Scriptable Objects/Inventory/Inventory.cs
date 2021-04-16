@@ -12,6 +12,9 @@ public class Inventory : ScriptableObject
         itemDict.Add(0, 1);
         itemDict.Add(1, 2);
         itemDict.Add(2, 1);
+        itemDict.Add(3, 1);
+        itemDict.Add(4, 1);
+        itemDict.Add(5, 1);
     }
 
     // public Dictionary<int, ItemObject> GetFullInventory()

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class PauseScreen : MonoBehaviour
 {
-    [SerializeField] private GameStateSO gameStateSO;
+    [SerializeField] private GameData gameData;
     public GameObject mainMenuScreen;
-    public GameObject combatPauseScreen;
+    public GameObject battlePauseScreen;
 
     private void Update()
     {
@@ -19,11 +19,11 @@ public class PauseScreen : MonoBehaviour
     private void TogglePause()
     {
         GameObject pauseScreen;
-        if(gameStateSO.gameState == GameState.Combat)
+        if(gameData.gameState == GameState.Battle)
         {
-            pauseScreen = combatPauseScreen;
+            pauseScreen = battlePauseScreen;
         }
-        else if(gameStateSO.gameState == GameState.Active)
+        else if(gameData.gameState == GameState.Normal)
         {
             pauseScreen = mainMenuScreen;
         }

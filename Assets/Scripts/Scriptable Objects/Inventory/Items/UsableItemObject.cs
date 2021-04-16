@@ -7,10 +7,10 @@ public class UsableItemObject : ItemObject
 {
     [SerializeField]  private int healthRecovery;
     
-
     public virtual void OnEnable()
     {
         itemType = ItemType.Usable;
+        equipmentType = EquipmentType.None;
     }
 
 

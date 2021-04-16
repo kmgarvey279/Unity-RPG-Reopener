@@ -6,12 +6,12 @@ using UnityEngine;
 public class PlayableCharacterInfo : CharacterInfo
 {
     [Header("Equipment")]
-    public Weapon weapon;
-    public Armor armor;
-    public Accessory accessory;
-    public Dictionary<EquipmentType, EquipmentObject> equipmentDict;
+    public EquipmentObject weapon;
+    public EquipmentObject armor;
+    public EquipmentObject accessory;
+    public Dictionary<EquipmentType, EquipmentObject> equipmentDict = new Dictionary<EquipmentType, EquipmentObject>();
 
-    public override void OnEnable()
+    protected override void OnEnable()
     {
         base.OnEnable();
         equipmentDict.Add(EquipmentType.Weapon, weapon);
@@ -24,20 +24,22 @@ public class PlayableCharacterInfo : CharacterInfo
         //check if anything is currently equipped
         if(equipmentDict[equipmentType] != null)
         {
-            attack.RemoveModifier(equipmentDict[equipmentType].attackModifier);
-            defense.RemoveModifier(equipmentDict[equipmentType].defenseModifier);
-            special.RemoveModifier(equipmentDict[equipmentType].specialModifier);
+            //go through each stat stored in character's stat dictionary
+            foreach(KeyValuePair<StatType, Stat> stat in statDict)
+            { 
+                stat.Value.RemoveModifier(equipmentDict[equipmentType].modifierDict[stat.Key]);
+            }
             
             equipmentDict[equipmentType] = null;
         }
         //assign new equipment to selected slot (or set to null if just removing equipment)
         if(newEquipment != null)
         {
-            // maxHealth.AddModifier(newEquipment.healthModifier)
-            // maxMana.AddModifier(newEquipment.manaModifier)
-            attack.AddModifier(newEquipment.attackModifier);
-            defense.AddModifier(newEquipment.defenseModifier);
-            special.AddModifier(newEquipment.specialModifier);
+            //go through each stat stored in character's stat dictionary
+            foreach(KeyValuePair<StatType, Stat> stat in statDict)
+            { 
+                stat.Value.AddModifier(newEquipment.modifierDict[stat.Key]);
+            }
             
             equipmentDict[equipmentType] = newEquipment;
         }

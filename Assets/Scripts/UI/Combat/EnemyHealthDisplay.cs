@@ -10,12 +10,18 @@ public class EnemyHealthDisplay : UnitHealthDisplay
     {
         base.Start();
         sliderBar = GetComponentInChildren<SliderBar>();
-        sliderBar.SetSliderValues(characterInfo.maxHealth.GetValue(), characterInfo.currentHealth);
+        sliderBar.SetSliderValues(character.characterInfo.health.GetValue(), character.characterInfo.health.GetCurrentValue());
+        sliderBar.gameObject.SetActive(false);
     }
 
     public override void HandleHealthChange(DamagePopupType popupType, float amount)
     {
         base.HandleHealthChange(popupType, amount);
-        sliderBar.UpdateSlider(characterInfo.currentHealth);
+        sliderBar.UpdateSlider(character.characterInfo.health.GetCurrentValue());
+    }
+
+    public void ToggleHealthBar(bool isActive)
+    {
+        sliderBar.gameObject.SetActive(isActive);
     }
 }

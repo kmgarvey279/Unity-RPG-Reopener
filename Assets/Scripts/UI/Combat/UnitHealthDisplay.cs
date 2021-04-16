@@ -6,12 +6,12 @@ using TMPro;
 
 public class UnitHealthDisplay : MonoBehaviour
 {
-    public CharacterInfo characterInfo;
+    public Character character;
     public DamagePopup damagePopup;
 
     public virtual void Start()
     {
-        characterInfo = GetComponentInParent<Character>().characterInfo;
+        character = GetComponentInParent<Character>();
         damagePopup = GetComponentInChildren<DamagePopup>();
     }
 

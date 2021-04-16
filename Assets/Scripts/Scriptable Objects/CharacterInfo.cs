@@ -2,48 +2,65 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class Resistance
-{
-    public AttackProperty attackProperty;
-    public float value;
-}
+// public enum ElementalProperty
+// {
+//     Fire,
+//     Ice,
+//     Electric,
+//     Dark
+// }
+
+// public enum AttackProperty
+// {
+//     Strike,
+//     Slash,
+//     Pierce
+// }
 
 public class CharacterInfo : ScriptableObject
 {
     public string name;
     public int level;
+
     [Header("HP/MP")]
-    public Stat maxHealth;
-    public float currentHealth;
-    public Stat maxMana;
-    public float currentMana;
+    public DynamicStat health;
+    public DynamicStat mana;
+
     [Header("Stats")]
     public Stat attack;
     public Stat defense;
     public Stat special;
-    public Stat moveSpeed;
+
+    public float moveSpeed;
+    public Dictionary<StatType, Stat> statDict = new Dictionary<StatType, Stat>();
+
     [Header("Resistances")]
-    public Resistance fire;
-    public Resistance ice;
-    public Resistance electric;
-    public Resistance dark;
+    public float fire;
+    public float ice;
+    public float electric;
+    public float dark;
+    // public Dictionary<AttackProperty, float> resistDict;
 
-    public virtual void OnEnable()
+    protected virtual void OnEnable()
     {
-        currentHealth = maxHealth.GetValue();
-        currentMana = maxMana.GetValue();
+        //add each stat to dictionary
+        statDict.Add(StatType.Health, health);
+        statDict.Add(StatType.Mana, mana);
+        statDict.Add(StatType.Attack, attack);
+        statDict.Add(StatType.Defense, defense);
+        statDict.Add(StatType.Special, special);
+        //set type of each stat
+        foreach(KeyValuePair<StatType,Stat> entry in statDict)
+        {
+            entry.Value.statType = entry.Key; 
+        }
     }
 
-    public void ChangeCurrentHealth(float amount)
+    protected void OnDisable()
     {
-        float temp = currentHealth + amount;
-        currentHealth = Mathf.Clamp(temp, 0, maxHealth.GetValue());
+        foreach(KeyValuePair<StatType,Stat> entry in statDict)
+        {
+            entry.Value.RemoveAllModifiers();
+        }   
     }
-
-    public void ChangeCurrentMana(float amount)
-    {
-        float temp = currentMana + amount;
-        currentMana = Mathf.Clamp(temp, 0, maxMana.GetValue());
-    } 
 }
