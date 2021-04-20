@@ -3,17 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using StateMachineNamespace;
 
-[System.Serializable]
-public class PlayerMoveState : PlayerState
+public class AllyControlState : StateMachine.State
 {
+    public PlayableCharacter character;
+
     public Vector3 moveDirection;
     public Vector3 lookDirection;
+    public Transform leadAxis;
 
     public override void OnEnter()
     {
+        character = GetComponentInParent<PlayableCharacter>();
+        nextState = "";
+
+        character.aiPath.canMove = false;
+        
         lookDirection = character.lookDirection;
         moveDirection = new Vector3(0,0,0);
-        nextState = "";
     }
 
     public override void StateUpdate()
@@ -26,7 +32,6 @@ public class PlayerMoveState : PlayerState
     { 
         ExecuteMovement();
     }
-
 
     public override string CheckConditions()
     {
@@ -61,6 +66,9 @@ public class PlayerMoveState : PlayerState
     {
         //rotate
         character.ChangeLookDirection(lookDirection);
+
+        float angle = Mathf.Atan2(lookDirection.x, -lookDirection.y) * Mathf.Rad2Deg;
+        leadAxis.rotation = Quaternion.Euler(0, 0, angle);
         
         //move
         float speedTemp = character.characterInfo.moveSpeed;
@@ -68,28 +76,33 @@ public class PlayerMoveState : PlayerState
         {
             speedTemp = speedTemp / 2f;
         }
-        rigidbody.velocity = new Vector3(moveDirection.x * speedTemp, moveDirection.y * speedTemp);
+        character.rigidbody.velocity = new Vector3(moveDirection.x * speedTemp, moveDirection.y * speedTemp);
 
         //update animation
         float tempX = Mathf.Round(character.lookDirection.x);
         float tempY = Mathf.Round(character.lookDirection.y);
-        animator.SetFloat("Look X", tempX);
-        animator.SetFloat("Look Y", tempY);
-        animator.SetFloat("Speed", moveDirection.sqrMagnitude);
+        character.animator.SetFloat("Look X", tempX);
+        character.animator.SetFloat("Look Y", tempY);
+        character.animator.SetFloat("Speed", moveDirection.sqrMagnitude);
     }
 
     private void HandleInput()
     {
-        if(Input.GetButtonDown("Dash"))
-        {
-            nextState = "DashState";
-        } else if (Input.GetButtonDown("Light Attack")) {
-            nextState = "AttackState";
-        } else if (Input.GetButtonDown("Shoot")) {
-            nextState = "ShootState";
-        } else if (Input.GetButtonDown("Guard")) {
-            nextState = "ShieldState";
-        }
+        // if(Input.GetButtonDown("Dash"))
+        // {
+        //     nextState = "DashState";
+        // } else if (Input.GetButtonDown("Light Attack")) {
+        //     nextState = "AttackState";
+        // } else if (Input.GetButtonDown("Shoot")) {
+        //     nextState = "ShootState";
+        // } else if (Input.GetButtonDown("Guard")) {
+        //     nextState = "ShieldState";
+        // }
+    }
+
+    public void EnterBattleState()
+    {
+        nextState = "BattleState";
     }
 
 }

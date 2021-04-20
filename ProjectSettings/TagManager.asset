@@ -15,8 +15,8 @@ TagManager:
   - UI
   - HUD
   - Collision
-  - Player
-  - Player Projectile
+  - Playable Character
+  - Friendly Projectile
   - Enemy
   - Enemy Projectile
   - 

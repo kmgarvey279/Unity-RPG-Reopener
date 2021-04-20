@@ -26,11 +26,5 @@ public class Action : MonoBehaviour
     {
         // character.animator.SetTrigger(animatorTrigger);
     }
-
-    public void OnDrawGizmos()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(transform.position, range);
-    }
 }
 

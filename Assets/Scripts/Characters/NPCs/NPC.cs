@@ -8,11 +8,4 @@ public class NPC : Character
     {
         base.Start();
     }
-
-    // public override void OnDrawGizmos()
-    // {
-    //     base.OnDrawGizmos();
-    //     Gizmos.color = Color.magenta;
-    //     Gizmos.DrawWireSphere(transform.position, personalSpaceRadius);
-    // }
 }

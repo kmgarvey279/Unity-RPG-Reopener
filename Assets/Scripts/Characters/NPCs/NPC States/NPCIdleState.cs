@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using StateMachineNamespace;
 using Pathfinding;
 
 public class NPCIdleState : NPCState

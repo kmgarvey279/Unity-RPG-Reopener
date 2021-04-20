@@ -2,51 +2,58 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using StateMachineNamespace;
+using Pathfinding;
 
 [System.Serializable]
-public class NPCBattleState : NPCMoveState
+public class NPCBattleState : NPCState
 {
-    [SerializeField] private Targeter targeter;
-    private string animatorTrigger;
-    [SerializeField] private PlayerParty playerParty;
+    // [SerializeField] private Targeter targeter;
+    // private string animatorTrigger;
+    // // [SerializeField] private PlayerParty playerParty;
+    // [SerializeField] private Transform startPosition;
 
-    public override void OnEnter()
-    {
-        targeter = GetComponent<Targeter>();
-        playerParty = FindObjectOfType<PlayerParty>();
+    // public override void OnEnter()
+    // {
+    //     //activate collision and pathfinding
 
-        playerParty.AddTargetToAll(GetComponentInParent<Enemy>().gameObject);
-        foreach (GameObject target in playerParty.activeParty)
-        {
-            targeter.AddTarget(target);         
-        }
+    //     character.aiPath.canMove = true;
+    //     character.setter.target = startPosition;
 
-        nextState = "";
-    }
+    //     targeter = GetComponent<Targeter>();
+    //     playerParty = GetComponentInParent<PlayerParty>();
 
-    public override void StateUpdate()
-    {
-    }
+    //     // playerParty.AddTargetToAll(GetComponentInParent<Enemy>().gameObject);
+    //     // foreach (GameObject target in playerParty.activeParty)
+    //     // {
+    //     //     targeter.AddTarget(target);         
+    //     // }
 
-    public override void StateFixedUpdate()
-    {
-    }
+    //     nextState = "";
+    // }
 
-    public override string CheckConditions()
-    {
-        return nextState;
-    }
+    // public override void StateUpdate()
+    // {
+    // }
 
-    public override void OnExit()
-    {
-        animator.SetTrigger("End Action");
-        // character.actionManager.FinishAction();
-    }
+    // public override void StateFixedUpdate()
+    // {
+    // }
+
+    // public override string CheckConditions()
+    // {
+    //     return nextState;
+    // }
+
+    // public override void OnExit()
+    // {
+    //     animator.SetTrigger("End Action");
+    //     // character.actionManager.FinishAction();
+    // }
 
 
-    public void OnAnimationComplete()
-    {
-        nextState = "MoveState";
-    }
+    // public void OnAnimationComplete()
+    // {
+    //     nextState = "MoveState";
+    // }
 
 }
