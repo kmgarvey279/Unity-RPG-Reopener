@@ -4,8 +4,11 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Player Attack
   - Enemy
+  - Playable Character
+  - Player Attack
+  - Combatant
+  - Tile
   layers:
   - Default
   - TransparentFX

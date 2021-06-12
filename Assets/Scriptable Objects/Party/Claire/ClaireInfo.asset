@@ -14,28 +14,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Claire
   level: 1
+  baseHealth: 50
   health:
+    baseValue: 50
     statType: 0
-    modifiers: []
-    currentValue: 0
+    modifiers: 
+    currentValue: 50
+  baseMana: 20
   mana:
+    baseValue: 20
     statType: 1
-    modifiers: []
-    currentValue: 0
-  attack:
-    statType: 2
-    modifiers: []
-  defense:
-    statType: 3
-    modifiers: []
-  special:
-    statType: 4
-    modifiers: []
-  moveSpeed: 7
+    modifiers: 
+    currentValue: 20
+  attack: 10
+  defense: 8
+  special: 5
+  agility: 5
+  moveRange: 4
+  strike: 0
+  slash: 0
+  pierce: 0
   fire: 0
   ice: 0
   electric: 0
   dark: 0
+  meleeAttack: {fileID: 11400000, guid: 49078961aba57e64590b3560444824a7, type: 2}
+  rangedAttack: {fileID: 11400000, guid: d0271b7210b12624186c868c9dc3043f, type: 2}
+  skills:
+  - {fileID: 11400000, guid: 675c277a63d62164bac38a220a7998a1, type: 2}
+  - {fileID: 11400000, guid: 44bb599697fb8414795981df292281fc, type: 2}
+  - {fileID: 11400000, guid: 95ae621aec7ee3d41b7c76dade20ea2a, type: 2}
   weapon: {fileID: 0}
   armor: {fileID: 0}
   accessory: {fileID: 0}

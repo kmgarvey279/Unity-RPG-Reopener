@@ -8,36 +8,44 @@ public enum StatType
     Mana,
     Attack,
     Defense,
-    Special
+    Special,
+    Agility,
+    MoveRange
 }
 
 [System.Serializable]
 public class Stat
 {
-    [SerializeField] protected float baseValue;
+    [SerializeField] protected int baseValue;
     public StatType statType;
-    [SerializeField] protected List<float> modifiers = new List<float>();
+    [SerializeField] protected List<int> modifiers = new List<int>();
 
-    public float GetValue()
+    public Stat(StatType statType, int baseValue)
     {
-        float finalValue = baseValue;
+        this.statType = statType;
+        this.baseValue = baseValue;
+    }
+
+    public int GetValue()
+    {
+        int finalValue = baseValue;
         modifiers.ForEach(x => finalValue += x);
         return finalValue;
     }
 
-    public void ChangeValue(float amount)
+    public void ChangeValue(int amount)
     {
         baseValue = baseValue + amount;
     }
 
-    public virtual void AddModifier(float modifier)
+    public virtual void AddModifier(int modifier)
     {
         if(modifier != 0)
             modifiers.Add(modifier);
         
     }
 
-    public virtual void RemoveModifier(float modifier)
+    public virtual void RemoveModifier(int modifier)
     {
         if(modifier != 0)
             modifiers.Remove(modifier);

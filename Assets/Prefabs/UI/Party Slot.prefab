@@ -154,6 +154,8 @@ MonoBehaviour:
   slotImage: {fileID: 9183411636186826502}
   activePartyColor: {r: 0.8773585, g: 0.32611248, b: 0.8761215, a: 1}
   reservePartyColor: {r: 0.3018868, g: 0.058098957, b: 0.297971, a: 1}
+  onActivePartyChange: {fileID: 11400000, guid: d01519caccb08bf4eaf5200960abba1b,
+    type: 2}
 --- !u!1 &9183411637428127401
 GameObject:
   m_ObjectHideFlags: 0

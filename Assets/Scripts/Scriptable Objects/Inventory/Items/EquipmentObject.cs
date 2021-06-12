@@ -5,12 +5,12 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Equipment", menuName = "Inventory/Items/Equipment")]
 public class EquipmentObject : ItemObject
 {
-    [SerializeField] private float healthModifier;
-    [SerializeField] private float manaModifier;
-    [SerializeField] private float attackModifier;
-    [SerializeField] private float defenseModifier;
-    [SerializeField] private float specialModifier;
-    public Dictionary<StatType, float> modifierDict = new Dictionary<StatType, float>();
+    [SerializeField] private int healthModifier;
+    [SerializeField] private int manaModifier;
+    [SerializeField] private int attackModifier;
+    [SerializeField] private int defenseModifier;
+    [SerializeField] private int specialModifier;
+    public Dictionary<StatType, int> modifierDict = new Dictionary<StatType, int>();
     
     public virtual void OnEnable()
     {

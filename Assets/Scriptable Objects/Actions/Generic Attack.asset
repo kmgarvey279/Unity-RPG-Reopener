@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
+  m_Name: Generic Attack
+  m_EditorClassIdentifier: 
+  actionType: 0
+  mpCost: 0
+  turnPointCost: 0
+  timeCost: 0
+  power: 0
+  accuracy: 0
+  range: 99
+  attackProperty1: 0
+  attackProperty2: 0
+  effects: []
+  targetFriendly: 0
+  targetHostile: 1
+  fixedTarget: 1
+  canMove: 0
+  hitboxPrefab: {fileID: 0}
+  animatorTrigger: 
+  userEffectPrefab: {fileID: 0}
+  actionEffectPrefab: {fileID: 0}

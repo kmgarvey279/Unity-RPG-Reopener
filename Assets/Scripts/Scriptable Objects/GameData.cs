@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum GameState
 {
-    Normal,
+    Move,
     Battle
 }
 
@@ -15,7 +15,7 @@ public class GameData: ScriptableObject
 
     private void Start()
     {
-        gameState = GameState.Normal;
+        gameState = GameState.Move;
     }
 
     public void ChangeGameState(GameState newGameState)

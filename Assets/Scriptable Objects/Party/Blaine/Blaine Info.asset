@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbd7c3aa6ce019147804e90e0136ea53, type: 3}
+  m_Name: Blaine Info
+  m_EditorClassIdentifier: 
+  name: Blaine
+  level: 1
+  health:
+    baseValue: 25
+    statType: 0
+    modifiers: []
+    currentValue: 0
+  mana:
+    baseValue: 10
+    statType: 1
+    modifiers: []
+    currentValue: 0
+  attack:
+    baseValue: 8
+    statType: 2
+    modifiers: []
+  defense:
+    baseValue: 8
+    statType: 3
+    modifiers: []
+  special:
+    baseValue: 5
+    statType: 4
+    modifiers: []
+  agility:
+    baseValue: 6
+    statType: 5
+    modifiers: []
+  moveRange:
+    baseValue: 3
+    statType: 6
+    modifiers: []
+  fire: 0
+  ice: 0
+  electric: 0
+  dark: 0
+  skills: []
+  weapon: {fileID: 0}
+  armor: {fileID: 0}
+  accessory: {fileID: 0}

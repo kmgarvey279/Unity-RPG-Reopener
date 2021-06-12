@@ -15,7 +15,7 @@ MonoBehaviour:
   name: Mutiny
   level: 1
   health:
-    baseValue: 10
+    baseValue: 20
     statType: 0
     modifiers: []
     currentValue: 0
@@ -25,22 +25,30 @@ MonoBehaviour:
     modifiers: []
     currentValue: 0
   attack:
-    baseValue: 0
+    baseValue: 5
     statType: 2
     modifiers: []
   defense:
-    baseValue: 0
+    baseValue: 5
     statType: 3
     modifiers: []
   special:
-    baseValue: 0
+    baseValue: 5
     statType: 4
     modifiers: []
-  moveSpeed: 0
+  agility:
+    baseValue: 30
+    statType: 5
+    modifiers: []
+  moveRange:
+    baseValue: 4
+    statType: 6
+    modifiers: []
   fire: 0
   ice: 0
   electric: 0
   dark: 0
+  skills: []
   weapon: {fileID: 0}
   armor: {fileID: 0}
   accessory: {fileID: 0}

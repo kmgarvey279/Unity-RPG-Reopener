@@ -1,106 +1,129 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
+using System.Linq;
+using StateMachineNamespace;
+
+[System.Serializable]
+public class TurnSlot
+{
+    public Combatant combatant;
+    private float turnCounterBase = 200;
+    public float turnCounter;
+
+    public float StartingCounterValue()
+    {
+        int agility = combatant.battleStats.statDict[StatType.Agility].GetValue();
+        return turnCounterBase - agility;
+    } 
+
+    public TurnSlot(Combatant _combatant)
+    {
+        combatant = _combatant;
+        turnCounter = StartingCounterValue();
+    }
+}
+
+[System.Serializable]
+public class TurnData
+{
+    public Combatant combatant;
+    public Action action;
+    public List<Combatant> targets = new List<Combatant>();
+    public Tile targetedTile;
+    public bool hasMoved;
+
+    public TurnData(Combatant combatant)
+    {
+        this.combatant = combatant;
+    }
+}
 
 public class BattleManager : MonoBehaviour
 {
-    // public GameData gameData;
+    [Header("Game Data Scriptable Object")]
+    [SerializeField] private GameData gameData;
+    [Header("Parties")]
+    public BattleParty allyParty;
+    public EnemyParty enemyParty;
+    [Header("Turn Order Display")]
+    [SerializeField] private BattleTimeline battleTimeline;
+    [SerializeField] private List<TurnSlot> turnForecast = new List<TurnSlot>();
+    [Header("States")]
+    public StateMachine stateMachine;
+    [Header("Current Turn Data")]
+    public TurnData turnData;
 
-    // private bool escaping = false;
-    // private float escapeTimer;
-    // [SerializeField] private float escapeDuration;
+    public SignalSenderGO changeCameraFocus;
 
-    // public PlayerParty playerParty;
+    public void Start()
+    {
+        foreach (Combatant combatant in allyParty.combatants)
+        {
+            TurnSlot newSlot = new TurnSlot(combatant);
+            turnForecast.Add(newSlot);
+        }
+        foreach (Combatant combatant in enemyParty.combatants)
+        {
+            TurnSlot newSlot = new TurnSlot(combatant);
+            turnForecast.Add(newSlot);
+        }
+        turnForecast.Sort((x, y) => x.turnCounter.CompareTo(y.turnCounter));
+        
+        AdvanceTimeline();
+    }
 
-    // private void Start()
-    // {
-    //     escapeTimer = escapeDuration;
-    // }
+    private void AdvanceTimeline()
+    {
+        if(turnForecast[0].turnCounter > 0)
+        {
+            float timeToAdvance = turnForecast[0].turnCounter;
+            foreach(TurnSlot turnSlot in turnForecast)
+            {
+                turnSlot.turnCounter =  turnSlot.turnCounter - timeToAdvance;
+            }
+        }
+        StartTurn();
+    }
 
-    // private void Update()
-    // {
-    //     if(escaping)
-    //     {
-    //         if(escapeTimer <= 0)
-    //         {
-    //             EndBattle();
-    //         }
-    //         else
-    //         {
-    //             escapeTimer--;
-    //         }
-    //     }
-    // }
+    public void EndBattle()
+    {
+        Debug.Log("End Battle");
+    }
 
-    // public void StartBattle()
-    // {
-    //     gameData.ChangeGameState(GameState.Battle);
-    // }
+    public void StartTurn()
+    {   
+        TurnSlot currentTurnSlot = turnForecast[0];
+        //update turn forecast
+        turnForecast.Remove(currentTurnSlot);
+        currentTurnSlot.turnCounter = currentTurnSlot.StartingCounterValue();
+        TurnForecastAdd(currentTurnSlot);
 
-    // public void EndBattle()
-    // {
-    //     escaping = false;
-    //     escapeTimer = escapeDuration; 
-    //     gameData.ChangeGameState(GameState.Normal);
-    // }
+        //create temp turn data
+        turnData = new TurnData(currentTurnSlot.combatant);
 
-    // public void OnAllyKO(GameObject target)
-    // {
-    //     // foreach (GameObject enemy in enemies)
-    //     // {
-    //     //     Targeter targeter = enemy.GetComponent<Targeter>();
-    //     //     targeter.RemoveTarget(target);
-    //     // }
-    // }
+        //get next state
+        if(currentTurnSlot.combatant is AllyCombatant)
+        {
+            stateMachine.ChangeState("BattleMenu");
+        }
+        else
+        {
+            stateMachine.ChangeState("EnemyTurn");
+        }
+    }
 
-    // // public void OnAllyChange(GameObject oldAlly, GameObject newAlly)
-    // // {
-    // //     partyActive[oldAlly] = newAlly;
-    // //     partyReserve[newAlly] =
-    // // }
+    private void TurnForecastAdd(TurnSlot turnSlot)
+    {
+        turnForecast.Add(turnSlot);
+        turnForecast.Sort((x, y) => x.turnCounter.CompareTo(y.turnCounter));
+        battleTimeline.UpdateTurnList(turnForecast[0], turnForecast);
+    }
 
-    // //called when a new enemy joins battle (or first enemy triggers battle)
-    // public void OnEnemyEngage(GameObject newEnemy)
-    // {
-    //     // //add enemy to battle manager enemy list
-    //     // enemies.Add(newEnemy);
-    //     // //add party to enemy target list
-    //     // newEnemy.GetComponent<Targeter>().SetTargets(partyActive);
-    //     // //add enemy to target list for each party member
-    //     // foreach (GameObject character in partyActive)
-    //     // {
-    //     //     Targeter targeter = character.GetComponent<Targeter>();
-    //     //     targeter.AddTarget(newEnemy);
-    //     // }
-    //     // //start battle (if not already to in battle state)
-    //     // if(gameManager.gameState != GameState.Battle)
-    //     // {
-    //     //     StartBattle();
-    //     // }
-    // }
-
-    // public void OnEnemyDie(GameObject target)
-    // {
-    //     // //remove enemy from battle manager enemy list
-    //     // enemies.Remove(target);
-    //     // //end battle if it was the last enemy
-    //     // if(enemies.Count <= 0)
-    //     // {
-    //     //     EndBattle();
-    //     // }
-    //     // else
-    //     // {
-    //     //     //remove enemy from each party member's target list
-    //     //     foreach (GameObject character in partyActive)
-    //     //     {
-    //     //         Targeter targeter = character.GetComponent<Targeter>();
-    //     //         targeter.RemoveTarget(target);
-    //     //     }
-    //     // }
-    // }
-
-    // public void StartEscape()
-    // {
-    //    escaping = true; 
-    // }
+    public void EndTurn()
+    {   
+        turnData = null;
+        AdvanceTimeline();
+    }
 }

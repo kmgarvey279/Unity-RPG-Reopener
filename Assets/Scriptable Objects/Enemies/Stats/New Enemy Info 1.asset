@@ -12,32 +12,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 622987f3fd980c04fb94f3589b51ab64, type: 3}
   m_Name: New Enemy Info 1
   m_EditorClassIdentifier: 
-  name: 
-  level: 0
+  name: Test Enemy
+  level: 1
+  baseHealth: 20
   health:
-    baseValue: 5
+    baseValue: 20
     statType: 0
-    modifiers: []
-    currentValue: 0
+    modifiers: 
+    currentValue: 20
+  baseMana: 5
   mana:
-    baseValue: 0
+    baseValue: 5
     statType: 1
-    modifiers: []
-    currentValue: 0
-  attack:
-    baseValue: 0
-    statType: 2
-    modifiers: []
-  defense:
-    baseValue: 0
-    statType: 3
-    modifiers: []
-  special:
-    baseValue: 0
-    statType: 4
-    modifiers: []
-  moveSpeed: 5
+    modifiers: 
+    currentValue: 5
+  attack: 0
+  defense: 0
+  special: 0
+  agility: 0
+  moveRange: 0
+  strike: 0
+  slash: 0
+  pierce: 0
   fire: 0
   ice: 0
   electric: 0
   dark: 0
+  meleeAttack: {fileID: 0}
+  rangedAttack: {fileID: 0}
+  skills: []
