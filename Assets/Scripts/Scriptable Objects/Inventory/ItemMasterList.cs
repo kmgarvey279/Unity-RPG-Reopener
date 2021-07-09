@@ -6,13 +6,19 @@ using UnityEngine;
 public class ItemMasterList : ScriptableObject
 {
     public List<ItemObject> masterList;
-    public Dictionary<int, ItemObject> masterDict = new Dictionary<int, ItemObject>();
+    public Dictionary<string, ItemObject> masterDict = new Dictionary<string, ItemObject>();
 
     private void OnEnable()
     {
         for (int i = 0; i < masterList.Count; i++)
         {
-            masterDict.Add(i, masterList[i]);
+            masterDict.Add(masterList[i].itemId, masterList[i]);
         }
     }
+
+    private void OnDisable()
+    {
+        masterDict.Clear();
+    }
 }
+

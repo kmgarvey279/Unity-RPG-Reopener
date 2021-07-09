@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Signal Sender (Int)", menuName = "SignalSender/Int")]
-public class SignalSenderInt : MonoBehaviour
+public class SignalSenderInt : ScriptableObject
 {
     private List<SignalListenerInt> listeners = new List <SignalListenerInt>();
 

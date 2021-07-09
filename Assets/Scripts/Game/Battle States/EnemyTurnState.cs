@@ -1,25 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using StateMachineNamespace;
 
 [System.Serializable]
-public class EnemyTurnState : StateMachine.State
+public class EnemyTurnState : BattleState
 {
     private BattleManager battleManager;
     private Combatant combatant;
-    public CameraManager cameraManager;
+    [Header("Unity Events")]
+    public SignalSender onCameraZoomOut;
 
-    private void Start()
+    public override void Start()
     {
+        base.Start();
         battleManager = GetComponentInParent<BattleManager>();
         // combatant = battleManager.currentTurnSlot.combatant;
     }
 
     public override void OnEnter()
     {
-        cameraManager.SetTarget(combatant.gameObject.transform);
-        // enemyTargetA
+        onCameraZoomOut.Raise();
     }
 
     public override void StateUpdate()
@@ -30,11 +32,6 @@ public class EnemyTurnState : StateMachine.State
     public override void StateFixedUpdate()
     {
 
-    }
-
-    public override string CheckConditions()
-    {
-        return nextState;
     }
 
     public override void OnExit()

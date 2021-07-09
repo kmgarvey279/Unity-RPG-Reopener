@@ -10,7 +10,7 @@ public class SecondaryBattlePanel : MonoBehaviour
     [SerializeField] private GameObject listParent;
     private List<GameObject> selectableList = new List<GameObject>();
 
-    public void DisplayItems(Combatant combatant)
+    public void DisplayItems()
     {
         display.SetActive(true);
     }

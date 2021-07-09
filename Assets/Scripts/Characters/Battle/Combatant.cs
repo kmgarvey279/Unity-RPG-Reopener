@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using Pathfinding;
 using UnityEngine.Tilemaps;
 
 [System.Serializable]
 public class BattleStats
 {
-    public string name;
+    public string characterName;
     public DynamicStat health;
     public DynamicStat mana;
     public Dictionary<StatType, Stat> statDict;
@@ -21,7 +22,7 @@ public class BattleStats
 
     public BattleStats(CharacterInfo characterInfo)
     {
-        this.name = characterInfo.name;
+        this.characterName = characterInfo.characterName;
         this.health = characterInfo.health;
         this.mana = characterInfo.mana;
         this.statDict = characterInfo.statDict;
@@ -50,7 +51,7 @@ public class Combatant : MonoBehaviour
     public Tile tile;
     public List<Tile> path = new List<Tile>();
 
-    public virtual void Start()
+    public virtual void Awake()
     {
         battleStats = new BattleStats(characterInfo);
 
@@ -59,7 +60,10 @@ public class Combatant : MonoBehaviour
 
         healthDisplay = GetComponentInChildren<HealthDisplay>();
         targetIcon = GetComponentInChildren<TargetIcon>();
+    }
 
+    public void Start()
+    {
         SnapToTileCenter();
     }
 
@@ -69,7 +73,6 @@ public class Combatant : MonoBehaviour
         
         Vector3Int cellPosition = tilemap.WorldToCell(transform.position);
         Vector3 newPosition = tilemap.GetCellCenterWorld(cellPosition);
-        // newPosition.y = newPosition.y - 0.25f;   
         transform.position = newPosition;
     }
 
@@ -90,10 +93,9 @@ public class Combatant : MonoBehaviour
         animator.SetBool("Moving", true);
     }
 
-    // Update is called once per frame
     private void Update()
     {
-        float speed = 5f;
+        float speed = 4f;
         if(path.Count > 0)
         {
             if(Vector3.Distance(transform.position, path[0].transform.position) < 0.0001f)
@@ -113,7 +115,7 @@ public class Combatant : MonoBehaviour
                     animator.SetFloat("Look X", Mathf.Round(moveDirection.x));
                     animator.SetFloat("Look Y", Mathf.Round(moveDirection.y));
                 }
-                float step =  speed * Time.deltaTime; 
+                float step = speed * Time.deltaTime; 
                 transform.position = Vector3.MoveTowards(transform.position, path[0].transform.position, step);   
             }
         }
@@ -129,5 +131,10 @@ public class Combatant : MonoBehaviour
         {
             Debug.Log("Dead");
         }
+    }
+
+    void OnDisable() 
+    {
+        Debug.LogError("");
     }
 }

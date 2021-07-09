@@ -1,24 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using StateMachineNamespace;
 
 [System.Serializable]
-public class MenuState : StateMachine.State
+public class MenuState : BattleState
 {
     [Header("Battle Menu")]
     [SerializeField] private CommandMenu commandMenu;
-    [SerializeField] private BattleManager battleManager;
-    public CameraManager cameraManager;
+    private BattleManager battleManager;
+    private TurnData turnData;
+    [Header("Events")]
+    public SignalSenderGO onCameraZoomIn;
 
-    private void Start()
+    public override void Start()
     {
+        base.Start();
         battleManager = GetComponentInParent<BattleManager>();
     }
     
     public override void OnEnter()
     {
-        cameraManager.SetTarget(battleManager.turnData.combatant.transform);
+        turnData = battleManager.turnData;
+
+        onCameraZoomIn.Raise(turnData.combatant.gameObject);
 
         commandMenu.DisplayMenu();
     }
@@ -31,11 +37,6 @@ public class MenuState : StateMachine.State
     public override void StateFixedUpdate()
     {
 
-    }
-
-    public override string CheckConditions()
-    {
-        return nextState;
     }
 
     public override void OnExit()

@@ -14,6 +14,7 @@ public class Ally : MonoBehaviour
     public Animator animator;
     public Rigidbody2D rigidbody;
     public bool isRunning;
+    public bool isJumping = false;
 
     public void Start()
     {
@@ -24,28 +25,31 @@ public class Ally : MonoBehaviour
 
     public void Update()
     {
-        if(Input.GetButton("Run"))
+        if(!isJumping)
         {
-            isRunning = true;
-        }
-        else
-        {
-            isRunning = false;
-        }
+            if(Input.GetButton("Run"))
+            {
+                isRunning = true;
+            }
+            else
+            {
+                isRunning = false;
+            }
 
-        float moveX = Input.GetAxisRaw("Horizontal");
-        float moveY = Input.GetAxisRaw("Vertical");
-        moveDirection = new Vector3(moveX, moveY).normalized;
+            float moveX = Input.GetAxisRaw("Horizontal");
+            float moveY = Input.GetAxisRaw("Vertical");
+            moveDirection = new Vector3(moveX, moveY).normalized;
 
-        if(!Mathf.Approximately(moveDirection.x, 0.0f) || !Mathf.Approximately(moveDirection.y, 0.0f))
-        {
-            float tempX = Mathf.Round(moveDirection.x);
-            float tempY = Mathf.Round(moveDirection.y);
-            animator.SetFloat("Look X", tempX);
-            animator.SetFloat("Look Y", tempY);
+            if(!Mathf.Approximately(moveDirection.x, 0.0f) || !Mathf.Approximately(moveDirection.y, 0.0f))
+            {
+                float tempX = Mathf.Round(moveDirection.x);
+                float tempY = Mathf.Round(moveDirection.y);
+                animator.SetFloat("Look X", tempX);
+                animator.SetFloat("Look Y", tempY);
 
-            float angle = Mathf.Atan2(moveDirection.x, -moveDirection.y) * Mathf.Rad2Deg;
-            followerAxis.rotation = Quaternion.Euler(0, 0, angle);
+                float angle = Mathf.Atan2(moveDirection.x, -moveDirection.y) * Mathf.Rad2Deg;
+                followerAxis.rotation = Quaternion.Euler(0, 0, angle);
+            }
         }
     }
 }

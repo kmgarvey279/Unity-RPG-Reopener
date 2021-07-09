@@ -20,7 +20,7 @@ public class GridDisplay
     public List<Combatant> GetTargetsInAOE()
     {
         List<Combatant> targets = new List<Combatant>();
-        foreach (Tile tile in aoeTiles)
+        foreach(Tile tile in aoeTiles)
         {
             if(tile.occupier != null && tile.occupier.CompareTag("Combatant"))
             {
@@ -34,11 +34,11 @@ public class GridDisplay
 public class GridManager : MonoBehaviour
 {
     public Tilemap tilemap;
-    public Transform startPoint;
     
     [SerializeField] private int xCount;
     [SerializeField] private int yCount;
-    private Vector3 tileSize = new Vector3(0.5f, 0.25f);
+    [SerializeField] private Transform start;
+    private float tileSize = 0.5f;
 
     public GameObject[,] tileArray;
 
@@ -54,65 +54,6 @@ public class GridManager : MonoBehaviour
     {
         tileArray = new GameObject[xCount, yCount];
         GenerateGrid(); 
-    }
-
-    private void Update()
-    {
-        if(gridDisplay.selectedTile != null)
-        {
-            int moveX = (int)(Input.GetAxisRaw("Horizontal"));
-            int moveY = (int)(Input.GetAxisRaw("Vertical"));
-            int[] isoDirection = ConvertToIsoDirection(moveX, moveY);
-
-            if(previousMoveX != isoDirection[0] || previousMoveY != isoDirection[1])
-            {
-                previousMoveX = isoDirection[0];
-                previousMoveY = isoDirection[1];
-                
-                int newX = gridDisplay.selectedTile.x + isoDirection[0];
-                int newY = gridDisplay.selectedTile.y + isoDirection[1];
-                
-                ChangeSelectedTile(newX, newY);
-            }
-        } 
-    }
-
-    private void ChangeSelectedTile(int newX, int newY)
-    {
-        if(newX >= 0 && newX < xCount && newY >= 0 && newY < yCount)
-        {
-            gridDisplay.selectedTile = tileArray[newX, newY].GetComponent<Tile>();
-            gridDisplay.selectedTile.Select();
-        }
-    }
-
-    private int[] ConvertToIsoDirection(int moveX, int moveY)
-    {
-        int[] originalDirection = new int[]{moveX, moveY};
-
-        int[][] directions = new int[][]
-        {
-           new int[] {0, 1},
-           new int[] {1, 1},
-           new int[] {1, 0},
-           new int[] {1, -1},
-           new int[] {0, -1},
-           new int[] {-1, -1},
-           new int[] {-1, 0},
-           new int[] {-1, 1}
-        };
-
-        int index = System.Array.IndexOf(directions, originalDirection);
-        if(index != null)
-        {
-            int next = index + 1;
-            if(next == 8)
-            {
-                next = 0; 
-            }
-            return directions[next];
-        }
-        return originalDirection;
     }
 
     public void OnSelectedTileChange()
@@ -131,7 +72,9 @@ public class GridManager : MonoBehaviour
         {  
             for(int y = 0; y < yCount; y++)
             {
-                Vector3 spawnPos = new Vector3(tileSize.x * ((float)x - (float)y), (tileSize.y * ((float)x + (float)y)));
+                float xPos = tileSize * (float)x + start.position.x;
+                float yPos = tileSize * (float)y + start.position.y;
+                Vector3 spawnPos = new Vector3(xPos, yPos);
                 SpawnTile(x, y, spawnPos);
             }
         }
@@ -322,7 +265,7 @@ public class GridManager : MonoBehaviour
         {
             adjacentTiles.Add(tileArray[tile.x + 1, tile.y].GetComponent<Tile>());
         }
-        if(tile.x - 1 > 0)
+        if(tile.x - 1 >= 0)
         {
             adjacentTiles.Add(tileArray[tile.x - 1, tile.y].GetComponent<Tile>());
         }
@@ -330,7 +273,7 @@ public class GridManager : MonoBehaviour
         {
             adjacentTiles.Add(tileArray[tile.x, tile.y + 1].GetComponent<Tile>());
         }
-        if(tile.y - 1 > 0)
+        if(tile.y - 1 >= 0)
         {
             adjacentTiles.Add(tileArray[tile.x, tile.y - 1].GetComponent<Tile>());
         }

@@ -17,7 +17,7 @@ public class PartySlot : MonoBehaviour
     public void AssignSlot(PartyMember newPartyMember)
     {
         partyMember = newPartyMember;
-        nameText.text = partyMember.name;
+        nameText.text = partyMember.characterName;
         if(partyMember.inActiveParty)
         {
             slotImage.color = activePartyColor;
@@ -30,7 +30,7 @@ public class PartySlot : MonoBehaviour
 
     public void ChangeActiveParty()
     {
-        if(partyMember.name != "Claire")
+        if(partyMember.characterName != "Claire")
         {
             if(partyMember.inActiveParty)
             {

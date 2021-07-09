@@ -39,10 +39,10 @@ public class OverworldParty : MonoBehaviour
             PartyMember partyMember = partyData.partyList[i];
             if(partyMember.inActiveParty)
             {
-                string name = partyMember.name; 
+                string characterName = partyMember.characterName; 
                 Transform partyPosition = nextAlly.GetComponent<Ally>().followerPosition.transform;
 
-                GameObject allyObject = Instantiate(allyPrefabs[name], partyPosition.position, Quaternion.identity);
+                GameObject allyObject = Instantiate(allyPrefabs[characterName], partyPosition.position, Quaternion.identity);
                 allyObject.transform.parent = gameObject.transform;
                 allyObject.GetComponent<Follower>().partyPosition = partyPosition;
                 allyObjects.Add(allyObject);

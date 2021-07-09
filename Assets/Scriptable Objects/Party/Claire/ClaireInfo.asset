@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd7c3aa6ce019147804e90e0136ea53, type: 3}
   m_Name: ClaireInfo
   m_EditorClassIdentifier: 
-  name: Claire
+  characterName: Claire
   level: 1
   baseHealth: 50
   health:
@@ -30,7 +30,7 @@ MonoBehaviour:
   defense: 8
   special: 5
   agility: 5
-  moveRange: 4
+  moveRange: 5
   strike: 0
   slash: 0
   pierce: 0

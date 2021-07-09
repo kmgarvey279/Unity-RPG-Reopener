@@ -39,7 +39,7 @@ public class EquipmentSelect : MonoBehaviour
         //     menuTextbox.UpdateText("");
         // }
         //create slots for equipment in category
-        foreach(KeyValuePair<int,int> item in inventory.itemDict)
+        foreach(KeyValuePair<string,int> item in inventory.itemDict)
         {
             ItemObject itemObject = itemMasterList.masterDict[item.Key];
             if(itemObject.itemType == ItemType.Equipment && itemObject.equipmentType == selectedEquipmentSlot.equipmentType)

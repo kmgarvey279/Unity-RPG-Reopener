@@ -11,6 +11,6 @@ public class TurnPanel : MonoBehaviour
     public void AssignTurnSlot(TurnSlot newSlot)
     {
         turnSlot = newSlot;
-        nameText.text = turnSlot.combatant.characterInfo.name + " " + turnSlot.turnCounter.ToString();
+        nameText.text = turnSlot.combatant.characterInfo.characterName + " " + turnSlot.turnCounter.ToString();
     }
 }

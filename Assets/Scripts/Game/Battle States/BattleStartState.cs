@@ -4,8 +4,13 @@ using UnityEngine;
 using StateMachineNamespace;
 
 [System.Serializable]
-public class BattleStartState : StateMachine.State
+public class BattleStartState : BattleState
 {
+    public override void Start()
+    {
+        base.Start();
+    }
+
     public override void OnEnter()
     {
     }
@@ -18,11 +23,6 @@ public class BattleStartState : StateMachine.State
     public override void StateFixedUpdate()
     {
 
-    }
-
-    public override string CheckConditions()
-    {
-        return null;
     }
 
     public override void OnExit()

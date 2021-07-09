@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Linq;
 using StateMachineNamespace;
 
+//stores information related to combatant's place in turn queue
 [System.Serializable]
 public class TurnSlot
 {
@@ -14,7 +15,7 @@ public class TurnSlot
 
     public float StartingCounterValue()
     {
-        int agility = combatant.battleStats.statDict[StatType.Agility].GetValue();
+        int agility = combatant.GetStatValue(StatType.Agility);
         return turnCounterBase - agility;
     } 
 
@@ -25,6 +26,7 @@ public class TurnSlot
     }
 }
 
+//stores information related to the current turn
 [System.Serializable]
 public class TurnData
 {
@@ -44,33 +46,41 @@ public class BattleManager : MonoBehaviour
 {
     [Header("Game Data Scriptable Object")]
     [SerializeField] private GameData gameData;
+    
     [Header("Parties")]
     public BattleParty allyParty;
     public EnemyParty enemyParty;
+    
     [Header("Turn Order Display")]
     [SerializeField] private BattleTimeline battleTimeline;
     [SerializeField] private List<TurnSlot> turnForecast = new List<TurnSlot>();
+    
     [Header("States")]
     public StateMachine stateMachine;
+    
     [Header("Current Turn Data")]
     public TurnData turnData;
 
-    public SignalSenderGO changeCameraFocus;
-
     public void Start()
     {
-        foreach (Combatant combatant in allyParty.combatants)
+        foreach(Combatant combatant in allyParty.combatants)
         {
             TurnSlot newSlot = new TurnSlot(combatant);
             turnForecast.Add(newSlot);
         }
-        foreach (Combatant combatant in enemyParty.combatants)
+        foreach(Combatant combatant in enemyParty.combatants)
         {
             TurnSlot newSlot = new TurnSlot(combatant);
             turnForecast.Add(newSlot);
         }
         turnForecast.Sort((x, y) => x.turnCounter.CompareTo(y.turnCounter));
         
+        StartCoroutine("BattleStart");
+    }
+
+    private IEnumerator BattleStart()
+    {
+        yield return new WaitForSeconds(0.3f);
         AdvanceTimeline();
     }
 
@@ -106,11 +116,11 @@ public class BattleManager : MonoBehaviour
         //get next state
         if(currentTurnSlot.combatant is AllyCombatant)
         {
-            stateMachine.ChangeState("BattleMenu");
+            stateMachine.ChangeState((int)BattleStateType.Menu);
         }
         else
         {
-            stateMachine.ChangeState("EnemyTurn");
+            stateMachine.ChangeState((int)BattleStateType.EnemyTurn);
         }
     }
 

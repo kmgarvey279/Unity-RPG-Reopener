@@ -27,7 +27,7 @@ GameObject:
   - component: {fileID: 5441985327513627525}
   - component: {fileID: 7488669416632416882}
   - component: {fileID: 527683902788398234}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Damage Popup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -234,7 +234,7 @@ GameObject:
   - component: {fileID: 2644537347353974537}
   - component: {fileID: 2119515496622217038}
   - component: {fileID: 3291117408337399392}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -294,7 +294,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 7152930139536384079, guid: 1a687d369361ed1429feaa5ddeae1ed8,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -353,7 +353,7 @@ GameObject:
   - component: {fileID: 6723958777601156428}
   - component: {fileID: 3950566147424485650}
   - component: {fileID: 4108398251982231320}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Target Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -499,7 +499,7 @@ GameObject:
   - component: {fileID: 6838105271789823341}
   - component: {fileID: 68928884876171253}
   - component: {fileID: 5872498766032593036}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Target Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -599,7 +599,7 @@ GameObject:
   - component: {fileID: 7887917972336964153}
   - component: {fileID: 7887917972336964152}
   - component: {fileID: 5659188196709777296}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Claire (Battle)
   m_TagString: Combatant
   m_Icon: {fileID: 0}
@@ -683,6 +683,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterInfo: {fileID: 11400000, guid: c86eb926f7a72e04fa5932e070cac635, type: 2}
+  battleStats:
+    characterName: 
+    health:
+      baseValue: 0
+      statType: 0
+      modifiers: 
+      currentValue: 0
+    mana:
+      baseValue: 0
+      statType: 0
+      modifiers: 
+      currentValue: 0
+    skills: []
+    meleeAttack: {fileID: 0}
+    rangedAttack: {fileID: 0}
   rigidbody: {fileID: 0}
   animator: {fileID: 0}
   healthDisplay: {fileID: 0}
@@ -711,6 +726,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Health Info
+      objectReference: {fileID: 0}
+    - target: {fileID: 3816189498532432383, guid: deb1bb15e2a4eda4cb1aa605719d6470,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4664556332710777618, guid: deb1bb15e2a4eda4cb1aa605719d6470,
         type: 3}

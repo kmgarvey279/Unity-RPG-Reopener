@@ -19,10 +19,10 @@ public enum EquipmentType
 [CreateAssetMenu(fileName = "New Item Object", menuName = "Inventory/Items/Generic Item")]
 public class ItemObject: ScriptableObject
 {
-    // public int itemId;
+    public string itemId = "New Id";
     public string itemName = "New Item";
     [TextArea(5,10)]
-    public string itemDescription;
+    public string itemDescription = "New Item";
     public Sprite icon = null;
     public ItemType itemType;
     public EquipmentType equipmentType;

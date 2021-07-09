@@ -6,19 +6,14 @@ using UnityEngine.Events;
 public class ItemPickup : Interactable
 {
     [Header("Item")]
+    [SerializeField] private Inventory inventory;
     [SerializeField] private ItemObject item;
+    [SerializeField] private SignalSenderString itemGet;
 
-    private void OnEnable()
+    public override void Interact()
     {
-        effectedTags = new string[]{"Player"};
-    }
-
-    public override void TriggerInteraction()
-    {
-        if(item != null)
-        {
-            
-            Destroy(this.gameObject);
-        }
+        inventory.AddItem(item.itemId);
+        itemGet.Raise(item.itemId);   
+        Destroy(this.gameObject);
     }
 }

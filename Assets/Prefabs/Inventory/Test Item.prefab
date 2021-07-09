@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7510270619798833615}
   - component: {fileID: 7510270619798833712}
   - component: {fileID: 7510270619798833713}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Test Item
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,8 +96,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1545d2c7a0d404ca4179520566cfdb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  effectedTags: []
+  leader: {fileID: 0}
+  leaderInRange: 0
+  leaderCanInteract: 0
+  useRaycast: 1
+  inventory: {fileID: 0}
   item: {fileID: 11400000, guid: 1d148fb2a0fc1d1419f0338a275d5f15, type: 2}
+  itemGet: {fileID: 11400000, guid: fe5c0907d2299724bbd5215bf283f455, type: 2}
 --- !u!58 &7510270619798833713
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -113,4 +118,4 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.1
+  m_Radius: 0.35

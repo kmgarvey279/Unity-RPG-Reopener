@@ -15,7 +15,7 @@ public enum ActionType
 public class Action : ScriptableObject
 {   
     public Image icon;
-    public string name;
+    public string actionName;
     public string descripton;
     public ActionType actionType;
     [Header("Costs")]

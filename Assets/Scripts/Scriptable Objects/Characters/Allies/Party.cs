@@ -5,13 +5,13 @@ using UnityEngine;
 [System.Serializable]
 public class PartyMember
 {
-    public string name;
+    public string characterName;
     public bool inActiveParty;
 
-    public PartyMember(string _name, bool _inActiveParty)
+    public PartyMember(string name, bool inActiveParty)
     {
-        name = _name;
-        inActiveParty = _inActiveParty;
+        this.characterName = characterName;
+        this.inActiveParty = inActiveParty;
     }
 }
 

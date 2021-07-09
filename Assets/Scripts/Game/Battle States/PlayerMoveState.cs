@@ -1,20 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using StateMachineNamespace;
 using UnityEngine.EventSystems;
 
 [System.Serializable]
-public class PlayerMoveState : StateMachine.State
+public class PlayerMoveState : BattleState
 {
     private BattleManager battleManager;
-    public Battlefield battlefield;
+    public GridManager gridManager;
 
     private TurnData turnData;
 
-    // Start is called before the first frame update
-    void Start()
+    [Header("Unity Events")]
+    public SignalSender onCameraZoomOut;
+    public SignalSenderGO onCameraZoomIn;
+
+    public override void Start()
     {
+        base.Start();
         battleManager = GetComponentInParent<BattleManager>();
     }
 
@@ -22,11 +27,10 @@ public class PlayerMoveState : StateMachine.State
     {
         turnData = battleManager.turnData;
 
-        //zoom out camera to entire battlefield (or just partway?)
-        battlefield.cameraManager.ZoomOut();
+        onCameraZoomOut.Raise();
 
         int moveRange = turnData.combatant.GetStatValue(StatType.MoveRange);
-        battlefield.gridManager.DisplayTilesInRange(turnData.combatant.tile, moveRange, -1);
+        gridManager.DisplayTilesInRange(turnData.combatant.tile, moveRange, -1);
     }
 
     public override void StateUpdate()
@@ -38,21 +42,15 @@ public class PlayerMoveState : StateMachine.State
 
     }
 
-    public override string CheckConditions()
-    {
-        return nextState;
-    }
-
     public override void OnExit()
     {
-        battlefield.gridManager.HideTiles();
+        gridManager.HideTiles();
     }
 
     public void OnSelectTile(GameObject tileObject)
     {     
+        onCameraZoomIn.Raise(turnData.combatant.gameObject);
         turnData.combatant.Move(tileObject.GetComponent<Tile>());
-        // actionData.tileDestination = tileObject.GetComponent<Tile>(); 
-        // nextState = "PlayerActionState";
     }
 
     public void OnMoveComplete()
@@ -60,17 +58,17 @@ public class PlayerMoveState : StateMachine.State
         turnData.hasMoved = true;
         if(turnData.action == null)
         {
-            nextState = "BattleMenu";
+            stateMachine.ChangeState((int)BattleStateType.Menu);
         }
         else
         {
             if(turnData.action.fixedTarget)
             {
-                nextState = "TargetSelect";
+                stateMachine.ChangeState((int)BattleStateType.TargetSelect);
             }
             else
             {
-                nextState = "TileSelect";
+                stateMachine.ChangeState((int)BattleStateType.TileSelect);
             }
         }
     }

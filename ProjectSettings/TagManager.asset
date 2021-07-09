@@ -6,22 +6,21 @@ TagManager:
   tags:
   - Enemy
   - Playable Character
-  - Player Attack
   - Combatant
   - Tile
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Environmental Triggers
   - Water
   - UI
   - HUD
-  - Collision
-  - Playable Character
-  - Friendly Projectile
-  - Enemy
-  - Enemy Projectile
+  - Ground
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 

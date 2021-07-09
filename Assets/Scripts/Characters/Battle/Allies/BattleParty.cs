@@ -23,7 +23,7 @@ public class BattleParty : MonoBehaviour
     [Header("Battle Positions")]
     public List<Transform> battlePositions = new List<Transform>();
 
-    private void OnEnable()
+    private void Awake()
     {
         allyPrefabs.Add("Claire", claire);
         allyPrefabs.Add("Mutiny", mutiny);
@@ -44,9 +44,9 @@ public class BattleParty : MonoBehaviour
             
             if(partyMember.inActiveParty)
             {
-                string name = partyMember.name; 
+                string characterName = partyMember.characterName; 
 
-                GameObject allyObject = Instantiate(allyPrefabs[name], battlePositions[allyCount].position, Quaternion.identity);
+                GameObject allyObject = Instantiate(allyPrefabs[characterName], battlePositions[allyCount].position, Quaternion.identity);
                 allyObject.transform.parent = gameObject.transform;
                 combatants.Add(allyObject.GetComponent<Combatant>());
 

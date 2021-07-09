@@ -10,20 +10,18 @@ namespace StateMachineNamespace
         [System.Serializable]
         public abstract class State: MonoBehaviour
         {
-            public string name;
+            public StateMachine stateMachine;
             [HideInInspector]
-            public string nextState;
+            public int id;
             //initialize variables
             public abstract void OnEnter();
-            //perform logic
+            //perform logic/physics
             public abstract void StateUpdate();
             public abstract void StateFixedUpdate();
-            //check if state should be changed
-            public abstract string CheckConditions();
             //clean up
             public abstract void OnExit();
-
         } 
+
         public State[] states;
         public State currentState;
         //pause
@@ -42,8 +40,6 @@ namespace StateMachineNamespace
             if(isActive == true && currentState != null)
             {
                 currentState.StateUpdate();
-                string stateId = currentState.CheckConditions();
-                ChangeState(stateId);
             }
         }
 
@@ -55,21 +51,19 @@ namespace StateMachineNamespace
             }
         }
 
-        public void ChangeState(string stateId)
+        public void ChangeState(int nextStateId)
         {
-            if(stateId.Length > 0)
+            foreach(State state in states)
+            {
+                if(state.id == nextStateId)  
                 {
-                    foreach (State state in states)
-                    {
-                        if(state.name == stateId)  
-                        {
-                            currentState.OnExit();
-                            currentState = state;
-                            currentState.OnEnter();
-                            break;
-                        }  
-                    }
-                }
+                    currentState.OnExit();
+                    currentState = state;
+                    currentState.OnEnter();
+                    break;
+                }  
+            }
+            
         }
 
         public void SetActive(bool isActive)

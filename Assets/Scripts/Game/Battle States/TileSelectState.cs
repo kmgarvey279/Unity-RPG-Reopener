@@ -5,27 +5,30 @@ using StateMachineNamespace;
 using UnityEngine.EventSystems;
 
 [System.Serializable]
-public class TileSelectState : StateMachine.State
+public class TileSelectState : BattleState
 {
     private BattleManager battleManager;
     private TurnData turnData;
-    public Battlefield battlefield;
+    public GridManager gridManager;
+    [Header("Events")]
+    [SerializeField] private SignalSender onCameraZoomOut;
 
     // Start is called before the first frame update
-    void Start()
+    public override void Start()
     {
+        base.Start();
         battleManager = GetComponentInParent<BattleManager>();
     }
 
     public override void OnEnter()
     {
         turnData = battleManager.turnData;
-        //zoom out camera to entire battlefield (or just partway?)
-        battlefield.cameraManager.ZoomOut();
+
+        onCameraZoomOut.Raise();
 
         int range = battleManager.turnData.action.range;
         int aoe = battleManager.turnData.action.aoe;
-        battlefield.gridManager.DisplayTilesInRange(battleManager.turnData.combatant.tile, range, aoe);
+        gridManager.DisplayTilesInRange(battleManager.turnData.combatant.tile, range, aoe);
 
     }
 
@@ -33,8 +36,8 @@ public class TileSelectState : StateMachine.State
     {
         if(Input.GetButtonDown("Cancel"))
         {
-            battleManager.turnData.action = null;
-            nextState = "BattleMenu";
+            turnData.action = null;
+            stateMachine.ChangeState((int)BattleStateType.Menu);
         }
     }
 
@@ -43,22 +46,15 @@ public class TileSelectState : StateMachine.State
 
     }
 
-    public override string CheckConditions()
-    {
-        return nextState;
-    }
-
     public override void OnExit()
     {
-        battlefield.gridManager.HideTiles();
+        gridManager.HideTiles();
     }
 
     public void OnSelectTile(GameObject tileObject)
     {                 
-        turnData.targets.AddRange(battlefield.gridManager.gridDisplay.GetTargetsInAOE());
+        turnData.targets.AddRange(gridManager.gridDisplay.GetTargetsInAOE());
         turnData.targetedTile = tileObject.GetComponent<Tile>();
-        nextState = "ExecuteAction";
-        // actionData.tileDestination = tileObject.GetComponent<Tile>(); 
-        // nextState = "PlayerActionState";
+        stateMachine.ChangeState((int)BattleStateType.Execute);
     }
 }

@@ -46,17 +46,17 @@ public class CommandMenu : MonoBehaviour
         turnData.action = genericAttack;
         if(turnData.hasMoved)
         {
-            battleManager.stateMachine.ChangeState("TargetSelect");
+            battleManager.stateMachine.ChangeState((int)BattleStateType.TargetSelect);
         }
         else
         {
-            battleManager.stateMachine.ChangeState("PlayerMove");
+            battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
         }
     }
 
     public void SelectMove()
     {
-        battleManager.stateMachine.ChangeState("PlayerMove");
+        battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
     }
 
     public void DisplaySkillList()
@@ -71,22 +71,22 @@ public class CommandMenu : MonoBehaviour
         {
             if(turnData.action.fixedTarget)
             {
-                battleManager.stateMachine.ChangeState("TargetSelect");
+                battleManager.stateMachine.ChangeState((int)BattleStateType.TargetSelect);
             }
             else
             {
-                battleManager.stateMachine.ChangeState("TileSelect");
+                battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
             }
         }
         else
         {
-            battleManager.stateMachine.ChangeState("PlayerMove");
+            battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
         }
     }
 
     public void DisplayItemList()
     {
-        secondaryPanel.DisplayItems(turnData.combatant);
+        secondaryPanel.DisplayItems();
     }
 
     public void SelectItem()

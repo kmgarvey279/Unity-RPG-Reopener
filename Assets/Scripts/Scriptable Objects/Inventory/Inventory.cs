@@ -5,17 +5,17 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Inventory", menuName = "Inventory/Inventory")]
 public class Inventory : ScriptableObject
 {
-    public Dictionary<int, int> itemDict = new Dictionary<int, int>();
+    public Dictionary<string, int> itemDict = new Dictionary<string, int>();
 
-    private void OnEnable()
-    {
-        itemDict.Add(0, 1);
-        itemDict.Add(1, 2);
-        itemDict.Add(2, 1);
-        itemDict.Add(3, 1);
-        itemDict.Add(4, 1);
-        itemDict.Add(5, 1);
-    }
+    // private void OnEnable()
+    // {
+    //     itemDict.Add(0, 1);
+    //     itemDict.Add(1, 2);
+    //     itemDict.Add(2, 1);
+    //     itemDict.Add(3, 1);
+    //     itemDict.Add(4, 1);
+    //     itemDict.Add(5, 1);
+    // }
 
     // public Dictionary<int, ItemObject> GetFullInventory()
     // {
@@ -70,9 +70,9 @@ public class Inventory : ScriptableObject
     // } 
 
     //add item to inventory (or increase number held)
-    public void AddItem(int itemId)
+    public void AddItem(string itemId)
     {   
-        if(itemDict.ContainsKey(itemId))
+        if(!itemDict.ContainsKey(itemId))
         {
             itemDict.Add(itemId, 1);
             // inventoryUI.CreateSlot(inventory.itemList.Count + 1);
@@ -84,7 +84,7 @@ public class Inventory : ScriptableObject
     }
 
     //remove item from list
-    public void RemoveItem(int itemId)
+    public void RemoveItem(string itemId)
     {
         itemDict.Remove(itemId);
         // inventoryUI.DestroySlot(index);

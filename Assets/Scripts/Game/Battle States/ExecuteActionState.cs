@@ -5,22 +5,25 @@ using StateMachineNamespace;
 using BattleCalculationsNamespace;
 
 [System.Serializable]
-public class ExecuteActionState : StateMachine.State
+public class ExecuteActionState : BattleState
 {
     private BattleManager battleManager;
     private TurnData turnData;
-    [SerializeField] private CameraManager cameraManager;
     private BattleCalculations battleCalculations;
+    [Header("Events")]
+    [SerializeField] private SignalSenderGO onCameraZoomIn;
 
-    private void Start()
+    public override void Start()
     {
+        base.Start();
         battleManager = GetComponentInParent<BattleManager>();
     }
 
     public override void OnEnter()
     {
         turnData = battleManager.turnData;
-        // cameraManager.SetTarget(turnData.combatant.transform);
+
+        onCameraZoomIn.Raise(turnData.targetedTile.gameObject);
         ExecuteAction();
     }
 
@@ -34,11 +37,6 @@ public class ExecuteActionState : StateMachine.State
 
     }
 
-    public override string CheckConditions()
-    {
-        return nextState;
-    }
-
     public override void OnExit()
     {
 
@@ -46,7 +44,7 @@ public class ExecuteActionState : StateMachine.State
 
     public void ExecuteAction()
     {
-        Debug.Log(turnData.combatant.battleStats.name + " used " + turnData.action.name);
+        Debug.Log(turnData.combatant.battleStats.characterName + " used " + turnData.action.actionName);
         if(turnData.targetedTile != null && turnData.targetedTile != turnData.combatant.tile)
         {
             Vector3 directionTemp = (turnData.targetedTile.transform.position - turnData.combatant.transform.position).normalized;
@@ -90,7 +88,7 @@ public class ExecuteActionState : StateMachine.State
             bool didHit = battleCalculations.HitCheck(turnData.combatant, turnData.action, target);
             if(didHit)
             {
-                Debug.Log(target.battleStats.name + " was hit!");
+                Debug.Log(target.battleStats.characterName + " was hit!");
                 foreach (ActionEffect effect in turnData.action.effects)
                 {
                     effect.ApplyEffect(turnData.action, turnData.combatant, target);
@@ -99,7 +97,7 @@ public class ExecuteActionState : StateMachine.State
             else
             {
                 // target.EvadeAttack();
-                Debug.Log(target.battleStats.name + " dodged the attack!");
+                Debug.Log(target.battleStats.characterName + " dodged the attack!");
             }
         }
         yield return new WaitForSeconds(1f);

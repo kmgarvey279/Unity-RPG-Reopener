@@ -17,7 +17,7 @@ public enum AttackProperty
 public class CharacterInfo : ScriptableObject
 {
     [Header("Basic info")]
-    public string name;
+    public string characterName;
     public int level;
 
     [Header("HP/MP")]
@@ -78,6 +78,7 @@ public class CharacterInfo : ScriptableObject
         foreach(KeyValuePair<StatType,Stat> entry in statDict)
         {
             entry.Value.RemoveAllModifiers();
-        }   
+        }  
+        statDict.Clear(); 
     }
 }

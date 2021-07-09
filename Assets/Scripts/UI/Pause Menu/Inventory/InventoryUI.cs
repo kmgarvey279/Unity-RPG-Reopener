@@ -15,7 +15,7 @@ public class InventoryUI : MonoBehaviour
     public virtual void Start()
     {   
         //for each item in inventory
-        foreach(KeyValuePair<int,int> item in inventory.itemDict)
+        foreach(KeyValuePair<string,int> item in inventory.itemDict)
         {
             CreateSlot(itemMasterList.masterDict[item.Key], item.Value);
         }

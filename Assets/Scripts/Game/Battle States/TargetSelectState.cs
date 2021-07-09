@@ -5,29 +5,28 @@ using StateMachineNamespace;
 using UnityEngine.EventSystems;
 
 [System.Serializable]
-public class TargetSelectState : StateMachine.State
+public class TargetSelectState : BattleState
 {
     private BattleManager battleManager;
-    public Battlefield battlefield;
+    public GridManager gridManager;
 
     private TurnData turnData;
 
     private List<Combatant> availableTargets = new List<Combatant>();
     private Combatant selectedTarget;
 
-    private GameObject targetingHitboxObject;
+    [Header("Events")]
+    public SignalSenderGO onCameraZoomIn;
 
-    private void Start()
+    public override void Start()
     {
+        base.Start();
         battleManager = GetComponentInParent<BattleManager>();
     }
 
     public override void OnEnter()
     {
         turnData = battleManager.turnData;
-
-        //zoom out camera to entire battlefield
-        battlefield.cameraManager.ZoomOut();
 
         SetTargetableCombatants();
     }
@@ -67,8 +66,6 @@ public class TargetSelectState : StateMachine.State
 
     public void SetTarget(Combatant newTarget)
     {
-        GridManager gridManager = battlefield.gridManager;
-
         if(selectedTarget != null)
         {
             selectedTarget.tile.ToggleAOE(false);
@@ -91,6 +88,8 @@ public class TargetSelectState : StateMachine.State
                 turnData.action = rangedAttack;
             }
         }
+
+        onCameraZoomIn.Raise(newTarget.gameObject);
     }
 
     private Combatant GetNearestTarget()
@@ -117,23 +116,18 @@ public class TargetSelectState : StateMachine.State
         {
             turnData.targets.Add(selectedTarget);
             turnData.targetedTile = selectedTarget.tile;
-            nextState = "ExecuteAction";
+            stateMachine.ChangeState((int)BattleStateType.Execute);
         }
         else if(Input.GetButtonDown("Cancel"))
         {
             battleManager.turnData.action = null;
-            nextState = "BattleMenu";
+            stateMachine.ChangeState((int)BattleStateType.Menu);
         }
     }
 
     public override void StateFixedUpdate()
     {
 
-    }
-
-    public override string CheckConditions()
-    {
-        return nextState;
     }
 
     public override void OnExit()

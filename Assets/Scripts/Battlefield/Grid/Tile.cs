@@ -4,11 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnterHandler
+public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public int x;
     public int y;
     public GameObject occupier;
+    [Header("Display")]
     [SerializeField] private Image tileImage;
     [SerializeField] private Button tileButton;
     [SerializeField] private Image aoeImage;
@@ -16,14 +17,14 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     // [SerializeField] private Button button;
     // [SerializeField] private Color emptyColor;
     // [SerializeField] private Color occupiedColor;
-
+    [Header("Events")]
     [SerializeField] private SignalSenderGO onTileSelect;
 
-    private void Start()
-    {
-        float AlphaThreshold = 0.1f;
-        tileImage.alphaHitTestMinimumThreshold = AlphaThreshold;
-    }
+    // private void Start()
+    // {
+    //     float AlphaThreshold = 0.1f;
+    //     tileImage.alphaHitTestMinimumThreshold = AlphaThreshold;
+    // }
 
     public void Display()
     {
@@ -50,24 +51,24 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
         EventSystem.current.SetSelectedGameObject(this.gameObject);
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        Select();
-    }
-
-    // public void OnPointerExit(PointerEventData eventData)
-    // {
-    //     EventSystem.current.SetSelectedGameObject(null);
-    // }
-
     public void OnSelect(BaseEventData eventData)
     {
         selectedImage.enabled = true;
     }
 
-    public void OnDeselect(BaseEventData data)
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        Select();
+    }
+
+    public void OnDeselect(BaseEventData eventData)
     {
         selectedImage.enabled = false;
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        EventSystem.current.SetSelectedGameObject(null);
     }
 
     private void OnTriggerEnter2D(Collider2D other)

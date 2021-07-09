@@ -12,13 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d60841806187fe7448bdd835df63eadb, type: 3}
   m_Name: Weapon1
   m_EditorClassIdentifier: 
+  itemId: TestWeapon1
   itemName: Weapon 1
   itemDescription: Weapon. Increase Attack by 3.
   icon: {fileID: 21300000, guid: a2c6f6d826b925a47956c0b33a527b42, type: 3}
   itemType: 1
   equipmentType: 1
-  maxHealthModifier: 0
-  maxManaModifier: 0
+  healthModifier: 0
+  manaModifier: 0
   attackModifier: 3
   defenseModifier: 0
   specialModifier: 0

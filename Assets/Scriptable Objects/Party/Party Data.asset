@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Party Data
   m_EditorClassIdentifier: 
   partyList:
-  - name: Claire
+  - characterName: Claire
     inActiveParty: 1
-  - name: Mutiny
-    inActiveParty: 1
-  - name: Blaine
-    inActiveParty: 1
-  - name: Shad
+  - characterName: 
     inActiveParty: 0
-  - name: Lucy
+  - characterName: 
     inActiveParty: 0
-  activePartySize: 3
+  - characterName: 
+    inActiveParty: 0
+  - characterName: 
+    inActiveParty: 0
+  activePartySize: 1
