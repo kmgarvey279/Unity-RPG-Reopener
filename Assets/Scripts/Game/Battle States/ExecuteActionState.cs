@@ -7,20 +7,16 @@ using BattleCalculationsNamespace;
 [System.Serializable]
 public class ExecuteActionState : BattleState
 {
-    private BattleManager battleManager;
     private TurnData turnData;
     private BattleCalculations battleCalculations;
+    
     [Header("Events")]
     [SerializeField] private SignalSenderGO onCameraZoomIn;
 
-    public override void Start()
-    {
-        base.Start();
-        battleManager = GetComponentInParent<BattleManager>();
-    }
-
     public override void OnEnter()
     {
+        base.OnEnter();
+        
         turnData = battleManager.turnData;
 
         onCameraZoomIn.Raise(turnData.targetedTile.gameObject);

@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
   m_Name: Claire Melee
   m_EditorClassIdentifier: 
-  name: Melee Attack
+  icon: {fileID: 0}
+  actionName: 
   descripton: 
   actionType: 0
   mpCost: 0
-  turnPointCost: 1
-  timeCost: 0
+  timeModifier: 0
   power: 1
   accuracy: 95
   range: 1
+  aoe: 0
   attackProperty1: 2
   attackProperty2: 0
   effects:
@@ -28,7 +29,6 @@ MonoBehaviour:
   targetFriendly: 0
   targetHostile: 1
   fixedTarget: 1
-  hitboxPrefab: {fileID: 0}
   useGraphicPrefab: {fileID: 0}
   effectGraphicPrefab: {fileID: 173376264066434547, guid: c1c96842e9fb8f748bb5fafd959e002b,
     type: 3}

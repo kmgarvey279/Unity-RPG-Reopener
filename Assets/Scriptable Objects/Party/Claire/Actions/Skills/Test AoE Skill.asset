@@ -13,12 +13,11 @@ MonoBehaviour:
   m_Name: Test AoE Skill
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
-  name: 'Test AoE '
+  actionName: 
   descripton: Nuke it!
   actionType: 1
-  mpCost: 0
-  turnPointCost: 0
-  timeCost: 0
+  mpCost: 10
+  timeModifier: 0
   power: 15
   accuracy: 95
   range: 3
@@ -27,9 +26,8 @@ MonoBehaviour:
   attackProperty2: 0
   effects: []
   targetFriendly: 0
-  targetHostile: 0
+  targetHostile: 1
   fixedTarget: 0
-  hitboxPrefab: {fileID: 0}
   useGraphicPrefab: {fileID: 0}
   effectGraphicPrefab: {fileID: 0}
   animatorTrigger: 

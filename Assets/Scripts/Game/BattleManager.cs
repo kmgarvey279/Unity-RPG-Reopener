@@ -10,19 +10,75 @@ using StateMachineNamespace;
 public class TurnSlot
 {
     public Combatant combatant;
-    private float turnCounterBase = 200;
-    public float turnCounter;
+    [Header("Number of ticks remaining until next turn")]
+    public int turnCounter;
+    [Header("Cost of action this turn")]
+    public float actionCost;
+    public float defaultActionCost = 40f;
+    [Header("Cost of movement this turn")]
+    public float moveCost;
+    public float defaultMoveCost = 0f;
 
-    public float StartingCounterValue()
-    {
-        int agility = combatant.GetStatValue(StatType.Agility);
-        return turnCounterBase - agility;
-    } 
+    private float speedMultiplier = 1f;
 
     public TurnSlot(Combatant _combatant)
     {
         combatant = _combatant;
-        turnCounter = StartingCounterValue();
+        SetTurnCounterToDefault();
+    }
+
+    public void SetTurnCounterToDefault()
+    {
+        actionCost = defaultActionCost;
+        moveCost = defaultMoveCost;
+        UpdateTurnCounter();
+    }
+
+    public void UpdateTurnCounter()
+    {
+        turnCounter = Mathf.FloorToInt((actionCost + moveCost) * 100 / GetSpeed());
+    }
+
+    public void SetActionCost(float actionCost)
+    {
+        this.actionCost = actionCost;
+        UpdateTurnCounter();
+    }
+
+    public void SetMoveCost(float moveCost)
+    {
+        this.moveCost = moveCost;
+        UpdateTurnCounter();
+    }
+
+    public void SetSpeedMultiplier(float newModifier)
+    {
+        speedMultiplier = newModifier;
+        UpdateTurnCounter();
+    }
+
+    public float GetSpeed()
+    {
+        //is character is slowed, round down
+        if(speedMultiplier < 1)
+        {
+            return Mathf.Floor((float)combatant.GetStatValue(StatType.Agility) * speedMultiplier);
+        }
+        //if sped up, round up
+        else if(speedMultiplier > 1)
+        {
+            return Mathf.Ceil((float)combatant.GetStatValue(StatType.Agility) * speedMultiplier);
+        }
+        //otherwise, round normally
+        else
+        {
+            return Mathf.Round((float)combatant.GetStatValue(StatType.Agility) * speedMultiplier);
+        }
+    }
+
+    public void Tick()
+    {
+        turnCounter = turnCounter - 1;
     }
 }
 
@@ -32,13 +88,18 @@ public class TurnData
 {
     public Combatant combatant;
     public Action action;
+    [Header("Targets")]
     public List<Combatant> targets = new List<Combatant>();
     public Tile targetedTile;
-    public bool hasMoved;
+    [Header("Starting Location")]
+    public Vector3 startingPosition;
+    public Vector2 startingDirection;
 
     public TurnData(Combatant combatant)
     {
         this.combatant = combatant;
+        this.startingPosition = combatant.transform.position;
+        this.startingDirection = combatant.GetDirection();
     }
 }
 
@@ -53,7 +114,9 @@ public class BattleManager : MonoBehaviour
     
     [Header("Turn Order Display")]
     [SerializeField] private BattleTimeline battleTimeline;
-    [SerializeField] private List<TurnSlot> turnForecast = new List<TurnSlot>();
+    private TurnSlot currentTurnSlot;
+    public List<TurnSlot> turnForecast = new List<TurnSlot>();
+    public List<TurnSlot> tempForecast;
     
     [Header("States")]
     public StateMachine stateMachine;
@@ -63,6 +126,7 @@ public class BattleManager : MonoBehaviour
 
     public void Start()
     {
+        //generate turn forecast & display it
         foreach(Combatant combatant in allyParty.combatants)
         {
             TurnSlot newSlot = new TurnSlot(combatant);
@@ -73,26 +137,21 @@ public class BattleManager : MonoBehaviour
             TurnSlot newSlot = new TurnSlot(combatant);
             turnForecast.Add(newSlot);
         }
-        turnForecast.Sort((x, y) => x.turnCounter.CompareTo(y.turnCounter));
-        
-        StartCoroutine("BattleStart");
-    }
+        turnForecast = turnForecast.OrderBy(o=>o.turnCounter).ToList();
+        battleTimeline.CreateTurnPanels(turnForecast);
 
-    private IEnumerator BattleStart()
-    {
-        yield return new WaitForSeconds(0.3f);
         AdvanceTimeline();
     }
 
     private void AdvanceTimeline()
     {
-        if(turnForecast[0].turnCounter > 0)
+        while(turnForecast[0].turnCounter > 0)
         {
-            float timeToAdvance = turnForecast[0].turnCounter;
             foreach(TurnSlot turnSlot in turnForecast)
             {
-                turnSlot.turnCounter =  turnSlot.turnCounter - timeToAdvance;
+                turnSlot.Tick();
             }
+            battleTimeline.UpdateTurnPanels(turnForecast);
         }
         StartTurn();
     }
@@ -104,11 +163,12 @@ public class BattleManager : MonoBehaviour
 
     public void StartTurn()
     {   
-        TurnSlot currentTurnSlot = turnForecast[0];
-        //update turn forecast
-        turnForecast.Remove(currentTurnSlot);
-        currentTurnSlot.turnCounter = currentTurnSlot.StartingCounterValue();
-        TurnForecastAdd(currentTurnSlot);
+        currentTurnSlot = turnForecast[0];
+        //remove from queue and set as current turn
+        // turnForecast.Remove(currentTurnSlot);
+        battleTimeline.ChangeCurrentTurn(currentTurnSlot);
+        currentTurnSlot.SetTurnCounterToDefault();
+        UpdateTurnOrder();
 
         //create temp turn data
         turnData = new TurnData(currentTurnSlot.combatant);
@@ -124,16 +184,58 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    private void TurnForecastAdd(TurnSlot turnSlot)
+    public void TurnForecastAdd(TurnSlot turnSlot)
     {
         turnForecast.Add(turnSlot);
-        turnForecast.Sort((x, y) => x.turnCounter.CompareTo(y.turnCounter));
-        battleTimeline.UpdateTurnList(turnForecast[0], turnForecast);
+        UpdateTurnOrder();
+    }
+
+    public void TurnForecastRemove(TurnSlot turnSlot)
+    {
+        turnForecast.Remove(turnSlot);
+        UpdateTurnOrder();
+    }
+
+    public void UpdateTurnOrder()
+    {
+        turnForecast = turnForecast.OrderBy(o=>o.turnCounter).ToList();
+        battleTimeline.UpdateTurnPanels(turnForecast);
+    }
+
+    public void SetAction(Action action)
+    {
+        turnData.action = action;
+        
+        currentTurnSlot.SetActionCost(action.timeCost);
+        UpdateTurnOrder();
+    }
+
+    public void ConfirmAction()
+    {
+
+    }
+
+    public void CancelAction()
+    {
+        turnData.action = null;
+        
+        currentTurnSlot.SetTurnCounterToDefault();
+        UpdateTurnOrder();
     }
 
     public void EndTurn()
     {   
         turnData = null;
         AdvanceTimeline();
+    }
+
+    public void OnTileSelect(GameObject tileObject)
+    {
+        Tile tile = tileObject.GetComponent<Tile>();
+        if(tile.moveCost > -1)
+        {
+            currentTurnSlot.SetMoveCost(tile.moveCost * 10);
+            UpdateTurnOrder();
+        }
     }
 }

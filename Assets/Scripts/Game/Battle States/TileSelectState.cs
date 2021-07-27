@@ -7,36 +7,35 @@ using UnityEngine.EventSystems;
 [System.Serializable]
 public class TileSelectState : BattleState
 {
-    private BattleManager battleManager;
+    [SerializeField] private GridManager gridManager;
+
     private TurnData turnData;
-    public GridManager gridManager;
+    private Tile selectedTile;
+
     [Header("Events")]
     [SerializeField] private SignalSender onCameraZoomOut;
 
-    // Start is called before the first frame update
-    public override void Start()
-    {
-        base.Start();
-        battleManager = GetComponentInParent<BattleManager>();
-    }
-
     public override void OnEnter()
     {
+        base.OnEnter();
+
         turnData = battleManager.turnData;
-
         onCameraZoomOut.Raise();
-
-        int range = battleManager.turnData.action.range;
-        int aoe = battleManager.turnData.action.aoe;
-        gridManager.DisplayTilesInRange(battleManager.turnData.combatant.tile, range, aoe);
-
+        //display tiles
+        int range = turnData.action.range;
+        int aoe = turnData.action.aoe;
+        gridManager.DisplayTilesInRange(turnData.combatant.tile, range, aoe, false);
     }
 
     public override void StateUpdate()
     {
+        if(Input.GetButtonDown("Select"))
+        {
+            OnConfirmTile();
+        }
         if(Input.GetButtonDown("Cancel"))
         {
-            turnData.action = null;
+            battleManager.CancelAction();
             stateMachine.ChangeState((int)BattleStateType.Menu);
         }
     }
@@ -48,13 +47,22 @@ public class TileSelectState : BattleState
 
     public override void OnExit()
     {
+        base.OnExit();
+        //clear tiles
+        selectedTile = null;
         gridManager.HideTiles();
     }
 
     public void OnSelectTile(GameObject tileObject)
+    {     
+        selectedTile = tileObject.GetComponent<Tile>();        
+        gridManager.DisplayAOE(selectedTile, turnData.action.aoe);
+    }
+
+    public void OnConfirmTile()
     {                 
-        turnData.targets.AddRange(gridManager.gridDisplay.GetTargetsInAOE());
-        turnData.targetedTile = tileObject.GetComponent<Tile>();
+        turnData.targets.AddRange(gridManager.GetTargetsInAOE());
+        turnData.targetedTile = selectedTile;
         stateMachine.ChangeState((int)BattleStateType.Execute);
     }
 }

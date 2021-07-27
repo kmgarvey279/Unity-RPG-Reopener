@@ -13,12 +13,11 @@ MonoBehaviour:
   m_Name: Test Buff Skill
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
-  name: Test Buff
+  actionName: 
   descripton: It buffs.
   actionType: 1
-  mpCost: 0
-  turnPointCost: 0
-  timeCost: 0
+  mpCost: 5
+  timeModifier: 0
   power: 0
   accuracy: 0
   range: 3
@@ -29,7 +28,6 @@ MonoBehaviour:
   targetFriendly: 1
   targetHostile: 0
   fixedTarget: 1
-  hitboxPrefab: {fileID: 0}
   useGraphicPrefab: {fileID: 0}
   effectGraphicPrefab: {fileID: 0}
   animatorTrigger: 

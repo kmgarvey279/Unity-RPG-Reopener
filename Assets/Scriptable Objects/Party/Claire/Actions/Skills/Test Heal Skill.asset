@@ -13,23 +13,21 @@ MonoBehaviour:
   m_Name: Test Heal Skill
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
-  name: Test Heal
+  actionName: 
   descripton: It heals
   actionType: 1
-  mpCost: 0
-  turnPointCost: 0
-  timeCost: 0
+  mpCost: 10
+  timeModifier: 0
   power: 0
   accuracy: 0
-  range: 3
-  aoe: 2
+  range: 0
+  aoe: 3
   attackProperty1: 0
   attackProperty2: 0
   effects: []
   targetFriendly: 1
   targetHostile: 1
   fixedTarget: 0
-  hitboxPrefab: {fileID: 0}
   useGraphicPrefab: {fileID: 0}
   effectGraphicPrefab: {fileID: 0}
   animatorTrigger: 

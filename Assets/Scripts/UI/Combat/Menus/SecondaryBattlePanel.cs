@@ -21,7 +21,8 @@ public class SecondaryBattlePanel : MonoBehaviour
         display.SetActive(true);
         for (int i = 0; i < skills.Count; i++)
         {
-            GameObject skillSlotObject = Instantiate(skillSlotPrefab, Vector3.zero, Quaternion.identity, listParent.transform);         
+            GameObject skillSlotObject = Instantiate(skillSlotPrefab, Vector3.zero, Quaternion.identity);   
+            skillSlotObject.transform.SetParent(listParent.transform, false);      
             skillSlotObject.GetComponent<BattleSkillSlot>().AssignSlot(skills[i]); 
             selectableList.Add(skillSlotObject);
         } 

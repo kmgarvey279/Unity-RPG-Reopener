@@ -14,20 +14,25 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     [SerializeField] private Button tileButton;
     [SerializeField] private Image aoeImage;
     [SerializeField] private Image selectedImage;
-    // [SerializeField] private Button button;
-    // [SerializeField] private Color emptyColor;
-    // [SerializeField] private Color occupiedColor;
     [Header("Events")]
     [SerializeField] private SignalSenderGO onTileSelect;
+    [SerializeField] private SignalSender onTileConfirm;
+    [Header("Color/Cost")]
+    [SerializeField] private Color defaultColor;
+    [SerializeField] private List<Color> costColors = new List<Color>();
+    public int moveCost;
 
-    // private void Start()
-    // {
-    //     float AlphaThreshold = 0.1f;
-    //     tileImage.alphaHitTestMinimumThreshold = AlphaThreshold;
-    // }
-
-    public void Display()
+    public void Display(int moveCost = -1)
     {
+        if(moveCost > -1)
+        {
+            this.moveCost = moveCost;
+            tileImage.color = costColors[moveCost];
+        }
+        else
+        {
+            tileImage.color = defaultColor;
+        }
         tileImage.enabled = true;
         tileButton.enabled = true;
     }
@@ -39,6 +44,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
 
     public void Hide()
     {
+        moveCost = -1;
         tileImage.enabled = false;
         tileButton.enabled = false;
         aoeImage.enabled = false;
@@ -53,12 +59,14 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
 
     public void OnSelect(BaseEventData eventData)
     {
+        onTileSelect.Raise(this.gameObject);
         selectedImage.enabled = true;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Select();
+        if(tileButton.enabled)
+            Select();
     }
 
     public void OnDeselect(BaseEventData eventData)
@@ -68,7 +76,8 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        EventSystem.current.SetSelectedGameObject(null);
+        // if(tileButton.enabled)
+        //     EventSystem.current.SetSelectedGameObject(null);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -82,15 +91,15 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if(other.gameObject.CompareTag("Combatant") && other.isTrigger)
-        {
-            occupier.GetComponent<Combatant>().SetTile(null); 
-        }
+        // if(other.gameObject.CompareTag("Combatant") && other.isTrigger)
+        // {
+        //     occupier.GetComponent<Combatant>().SetTile(null); 
+        // }
         occupier = null;
     }
 
     public void OnClick()
     {
-        onTileSelect.Raise(this.gameObject);
+        onTileConfirm.Raise();
     }
 }

@@ -42,6 +42,7 @@ public class Combatant : MonoBehaviour
     [Header("Game Object Components")]
     public Rigidbody2D rigidbody;
     public Animator animator;
+    public GameObject spriteFill;
     [Header("Child Scripts")]
     public HealthDisplay healthDisplay;
     public TargetIcon targetIcon;
@@ -64,21 +65,26 @@ public class Combatant : MonoBehaviour
 
     public void Start()
     {
-        SnapToTileCenter();
+        // SnapToTileCenter();
     }
 
-    public void SnapToTileCenter()
-    {
-        Tilemap tilemap = GetComponentInParent<Battlefield>().gridManager.tilemap;
+    // public void SnapToTileCenter()
+    // {
+    //     Tilemap tilemap = GetComponentInParent<Battlefield>().gridManager.tilemap;
         
-        Vector3Int cellPosition = tilemap.WorldToCell(transform.position);
-        Vector3 newPosition = tilemap.GetCellCenterWorld(cellPosition);
-        transform.position = newPosition;
-    }
+    //     Vector3Int cellPosition = tilemap.WorldToCell(transform.position);
+    //     Vector3 newPosition = tilemap.GetCellCenterWorld(cellPosition);
+    //     transform.position = newPosition;
+    // }
 
     public int GetStatValue(StatType statType)
     {
         return battleStats.statDict[statType].GetValue();
+    }
+
+    public Vector2 GetDirection()
+    {
+        return new Vector2(animator.GetFloat("Look X"), animator.GetFloat("Look Y"));
     }
 
     public void SetTile(Tile tile)
@@ -133,8 +139,8 @@ public class Combatant : MonoBehaviour
         }
     }
 
-    void OnDisable() 
+    public void ToggleHighlight(bool isHighlighted)
     {
-        Debug.LogError("");
+        spriteFill.SetActive(isHighlighted);
     }
 }

@@ -7,26 +7,35 @@ using StateMachineNamespace;
 [System.Serializable]
 public class MenuState : BattleState
 {
+    private TurnData turnData;
+
     [Header("Battle Menu")]
     [SerializeField] private CommandMenu commandMenu;
-    private BattleManager battleManager;
-    private TurnData turnData;
+
     [Header("Events")]
     public SignalSenderGO onCameraZoomIn;
-
-    public override void Start()
-    {
-        base.Start();
-        battleManager = GetComponentInParent<BattleManager>();
-    }
     
     public override void OnEnter()
     {
-        turnData = battleManager.turnData;
+        base.OnEnter();
+        turnData = battleManager.turnData;  
+        
+        //checks if player is canceling a move
+        if(turnData.combatant.transform.position != turnData.startingPosition)
+        {
+            ResetPosition();
+        }
 
-        onCameraZoomIn.Raise(turnData.combatant.gameObject);
+        // onCameraZoomIn.Raise(turnData.combatant.gameObject);
 
         commandMenu.DisplayMenu();
+    }
+
+    private void ResetPosition()
+    {
+        turnData.combatant.transform.position = turnData.startingPosition;
+        turnData.combatant.animator.SetFloat("Look X", turnData.startingDirection.x);
+        turnData.combatant.animator.SetFloat("Look Y", turnData.startingDirection.y);
     }
 
     public override void StateUpdate()
@@ -41,6 +50,7 @@ public class MenuState : BattleState
 
     public override void OnExit()
     {
+        base.OnExit();
         commandMenu.HideMenus();
     }
 }

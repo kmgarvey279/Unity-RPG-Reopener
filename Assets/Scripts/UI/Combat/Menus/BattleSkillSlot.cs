@@ -15,7 +15,7 @@ public class BattleSkillSlot : MonoBehaviour, ISelectHandler, IPointerEnterHandl
     [SerializeField] private TextMeshProUGUI costText;
     [Header("Events")]
     [SerializeField] private SignalSenderGO onSelectBattleSkill;
-    [SerializeField] private SignalSenderGO onClickBattleSkill;
+    [SerializeField] private SignalSenderGO onConfirmBattleSkill;
 
     public void AssignSlot(Action skill)
     {
@@ -32,12 +32,12 @@ public class BattleSkillSlot : MonoBehaviour, ISelectHandler, IPointerEnterHandl
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-    EventSystem.current.SetSelectedGameObject(null);
-    EventSystem.current.SetSelectedGameObject(this.gameObject);
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(this.gameObject);
     }
 
     public void OnClick()
     {
-        onClickBattleSkill.Raise(this.gameObject);
+        onConfirmBattleSkill.Raise(this.gameObject);
     }
 }

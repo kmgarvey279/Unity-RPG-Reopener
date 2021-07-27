@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 622987f3fd980c04fb94f3589b51ab64, type: 3}
   m_Name: New Enemy Info 1
   m_EditorClassIdentifier: 
-  name: Test Enemy
+  characterName: Enemy
   level: 1
   baseHealth: 20
   health:
@@ -29,7 +29,7 @@ MonoBehaviour:
   attack: 0
   defense: 0
   special: 0
-  agility: 0
+  agility: 10
   moveRange: 0
   strike: 0
   slash: 0

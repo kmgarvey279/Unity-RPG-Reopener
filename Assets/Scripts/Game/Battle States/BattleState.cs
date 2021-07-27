@@ -18,15 +18,28 @@ public enum BattleStateType
 public class BattleState : StateMachine.State
 {
     public BattleStateType battleStateType;
+    [HideInInspector] public BattleManager battleManager;
+    [Header("Unity Events (Listeners)")]
+    public List<MonoBehaviour> signalListeners;
 
     public virtual void Start()
     {
-        id = (int)battleStateType;
-        stateMachine = GetComponentInParent<StateMachine>();
+        //state machine
+        stateMachine = GetComponentInParent<StateMachine>(); 
+        id = (int)battleStateType; 
+        //battle manager
+        battleManager = GetComponentInParent<BattleManager>();  
     }
 
     public override void OnEnter()
     {
+        if(signalListeners.Count > 0)
+        {
+            foreach (MonoBehaviour script in signalListeners)
+            {
+                script.enabled = true;
+            }
+        }
     }
 
     public override void StateUpdate()
@@ -39,5 +52,12 @@ public class BattleState : StateMachine.State
 
     public override void OnExit()
     {
+        if(signalListeners.Count > 0)
+        {
+            foreach (MonoBehaviour script in signalListeners)
+            {
+                script.enabled = false;
+            }
+        }
     }
 }

@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
   m_Name: Claire Ranged
   m_EditorClassIdentifier: 
-  name: Ranged Attack
+  icon: {fileID: 0}
+  actionName: 
   descripton: 
   actionType: 0
   mpCost: 0
-  turnPointCost: 1
-  timeCost: 0
+  timeModifier: 0
   power: 0.6
   accuracy: 80
   range: 8
+  aoe: 0
   attackProperty1: 3
   attackProperty2: 0
   effects:
@@ -28,7 +29,6 @@ MonoBehaviour:
   targetFriendly: 0
   targetHostile: 1
   fixedTarget: 1
-  hitboxPrefab: {fileID: 0}
   useGraphicPrefab: {fileID: 0}
   effectGraphicPrefab: {fileID: 9080087516260223380, guid: a9a53ad4435f66448b4a1b4e852a9413,
     type: 3}

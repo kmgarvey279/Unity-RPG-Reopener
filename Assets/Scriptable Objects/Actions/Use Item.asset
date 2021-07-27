@@ -12,21 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
   m_Name: Use Item
   m_EditorClassIdentifier: 
-  actionType: 0
+  icon: {fileID: 0}
+  actionName: 
+  descripton: 
+  actionType: 2
   mpCost: 0
-  turnPointCost: 1
-  timeCost: 0
+  timeModifier: 0
   power: 0
   accuracy: 0
-  range: 4
+  range: 2
+  aoe: 0
   attackProperty1: 0
   attackProperty2: 0
   effects: []
   targetFriendly: 1
   targetHostile: 0
   fixedTarget: 1
-  canMove: 1
-  hitboxPrefab: {fileID: 0}
+  useGraphicPrefab: {fileID: 0}
+  effectGraphicPrefab: {fileID: 0}
   animatorTrigger: Item
-  userEffectPrefab: {fileID: 0}
-  actionEffectPrefab: {fileID: 0}

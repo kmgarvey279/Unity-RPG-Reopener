@@ -4,8 +4,4 @@ using UnityEngine;
 
 public class AllyCombatant : Combatant
 {
-    public override void Start()
-    {
-        base.Start();
-    }
 }

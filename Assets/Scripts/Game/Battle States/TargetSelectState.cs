@@ -7,26 +7,24 @@ using UnityEngine.EventSystems;
 [System.Serializable]
 public class TargetSelectState : BattleState
 {
-    private BattleManager battleManager;
-    public GridManager gridManager;
+    [SerializeField] private GridManager gridManager;
+    [SerializeField] private AttackSwitch attackSwitch;
 
     private TurnData turnData;
 
     private List<Combatant> availableTargets = new List<Combatant>();
     private Combatant selectedTarget;
 
-    [Header("Events")]
-    public SignalSenderGO onCameraZoomIn;
-
-    public override void Start()
-    {
-        base.Start();
-        battleManager = GetComponentInParent<BattleManager>();
-    }
+    [Header("Events (Signals)")]
+    [SerializeField] private SignalSenderGO onCameraZoomIn;
 
     public override void OnEnter()
     {
+        base.OnEnter();
         turnData = battleManager.turnData;
+
+        if(turnData.action.actionType == ActionType.Attack)
+            attackSwitch.gameObject.SetActive(true);
 
         SetTargetableCombatants();
     }
@@ -51,48 +49,21 @@ public class TargetSelectState : BattleState
 
     private void SetInitialTarget()
     {   
+        GameObject initialTarget;
         //set default target
         if(availableTargets.Contains(turnData.combatant))
         {
-            SetTarget(turnData.combatant);
+            initialTarget = turnData.combatant.gameObject.GetComponentInChildren<TargetIcon>().gameObject;
         }
         else
         {
-            SetTarget(GetNearestTarget());
+            initialTarget = GetNearestTarget().GetComponentInChildren<TargetIcon>().gameObject;
         }
         EventSystem.current.SetSelectedGameObject(null);
-        EventSystem.current.SetSelectedGameObject(selectedTarget.gameObject.GetComponentInChildren<TargetIcon>().gameObject);
+        EventSystem.current.SetSelectedGameObject(initialTarget);
     }
 
-    public void SetTarget(Combatant newTarget)
-    {
-        if(selectedTarget != null)
-        {
-            selectedTarget.tile.ToggleAOE(false);
-        }
-
-        selectedTarget = newTarget;
-        selectedTarget.tile.ToggleAOE(true);
-
-        if(turnData.action.actionType == ActionType.GenericAttack)
-        {
-            Action meleeAttack = turnData.combatant.battleStats.meleeAttack;
-            Action rangedAttack = turnData.combatant.battleStats.rangedAttack;
-
-            if(meleeAttack && meleeAttack.range >= gridManager.GetMoveCost(turnData.combatant.tile, selectedTarget.tile))
-            {
-                turnData.action = meleeAttack;
-            }
-            else if(rangedAttack)
-            {
-                turnData.action = rangedAttack;
-            }
-        }
-
-        onCameraZoomIn.Raise(newTarget.gameObject);
-    }
-
-    private Combatant GetNearestTarget()
+    private GameObject GetNearestTarget()
     {
         Combatant closestTarget = null;
         float smallestDistance = Mathf.Infinity;
@@ -107,7 +78,7 @@ public class TargetSelectState : BattleState
                 closestTarget = target;
             }
         }
-        return closestTarget;
+        return closestTarget.gameObject;
     }
 
     public override void StateUpdate()
@@ -123,6 +94,13 @@ public class TargetSelectState : BattleState
             battleManager.turnData.action = null;
             stateMachine.ChangeState((int)BattleStateType.Menu);
         }
+
+        if(Input.GetButtonDown("Change"))
+        {
+            Debug.Log("test");
+            ChangeAttackType();
+        }
+ 
     }
 
     public override void StateFixedUpdate()
@@ -132,16 +110,67 @@ public class TargetSelectState : BattleState
 
     public override void OnExit()
     {
+        base.OnExit();
+
+        //clear tiles & targets
+        gridManager.HideTiles();
+        foreach(Combatant target in availableTargets)
+        {
+            target.targetIcon.ToggleButton(false);
+        }
         availableTargets.Clear();
         if(selectedTarget != null)
-        {
             selectedTarget = null;
-            selectedTarget.tile.ToggleAOE(false);
+        //hide attack display
+        if(attackSwitch.gameObject.activeInHierarchy)
+            attackSwitch.gameObject.SetActive(false);
+    }
+
+    public void OnTargetChange()
+    {
+        Combatant selectedTarget = EventSystem.current.currentSelectedGameObject.GetComponentInParent<Combatant>();
+        gridManager.DisplayAOE(selectedTarget.tile, turnData.action.aoe);
+
+        if(turnData.action.actionType == ActionType.Attack)
+        {
+            Action meleeAttack = turnData.combatant.battleStats.meleeAttack;
+            Action rangedAttack = turnData.combatant.battleStats.rangedAttack;
+
+            if(meleeAttack && meleeAttack.range >= gridManager.GetMoveCost(turnData.combatant.tile, selectedTarget.tile))
+            {
+                turnData.action = meleeAttack;
+                attackSwitch.ChangeSelectedIcon(AttackType.Melee);
+            }
+            else if(rangedAttack)
+            {
+                turnData.action = rangedAttack;
+                attackSwitch.ChangeSelectedIcon(AttackType.Gun);
+            }
+            else
+            {
+                Debug.Log("No targets in range");
+            }
         }
     }
 
-    public void OnTargetChange(Combatant newTarget)
+    public void ChangeAttackType()
     {
-        SetTarget(newTarget);
+        Action meleeAttack = turnData.combatant.battleStats.meleeAttack;
+        Action rangedAttack = turnData.combatant.battleStats.rangedAttack;
+
+        if(turnData.action == meleeAttack && rangedAttack != null)
+        {
+            turnData.action = rangedAttack;
+            attackSwitch.ChangeSelectedIcon(AttackType.Gun);
+        }
+        else if(turnData.action == rangedAttack && meleeAttack != null)
+        {
+            turnData.action = meleeAttack;
+            attackSwitch.ChangeSelectedIcon(AttackType.Melee);
+        }
+        else 
+        {
+            Debug.Log("Cannot switch attack type");
+        }
     }
 }

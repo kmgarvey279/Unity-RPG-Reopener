@@ -13,12 +13,13 @@ public class EnemyHealthDisplay : HealthDisplay
         combatant = GetComponentInParent<EnemyCombatant>();
 
         sliderBar = GetComponentInChildren<SliderBar>();
-        sliderBar.SetSliderValues(combatant.battleStats.health.GetValue(), combatant.battleStats.health.GetCurrentValue());
+        sliderBar.SetMaxValue(combatant.battleStats.health.GetValue());
+        sliderBar.SetCurrentValue(combatant.battleStats.health.GetCurrentValue());
     }
 
     public override void HandleHealthChange(DamagePopupType popupType, float amount)
     {
         base.HandleHealthChange(popupType, amount);
-        sliderBar.UpdateSlider(combatant.battleStats.health.GetCurrentValue());
+        sliderBar.SetCurrentValue(combatant.battleStats.health.GetCurrentValue());
     }
 }

@@ -4,17 +4,30 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.EventSystems;
 
-public class GridDisplay
+public class GridManager : MonoBehaviour
 {
-    public List<Tile> displayedTiles = new List<Tile>();
-    public List<Tile> aoeTiles = new List<Tile>();
-    public int aoe;
-    public Tile selectedTile;
+    [Header("Grid Parameters")]
+    [SerializeField] private int xCount;
+    [SerializeField] private int yCount;
+    [SerializeField] private Transform startWorld;
+    private float tileSize = 0.75f;
+    
+    [Header("Array of tiles")]
+    private GameObject[,] tileArray;
 
-    public GridDisplay(List<Tile> displayedTiles, int aoe)
+    [Header("Currently Displayed Tiles")]
+    private List<Tile> displayedTiles = new List<Tile>();
+    private List<Tile> aoeTiles = new List<Tile>();
+    
+    [Header("Misc")]
+    [SerializeField] private GameObject tilePrefab;
+    [SerializeField] private GameObject canvas;
+    [SerializeField] private BattleManager battleManager;
+
+    private void Start()
     {
-        this.displayedTiles = displayedTiles;
-        this.aoe = aoe;
+        tileArray = new GameObject[xCount, yCount];
+        GenerateGrid(); 
     }
 
     public List<Combatant> GetTargetsInAOE()
@@ -29,42 +42,6 @@ public class GridDisplay
         }
         return targets;
     }
-}
-
-public class GridManager : MonoBehaviour
-{
-    public Tilemap tilemap;
-    
-    [SerializeField] private int xCount;
-    [SerializeField] private int yCount;
-    [SerializeField] private Transform start;
-    private float tileSize = 0.5f;
-
-    public GameObject[,] tileArray;
-
-    public GameObject tilePrefab;
-    public GameObject canvas;
-
-    public GridDisplay gridDisplay;
-
-    private int previousMoveX;
-    private int previousMoveY;
-
-    private void Start()
-    {
-        tileArray = new GameObject[xCount, yCount];
-        GenerateGrid(); 
-    }
-
-    public void OnSelectedTileChange()
-    {
-
-    }
-
-    public void DisplayAOE()
-    {
-
-    }
 
     void GenerateGrid()
     {
@@ -72,8 +49,8 @@ public class GridManager : MonoBehaviour
         {  
             for(int y = 0; y < yCount; y++)
             {
-                float xPos = tileSize * (float)x + start.position.x;
-                float yPos = tileSize * (float)y + start.position.y;
+                float xPos = tileSize * (float)x + startWorld.position.x;
+                float yPos = tileSize * (float)y + startWorld.position.y;
                 Vector3 spawnPos = new Vector3(xPos, yPos);
                 SpawnTile(x, y, spawnPos);
             }
@@ -90,23 +67,19 @@ public class GridManager : MonoBehaviour
         tileArray[x, y] = tile;
     }
 
-    Vector3Int GetCell(int x, int y)
-    {
-        return tilemap.WorldToCell(new Vector3(x, y));
-    }
-
-    public void DisplayTilesInRange(Tile start, int range, int aoe)
+    public void DisplayTilesInRange(Tile start, int range, int aoe, bool isMoveRange = false)
     {
         int loops = 0;
         List<Tile> checkedTiles = new List<Tile>();
         List<Tile> uncheckedTiles = new List<Tile>();
+        
         uncheckedTiles.Add(start);
 
         while(uncheckedTiles.Count > 0)
         {
             Tile tile = uncheckedTiles[0];
             
-            if(tile.occupier == null || tile == start)
+            if(isMoveRange && (tile.occupier == null || tile == start) || !isMoveRange)
             {
                 List<Tile> adjacentTiles =  GetAdjacentTiles(tile, false);
                 if(adjacentTiles.Count > 0)  
@@ -120,7 +93,15 @@ public class GridManager : MonoBehaviour
                         }    
                     } 
                 }
-                tile.Display();
+                if(isMoveRange)
+                {   
+                    int moveCost = Mathf.Abs(tile.x - start.x) + Mathf.Abs(tile.y - start.y);
+                    tile.Display(moveCost);
+                }
+                else
+                {
+                    tile.Display();
+                }
             }
             
             uncheckedTiles.Remove(tile);
@@ -132,17 +113,18 @@ public class GridManager : MonoBehaviour
                 return;
             }
         }
-        gridDisplay = new GridDisplay(checkedTiles, aoe);
+        displayedTiles = checkedTiles;
 
-        gridDisplay.selectedTile = start;
         start.Select();
-
-        if(aoe >= 0)
-            DisplayAOE(start, aoe);
     }
 
     public void DisplayAOE(Tile start, int range)
     {
+        if(aoeTiles.Count > 0)
+        {
+            ClearAOE();
+        }
+
         int loops = 0;
         List<Tile> checkedTiles = new List<Tile>();
         List<Tile> uncheckedTiles = new List<Tile>();
@@ -175,19 +157,29 @@ public class GridManager : MonoBehaviour
                 return;
             }
         }
-        gridDisplay.aoeTiles = checkedTiles;
+        aoeTiles = checkedTiles;
     }
 
     public void HideTiles()
     {
-        if(gridDisplay.displayedTiles.Count > 0)
+        ClearAOE();
+        if(displayedTiles.Count > 0)
         {
-            foreach (Tile tile in gridDisplay.displayedTiles)
+            foreach (Tile tile in displayedTiles)
             {
                 tile.Hide();
             }
         }
-        gridDisplay = null;
+        displayedTiles.Clear();
+    }
+
+    private void ClearAOE()
+    {
+        foreach (Tile tile in aoeTiles)
+        {
+            tile.ToggleAOE(false);
+        }
+        aoeTiles.Clear();
     }
 
     public Tile GetClosestTileInRange(Tile start, Tile end, int moveRange)

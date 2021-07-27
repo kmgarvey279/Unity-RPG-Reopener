@@ -4,11 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class TargetIcon : MonoBehaviour, ISelectHandler, IDeselectHandler
+public class TargetIcon : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnterHandler
 {
     public Button button;
     public Image image;
-    // public SignalSenderGO changeCameraFocus;
+    public SignalSender onTargetChange;
+
 
     public void ToggleButton(bool isEnabled)
     {
@@ -22,8 +23,8 @@ public class TargetIcon : MonoBehaviour, ISelectHandler, IDeselectHandler
 
     public void OnSelect(BaseEventData eventData)
     {
-        // changeCameraFocus.Raise(this.gameObject);
         image.enabled = true;
+        onTargetChange.Raise();
     }
 
     public void OnDeselect(BaseEventData eventData)
@@ -31,8 +32,10 @@ public class TargetIcon : MonoBehaviour, ISelectHandler, IDeselectHandler
         image.enabled = false;
     }
 
-    public void OnClick()
+    public void OnPointerEnter(PointerEventData eventData)
     {
-        image.enabled = false;
+        Debug.Log("Enter");
+            // EventSystem.current.SetSelectedGameObject(null);
+            // EventSystem.current.SetSelectedGameObject(this.gameObject);
     }
 }

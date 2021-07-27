@@ -10,6 +10,7 @@ namespace StateMachineNamespace
         [System.Serializable]
         public abstract class State: MonoBehaviour
         {
+            [HideInInspector]
             public StateMachine stateMachine;
             [HideInInspector]
             public int id;
@@ -27,7 +28,7 @@ namespace StateMachineNamespace
         //pause
         public bool isActive = true;
 
-        void Start()
+        public void Start()
         {
             if(currentState != null)
             {
@@ -35,7 +36,7 @@ namespace StateMachineNamespace
             }
         }
 
-        void Update()
+        public void Update()
         {
             if(isActive == true && currentState != null)
             {
@@ -43,7 +44,7 @@ namespace StateMachineNamespace
             }
         }
 
-        void FixedUpdate()
+        public void FixedUpdate()
         {
             if(isActive == true && currentState != null)
             {

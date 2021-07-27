@@ -5,33 +5,64 @@ using UnityEngine.UI;
 
 public class BattleTimeline : MonoBehaviour
 {
-    public GameObject turnPanelPrefab;
-    public TurnPanel currentTurnPanel;
-    public List<TurnPanel> turnPanels = new List<TurnPanel>();
-    public Color currentTurnColor;
+    [Header("Current Turn")]
+    [SerializeField] private TurnPanel currentTurnPanel;
+    [Header("Preview")]
+    [SerializeField] private GameObject panelsParent; 
+    // private List<TurnPanel> turnPanels = new List<TurnPanel>();
+    private Dictionary<TurnSlot, TurnPanel> turnPanels = new Dictionary<TurnSlot, TurnPanel>();
+    [Header("Misc")]
+    [SerializeField] private GameObject turnPanelPrefab;
 
-    public void UpdateTurnList(TurnSlot currentTurnSlot, List<TurnSlot> turnOrder)
+    [SerializeField] private List<Transform> slotLocations;
+
+    public void CreateTurnPanels(List<TurnSlot> turnForecast)
+    {
+        for(int i = 0; i < turnForecast.Count; i++)
+        {
+            CreateTurnPanel(i, turnForecast[i]);
+        }
+    }
+
+    public void UpdateTurnPanels(List<TurnSlot> turnForecast)
+    {
+        foreach(KeyValuePair<TurnSlot, TurnPanel> entry in turnPanels)
+        {
+            entry.Value.UpdateSliderValue();
+            Vector3 updatedPosition = slotLocations[turnForecast.IndexOf(entry.Key)].position;
+            if(entry.Value.transform.position != updatedPosition)
+            {
+                entry.Value.Move(updatedPosition);
+            }
+        }
+    }
+
+    private void CreateTurnPanel(int index, TurnSlot turnSlot)
+    {
+        //create panel
+        GameObject turnPanelObject = Instantiate(turnPanelPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        turnPanelObject.transform.SetParent(panelsParent.transform, false);
+        TurnPanel turnPanel = turnPanelObject.GetComponent<TurnPanel>();
+        //assign value 
+        turnPanel.AssignTurnSlot(turnSlot);
+        //set position
+        turnPanel.transform.position = slotLocations[index].position;
+        //store in list
+        turnPanels.Add(turnSlot, turnPanel);
+    }
+
+    private void MoveTurnPanel(TurnPanel turnPanel)
+    {
+
+    }
+
+    public void RemoveTurnPanel()
+    {
+    }
+
+    public void ChangeCurrentTurn(TurnSlot currentTurnSlot)
     {
         currentTurnPanel.AssignTurnSlot(currentTurnSlot);
-
-        while(turnOrder.Count > turnPanels.Count)
-        {
-            GameObject turnPanelObject = Instantiate(turnPanelPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-            turnPanelObject.transform.SetParent(this.transform, false);
-            TurnPanel turnPanel = turnPanelObject.GetComponent<TurnPanel>();
-            turnPanels.Add(turnPanel);
-        }
-
-        while(turnOrder.Count < turnPanels.Count)
-        {
-            TurnPanel panelToRemove = turnPanels[-1];
-            turnPanels.Remove(panelToRemove);
-            Destroy(panelToRemove.gameObject);
-        }
-
-        for(int i = 0; i < turnPanels.Count; i++)
-        {
-            turnPanels[i].AssignTurnSlot(turnOrder[i]);
-        }
+        turnPanels[currentTurnSlot].ToggleNextIcon(true);
     }
 }

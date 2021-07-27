@@ -12,20 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
   m_Name: Move
   m_EditorClassIdentifier: 
+  icon: {fileID: 0}
+  actionName: 
+  descripton: 
+  actionType: 3
   mpCost: 0
-  turnPointCost: 1
-  timeCost: 0
+  timeModifier: 40
   power: 0
   accuracy: 0
-  minRange: 0
-  maxRange: 0
-  useMoveRange: 1
+  range: 0
+  aoe: -1
+  attackProperty1: 0
+  attackProperty2: 0
+  effects: []
   targetFriendly: 0
   targetHostile: 0
   fixedTarget: 0
-  canMove: 1
-  hitboxPrefab: {fileID: 7820653046794602019, guid: 5a3be9c50227d2c409e733c68ab11622,
-    type: 3}
+  useGraphicPrefab: {fileID: 0}
+  effectGraphicPrefab: {fileID: 0}
   animatorTrigger: 
-  userEffectPrefab: {fileID: 0}
-  actionEffectPrefab: {fileID: 0}

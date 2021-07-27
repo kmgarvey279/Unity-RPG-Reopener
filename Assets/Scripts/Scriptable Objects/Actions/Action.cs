@@ -5,9 +5,10 @@ using UnityEngine.UI;
 
 public enum ActionType
 {
-    GenericAttack,
+    Attack,
     Skill,
-    Item
+    Item,
+    Move
 }
 
 [System.Serializable]
@@ -19,9 +20,8 @@ public class Action : ScriptableObject
     public string descripton;
     public ActionType actionType;
     [Header("Costs")]
-    public float mpCost;
-    public int turnPointCost;
-    public float timeCost;
+    public int mpCost;
+    public int timeCost;
     [Header("Properties")]
     public float power;
     public int accuracy;
@@ -35,7 +35,6 @@ public class Action : ScriptableObject
     public bool targetFriendly;
     public bool targetHostile;
     public bool fixedTarget;
-    public GameObject hitboxPrefab;
     [Header("Animation")]
     public GameObject useGraphicPrefab;
     public GameObject effectGraphicPrefab;

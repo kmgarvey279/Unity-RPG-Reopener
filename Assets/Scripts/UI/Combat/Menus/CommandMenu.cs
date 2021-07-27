@@ -15,22 +15,15 @@ public class CommandMenu : MonoBehaviour
 
     [SerializeField] private SecondaryBattlePanel secondaryPanel;
 
-    [SerializeField] private Action genericAttack;
-    [SerializeField] private Action useItem;
+    [SerializeField] private Action attack;
+    [SerializeField] private Action item;
+    [SerializeField] private Action guard;
 
     public void DisplayMenu()
     {
         turnData = battleManager.turnData;
         commandPanel.SetActive(true);
         
-        if(turnData.hasMoved)
-        {
-            moveButton.interactable = false;
-        }
-        else
-        {
-            moveButton.interactable = true;
-        }
         EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(defaultButton);
     }
@@ -43,19 +36,7 @@ public class CommandMenu : MonoBehaviour
 
     public void SelectAttack()
     {
-        turnData.action = genericAttack;
-        if(turnData.hasMoved)
-        {
-            battleManager.stateMachine.ChangeState((int)BattleStateType.TargetSelect);
-        }
-        else
-        {
-            battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
-        }
-    }
-
-    public void SelectMove()
-    {
+        battleManager.SetAction(attack);
         battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
     }
 
@@ -66,22 +47,8 @@ public class CommandMenu : MonoBehaviour
 
     public void SelectSkill(GameObject skillSlot)
     {
-        turnData.action = skillSlot.GetComponent<BattleSkillSlot>().skill;
-        if(turnData.hasMoved)
-        {
-            if(turnData.action.fixedTarget)
-            {
-                battleManager.stateMachine.ChangeState((int)BattleStateType.TargetSelect);
-            }
-            else
-            {
-                battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
-            }
-        }
-        else
-        {
-            battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
-        }
+        battleManager.SetAction(skillSlot.GetComponent<BattleSkillSlot>().skill);
+        battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
     }
 
     public void DisplayItemList()

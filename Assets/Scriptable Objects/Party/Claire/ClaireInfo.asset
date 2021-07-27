@@ -29,8 +29,8 @@ MonoBehaviour:
   attack: 10
   defense: 8
   special: 5
-  agility: 5
-  moveRange: 5
+  agility: 25
+  moveRange: 3
   strike: 0
   slash: 0
   pierce: 0

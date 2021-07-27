@@ -12,21 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
   m_Name: Generic Attack
   m_EditorClassIdentifier: 
+  icon: {fileID: 0}
+  actionName: 
+  descripton: 
   actionType: 0
   mpCost: 0
-  turnPointCost: 0
-  timeCost: 0
+  timeCost: 30
   power: 0
   accuracy: 0
   range: 99
+  aoe: 0
   attackProperty1: 0
   attackProperty2: 0
   effects: []
   targetFriendly: 0
   targetHostile: 1
   fixedTarget: 1
-  canMove: 0
-  hitboxPrefab: {fileID: 0}
+  useGraphicPrefab: {fileID: 0}
+  effectGraphicPrefab: {fileID: 0}
   animatorTrigger: 
-  userEffectPrefab: {fileID: 0}
-  actionEffectPrefab: {fileID: 0}

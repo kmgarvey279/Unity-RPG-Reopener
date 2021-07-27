@@ -8,34 +8,43 @@ using UnityEngine.EventSystems;
 [System.Serializable]
 public class PlayerMoveState : BattleState
 {
-    private BattleManager battleManager;
-    public GridManager gridManager;
+    [SerializeField] private GridManager gridManager;
 
     private TurnData turnData;
+    private Tile selectedTile;
 
-    [Header("Unity Events")]
-    public SignalSender onCameraZoomOut;
-    public SignalSenderGO onCameraZoomIn;
-
-    public override void Start()
-    {
-        base.Start();
-        battleManager = GetComponentInParent<BattleManager>();
-    }
+    [Header("Unity Events (Signals)")]
+    [SerializeField] private SignalSender onCameraZoomOut;
+    [SerializeField] private SignalSenderGO onCameraZoomIn;
 
     public override void OnEnter()
     {
-        turnData = battleManager.turnData;
+        base.OnEnter();
 
+        turnData = battleManager.turnData;
         onCameraZoomOut.Raise();
 
-        int moveRange = turnData.combatant.GetStatValue(StatType.MoveRange);
-        gridManager.DisplayTilesInRange(turnData.combatant.tile, moveRange, -1);
+        int range = turnData.combatant.GetStatValue(StatType.MoveRange);
+        gridManager.DisplayTilesInRange(turnData.combatant.tile, range, -1, true);
+
     }
 
     public override void StateUpdate()
     {
+        if(Input.GetButtonDown("Select"))
+        {
+            OnConfirmTile();
+        }
+        if(Input.GetButtonDown("Cancel"))
+        {
+            selectedTile = null;
+            gridManager.HideTiles();
+
+            battleManager.CancelAction();
+            stateMachine.ChangeState((int)BattleStateType.Menu);
+        }
     }
+
 
     public override void StateFixedUpdate()
     {
@@ -44,32 +53,30 @@ public class PlayerMoveState : BattleState
 
     public override void OnExit()
     {
-        gridManager.HideTiles();
+        base.OnExit();
     }
 
     public void OnSelectTile(GameObject tileObject)
     {     
-        onCameraZoomIn.Raise(turnData.combatant.gameObject);
-        turnData.combatant.Move(tileObject.GetComponent<Tile>());
+        selectedTile = tileObject.GetComponent<Tile>();
+    }
+
+    public void OnConfirmTile()
+    {                
+        gridManager.HideTiles();
+        turnData.combatant.Move(selectedTile);
+        selectedTile = null; 
     }
 
     public void OnMoveComplete()
     {
-        turnData.hasMoved = true;
-        if(turnData.action == null)
+        if(turnData.action.fixedTarget)
         {
-            stateMachine.ChangeState((int)BattleStateType.Menu);
+            battleManager.stateMachine.ChangeState((int)BattleStateType.TargetSelect);
         }
         else
         {
-            if(turnData.action.fixedTarget)
-            {
-                stateMachine.ChangeState((int)BattleStateType.TargetSelect);
-            }
-            else
-            {
-                stateMachine.ChangeState((int)BattleStateType.TileSelect);
-            }
+            battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
         }
     }
 
