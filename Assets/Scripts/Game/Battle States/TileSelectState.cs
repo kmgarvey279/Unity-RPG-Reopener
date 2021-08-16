@@ -23,8 +23,7 @@ public class TileSelectState : BattleState
         onCameraZoomOut.Raise();
         //display tiles
         int range = turnData.action.range;
-        int aoe = turnData.action.aoe;
-        gridManager.DisplayTilesInRange(turnData.combatant.tile, range, aoe, false);
+        gridManager.DisplayTilesInRange(turnData.combatant.tile, range, false);
     }
 
     public override void StateUpdate()

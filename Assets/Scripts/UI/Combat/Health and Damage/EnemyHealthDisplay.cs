@@ -4,22 +4,29 @@ using UnityEngine;
 
 public class EnemyHealthDisplay : HealthDisplay
 {
-    public EnemyCombatant combatant;
-    public SliderBar sliderBar;
+    private Combatant combatant;
+    [SerializeField] private GameObject healthBarContainer;
+    [SerializeField] private SliderBar healthBar;
+    [SerializeField] private SliderBar damageBar;
+    [SerializeField] private SliderBar miasmaBar;
 
     public override void Start()
     {
         base.Start();
-        combatant = GetComponentInParent<EnemyCombatant>();
+        combatant = GetComponentInParent<Combatant>();
 
-        sliderBar = GetComponentInChildren<SliderBar>();
-        sliderBar.SetMaxValue(combatant.battleStats.health.GetValue());
-        sliderBar.SetCurrentValue(combatant.battleStats.health.GetCurrentValue());
+        healthBar.SetMaxValue(combatant.battleStats.health.GetValue());
+        healthBar.SetCurrentValue(combatant.battleStats.health.GetCurrentValue());
+    }
+
+    public void ToggleBarVisibility(bool isActive)
+    {
+        healthBarContainer.SetActive(isActive);
     }
 
     public override void HandleHealthChange(DamagePopupType popupType, float amount)
     {
         base.HandleHealthChange(popupType, amount);
-        sliderBar.SetCurrentValue(combatant.battleStats.health.GetCurrentValue());
+        healthBar.SetCurrentValue(combatant.battleStats.health.GetCurrentValue());
     }
 }

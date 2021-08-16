@@ -116,7 +116,6 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private BattleTimeline battleTimeline;
     private TurnSlot currentTurnSlot;
     public List<TurnSlot> turnForecast = new List<TurnSlot>();
-    public List<TurnSlot> tempForecast;
     
     [Header("States")]
     public StateMachine stateMachine;
@@ -236,6 +235,26 @@ public class BattleManager : MonoBehaviour
         {
             currentTurnSlot.SetMoveCost(tile.moveCost * 10);
             UpdateTurnOrder();
+        }
+    }
+
+    public void OnTargetSelect(GameObject gameObject)
+    {
+        Combatant combatant = gameObject.GetComponent<Combatant>();
+        TurnSlot selectedTurnSlot = turnForecast.FirstOrDefault(turnSlot => turnSlot.combatant == combatant);
+        if(selectedTurnSlot != null)
+        {
+            battleTimeline.ToggleTargeted(selectedTurnSlot, true);
+        }
+    }
+
+    public void OnTargetDeselect(GameObject gameObject)
+    {
+        Combatant combatant = gameObject.GetComponent<Combatant>();
+        TurnSlot selectedTurnSlot = turnForecast.FirstOrDefault(turnSlot => turnSlot.combatant == combatant);
+        if(selectedTurnSlot != null)
+        {
+            battleTimeline.ToggleTargeted(selectedTurnSlot, false);
         }
     }
 }

@@ -40,7 +40,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 15.66, y: 3.38}
-  m_SizeDelta: {x: 0.75, y: 0.75}
+  m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1305625966038601592
 CanvasRenderer:
@@ -57,13 +57,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1305625966038601474}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2529726, g: 0.7169812, b: 0.6791212, a: 0.39215687}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -101,16 +101,14 @@ MonoBehaviour:
   selectedImage: {fileID: 1305625966236595387}
   onTileSelect: {fileID: 11400000, guid: 793683ac7958afe49ad41d0555631cb8, type: 2}
   onTileConfirm: {fileID: 11400000, guid: d437005961dbbbf46b9b7ba7fa1cdbfe, type: 2}
+  invisibleColor: {r: 0, g: 0, b: 0, a: 0}
   defaultColor: {r: 0.5618014, g: 0.8113208, b: 0.7936845, a: 0.6862745}
   costColors:
   - {r: 0.9333334, g: 0.74509805, b: 0.74509805, a: 0.6862745}
   - {r: 0.95294124, g: 0.53333336, b: 0.53333336, a: 0.6862745}
   - {r: 0.9607844, g: 0.37647063, b: 0.37647063, a: 0.6862745}
   - {r: 0.91372555, g: 0.1764706, b: 0.1764706, a: 0.6862745}
-  zeroCostColor: {r: 0.9339623, g: 0.7436454, b: 0.7436454, a: 0.6862745}
-  tenCostColor: {r: 0.9528302, g: 0.5339444, b: 0.5339444, a: 0.6862745}
-  twentyCostColor: {r: 0.9622642, g: 0.37582767, b: 0.37582767, a: 0.6862745}
-  thirtyCostColor: {r: 0.9150943, g: 0.17611246, b: 0.17611246, a: 0.6862745}
+  moveCost: 0
 --- !u!60 &1305625966038601599
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -136,10 +134,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0.375, y: 0.375}
-      - {x: -0.375, y: 0.375}
-      - {x: -0.375, y: -0.375}
-      - {x: 0.375, y: -0.375}
+    - - {x: 0.5, y: 0.5}
+      - {x: -0.5, y: 0.5}
+      - {x: -0.5, y: -0.5}
+      - {x: 0.5, y: -0.5}
 --- !u!114 &1305625966038601596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -283,7 +281,7 @@ GameObject:
   - component: {fileID: 1305625967943963527}
   - component: {fileID: 1305625967943963524}
   m_Layer: 0
-  m_Name: Targeted
+  m_Name: AOE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

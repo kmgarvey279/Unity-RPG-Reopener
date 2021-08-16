@@ -46,8 +46,8 @@ public class CharacterInfo : ScriptableObject
     public Dictionary<AttackProperty, int> resistDict;
 
     [Header("Skills")]
-    public Action meleeAttack;
-    public Action rangedAttack;
+    public Action attack1;
+    public Action attack2;
     public List<Action> skills = new List<Action>();
 
 

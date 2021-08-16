@@ -65,4 +65,17 @@ public class BattleTimeline : MonoBehaviour
         currentTurnPanel.AssignTurnSlot(currentTurnSlot);
         turnPanels[currentTurnSlot].ToggleNextIcon(true);
     }
+
+    public void ToggleTargeted(TurnSlot turnSlot, bool isTargeted)
+    {
+        turnPanels[turnSlot].ToggleTargetedAnimation(isTargeted);
+    }
+
+    public void ClearAllTargeted()
+    {
+        foreach(KeyValuePair<TurnSlot, TurnPanel> entry in turnPanels)
+        {
+           entry.Value.ToggleTargetedAnimation(false); 
+        }
+    }
 }

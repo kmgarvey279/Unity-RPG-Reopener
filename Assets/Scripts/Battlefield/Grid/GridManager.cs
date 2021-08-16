@@ -6,11 +6,12 @@ using UnityEngine.EventSystems;
 
 public class GridManager : MonoBehaviour
 {
+    public Tilemap tilemap;
     [Header("Grid Parameters")]
     [SerializeField] private int xCount;
     [SerializeField] private int yCount;
     [SerializeField] private Transform startWorld;
-    private float tileSize = 0.75f;
+    private float tileSize = 1f;
     
     [Header("Array of tiles")]
     private GameObject[,] tileArray;
@@ -26,6 +27,7 @@ public class GridManager : MonoBehaviour
 
     private void Start()
     {
+        tilemap = GetComponentInChildren<Tilemap>();
         tileArray = new GameObject[xCount, yCount];
         GenerateGrid(); 
     }
@@ -67,7 +69,7 @@ public class GridManager : MonoBehaviour
         tileArray[x, y] = tile;
     }
 
-    public void DisplayTilesInRange(Tile start, int range, int aoe, bool isMoveRange = false)
+    public void DisplayTilesInRange(Tile start, int range, bool isMoveRange = false)
     {
         int loops = 0;
         List<Tile> checkedTiles = new List<Tile>();

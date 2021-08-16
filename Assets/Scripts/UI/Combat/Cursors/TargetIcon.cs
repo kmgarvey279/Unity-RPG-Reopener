@@ -6,10 +6,20 @@ using UnityEngine.EventSystems;
 
 public class TargetIcon : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnterHandler
 {
-    public Button button;
-    public Image image;
-    public SignalSender onTargetChange;
+    private Combatant combatant;
+    [Header("Components")]
+    [SerializeField] private Button button;
+    [SerializeField] private Image image;
+    [Header("Sprite Mask")]
+    [SerializeField] private MaskController maskController;
+    [Header("Events")]
+    [SerializeField] private SignalSenderGO onTargetSelect;
+    [SerializeField] private SignalSenderGO onTargetDeselect;
 
+    private void Start()
+    {
+        combatant = GetComponentInParent<Combatant>();    
+    }
 
     public void ToggleButton(bool isEnabled)
     {
@@ -23,19 +33,41 @@ public class TargetIcon : MonoBehaviour, ISelectHandler, IDeselectHandler, IPoin
 
     public void OnSelect(BaseEventData eventData)
     {
-        image.enabled = true;
-        onTargetChange.Raise();
+        Select();
     }
 
     public void OnDeselect(BaseEventData eventData)
     {
-        image.enabled = false;
+        Deselect();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log("Enter");
-            // EventSystem.current.SetSelectedGameObject(null);
-            // EventSystem.current.SetSelectedGameObject(this.gameObject);
+        if(button.enabled)
+        {
+            Select();
+        }
+    }
+
+    // public void OnPointerExit(PointerEventData eventData)
+    // {
+    //     if(button.enabled)
+    //     {
+    //         Deselect();
+    //     }
+    // }
+
+    private void Select()
+    {
+        image.enabled = true;
+        maskController.TriggerSelected();
+        onTargetSelect.Raise(combatant.gameObject);
+    }
+
+    private void Deselect()
+    {
+        image.enabled = false;
+        maskController.EndAnimation();
+        onTargetDeselect.Raise(combatant.gameObject);
     }
 }

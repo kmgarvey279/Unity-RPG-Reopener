@@ -25,7 +25,7 @@ public class PlayerMoveState : BattleState
         onCameraZoomOut.Raise();
 
         int range = turnData.combatant.GetStatValue(StatType.MoveRange);
-        gridManager.DisplayTilesInRange(turnData.combatant.tile, range, -1, true);
+        gridManager.DisplayTilesInRange(turnData.combatant.tile, range, true);
 
     }
 

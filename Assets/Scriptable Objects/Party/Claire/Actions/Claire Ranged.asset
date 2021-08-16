@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Claire Ranged
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
-  actionName: 
+  actionName: Gun Attack
   descripton: 
   actionType: 0
   mpCost: 0
-  timeModifier: 0
+  timeCost: 0
   power: 0.6
   accuracy: 80
   range: 8

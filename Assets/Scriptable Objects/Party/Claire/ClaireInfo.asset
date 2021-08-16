@@ -38,8 +38,8 @@ MonoBehaviour:
   ice: 0
   electric: 0
   dark: 0
-  meleeAttack: {fileID: 11400000, guid: 49078961aba57e64590b3560444824a7, type: 2}
-  rangedAttack: {fileID: 11400000, guid: d0271b7210b12624186c868c9dc3043f, type: 2}
+  attack1: {fileID: 11400000, guid: 49078961aba57e64590b3560444824a7, type: 2}
+  attack2: {fileID: 11400000, guid: d0271b7210b12624186c868c9dc3043f, type: 2}
   skills:
   - {fileID: 11400000, guid: 675c277a63d62164bac38a220a7998a1, type: 2}
   - {fileID: 11400000, guid: 44bb599697fb8414795981df292281fc, type: 2}

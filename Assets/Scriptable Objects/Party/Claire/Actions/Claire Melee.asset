@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Claire Melee
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
-  actionName: 
+  actionName: Melee Attack
   descripton: 
   actionType: 0
   mpCost: 0
-  timeModifier: 0
+  timeCost: 0
   power: 1
   accuracy: 95
   range: 1

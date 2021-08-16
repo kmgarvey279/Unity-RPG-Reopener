@@ -10,7 +10,7 @@ public class ExecuteActionState : BattleState
     private TurnData turnData;
     private BattleCalculations battleCalculations;
     
-    [Header("Events")]
+    [Header("Events (Signals)")]
     [SerializeField] private SignalSenderGO onCameraZoomIn;
 
     public override void OnEnter()

@@ -15,8 +15,8 @@ public class BattleStats
     public Dictionary<AttackProperty, int> resistDict;
 
     public List<Action> skills;
-    public Action meleeAttack;
-    public Action rangedAttack;
+    public Action attack1;
+    public Action attack2;
     //list of status effects
     //alive/dead?
 
@@ -28,8 +28,8 @@ public class BattleStats
         this.statDict = characterInfo.statDict;
         this.resistDict = characterInfo.resistDict;
 
-        this.meleeAttack = characterInfo.meleeAttack;
-        this.rangedAttack = characterInfo.rangedAttack;
+        this.attack1 = characterInfo.attack1;
+        this.attack2 = characterInfo.attack2;
         this.skills = characterInfo.skills;
     }
 }
@@ -45,7 +45,7 @@ public class Combatant : MonoBehaviour
     public GameObject spriteFill;
     [Header("Child Scripts")]
     public HealthDisplay healthDisplay;
-    public TargetIcon targetIcon;
+    public MaskController maskController;
     [Header("Events")]
     public SignalSender onMoveComplete;
     [Header("Grid")]
@@ -60,22 +60,22 @@ public class Combatant : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
 
         healthDisplay = GetComponentInChildren<HealthDisplay>();
-        targetIcon = GetComponentInChildren<TargetIcon>();
+        maskController = GetComponentInChildren<MaskController>();
     }
 
     public void Start()
     {
-        // SnapToTileCenter();
+        SnapToTileCenter();
     }
 
-    // public void SnapToTileCenter()
-    // {
-    //     Tilemap tilemap = GetComponentInParent<Battlefield>().gridManager.tilemap;
+    public void SnapToTileCenter()
+    {
+        Tilemap tilemap = GetComponentInParent<Battlefield>().gridManager.tilemap;
         
-    //     Vector3Int cellPosition = tilemap.WorldToCell(transform.position);
-    //     Vector3 newPosition = tilemap.GetCellCenterWorld(cellPosition);
-    //     transform.position = newPosition;
-    // }
+        Vector3Int cellPosition = tilemap.WorldToCell(transform.position);
+        Vector3 newPosition = tilemap.GetCellCenterWorld(cellPosition);
+        transform.position = newPosition;
+    }
 
     public int GetStatValue(StatType statType)
     {
@@ -139,8 +139,18 @@ public class Combatant : MonoBehaviour
         }
     }
 
-    public void ToggleHighlight(bool isHighlighted)
+    public void Select()
     {
-        spriteFill.SetActive(isHighlighted);
+        maskController.TriggerSelected();
+    }
+
+    public void GrayOut()
+    {
+        maskController.TriggerUnselectable();
+    }
+
+    public void ClearSpriteMask()
+    {
+        maskController.EndAnimation();
     }
 }

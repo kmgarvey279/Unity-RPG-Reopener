@@ -22,7 +22,13 @@ public class TurnPanel : MonoBehaviour
     [SerializeField] private GameObject targetedIcon;
     [SerializeField] private GameObject nextIcon;
     [Header("Animations/Movement")]
+    private Animator animator;
     [SerializeField] float moveTime;
+
+    private void Start()
+    {
+        animator = GetComponent<Animator>();    
+    }
 
     public void Move(Vector3 newPosition)
     {
@@ -63,8 +69,9 @@ public class TurnPanel : MonoBehaviour
         nextIcon.SetActive(isNext);
     }
 
-    public void ToggleTargetedIcon(bool isTargeted)
+    public void ToggleTargetedAnimation(bool isTargeted)
     {
+        animator.SetBool("Targeted", isTargeted);
         targetedIcon.SetActive(isTargeted);
     }
 

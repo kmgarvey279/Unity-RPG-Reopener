@@ -43,9 +43,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74ab52bd3ac410e438adebcc23b6baea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stateMachine: {fileID: 0}
   id: 0
-  nextId: 0
   battleStateType: 2
+  battleManager: {fileID: 0}
+  signalListeners: []
   gridManager: {fileID: 0}
   onCameraZoomOut: {fileID: 11400000, guid: 7d39b1d704621c640a8ce91a6ae94a29, type: 2}
   onCameraZoomIn: {fileID: 11400000, guid: 1b526e957c88b6e40aa2172d13ee6bf3, type: 2}
@@ -154,9 +156,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae60a86f7e036ba4f8d1727614b27e28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stateMachine: {fileID: 0}
   id: 0
-  nextId: 0
   battleStateType: 7
+  battleManager: {fileID: 0}
+  signalListeners: []
 --- !u!1 &1068160556
 GameObject:
   m_ObjectHideFlags: 0
@@ -200,9 +204,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 110c2c9820d15a642a99d72c7e146990, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stateMachine: {fileID: 0}
   id: 0
-  nextId: 0
   battleStateType: 6
+  battleManager: {fileID: 0}
+  signalListeners: []
   onCameraZoomOut: {fileID: 11400000, guid: 7d39b1d704621c640a8ce91a6ae94a29, type: 2}
 --- !u!1 &1104867728
 GameObject:
@@ -247,9 +253,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9653c389204e58b41a934dcc74f64932, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stateMachine: {fileID: 0}
   id: 0
-  nextId: 0
   battleStateType: 0
+  battleManager: {fileID: 0}
+  signalListeners: []
 --- !u!1 &1360154138
 GameObject:
   m_ObjectHideFlags: 0
@@ -293,10 +301,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1584df8704766bc47a14e63d673e8e5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stateMachine: {fileID: 0}
   id: 0
-  nextId: 0
   battleStateType: 5
-  cameraManager: {fileID: 0}
+  battleManager: {fileID: 0}
+  signalListeners: []
+  onCameraZoomIn: {fileID: 0}
 --- !u!1 &1522742265
 GameObject:
   m_ObjectHideFlags: 0
@@ -340,9 +350,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 439bbc3ba66a7744791a3d441154ffef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stateMachine: {fileID: 0}
   id: 0
-  nextId: 0
   battleStateType: 1
+  battleManager: {fileID: 0}
+  signalListeners: []
   commandMenu: {fileID: 0}
   onCameraZoomIn: {fileID: 11400000, guid: 1b526e957c88b6e40aa2172d13ee6bf3, type: 2}
 --- !u!1 &1600802480
@@ -388,10 +400,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b91a7970eaad894f8c57be6568bcc6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stateMachine: {fileID: 0}
   id: 0
-  nextId: 0
   battleStateType: 4
-  battlefield: {fileID: 0}
+  battleManager: {fileID: 0}
+  signalListeners: []
+  gridManager: {fileID: 0}
+  onCameraZoomOut: {fileID: 0}
 --- !u!1 &1790431372
 GameObject:
   m_ObjectHideFlags: 0
@@ -435,11 +450,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfca52920fe41f040b7e1d11a16b5489, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stateMachine: {fileID: 0}
   id: 0
-  nextId: 0
   battleStateType: 3
+  battleManager: {fileID: 0}
+  signalListeners: []
   gridManager: {fileID: 0}
-  onCameraZoomOut: {fileID: 11400000, guid: 7d39b1d704621c640a8ce91a6ae94a29, type: 2}
+  attackSwitch: {fileID: 0}
   onCameraZoomIn: {fileID: 11400000, guid: 1b526e957c88b6e40aa2172d13ee6bf3, type: 2}
 --- !u!1 &2036527992414714683
 GameObject:
@@ -496,4 +513,5 @@ MonoBehaviour:
     action: {fileID: 0}
     targets: []
     targetedTile: {fileID: 0}
-    hasMoved: 0
+    startingPosition: {x: 0, y: 0, z: 0}
+    startingDirection: {x: 0, y: 0}
