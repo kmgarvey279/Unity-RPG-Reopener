@@ -120,7 +120,7 @@ public class GridManager : MonoBehaviour
         start.Select();
     }
 
-    public void DisplayAOE(Tile start, int range)
+    public void DisplayAOE(Tile start, int range, bool targetFriendly, bool targetHostile)
     {
         if(aoeTiles.Count > 0)
         {
@@ -148,7 +148,7 @@ public class GridManager : MonoBehaviour
                     }    
                 } 
             }
-            tile.ToggleAOE(true);
+            tile.DisplayAOE(targetFriendly, targetHostile);
             
             uncheckedTiles.Remove(tile);
             checkedTiles.Add(tile);
@@ -179,7 +179,7 @@ public class GridManager : MonoBehaviour
     {
         foreach (Tile tile in aoeTiles)
         {
-            tile.ToggleAOE(false);
+            tile.ClearAOE();
         }
         aoeTiles.Clear();
     }

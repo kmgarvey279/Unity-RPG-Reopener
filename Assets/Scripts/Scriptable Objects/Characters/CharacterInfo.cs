@@ -27,10 +27,16 @@ public class CharacterInfo : ScriptableObject
     [HideInInspector] public DynamicStat mana;
 
     [Header("Stats")]
+    //determine power of physical/gun attacks
     [SerializeField] private int attack;
+    //determine defense against physical/gun attacks
     [SerializeField] private int defense;
+    //determine offensive and defensive magic power + mp regen
     [SerializeField] private int special;
+    //determine action speed/cost and evasion 
     [SerializeField] private int agility;
+    //determine accuracy and crit rate/damage
+    [SerializeField] private int skill;
     [SerializeField] private int moveRange;
     public Dictionary<StatType, Stat> statDict;
 
@@ -43,6 +49,10 @@ public class CharacterInfo : ScriptableObject
     [SerializeField] private int ice;
     [SerializeField] private int electric;
     [SerializeField] private int dark;
+    // [SerializeField] private int light;
+    // [SerializeField] private int water;
+    // [SerializeField] private int wind;
+    // [SerializeField] private int earth;
     public Dictionary<AttackProperty, int> resistDict;
 
     [Header("Skills")]
@@ -61,6 +71,7 @@ public class CharacterInfo : ScriptableObject
         statDict.Add(StatType.Defense, new Stat(StatType.Defense, defense));
         statDict.Add(StatType.Special, new Stat(StatType.Special, special));
         statDict.Add(StatType.Agility, new Stat(StatType.Agility, agility));
+        statDict.Add(StatType.Skill, new Stat(StatType.Skill, skill));
         statDict.Add(StatType.MoveRange, new Stat(StatType.MoveRange, moveRange));
         //add resistances to dictionary
         resistDict = new Dictionary<AttackProperty, int>();

@@ -63,19 +63,23 @@ public class BattleTimeline : MonoBehaviour
     public void ChangeCurrentTurn(TurnSlot currentTurnSlot)
     {
         currentTurnPanel.AssignTurnSlot(currentTurnSlot);
-        turnPanels[currentTurnSlot].ToggleNextIcon(true);
     }
 
-    public void ToggleTargeted(TurnSlot turnSlot, bool isTargeted)
+    public void DisplayAccuracyPreview(TurnSlot turnSlot, int accuracy)
     {
-        turnPanels[turnSlot].ToggleTargetedAnimation(isTargeted);
+        turnPanels[turnSlot].DisplayAccuracyPreview(accuracy);
+    }
+
+    public void ClearAccuracyPreview(TurnSlot turnSlot)
+    {
+        turnPanels[turnSlot].ClearAccuracyPreview();
     }
 
     public void ClearAllTargeted()
     {
         foreach(KeyValuePair<TurnSlot, TurnPanel> entry in turnPanels)
         {
-           entry.Value.ToggleTargetedAnimation(false); 
+           entry.Value.ClearAccuracyPreview(); 
         }
     }
 }

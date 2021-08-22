@@ -12,6 +12,7 @@ public enum DamagePopupType
 
 public class DamagePopup : MonoBehaviour
 {
+    private Animator animator;
     [Header("UI Elements")]
     [SerializeField] private TextMeshProUGUI popupText;
     [Header("Value Displayed")]
@@ -19,17 +20,20 @@ public class DamagePopup : MonoBehaviour
     public Color healColor;
     private float popupDuration = 1f;
 
+    private void Start()
+    {
+        animator = GetComponent<Animator>();
+    }
+
     public void TriggerPopup(DamagePopupType popupType, float amount)
     {
         SetPopupColor(popupType);
         popupText.text = amount.ToString("n0");
-        StartCoroutine(ClearPopupCo());
+        animator.SetTrigger("Activate");
     }
 
-    public IEnumerator ClearPopupCo()
+    public void ClearPopup()
     {
-        yield return new WaitForSeconds(popupDuration);
-        popupText.enabled = false;
         popupText.text = "";
     }
 

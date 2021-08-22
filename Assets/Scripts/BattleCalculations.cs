@@ -6,12 +6,18 @@ namespace BattleCalculationsNamespace
 {
     public class BattleCalculations
     {
-        //check if action hits target
-        public bool HitCheck(Combatant attacker, Action action, Combatant target)
+        //get accuracy %
+        public int GetHitChance(int actionAccuracy, int attackerAccuracy, int targetEvasion)
         {
-            int hitChance = Mathf.Clamp(action.accuracy + attacker.GetStatValue(StatType.Agility) - target.GetStatValue(StatType.Agility), 1, 99);
+            return Mathf.Clamp(actionAccuracy + (attackerAccuracy - targetEvasion), 1, 100);
+        }
+
+        //roll to check if action hits target
+        public bool HitCheck(int actionAccuracy, int attackerAccuracy, int targetEvasion)
+        {
+            int hitChance = GetHitChance(actionAccuracy, attackerAccuracy, targetEvasion);
             int roll = Random.Range(1, 100);
-            if(roll <= hitChance )
+            if(roll >= hitChance )
             {
                 return true;
             }
@@ -22,13 +28,23 @@ namespace BattleCalculationsNamespace
         }
 
         //get final damage of attack
-        public int GetDamageAmount(Combatant attacker, Action action, Combatant target)
+        public int GetDamageAmount(Action action, Combatant attacker, Combatant target)
         {
-            float attackTotal = ((float)attacker.GetStatValue(StatType.Attack) * action.power); 
-            float defenseTotal = (float)target.GetStatValue(StatType.Defense);
+            float offensiveStat = 0;
+            float defensiveStat = 0;
+            if(action.isSpecial)
+            {
+                offensiveStat = (float)attacker.GetStatValue(StatType.Special);
+                defensiveStat = (float)target.GetStatValue(StatType.Special);
+            }
+            else
+            {
+                offensiveStat = (float)attacker.GetStatValue(StatType.Attack);
+                defensiveStat = (float)target.GetStatValue(StatType.Defense);
+            }
             float crit = CritCheck(); 
 
-            float damage = (((attackTotal - (defenseTotal/2)) * Random.Range(0.85f, 1f)) * crit) * Random.Range(0.85f, 1f);
+            float damage = (offensiveStat * (float)action.power) * (100f/(100f + defensiveStat)) * Random.Range(0.85f, 1f);
             return Mathf.FloorToInt(damage);
         }
 

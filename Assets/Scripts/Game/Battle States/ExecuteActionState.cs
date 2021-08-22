@@ -16,10 +16,11 @@ public class ExecuteActionState : BattleState
     public override void OnEnter()
     {
         base.OnEnter();
+        battleCalculations = new BattleCalculations();
         
         turnData = battleManager.turnData;
 
-        onCameraZoomIn.Raise(turnData.targetedTile.gameObject);
+        // onCameraZoomIn.Raise(turnData.targetedTile.gameObject);
         ExecuteAction();
     }
 
@@ -43,9 +44,7 @@ public class ExecuteActionState : BattleState
         Debug.Log(turnData.combatant.battleStats.characterName + " used " + turnData.action.actionName);
         if(turnData.targetedTile != null && turnData.targetedTile != turnData.combatant.tile)
         {
-            Vector3 directionTemp = (turnData.targetedTile.transform.position - turnData.combatant.transform.position).normalized;
-            turnData.combatant.animator.SetFloat("Look X", Mathf.Round(directionTemp.x));
-            turnData.combatant.animator.SetFloat("Look Y", Mathf.Round(directionTemp.y));
+            turnData.combatant.FaceTarget(turnData.targetedTile.transform);
         }
         TriggerAnimation();
     }
@@ -79,9 +78,10 @@ public class ExecuteActionState : BattleState
 
     public IEnumerator TriggerActionEffectsCo()
     {
+        Debug.Log(turnData.targets.Count);
         foreach(Combatant target in turnData.targets)
         {
-            bool didHit = battleCalculations.HitCheck(turnData.combatant, turnData.action, target);
+            bool didHit = battleCalculations.HitCheck(turnData.action.accuracy, turnData.combatant.GetStatValue(StatType.Skill), target.GetStatValue(StatType.Agility));
             if(didHit)
             {
                 Debug.Log(target.battleStats.characterName + " was hit!");

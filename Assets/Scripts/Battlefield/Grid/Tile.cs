@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 public enum Targetability
 {
-    Neutral,
+    Default,
     Targetable,
     Untargetable
 }
@@ -16,7 +16,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     public int x;
     public int y;
     public GameObject occupier;
-    private Targetability targetability = Targetability.Neutral;
+    private Targetability targetability = Targetability.Default;
     [Header("Display")]
     [SerializeField] private Image tileImage;
     [SerializeField] private Button tileButton;
@@ -45,21 +45,34 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
         tileButton.enabled = true;
     }
 
-    public void ToggleAOE(bool isDisplayed)
+    public void DisplayAOE(bool targetFriendly, bool targetHostile)
     {
-        aoeImage.enabled = isDisplayed;
+        aoeImage.enabled = true;
         if(occupier)
         {
-            if(isDisplayed)
+            Combatant combatant = occupier.GetComponent<Combatant>();
+            if(combatant)
             {
-                Combatant combatant = occupier.GetComponent<Combatant>();
-                combatant.Select();
+                if(combatant is AllyCombatant && targetFriendly)
+                {
+                    combatant.Select();
+                }
+                if(combatant is EnemyCombatant && targetHostile)
+                {
+                    combatant.Select();
+                }
             }
-            else 
-            {
-                Combatant combatant = occupier.GetComponent<Combatant>();
-                combatant.ClearSpriteMask();
-            }
+        }
+    }
+
+    public void ClearAOE()
+    {
+        aoeImage.enabled = false;
+        if(occupier)
+        {
+            Combatant combatant = occupier.GetComponent<Combatant>();
+            if(combatant)
+                combatant.Deselect();
         }
     }
 
@@ -73,21 +86,20 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
                 targetability = newStatus;
                 switch((int)targetability) 
                 {
-                    //neutral
+                    //default
                     case 0:
-
                         tileButton.enabled = false;
-                        occupier.GetComponent<Combatant>().ClearSpriteMask();
+                        combatant.ClearSpriteMask();
                         break;
                     //targetable
                     case 1:
                         tileButton.enabled = true;
-                        occupier.GetComponent<Combatant>().ClearSpriteMask();
+                        combatant.ClearSpriteMask();
                         break;
                     //untargetable
                     case 2:
                         tileButton.enabled = false;
-                        occupier.GetComponent<Combatant>().GrayOut();
+                        combatant.GrayOut();
                         break;
                 }
             }
@@ -101,7 +113,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
         tileButton.enabled = false;
         aoeImage.enabled = false;
         selectedImage.enabled = false;
-        ChangeTargetability(Targetability.Neutral);
+        // ChangeTargetability(Targetability.Default);
     }
 
     public void Select()
@@ -114,10 +126,11 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     {
         onTileSelect.Raise(this.gameObject);
         selectedImage.enabled = true;
-        if(occupier)
+        if(occupier && targetability == Targetability.Targetable)
         {
             Combatant combatant = occupier.GetComponent<Combatant>();
-            combatant.Select();
+            if(combatant)
+                combatant.Select();
         }
     }
 
@@ -133,7 +146,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
         if(occupier)
         {
             Combatant combatant = occupier.GetComponent<Combatant>();
-            combatant.ClearSpriteMask();
+            combatant.Deselect();
         }
     }
 

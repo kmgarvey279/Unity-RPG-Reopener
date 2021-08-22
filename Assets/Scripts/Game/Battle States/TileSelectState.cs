@@ -30,7 +30,15 @@ public class TileSelectState : BattleState
     {
         if(Input.GetButtonDown("Select"))
         {
-            OnConfirmTile();
+             if(turnData.targets.Count > 0) 
+            {
+                turnData.targetedTile = selectedTile;
+                stateMachine.ChangeState((int)BattleStateType.Execute); 
+            }
+            else 
+            {
+                Debug.Log("No target selected");
+            }
         }
         if(Input.GetButtonDown("Cancel"))
         {
@@ -55,13 +63,20 @@ public class TileSelectState : BattleState
     public void OnSelectTile(GameObject tileObject)
     {     
         selectedTile = tileObject.GetComponent<Tile>();        
-        gridManager.DisplayAOE(selectedTile, turnData.action.aoe);
+        gridManager.DisplayAOE(selectedTile, turnData.action.aoe, turnData.action.targetFriendly, turnData.action.targetHostile);
     }
 
     public void OnConfirmTile()
-    {                 
-        turnData.targets.AddRange(gridManager.GetTargetsInAOE());
-        turnData.targetedTile = selectedTile;
-        stateMachine.ChangeState((int)BattleStateType.Execute);
+    {                
+        // if(turnData.targets.Count > 0) 
+        // {
+        //     turnData.targetedTile = selectedTile;
+        //     stateMachine.ChangeState((int)BattleStateType.Execute); 
+        // }
+        // else 
+        // {
+        //     Debug.Log("No target selected");
+        // }
+
     }
 }

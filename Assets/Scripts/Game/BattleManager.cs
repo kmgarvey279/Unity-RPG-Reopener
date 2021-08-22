@@ -4,6 +4,7 @@ using System;
 using UnityEngine;
 using System.Linq;
 using StateMachineNamespace;
+using BattleCalculationsNamespace;
 
 //stores information related to combatant's place in turn queue
 [System.Serializable]
@@ -105,6 +106,7 @@ public class TurnData
 
 public class BattleManager : MonoBehaviour
 {
+    private BattleCalculations battleCalculations;
     [Header("Game Data Scriptable Object")]
     [SerializeField] private GameData gameData;
     
@@ -125,6 +127,7 @@ public class BattleManager : MonoBehaviour
 
     public void Start()
     {
+        battleCalculations = new BattleCalculations();
         //generate turn forecast & display it
         foreach(Combatant combatant in allyParty.combatants)
         {
@@ -200,7 +203,7 @@ public class BattleManager : MonoBehaviour
         turnForecast = turnForecast.OrderBy(o=>o.turnCounter).ToList();
         battleTimeline.UpdateTurnPanels(turnForecast);
     }
-
+    //set action to be executed in execution phase
     public void SetAction(Action action)
     {
         turnData.action = action;
@@ -208,12 +211,13 @@ public class BattleManager : MonoBehaviour
         currentTurnSlot.SetActionCost(action.timeCost);
         UpdateTurnOrder();
     }
-
-    public void ConfirmAction()
+    //set tile and combatants to be targeted in execution phase
+    public void SetTargets(Tile selectedTile, List<Combatant> selectedTargets)
     {
-
+        turnData.targets = selectedTargets;
+        turnData.targetedTile = selectedTile;
     }
-
+    //cancel selected action and movement
     public void CancelAction()
     {
         turnData.action = null;
@@ -240,21 +244,25 @@ public class BattleManager : MonoBehaviour
 
     public void OnTargetSelect(GameObject gameObject)
     {
-        Combatant combatant = gameObject.GetComponent<Combatant>();
-        TurnSlot selectedTurnSlot = turnForecast.FirstOrDefault(turnSlot => turnSlot.combatant == combatant);
+        //find target in turn forecast
+        Combatant target = gameObject.GetComponent<Combatant>();
+        TurnSlot selectedTurnSlot = turnForecast.FirstOrDefault(turnSlot => turnSlot.combatant == target);
+        //get accuracy
         if(selectedTurnSlot != null)
         {
-            battleTimeline.ToggleTargeted(selectedTurnSlot, true);
+            int accuracy = battleCalculations.GetHitChance(turnData.action.accuracy, turnData.combatant.GetStatValue(StatType.Skill), target.GetStatValue(StatType.Agility));
+            battleTimeline.DisplayAccuracyPreview(selectedTurnSlot, accuracy);
         }
     }
 
     public void OnTargetDeselect(GameObject gameObject)
     {
-        Combatant combatant = gameObject.GetComponent<Combatant>();
-        TurnSlot selectedTurnSlot = turnForecast.FirstOrDefault(turnSlot => turnSlot.combatant == combatant);
+        Debug.Log("Deselect");
+        Combatant target = gameObject.GetComponent<Combatant>();
+        TurnSlot selectedTurnSlot = turnForecast.FirstOrDefault(turnSlot => turnSlot.combatant == target);
         if(selectedTurnSlot != null)
-        {
-            battleTimeline.ToggleTargeted(selectedTurnSlot, false);
+        { 
+            battleTimeline.ClearAccuracyPreview(selectedTurnSlot);
         }
     }
 }

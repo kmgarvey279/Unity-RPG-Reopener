@@ -20,7 +20,7 @@ public class TurnPanel : MonoBehaviour
     [SerializeField] private Color highlightColor;
     [Header("Info")]
     [SerializeField] private GameObject targetedIcon;
-    [SerializeField] private GameObject nextIcon;
+    [SerializeField] private TextMeshProUGUI accuracyText;
     [Header("Animations/Movement")]
     private Animator animator;
     [SerializeField] float moveTime;
@@ -64,15 +64,17 @@ public class TurnPanel : MonoBehaviour
         }
     }
 
-    public void ToggleNextIcon(bool isNext)
+    public void DisplayAccuracyPreview(int accuracy)
     {
-        nextIcon.SetActive(isNext);
+        animator.SetBool("Targeted", true);
+        targetedIcon.SetActive(true);
+        accuracyText.text = accuracy.ToString() + "%";
     }
 
-    public void ToggleTargetedAnimation(bool isTargeted)
+    public void ClearAccuracyPreview()
     {
-        animator.SetBool("Targeted", isTargeted);
-        targetedIcon.SetActive(isTargeted);
+        animator.SetBool("Targeted", false);
+        targetedIcon.SetActive(false);;
     }
 
     public void Highlight()

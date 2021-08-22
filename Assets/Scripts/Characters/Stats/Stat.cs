@@ -10,6 +10,7 @@ public enum StatType
     Defense,
     Special,
     Agility,
+    Skill,
     MoveRange
 }
 

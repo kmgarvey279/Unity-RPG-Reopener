@@ -12,15 +12,27 @@ public class TargetSelectState : BattleState
     private TurnData turnData;
     //standard atttack options
     [SerializeField] private AttackButtons attackButtons;
-    private Action attack1;
-    private bool attack1Usable = false;
-    private Action attack2;
-    private bool attack2Usable = false;
-    //targets
+    //attack data
+    public class AttackOptions
+    {
+        public Action selectedAttack;
+        public Action attack1;
+        public Action attack2;
+        public bool canSwitch = false;
+
+        public AttackOptions(Action attack1, Action attack2)
+        {
+            this.attack1 = attack1;
+            this.attack2 = attack2;
+        }
+    }
+    public AttackOptions attackOptions;
+    //possible targets
+    private List<Tile> occupiedTiles = new List<Tile>();
     private List<Tile> targetableTiles = new List<Tile>();
-    private List<Tile> targetableTilesMeleeRange = new List<Tile>();
-    //selected tile
+    //temp action data
     private Tile selectedTile;
+    [SerializeField] private List<Combatant> selectedTargets;
     [Header("Events (Signals)")]
     [SerializeField] private SignalSenderGO onCameraZoomIn;
 
@@ -28,17 +40,17 @@ public class TargetSelectState : BattleState
     {
         base.OnEnter();
         turnData = battleManager.turnData;
-
+        //temp target data
+        selectedTargets = new List<Combatant>();
+        selectedTile = null;
+        //check max range
         int maxRange;
-        //display attack options if "attack" command was selected
         if(turnData.action.actionType == ActionType.Attack)
         {
             attackButtons.gameObject.SetActive(true);
+            attackOptions = new AttackOptions(turnData.combatant.battleStats.attack1, turnData.combatant.battleStats.attack2);
 
-            attack1 = turnData.combatant.battleStats.attack1;
-            attack2 = turnData.combatant.battleStats.attack2;
-
-            maxRange = Mathf.Max(attack1.range, attack2.range);
+            maxRange = Mathf.Max(attackOptions.attack1.range, attackOptions.attack2.range);
         }
         else
         {
@@ -50,23 +62,28 @@ public class TargetSelectState : BattleState
 
     private void SetTargetableCombatants(int maxRange)
     {
-        //go though each allied/hostile combatant, grab their associated tile, and set as targetable or not targetable
+        //go though each combatant...
         foreach(Combatant combatant in battleManager.allyParty.combatants)
         {
+            //get tile they are on & add to list
             Tile tile = combatant.tile;
+            occupiedTiles.Add(tile);
+            //make targetable/untargetable
             if(turnData.action.targetFriendly && maxRange >= gridManager.GetMoveCost(turnData.combatant.tile, tile))
             {
                 tile.ChangeTargetability(Targetability.Targetable);
                 targetableTiles.Add(combatant.tile);
             }
-            else
+            else if(combatant != turnData.combatant)
             {
                 tile.ChangeTargetability(Targetability.Untargetable);
             }
         }
+        //repeat for enemies
         foreach(Combatant combatant in battleManager.enemyParty.combatants)
         {
             Tile tile = combatant.tile;
+            occupiedTiles.Add(tile);
             if(turnData.action.targetHostile && maxRange >= gridManager.GetMoveCost(turnData.combatant.tile, tile))
             {
                 tile.ChangeTargetability(Targetability.Targetable);
@@ -77,10 +94,17 @@ public class TargetSelectState : BattleState
                 tile.ChangeTargetability(Targetability.Untargetable);
             }
         }
+        //if targets are available
         if(targetableTiles.Count > 0)
         {
+            //find the nearest one
             Tile nearestTargetableTile = GetNearestTargetableTile();
-
+            //face it
+            if(nearestTargetableTile != turnData.combatant.tile)
+            {
+                turnData.combatant.FaceTarget(nearestTargetableTile.transform);
+            }
+            //select it
             EventSystem.current.SetSelectedGameObject(null);
             EventSystem.current.SetSelectedGameObject(nearestTargetableTile.gameObject);
         }
@@ -108,22 +132,30 @@ public class TargetSelectState : BattleState
     {
         if(Input.GetButtonDown("Select"))
         {
-            if(selectedTile == null)
+            if(turnData.action.actionType == ActionType.Attack && attackOptions.selectedAttack != null)
             {
-                Debug.Log("No target!");
+                battleManager.SetAction(attackOptions.selectedAttack);
             }
-            else
+            battleManager.SetTargets(selectedTile, selectedTargets);
+            stateMachine.ChangeState((int)BattleStateType.Execute);
+        }     
+        else if(Input.GetButtonDown("Switch"))
+        {
+            if(turnData.action.actionType == ActionType.Attack && attackOptions.canSwitch)
             {
-                if(selectedTile.occupier)
-                    turnData.targets.Add(selectedTile.occupier.GetComponent<Combatant>());
-                
-                turnData.targetedTile = selectedTile;
-                stateMachine.ChangeState((int)BattleStateType.Execute);
+                if(attackOptions.selectedAttack == attackOptions.attack1)
+                {
+                    attackOptions.selectedAttack = attackOptions.attack2;
+                }
+                else 
+                {
+                    attackOptions.selectedAttack = attackOptions.attack1;
+                }
             }
         }
-        else if(Input.GetButtonDown("Cancel"))
+        else if(Input.GetButtonDown("Cancel"))                
         {
-            battleManager.turnData.action = null;
+            battleManager.CancelAction();
             stateMachine.ChangeState((int)BattleStateType.Menu);
         }
  
@@ -138,43 +170,75 @@ public class TargetSelectState : BattleState
     {
         base.OnExit();
 
-        //clear tiles
-        selectedTile = null;
-        gridManager.HideTiles();
         //clear list of targetable tiles
+        foreach (Tile tile in occupiedTiles)
+        {
+            tile.ChangeTargetability(Targetability.Default);
+        }
+        occupiedTiles.Clear();
         targetableTiles.Clear();
-        //hide attack display
+        
+        //clear attack data
         if(attackButtons.gameObject.activeInHierarchy)
             attackButtons.gameObject.SetActive(false);
-        attack1 = null;
-        attack1Usable = false;
-        attack2 = null;
-        attack2Usable = false;
+        attackOptions = null;
     }
 
     public void OnSelectTile(GameObject tileObject)
-    {     
-        Debug.Log("Test");
-        selectedTile = tileObject.GetComponent<Tile>();     
+    {   
+        //clear previous target  
+        if(selectedTargets.Count > 0)
+            selectedTargets.Clear();
+        //get new target
+        selectedTile = tileObject.GetComponent<Tile>();   
+        selectedTargets.Add(selectedTile.occupier.GetComponent<Combatant>()); 
+        //set attack options
         if(turnData.action.actionType == ActionType.Attack)
         {
-            if(attack1 && attack1.range >= gridManager.GetMoveCost(turnData.combatant.tile, selectedTile))
-            {
-                attack1Usable = true;
-            }
-            else
-            {
-                attack1Usable = false;
-            }
-            if(attack2 && attack2.range >= gridManager.GetMoveCost(turnData.combatant.tile, selectedTile))
-            {
-                attack2Usable = true;
-            }
-            else
-            {
-                attack2Usable = false;
-            }
-            attackButtons.UpdateButtons(attack1Usable, attack2Usable);
+            SetAttacks();  
+        //     battleManager.DisplayActionPreview(attackOptions.selectedAttack, selectedTargets);
         }   
+        // else
+        // {
+        //     battleManager.DisplayActionPreview(turnData.action, selectedTargets);
+        // }
+    }
+
+    public void OnConfirmTile()
+    {                 
+        // turnData.targetedTile = selectedTile;
+        // stateMachine.ChangeState((int)BattleStateType.Execute);
+    }
+
+    private void SetAttacks()
+    {
+        bool attack1Usable = false;
+        bool attack2Usable = false;
+
+        //check if either attack type can be used
+        if(attackOptions.attack1 && attackOptions.attack1.range >= gridManager.GetMoveCost(turnData.combatant.tile, selectedTile))
+        {
+            attack1Usable = true;
+        }
+        if(attackOptions.attack2 && attackOptions.attack2.range >= gridManager.GetMoveCost(turnData.combatant.tile, selectedTile))
+        {
+            attack2Usable = true;
+        }
+        //update buttons to reflect available attacks
+        attackButtons.UpdateButtons(attack1Usable, attack2Usable);
+        //set current attack
+        if(attack1Usable)
+        {
+            attackOptions.selectedAttack = attackOptions.attack1;
+        } 
+        else if(attack2Usable)
+        {
+            attackOptions.selectedAttack = attackOptions.attack2;
+        }
+        //allow for attacks to be switched when both are available
+        if(attack1Usable && attack2Usable)
+        {
+            attackOptions.canSwitch = true;
+        }
     }
 }

@@ -23,12 +23,13 @@ public class Action : ScriptableObject
     public int mpCost;
     public int timeCost;
     [Header("Properties")]
-    public float power;
+    public int power;
     public int accuracy;
     public int range;
     public int aoe;
     public AttackProperty attackProperty1;
     public AttackProperty attackProperty2;
+    public bool isSpecial;
     [Header("Effects")]
     public List<ActionEffect> effects = new List<ActionEffect>();
     [Header("Targeting")]

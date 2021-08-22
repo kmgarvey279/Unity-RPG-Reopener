@@ -48,16 +48,20 @@ public class Combatant : MonoBehaviour
     public MaskController maskController;
     [Header("Events")]
     public SignalSender onMoveComplete;
+    public SignalSenderGO onTargetSelect;
+    public SignalSenderGO onTargetDeselect;
     [Header("Grid")]
     public Tile tile;
     public List<Tile> path = new List<Tile>();
+    [Header("Coroutine Timers")]
+    public float recoveryTime = 1f;
+    public float koTime = 1f;
 
     public virtual void Awake()
     {
         battleStats = new BattleStats(characterInfo);
 
         rigidbody = GetComponent<Rigidbody2D>();
-        animator = GetComponentInChildren<Animator>();
 
         healthDisplay = GetComponentInChildren<HealthDisplay>();
         maskController = GetComponentInChildren<MaskController>();
@@ -99,6 +103,13 @@ public class Combatant : MonoBehaviour
         animator.SetBool("Moving", true);
     }
 
+    public void FaceTarget(Transform target)
+    {
+        Vector3 direction = (target.position - transform.position).normalized;
+        animator.SetFloat("Look X", direction.x);
+        animator.SetFloat("Look Y", direction.y);
+    }
+
     private void Update()
     {
         float speed = 4f;
@@ -129,19 +140,50 @@ public class Combatant : MonoBehaviour
 
     public void TakeDamage(float rawDamage)
     {
+        //switch to damage animation
+        animator.SetBool("Hurt", true);
+        //get final damage amount
         int finalDamage = Mathf.RoundToInt((rawDamage - (float)battleStats.statDict[StatType.Defense].GetValue()) * Random.Range(0.85f, 1f));
+        finalDamage = Mathf.Clamp(finalDamage, 1, 9999);
+        //update health
         battleStats.health.ChangeCurrentValue(-finalDamage);
+        //display damage + new health
         healthDisplay.HandleHealthChange(DamagePopupType.Damage, finalDamage);
-        
+        //ko target if hp <= 0
         if(battleStats.health.GetCurrentValue() <= 0)
         {
-            Debug.Log("Dead");
+            StartCoroutine(KO());
         }
+        else 
+        {
+            StartCoroutine(Recover());
+        }
+    }
+
+    private IEnumerator Recover()
+    {
+        yield return new WaitForSeconds(recoveryTime);
+        animator.SetBool("Hurt", false);
+    }
+
+    private IEnumerator KO()
+    {
+        yield return new WaitForSeconds(koTime);
+        Debug.Log("Dead");
     }
 
     public void Select()
     {
         maskController.TriggerSelected();
+        onTargetSelect.Raise(this.gameObject);
+        healthDisplay.ToggleBarVisibility(true);
+    }
+
+    public void Deselect()
+    {
+        maskController.EndAnimation();
+        onTargetDeselect.Raise(this.gameObject);
+        healthDisplay.ToggleBarVisibility(false);
     }
 
     public void GrayOut()
