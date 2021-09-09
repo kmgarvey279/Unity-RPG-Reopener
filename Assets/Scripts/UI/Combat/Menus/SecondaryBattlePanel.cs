@@ -17,7 +17,7 @@ public class SecondaryBattlePanel : MonoBehaviour
 
     public void DisplaySkills(Combatant combatant)
     {
-        List<Action> skills = combatant.battleStats.skills;
+        List<Action> skills = combatant.skills;
         display.SetActive(true);
         for (int i = 0; i < skills.Count; i++)
         {

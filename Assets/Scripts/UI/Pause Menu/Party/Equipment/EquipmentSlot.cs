@@ -21,7 +21,7 @@ public class EquipmentSlot : MonoBehaviour
     private void Start()
     {
         playableCharacterInfo = GetComponentInParent<CharacterInfoUI>().playableCharacterInfo;
-        AssignSlot(playableCharacterInfo.equipmentDict[equipmentType]);
+        AssignSlot(playableCharacterInfo.equipment[equipmentType]);
     }
 
     //assign equipment SO to this slot

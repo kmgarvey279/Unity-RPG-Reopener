@@ -16,14 +16,14 @@ public class TargetSelectState : BattleState
     public class AttackOptions
     {
         public Action selectedAttack;
-        public Action attack1;
-        public Action attack2;
+        public Action meleeAttack;
+        public Action rangedAttack;
         public bool canSwitch = false;
 
-        public AttackOptions(Action attack1, Action attack2)
+        public AttackOptions(Action meleeAttack, Action rangedAttack)
         {
-            this.attack1 = attack1;
-            this.attack2 = attack2;
+            this.meleeAttack = meleeAttack;
+            this.rangedAttack = rangedAttack;
         }
     }
     public AttackOptions attackOptions;
@@ -48,9 +48,9 @@ public class TargetSelectState : BattleState
         if(turnData.action.actionType == ActionType.Attack)
         {
             attackButtons.gameObject.SetActive(true);
-            attackOptions = new AttackOptions(turnData.combatant.battleStats.attack1, turnData.combatant.battleStats.attack2);
+            attackOptions = new AttackOptions(turnData.combatant.meleeAttack, turnData.combatant.rangedAttack);
 
-            maxRange = Mathf.Max(attackOptions.attack1.range, attackOptions.attack2.range);
+            maxRange = Mathf.Max(attackOptions.meleeAttack.range, attackOptions.rangedAttack.range);
         }
         else
         {
@@ -143,13 +143,13 @@ public class TargetSelectState : BattleState
         {
             if(turnData.action.actionType == ActionType.Attack && attackOptions.canSwitch)
             {
-                if(attackOptions.selectedAttack == attackOptions.attack1)
+                if(attackOptions.selectedAttack == attackOptions.meleeAttack)
                 {
-                    attackOptions.selectedAttack = attackOptions.attack2;
+                    attackOptions.selectedAttack = attackOptions.rangedAttack;
                 }
                 else 
                 {
-                    attackOptions.selectedAttack = attackOptions.attack1;
+                    attackOptions.selectedAttack = attackOptions.meleeAttack;
                 }
             }
         }
@@ -191,7 +191,7 @@ public class TargetSelectState : BattleState
             selectedTargets.Clear();
         //get new target
         selectedTile = tileObject.GetComponent<Tile>();   
-        selectedTargets.Add(selectedTile.occupier.GetComponent<Combatant>()); 
+        selectedTargets.Add(selectedTile.occupier); 
         //set attack options
         if(turnData.action.actionType == ActionType.Attack)
         {
@@ -212,31 +212,31 @@ public class TargetSelectState : BattleState
 
     private void SetAttacks()
     {
-        bool attack1Usable = false;
-        bool attack2Usable = false;
+        bool meleeAttackUsable = false;
+        bool rangedAttackUsable = false;
 
         //check if either attack type can be used
-        if(attackOptions.attack1 && attackOptions.attack1.range >= gridManager.GetMoveCost(turnData.combatant.tile, selectedTile))
+        if(attackOptions.meleeAttack && attackOptions.meleeAttack.range >= gridManager.GetMoveCost(turnData.combatant.tile, selectedTile))
         {
-            attack1Usable = true;
+            meleeAttackUsable = true;
         }
-        if(attackOptions.attack2 && attackOptions.attack2.range >= gridManager.GetMoveCost(turnData.combatant.tile, selectedTile))
+        if(attackOptions.rangedAttack && attackOptions.rangedAttack.range >= gridManager.GetMoveCost(turnData.combatant.tile, selectedTile))
         {
-            attack2Usable = true;
+            rangedAttackUsable = true;
         }
         //update buttons to reflect available attacks
-        attackButtons.UpdateButtons(attack1Usable, attack2Usable);
+        attackButtons.UpdateButtons(meleeAttackUsable, rangedAttackUsable);
         //set current attack
-        if(attack1Usable)
+        if(meleeAttackUsable)
         {
-            attackOptions.selectedAttack = attackOptions.attack1;
+            attackOptions.selectedAttack = attackOptions.meleeAttack;
         } 
-        else if(attack2Usable)
+        else if(rangedAttackUsable)
         {
-            attackOptions.selectedAttack = attackOptions.attack2;
+            attackOptions.selectedAttack = attackOptions.rangedAttack;
         }
         //allow for attacks to be switched when both are available
-        if(attack1Usable && attack2Usable)
+        if(meleeAttackUsable && rangedAttackUsable)
         {
             attackOptions.canSwitch = true;
         }

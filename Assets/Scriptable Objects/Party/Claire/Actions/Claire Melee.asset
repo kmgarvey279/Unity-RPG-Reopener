@@ -16,14 +16,20 @@ MonoBehaviour:
   actionName: Melee Attack
   descripton: 
   actionType: 0
+  timeCost: 3
   mpCost: 0
-  timeCost: 0
+  cooldown: 0
   power: 1
   accuracy: 95
   range: 1
   aoe: 0
-  attackProperty1: 2
-  attackProperty2: 0
+  attackProperty: 0
+  elementalProperty: 0
+  isMelee: 0
+  isGun: 0
+  isSpecial: 0
+  guaranteedHit: 0
+  distancePenalty: 0
   effects:
   - {fileID: 11400000, guid: 7b5ff438e848e54438d2d76005586efe, type: 2}
   targetFriendly: 0
@@ -32,4 +38,4 @@ MonoBehaviour:
   useGraphicPrefab: {fileID: 0}
   effectGraphicPrefab: {fileID: 173376264066434547, guid: c1c96842e9fb8f748bb5fafd959e002b,
     type: 3}
-  animatorTrigger: Melee Attack
+  animatorTrigger: Melee

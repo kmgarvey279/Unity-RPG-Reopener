@@ -14,7 +14,7 @@ public class GridManager : MonoBehaviour
     private float tileSize = 1f;
     
     [Header("Array of tiles")]
-    private GameObject[,] tileArray;
+    public GameObject[,] tileArray;
 
     [Header("Currently Displayed Tiles")]
     private List<Tile> displayedTiles = new List<Tile>();
@@ -30,19 +30,6 @@ public class GridManager : MonoBehaviour
         tilemap = GetComponentInChildren<Tilemap>();
         tileArray = new GameObject[xCount, yCount];
         GenerateGrid(); 
-    }
-
-    public List<Combatant> GetTargetsInAOE()
-    {
-        List<Combatant> targets = new List<Combatant>();
-        foreach(Tile tile in aoeTiles)
-        {
-            if(tile.occupier != null && tile.occupier.CompareTag("Combatant"))
-            {
-                targets.Add(tile.occupier.GetComponent<Combatant>());
-            }
-        }
-        return targets;
     }
 
     void GenerateGrid()
@@ -71,7 +58,62 @@ public class GridManager : MonoBehaviour
 
     public void DisplayTilesInRange(Tile start, int range, bool isMoveRange = false)
     {
+        List<Tile> tilesInRange = GetTilesInRange(start, range, isMoveRange);
+        foreach (Tile tile in tilesInRange)
+        {
+            if(isMoveRange)
+            {
+                tile.Display(GetMoveCost(tile, start));
+            }
+            else 
+            {
+                tile.Display();
+            }   
+        }
+        displayedTiles = tilesInRange;
+        start.Select();
+    }
+
+    public void DisplayAOE(Tile start, int range, bool targetPlayer, bool targetEnemy)
+    {
+        if(aoeTiles.Count > 0)
+        {
+            ClearAOE();
+        }
+
+        List<Tile> tilesInRange = GetTilesInRange(start, range, false);
+        foreach (Tile tile in tilesInRange)
+        {
+            tile.DisplayAOE(targetPlayer, targetEnemy); 
+        }
+        aoeTiles = tilesInRange;
+        start.Select();
+    }
+
+    public List<Combatant> GetTargetsInRange(Tile start, int range, bool targetPlayer, bool targetEnemy)
+    {
+        List<Combatant> targets = new List<Combatant>();
+        List<Tile> tilesInRange = GetTilesInRange(start, range, false);
+        foreach(Tile tile in tilesInRange)
+        {
+            if(tile.occupier != null)
+            {
+                Debug.Log("found a target");
+                if(tile.occupier is AllyCombatant && targetPlayer || tile.occupier is EnemyCombatant && targetEnemy)
+                {
+                    Debug.Log("adding target");
+                    targets.Add(tile.occupier);
+                }
+            }
+        }
+        return targets;
+    }
+
+    public List<Tile> GetTilesInRange(Tile start, int range, bool isMoveRange = false)
+    {
+        //endless loop safeguard
         int loops = 0;
+        //
         List<Tile> checkedTiles = new List<Tile>();
         List<Tile> uncheckedTiles = new List<Tile>();
         
@@ -83,6 +125,7 @@ public class GridManager : MonoBehaviour
             
             if(isMoveRange && (tile.occupier == null || tile == start) || !isMoveRange)
             {
+                checkedTiles.Add(tile);
                 List<Tile> adjacentTiles =  GetAdjacentTiles(tile, false);
                 if(adjacentTiles.Count > 0)  
                 {
@@ -98,68 +141,18 @@ public class GridManager : MonoBehaviour
                 if(isMoveRange)
                 {   
                     int moveCost = Mathf.Abs(tile.x - start.x) + Mathf.Abs(tile.y - start.y);
-                    tile.Display(moveCost);
-                }
-                else
-                {
-                    tile.Display();
                 }
             }
-            
             uncheckedTiles.Remove(tile);
-            checkedTiles.Add(tile);
-
+            //endless loop safeguard
             loops++;
             if(loops > 200)
             {
-                return;
+                break;
             }
+            //
         }
-        displayedTiles = checkedTiles;
-
-        start.Select();
-    }
-
-    public void DisplayAOE(Tile start, int range, bool targetFriendly, bool targetHostile)
-    {
-        if(aoeTiles.Count > 0)
-        {
-            ClearAOE();
-        }
-
-        int loops = 0;
-        List<Tile> checkedTiles = new List<Tile>();
-        List<Tile> uncheckedTiles = new List<Tile>();
-        uncheckedTiles.Add(tileArray[start.x, start.y].GetComponent<Tile>());
-
-        while(uncheckedTiles.Count > 0)
-        {
-            Tile tile = uncheckedTiles[0];
-            
-            List<Tile> adjacentTiles =  GetAdjacentTiles(tile, false);
-            if(adjacentTiles.Count > 0)  
-            {
-                foreach (Tile adjacentTile in adjacentTiles)
-                {
-                    int moveCost = Mathf.Abs(adjacentTile.x - start.x) + Mathf.Abs(adjacentTile.y - start.y); 
-                    if(!checkedTiles.Contains(adjacentTile) && !uncheckedTiles.Contains(adjacentTile) && moveCost <= range)
-                    {
-                        uncheckedTiles.Add(adjacentTile);
-                    }    
-                } 
-            }
-            tile.DisplayAOE(targetFriendly, targetHostile);
-            
-            uncheckedTiles.Remove(tile);
-            checkedTiles.Add(tile);
-
-            loops++;
-            if(loops > 200)
-            {
-                return;
-            }
-        }
-        aoeTiles = checkedTiles;
+        return checkedTiles;
     }
 
     public void HideTiles()
@@ -184,13 +177,13 @@ public class GridManager : MonoBehaviour
         aoeTiles.Clear();
     }
 
-    public Tile GetClosestTileInRange(Tile start, Tile end, int moveRange)
+    public Tile GetClosestTileInRange(Tile start, Tile end, int range)
     {
         List<Tile> path = GetPath(end, start);
         path.Remove(end);
         for(int i = 0; i < path.Count; i++)
         {
-            if(GetMoveCost(path[i], start) <= moveRange)
+            if(GetMoveCost(path[i], start) <= range)
             {
                 return path[i];
             }

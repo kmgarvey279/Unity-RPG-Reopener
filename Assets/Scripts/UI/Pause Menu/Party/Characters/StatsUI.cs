@@ -8,8 +8,8 @@ public class StatsUI : MonoBehaviour
 
     private void Start()
     {
-        equipmentComparison.Add(StatType.Health, 0);
-        equipmentComparison.Add(StatType.Mana, 0);
+        equipmentComparison.Add(StatType.HP, 0);
+        equipmentComparison.Add(StatType.MP, 0);
         equipmentComparison.Add(StatType.Attack, 0);
         equipmentComparison.Add(StatType.Defense, 0);
         equipmentComparison.Add(StatType.Special, 0);

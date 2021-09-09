@@ -60,9 +60,14 @@ public class BattleTimeline : MonoBehaviour
     {
     }
 
-    public void ChangeCurrentTurn(TurnSlot currentTurnSlot)
+    public void ChangeCurrentTurn(TurnSlot newCurrentSlot)
     {
-        currentTurnPanel.AssignTurnSlot(currentTurnSlot);
+        currentTurnPanel.AssignTurnSlot(newCurrentSlot);
+    }
+
+    public void ToggleNextTurnIndicator(TurnSlot turnSlot, bool isNextTurn)
+    {
+        turnPanels[turnSlot].ToggleNextTurnIndicator(isNextTurn);
     }
 
     public void DisplayAccuracyPreview(TurnSlot turnSlot, int accuracy)

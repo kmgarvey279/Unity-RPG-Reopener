@@ -77,7 +77,7 @@ public class EquipmentSelect : MonoBehaviour
     public void OnConfirmEquipmentChange()
     {
         selectedInventorySlot = EventSystem.current.currentSelectedGameObject.GetComponent<InventorySlot>();
-        playableCharacterInfo.ChangeEquipment(selectedEquipmentSlot.equipmentType, (EquipmentObject)selectedInventorySlot.item);
+        playableCharacterInfo.ChangeEquipment((EquipmentObject)selectedInventorySlot.item);
         selectedEquipmentSlot.AssignSlot(selectedInventorySlot.item);
         this.gameObject.SetActive(false);
     }

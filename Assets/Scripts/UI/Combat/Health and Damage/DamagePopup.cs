@@ -5,9 +5,9 @@ using TMPro;
 
 public enum DamagePopupType
 {
-    None,
     Damage,
-    Heal
+    Heal,
+    Miss
 }
 
 public class DamagePopup : MonoBehaviour
@@ -18,6 +18,7 @@ public class DamagePopup : MonoBehaviour
     [Header("Value Displayed")]
     public Color damageColor;
     public Color healColor;
+    public Color missColor;
     private float popupDuration = 1f;
 
     private void Start()
@@ -27,25 +28,28 @@ public class DamagePopup : MonoBehaviour
 
     public void TriggerPopup(DamagePopupType popupType, float amount)
     {
-        SetPopupColor(popupType);
-        popupText.text = amount.ToString("n0");
+        switch((int)popupType)
+        {
+        case 0:
+            popupText.color = damageColor; 
+            popupText.text = amount.ToString("n0");
+            break;
+        case 1:
+            popupText.color = healColor; 
+            popupText.text = amount.ToString("n0");
+            break;
+        case 2:
+            popupText.color = missColor; 
+            popupText.text = "MISS";
+            break;
+        default:
+            break;
+        }
         animator.SetTrigger("Activate");
     }
 
     public void ClearPopup()
     {
         popupText.text = "";
-    }
-
-    private void SetPopupColor(DamagePopupType popupType)
-    {
-        if(popupType == DamagePopupType.Damage)
-        {
-            popupText.color = damageColor;     
-        }
-        else if(popupType == DamagePopupType.Heal)
-        {
-            popupText.color = healColor;
-        }
     }
 }

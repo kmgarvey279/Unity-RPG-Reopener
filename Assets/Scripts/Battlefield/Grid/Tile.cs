@@ -15,7 +15,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
 {
     public int x;
     public int y;
-    public GameObject occupier;
+    public Combatant occupier;
     private Targetability targetability = Targetability.Default;
     [Header("Display")]
     [SerializeField] private Image tileImage;
@@ -45,22 +45,18 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
         tileButton.enabled = true;
     }
 
-    public void DisplayAOE(bool targetFriendly, bool targetHostile)
+    public void DisplayAOE(bool targetPlayer, bool targetEnemy)
     {
         aoeImage.enabled = true;
         if(occupier)
         {
-            Combatant combatant = occupier.GetComponent<Combatant>();
-            if(combatant)
+            if(occupier is AllyCombatant && targetPlayer)
             {
-                if(combatant is AllyCombatant && targetFriendly)
-                {
-                    combatant.Select();
-                }
-                if(combatant is EnemyCombatant && targetHostile)
-                {
-                    combatant.Select();
-                }
+                occupier.Select();
+            }
+            if(occupier is EnemyCombatant && targetEnemy)
+            {
+                occupier.Select();
             }
         }
     }
@@ -70,9 +66,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
         aoeImage.enabled = false;
         if(occupier)
         {
-            Combatant combatant = occupier.GetComponent<Combatant>();
-            if(combatant)
-                combatant.Deselect();
+            occupier.Deselect();
         }
     }
 
@@ -80,28 +74,24 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     {
         if(occupier)
         {
-            Combatant combatant = occupier.GetComponent<Combatant>();
-            if(combatant)
+            targetability = newStatus;
+            switch((int)targetability) 
             {
-                targetability = newStatus;
-                switch((int)targetability) 
-                {
-                    //default
-                    case 0:
-                        tileButton.enabled = false;
-                        combatant.ClearSpriteMask();
-                        break;
-                    //targetable
-                    case 1:
-                        tileButton.enabled = true;
-                        combatant.ClearSpriteMask();
-                        break;
-                    //untargetable
-                    case 2:
-                        tileButton.enabled = false;
-                        combatant.GrayOut();
-                        break;
-                }
+                //default
+                case 0:
+                    tileButton.enabled = false;
+                    occupier.ClearSpriteMask();
+                    break;
+                //targetable
+                case 1:
+                    tileButton.enabled = true;
+                    occupier.ClearSpriteMask();
+                    break;
+                //untargetable
+                case 2:
+                    tileButton.enabled = false;
+                    occupier.GrayOut();
+                    break;
             }
         }
     }
@@ -128,9 +118,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
         selectedImage.enabled = true;
         if(occupier && targetability == Targetability.Targetable)
         {
-            Combatant combatant = occupier.GetComponent<Combatant>();
-            if(combatant)
-                combatant.Select();
+            occupier.Select();
         }
     }
 
@@ -145,8 +133,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
         selectedImage.enabled = false;
         if(occupier)
         {
-            Combatant combatant = occupier.GetComponent<Combatant>();
-            combatant.Deselect();
+            occupier.Deselect();
         }
     }
 
@@ -158,10 +145,11 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        occupier = other.gameObject;
-        if(occupier.CompareTag("Combatant") && other.isTrigger)
+        if(other.gameObject.CompareTag("Combatant") && other.isTrigger)
         {
-            occupier.GetComponent<Combatant>().SetTile(this); 
+            Combatant combatant = other.GetComponent<Combatant>();
+            combatant.SetTile(this); 
+            occupier = combatant;
         }
     }
 

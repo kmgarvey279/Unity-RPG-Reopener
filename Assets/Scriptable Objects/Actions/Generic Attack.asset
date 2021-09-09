@@ -17,13 +17,18 @@ MonoBehaviour:
   descripton: 
   actionType: 0
   mpCost: 0
-  timeCost: 30
+  timeCost: 3
   power: 0
   accuracy: 95
   range: 99
   aoe: 0
   attackProperty1: 0
   attackProperty2: 0
+  isMelee: 0
+  isGun: 0
+  isSpecial: 0
+  guaranteedHit: 0
+  distancePenalty: 1
   effects: []
   targetFriendly: 0
   targetHostile: 1

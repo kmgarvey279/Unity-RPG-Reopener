@@ -8,6 +8,7 @@ using BattleCalculationsNamespace;
 public class ExecuteActionState : BattleState
 {
     private TurnData turnData;
+    [SerializeField] private GridManager gridManager;
     private BattleCalculations battleCalculations;
     
     [Header("Events (Signals)")]
@@ -41,7 +42,7 @@ public class ExecuteActionState : BattleState
 
     public void ExecuteAction()
     {
-        Debug.Log(turnData.combatant.battleStats.characterName + " used " + turnData.action.actionName);
+        Debug.Log(turnData.combatant.characterName + " used " + turnData.action.actionName);
         if(turnData.targetedTile != null && turnData.targetedTile != turnData.combatant.tile)
         {
             turnData.combatant.FaceTarget(turnData.targetedTile.transform);
@@ -78,25 +79,31 @@ public class ExecuteActionState : BattleState
 
     public IEnumerator TriggerActionEffectsCo()
     {
-        Debug.Log(turnData.targets.Count);
-        foreach(Combatant target in turnData.targets)
+        if(turnData.targets.Count > 0)
         {
-            bool didHit = battleCalculations.HitCheck(turnData.action.accuracy, turnData.combatant.GetStatValue(StatType.Skill), target.GetStatValue(StatType.Agility));
-            if(didHit)
+            foreach(Combatant target in turnData.targets)
             {
-                Debug.Log(target.battleStats.characterName + " was hit!");
-                foreach (ActionEffect effect in turnData.action.effects)
+                bool didHit = battleCalculations.HitCheck(turnData.action, turnData.combatant, target, gridManager.GetMoveCost(turnData.combatant.tile, target.tile));
+                if(didHit)
                 {
-                    effect.ApplyEffect(turnData.action, turnData.combatant, target);
-                }  
-            } 
-            else
-            {
-                // target.EvadeAttack();
-                Debug.Log(target.battleStats.characterName + " dodged the attack!");
+                    Debug.Log(target.characterName + " was hit!");
+                    foreach (ActionEffect effect in turnData.action.effects)
+                    {
+                        effect.ApplyEffect(turnData.action, turnData.combatant, target);
+                    }  
+                } 
+                else
+                {
+                    target.EvadeAttack();
+                    Debug.Log(target.characterName + " dodged the attack!");
+                }
             }
+            yield return new WaitForSeconds(1f);
+        } 
+        else
+        {
+            yield return new WaitForSeconds(0.2f);
         }
-        yield return new WaitForSeconds(1f);
         EndAction();
     }
 

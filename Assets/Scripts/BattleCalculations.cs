@@ -7,17 +7,30 @@ namespace BattleCalculationsNamespace
     public class BattleCalculations
     {
         //get accuracy %
-        public int GetHitChance(int actionAccuracy, int attackerAccuracy, int targetEvasion)
+        public int GetHitChance(Action action, Combatant attacker, Combatant target, int distance)
         {
-            return Mathf.Clamp(actionAccuracy + (attackerAccuracy - targetEvasion), 1, 100);
+            if(action.guaranteedHit)
+            {
+                return 100;
+            }
+            int distancePenalty = 0;
+            if(action.distancePenalty)
+            {
+                distancePenalty = Mathf.RoundToInt((float)distance * 2.5f);
+            }
+            return Mathf.Clamp(action.accuracy + attacker.statDict[StatType.Skill].GetValue() - target.statDict[StatType.Agility].GetValue() - distancePenalty, 1, 100);
         }
 
         //roll to check if action hits target
-        public bool HitCheck(int actionAccuracy, int attackerAccuracy, int targetEvasion)
+        public bool HitCheck(Action action, Combatant attacker, Combatant target, int distance)
         {
-            int hitChance = GetHitChance(actionAccuracy, attackerAccuracy, targetEvasion);
+            if(action.guaranteedHit)
+            {
+                return true;
+            }
+            int hitChance = GetHitChance(action, attacker, target, distance);
             int roll = Random.Range(1, 100);
-            if(roll >= hitChance )
+            if(roll <= hitChance )
             {
                 return true;
             }
@@ -32,19 +45,19 @@ namespace BattleCalculationsNamespace
         {
             float offensiveStat = 0;
             float defensiveStat = 0;
-            if(action.isSpecial)
+            if(action.attackProperty == AttackProperty.Magic)
             {
-                offensiveStat = (float)attacker.GetStatValue(StatType.Special);
-                defensiveStat = (float)target.GetStatValue(StatType.Special);
+                offensiveStat = (float)attacker.statDict[StatType.Special].GetValue();
+                defensiveStat = (float)target.statDict[StatType.Special].GetValue();
             }
             else
             {
-                offensiveStat = (float)attacker.GetStatValue(StatType.Attack);
-                defensiveStat = (float)target.GetStatValue(StatType.Defense);
+                offensiveStat = (float)attacker.statDict[StatType.Attack].GetValue();
+                defensiveStat = (float)target.statDict[StatType.Defense].GetValue();
             }
             float crit = CritCheck(); 
 
-            float damage = (offensiveStat * (float)action.power) * (100f/(100f + defensiveStat)) * Random.Range(0.85f, 1f);
+            float damage = Mathf.Clamp((offensiveStat * (float)action.power) * (100f/(100f + defensiveStat)) * Random.Range(0.85f, 1f), 1, 9999);
             return Mathf.FloorToInt(damage);
         }
 

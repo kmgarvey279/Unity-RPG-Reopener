@@ -17,7 +17,7 @@ public class TurnPanel : MonoBehaviour
     [Header("Panel")]
     [SerializeField] private Image panel;
     [SerializeField] private Color defaultColor;
-    [SerializeField] private Color highlightColor;
+    [SerializeField] private Color previewColor;
     [Header("Info")]
     [SerializeField] private GameObject targetedIcon;
     [SerializeField] private TextMeshProUGUI accuracyText;
@@ -44,7 +44,7 @@ public class TurnPanel : MonoBehaviour
     public void AssignTurnSlot(TurnSlot newSlot)
     {
         turnSlot = newSlot;
-        nameText.text = turnSlot.combatant.battleStats.characterName;
+        nameText.text = turnSlot.combatant.characterName;
         sliderBarPositive.SetMaxValue(sliderMax);
         sliderBarNegative.SetMaxValue(sliderMax);
         UpdateSliderValue();
@@ -77,13 +77,15 @@ public class TurnPanel : MonoBehaviour
         targetedIcon.SetActive(false);;
     }
 
-    public void Highlight()
+    public void ToggleNextTurnIndicator(bool isNextTurn)
     {
-        panel.color = highlightColor;
-    }
-
-    public void Unhighlight()
-    {
-        panel.color = defaultColor;
+        if(isNextTurn)
+        {
+            panel.color = previewColor;
+        }
+        else
+        {
+            panel.color = defaultColor;
+        }
     }
 }

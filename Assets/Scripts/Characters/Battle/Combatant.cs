@@ -5,44 +5,24 @@ using UnityEngine.Events;
 using Pathfinding;
 using UnityEngine.Tilemaps;
 
-[System.Serializable]
-public class BattleStats
-{
-    public string characterName;
-    public DynamicStat health;
-    public DynamicStat mana;
-    public Dictionary<StatType, Stat> statDict;
-    public Dictionary<AttackProperty, int> resistDict;
-
-    public List<Action> skills;
-    public Action attack1;
-    public Action attack2;
-    //list of status effects
-    //alive/dead?
-
-    public BattleStats(CharacterInfo characterInfo)
-    {
-        this.characterName = characterInfo.characterName;
-        this.health = characterInfo.health;
-        this.mana = characterInfo.mana;
-        this.statDict = characterInfo.statDict;
-        this.resistDict = characterInfo.resistDict;
-
-        this.attack1 = characterInfo.attack1;
-        this.attack2 = characterInfo.attack2;
-        this.skills = characterInfo.skills;
-    }
-}
-
 public class Combatant : MonoBehaviour
 {
     [Header("Character Stats")]
     public CharacterInfo characterInfo;
-    public BattleStats battleStats;
+    public string characterName;
+    public DynamicStat hp;
+    public DynamicStat mp;
+    public Dictionary<StatType, Stat> statDict;
+    public Dictionary<ElementalProperty, int> resistDict;
+    public Action meleeAttack;
+    public Action rangedAttack;
+    public List<Action> skills;
+    // public List<StatusEffect> StatusEffects;
     [Header("Game Object Components")]
-    public Rigidbody2D rigidbody;
     public Animator animator;
     public GameObject spriteFill;
+    [Header("Parent Scripts")]
+    public Battlefield battlefield;
     [Header("Child Scripts")]
     public HealthDisplay healthDisplay;
     public MaskController maskController;
@@ -52,38 +32,40 @@ public class Combatant : MonoBehaviour
     public SignalSenderGO onTargetDeselect;
     [Header("Grid")]
     public Tile tile;
-    public List<Tile> path = new List<Tile>();
-    [Header("Coroutine Timers")]
-    public float recoveryTime = 1f;
-    public float koTime = 1f;
+    [HideInInspector] public List<Tile> path = new List<Tile>();
+    [HideInInspector] public float recoveryTime = 1f;
+    [HideInInspector] public float koTime = 1f;
 
     public virtual void Awake()
     {
-        battleStats = new BattleStats(characterInfo);
-
-        rigidbody = GetComponent<Rigidbody2D>();
-
+        characterName = characterInfo.characterName;
+        //stats
+        hp = characterInfo.hp;
+        mp = characterInfo.mp;
+        statDict = characterInfo.statDict;
+        resistDict = characterInfo.resistDict;
+        //actions
+        meleeAttack = characterInfo.meleeAttack;
+        rangedAttack = characterInfo.rangedAttack;
+        skills = characterInfo.skills;
+        //components
         healthDisplay = GetComponentInChildren<HealthDisplay>();
         maskController = GetComponentInChildren<MaskController>();
     }
 
-    public void Start()
+    public virtual void Start()
     {
+        battlefield = GetComponentInParent<Battlefield>();
         SnapToTileCenter();
     }
 
     public void SnapToTileCenter()
     {
-        Tilemap tilemap = GetComponentInParent<Battlefield>().gridManager.tilemap;
+        Tilemap tilemap = battlefield.gridManager.tilemap;
         
         Vector3Int cellPosition = tilemap.WorldToCell(transform.position);
         Vector3 newPosition = tilemap.GetCellCenterWorld(cellPosition);
         transform.position = newPosition;
-    }
-
-    public int GetStatValue(StatType statType)
-    {
-        return battleStats.statDict[statType].GetValue();
     }
 
     public Vector2 GetDirection()
@@ -98,9 +80,13 @@ public class Combatant : MonoBehaviour
 
     public void Move(Tile destination)
     {
-        GridManager gridManager = GetComponentInParent<Battlefield>().gridManager;
-        path = gridManager.GetPath(tile, destination);
+        path = battlefield.gridManager.GetPath(tile, destination);
         animator.SetBool("Moving", true);
+    }
+
+    public virtual void EndMove()
+    {
+        onMoveComplete.Raise();
     }
 
     public void FaceTarget(Transform target)
@@ -121,7 +107,7 @@ public class Combatant : MonoBehaviour
                 if(path.Count == 0)
                 {
                     animator.SetBool("Moving", false);
-                    onMoveComplete.Raise();
+                    EndMove();
                 }
             }
             else
@@ -138,19 +124,21 @@ public class Combatant : MonoBehaviour
         }
     }
 
-    public void TakeDamage(float rawDamage)
+    public void EvadeAttack()
+    {
+        healthDisplay.HandleHealthChange(DamagePopupType.Miss, 0);
+    }
+
+    public void TakeDamage(int damage)
     {
         //switch to damage animation
-        animator.SetBool("Hurt", true);
-        //get final damage amount
-        int finalDamage = Mathf.RoundToInt((rawDamage - (float)battleStats.statDict[StatType.Defense].GetValue()) * Random.Range(0.85f, 1f));
-        finalDamage = Mathf.Clamp(finalDamage, 1, 9999);
+        animator.SetBool("Stun", true);
         //update health
-        battleStats.health.ChangeCurrentValue(-finalDamage);
+        hp.ChangeCurrentValue(-damage);
         //display damage + new health
-        healthDisplay.HandleHealthChange(DamagePopupType.Damage, finalDamage);
+        healthDisplay.HandleHealthChange(DamagePopupType.Damage, damage);
         //ko target if hp <= 0
-        if(battleStats.health.GetCurrentValue() <= 0)
+        if(hp.GetCurrentValue() <= 0)
         {
             StartCoroutine(KO());
         }
@@ -163,7 +151,7 @@ public class Combatant : MonoBehaviour
     private IEnumerator Recover()
     {
         yield return new WaitForSeconds(recoveryTime);
-        animator.SetBool("Hurt", false);
+        animator.SetBool("Stun", false);
     }
 
     private IEnumerator KO()

@@ -6,9 +6,28 @@ using UnityEngine.UI;
 public enum ActionType
 {
     Attack,
-    Skill,
-    Item,
-    Move
+    Heal,
+    CureAilment,
+    Buff,
+    Debuff,
+    Other
+}
+
+public enum AttackProperty
+{
+    None,
+    Melee,
+    Ranged,
+    Magic
+}
+
+public enum ElementalProperty
+{
+    None,
+    Fire,
+    Ice,
+    Electric,
+    Void
 }
 
 [System.Serializable]
@@ -20,16 +39,20 @@ public class Action : ScriptableObject
     public string descripton;
     public ActionType actionType;
     [Header("Costs")]
-    public int mpCost;
     public int timeCost;
+    //playable characters only
+    public int mpCost;
+    //enemies only
+    public int cooldown;
     [Header("Properties")]
     public int power;
     public int accuracy;
     public int range;
     public int aoe;
-    public AttackProperty attackProperty1;
-    public AttackProperty attackProperty2;
-    public bool isSpecial;
+    public AttackProperty attackProperty;
+    public ElementalProperty elementalProperty;
+    public bool guaranteedHit;
+    public bool distancePenalty;
     [Header("Effects")]
     public List<ActionEffect> effects = new List<ActionEffect>();
     [Header("Targeting")]

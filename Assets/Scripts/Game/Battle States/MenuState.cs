@@ -23,6 +23,7 @@ public class MenuState : BattleState
         //checks if player is canceling a move
         if(turnData.combatant.transform.position != turnData.startingPosition)
         {
+            battleManager.SetMoveCost(0);
             ResetPosition();
         }
 

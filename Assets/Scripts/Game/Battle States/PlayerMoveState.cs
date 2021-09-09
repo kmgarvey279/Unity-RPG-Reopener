@@ -24,7 +24,7 @@ public class PlayerMoveState : BattleState
         turnData = battleManager.turnData;
         onCameraZoomOut.Raise();
 
-        int range = turnData.combatant.GetStatValue(StatType.MoveRange);
+        int range = turnData.combatant.statDict[StatType.MoveRange].GetValue();
         gridManager.DisplayTilesInRange(turnData.combatant.tile, range, true);
 
     }
@@ -54,6 +54,7 @@ public class PlayerMoveState : BattleState
     public override void OnExit()
     {
         base.OnExit();
+        selectedTile = null; 
     }
 
     public void OnSelectTile(GameObject tileObject)
@@ -62,10 +63,12 @@ public class PlayerMoveState : BattleState
     }
 
     public void OnConfirmTile()
-    {                
+    {          
+        int moveCost = gridManager.GetMoveCost(selectedTile, turnData.combatant.tile);      
+        battleManager.SetMoveCost(moveCost);
+
         gridManager.HideTiles();
-        turnData.combatant.Move(selectedTile);
-        selectedTile = null; 
+        turnData.combatant.Move(selectedTile); 
     }
 
     public void OnMoveComplete()

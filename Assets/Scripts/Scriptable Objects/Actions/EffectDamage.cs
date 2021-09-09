@@ -6,7 +6,7 @@ using BattleCalculationsNamespace;
 [CreateAssetMenu(fileName = "New Action Effect (Damage)", menuName = "Action/Action Effect(Damage")]
 public class EffectDamage : ActionEffect
 {
-    private BattleCalculations battleCalculations;
+    private BattleCalculations battleCalculations = new BattleCalculations();
 
     public override void ApplyEffect(Action action, Combatant attacker, Combatant target)
     {

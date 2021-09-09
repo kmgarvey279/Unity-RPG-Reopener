@@ -15,7 +15,7 @@ public class TurnSlot
     public int turnCounter;
     [Header("Cost of action this turn")]
     public float actionCost;
-    public float defaultActionCost = 40f;
+    public float defaultActionCost = 4f;
     [Header("Cost of movement this turn")]
     public float moveCost;
     public float defaultMoveCost = 0f;
@@ -60,20 +60,21 @@ public class TurnSlot
 
     public float GetSpeed()
     {
+        float speedTemp = (float)combatant.statDict[StatType.Agility].GetValue() * speedMultiplier;
         //is character is slowed, round down
         if(speedMultiplier < 1)
         {
-            return Mathf.Floor((float)combatant.GetStatValue(StatType.Agility) * speedMultiplier);
+            return Mathf.Floor(speedTemp);
         }
-        //if sped up, round up
+        //if speed up, round up
         else if(speedMultiplier > 1)
         {
-            return Mathf.Ceil((float)combatant.GetStatValue(StatType.Agility) * speedMultiplier);
+            return Mathf.Ceil(speedTemp);
         }
         //otherwise, round normally
         else
         {
-            return Mathf.Round((float)combatant.GetStatValue(StatType.Agility) * speedMultiplier);
+            return Mathf.Round(speedTemp);
         }
     }
 
@@ -107,12 +108,14 @@ public class TurnData
 public class BattleManager : MonoBehaviour
 {
     private BattleCalculations battleCalculations;
+    [SerializeField] private GridManager gridManager;
     [Header("Game Data Scriptable Object")]
     [SerializeField] private GameData gameData;
     
     [Header("Parties")]
     public BattleParty allyParty;
     public EnemyParty enemyParty;
+    [SerializeField] private BattlePartyHUD battlePartyHUD;
     
     [Header("Turn Order Display")]
     [SerializeField] private BattleTimeline battleTimeline;
@@ -133,6 +136,8 @@ public class BattleManager : MonoBehaviour
         {
             TurnSlot newSlot = new TurnSlot(combatant);
             turnForecast.Add(newSlot);
+            //create playable character status panel
+            battlePartyHUD.CreatePartyPanel((AllyCombatant)combatant);
         }
         foreach(Combatant combatant in enemyParty.combatants)
         {
@@ -166,9 +171,8 @@ public class BattleManager : MonoBehaviour
     public void StartTurn()
     {   
         currentTurnSlot = turnForecast[0];
-        //remove from queue and set as current turn
-        // turnForecast.Remove(currentTurnSlot);
         battleTimeline.ChangeCurrentTurn(currentTurnSlot);
+        battleTimeline.ToggleNextTurnIndicator(currentTurnSlot, true);
         currentTurnSlot.SetTurnCounterToDefault();
         UpdateTurnOrder();
 
@@ -203,6 +207,11 @@ public class BattleManager : MonoBehaviour
         turnForecast = turnForecast.OrderBy(o=>o.turnCounter).ToList();
         battleTimeline.UpdateTurnPanels(turnForecast);
     }
+    public void SetMoveCost(int moveCost)
+    {
+        currentTurnSlot.SetMoveCost(moveCost);
+        UpdateTurnOrder();
+    }
     //set action to be executed in execution phase
     public void SetAction(Action action)
     {
@@ -228,6 +237,8 @@ public class BattleManager : MonoBehaviour
 
     public void EndTurn()
     {   
+        Debug.Log("End Turn");
+        battleTimeline.ToggleNextTurnIndicator(currentTurnSlot, false);
         turnData = null;
         AdvanceTimeline();
     }
@@ -237,7 +248,7 @@ public class BattleManager : MonoBehaviour
         Tile tile = tileObject.GetComponent<Tile>();
         if(tile.moveCost > -1)
         {
-            currentTurnSlot.SetMoveCost(tile.moveCost * 10);
+            currentTurnSlot.SetMoveCost(tile.moveCost);
             UpdateTurnOrder();
         }
     }
@@ -250,7 +261,7 @@ public class BattleManager : MonoBehaviour
         //get accuracy
         if(selectedTurnSlot != null)
         {
-            int accuracy = battleCalculations.GetHitChance(turnData.action.accuracy, turnData.combatant.GetStatValue(StatType.Skill), target.GetStatValue(StatType.Agility));
+            int accuracy = battleCalculations.GetHitChance(turnData.action, turnData.combatant, target, gridManager.GetMoveCost(turnData.combatant.tile, target.tile));
             battleTimeline.DisplayAccuracyPreview(selectedTurnSlot, accuracy);
         }
     }

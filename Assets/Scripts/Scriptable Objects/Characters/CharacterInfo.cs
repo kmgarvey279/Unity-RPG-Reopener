@@ -2,18 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum AttackProperty
-{
-    None,
-    Strike, 
-    Slash,
-    Pierce,
-    Fire,
-    Ice,
-    Electric,
-    Dark
-}
-
 public class CharacterInfo : ScriptableObject
 {
     [Header("Basic info")]
@@ -21,50 +9,50 @@ public class CharacterInfo : ScriptableObject
     public int level;
 
     [Header("HP/MP")]
-    [SerializeField] private int baseHealth;
-    [HideInInspector] public DynamicStat health;
-    [SerializeField] private int baseMana;
-    [HideInInspector] public DynamicStat mana;
+    [SerializeField] private int baseHP;
+    [HideInInspector] public DynamicStat hp;
+    [SerializeField] private int baseMP;
+    [HideInInspector] public DynamicStat mp;
+
+    [Header("offensive and defensive power")]
+    [SerializeField] private int meleePower;
+    [SerializeField] private int rangedPower;
+    [SerializeField] private int magicPower;
+    [SerializeField] private int meleeResistance;
+    [SerializeField] private int rangedResistance;
+    [SerializeField] private int magicResistance;
 
     [Header("Stats")]
     //determine power of physical/gun attacks
     [SerializeField] private int attack;
+    //determine accuracy and crit rate/damage
+    [SerializeField] private int skill;
     //determine defense against physical/gun attacks
     [SerializeField] private int defense;
     //determine offensive and defensive magic power + mp regen
     [SerializeField] private int special;
     //determine action speed/cost and evasion 
     [SerializeField] private int agility;
-    //determine accuracy and crit rate/damage
-    [SerializeField] private int skill;
     [SerializeField] private int moveRange;
     public Dictionary<StatType, Stat> statDict;
 
-    [Header("Physical Resistances")]
-    [SerializeField] private int strike;
-    [SerializeField] private int slash;
-    [SerializeField] private int pierce;
     [Header("Elemental Resistances")]
-    [SerializeField] private int fire;
-    [SerializeField] private int ice;
-    [SerializeField] private int electric;
-    [SerializeField] private int dark;
-    // [SerializeField] private int light;
-    // [SerializeField] private int water;
-    // [SerializeField] private int wind;
-    // [SerializeField] private int earth;
-    public Dictionary<AttackProperty, int> resistDict;
+    [SerializeField] private int fireResist;
+    [SerializeField] private int iceResist;
+    [SerializeField] private int electricResist;
+    [SerializeField] private int voidResist;
+    public Dictionary<ElementalProperty, int> resistDict;
 
     [Header("Skills")]
-    public Action attack1;
-    public Action attack2;
+    public Action meleeAttack;
+    public Action rangedAttack;
     public List<Action> skills = new List<Action>();
 
 
     protected virtual void OnEnable()
     {
-        health = new DynamicStat(StatType.Health, baseHealth);
-        mana = new DynamicStat(StatType.Mana, baseMana);
+        hp = new DynamicStat(StatType.HP, baseHP);
+        mp = new DynamicStat(StatType.MP, baseMP);
         //add each stat to dictionary
         statDict = new Dictionary<StatType, Stat>();
         statDict.Add(StatType.Attack, new Stat(StatType.Attack, attack));
@@ -74,17 +62,14 @@ public class CharacterInfo : ScriptableObject
         statDict.Add(StatType.Skill, new Stat(StatType.Skill, skill));
         statDict.Add(StatType.MoveRange, new Stat(StatType.MoveRange, moveRange));
         //add resistances to dictionary
-        resistDict = new Dictionary<AttackProperty, int>();
-        resistDict.Add(AttackProperty.Strike, strike);
-        resistDict.Add(AttackProperty.Slash, slash);
-        resistDict.Add(AttackProperty.Pierce, pierce);
-        resistDict.Add(AttackProperty.Fire, fire);
-        resistDict.Add(AttackProperty.Ice, ice);
-        resistDict.Add(AttackProperty.Electric, electric);
-        resistDict.Add(AttackProperty.Dark, dark);
+        resistDict = new Dictionary<ElementalProperty, int>();
+        resistDict.Add(ElementalProperty.Fire, fireResist);
+        resistDict.Add(ElementalProperty.Ice, iceResist);
+        resistDict.Add(ElementalProperty.Electric, electricResist);
+        resistDict.Add(ElementalProperty.Void, voidResist);
     }
 
-    protected void OnDisable()
+    public virtual void OnDisable()
     {
         foreach(KeyValuePair<StatType,Stat> entry in statDict)
         {

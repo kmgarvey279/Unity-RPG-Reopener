@@ -10,16 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d60841806187fe7448bdd835df63eadb, type: 3}
-  m_Name: Weapon1
+  m_Name: TestSword2
   m_EditorClassIdentifier: 
-  itemId: TestWeapon1
-  itemName: Weapon 1
-  itemDescription: Weapon. Increase Attack by 3.
+  itemId: TestWeapon2
+  itemName: Weapon 2
+  itemDescription: Increase MP/Special at the cost of attack/defense.
   icon: {fileID: 21300000, guid: a2c6f6d826b925a47956c0b33a527b42, type: 3}
   itemType: 1
   equipmentType: 1
   healthModifier: 0
   manaModifier: 0
-  attackModifier: 3
-  defenseModifier: 0
-  specialModifier: 0
+  attackModifier: -1
+  skillModifier: 0
+  defenseModifier: -1
+  specialModifier: 5
+  agilityModifier: 0
+  power: 0
+  claireEquip: 0
+  mutinyEquip: 0
+  shadEquip: 0
+  blaineEquip: 0
+  lucyEquip: 0
