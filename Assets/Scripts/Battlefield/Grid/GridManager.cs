@@ -98,10 +98,8 @@ public class GridManager : MonoBehaviour
         {
             if(tile.occupier != null)
             {
-                Debug.Log("found a target");
                 if(tile.occupier is AllyCombatant && targetPlayer || tile.occupier is EnemyCombatant && targetEnemy)
                 {
-                    Debug.Log("adding target");
                     targets.Add(tile.occupier);
                 }
             }

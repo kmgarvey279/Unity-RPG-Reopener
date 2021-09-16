@@ -17,6 +17,7 @@ public class ExecuteActionState : BattleState
     public override void OnEnter()
     {
         base.OnEnter();
+        Debug.Log("Eneter execute state");
         battleCalculations = new BattleCalculations();
         
         turnData = battleManager.turnData;

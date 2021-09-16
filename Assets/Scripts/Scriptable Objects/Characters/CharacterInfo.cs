@@ -2,6 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum StatType
+{
+    //inherent stats
+    HP,
+    MP,
+    Attack,
+    Defense,
+    Magic,
+    MagicDefense,
+    Skill,
+    Agility,
+    MoveRange,
+    //gear stats
+    EquipmentMeleeAttack,
+    EquipmentRangedAttack,
+    EquipmentMagicAttack,
+    EquipmentPhysicalDefense,
+    EquipmentMagicDefense
+}
+
 public class CharacterInfo : ScriptableObject
 {
     [Header("Basic info")]
@@ -14,23 +34,16 @@ public class CharacterInfo : ScriptableObject
     [SerializeField] private int baseMP;
     [HideInInspector] public DynamicStat mp;
 
-    [Header("offensive and defensive power")]
-    [SerializeField] private int meleePower;
-    [SerializeField] private int rangedPower;
-    [SerializeField] private int magicPower;
-    [SerializeField] private int meleeResistance;
-    [SerializeField] private int rangedResistance;
-    [SerializeField] private int magicResistance;
-
     [Header("Stats")]
     //determine power of physical/gun attacks
     [SerializeField] private int attack;
-    //determine accuracy and crit rate/damage
-    [SerializeField] private int skill;
     //determine defense against physical/gun attacks
     [SerializeField] private int defense;
     //determine offensive and defensive magic power + mp regen
-    [SerializeField] private int special;
+    [SerializeField] private int magic;
+    [SerializeField] private int magicDefense;
+    //determine accuracy and crit rate/damage
+    [SerializeField] private int skill;
     //determine action speed/cost and evasion 
     [SerializeField] private int agility;
     [SerializeField] private int moveRange;
@@ -40,33 +53,33 @@ public class CharacterInfo : ScriptableObject
     [SerializeField] private int fireResist;
     [SerializeField] private int iceResist;
     [SerializeField] private int electricResist;
-    [SerializeField] private int voidResist;
-    public Dictionary<ElementalProperty, int> resistDict;
+    [SerializeField] private int darkResist;
+    public Dictionary<ElementalProperty, Stat> elementalResistDict;
+
 
     [Header("Skills")]
-    public Action meleeAttack;
-    public Action rangedAttack;
     public List<Action> skills = new List<Action>();
 
 
     protected virtual void OnEnable()
     {
-        hp = new DynamicStat(StatType.HP, baseHP);
-        mp = new DynamicStat(StatType.MP, baseMP);
+        hp = new DynamicStat(baseHP);
+        mp = new DynamicStat(baseMP);
         //add each stat to dictionary
         statDict = new Dictionary<StatType, Stat>();
-        statDict.Add(StatType.Attack, new Stat(StatType.Attack, attack));
-        statDict.Add(StatType.Defense, new Stat(StatType.Defense, defense));
-        statDict.Add(StatType.Special, new Stat(StatType.Special, special));
-        statDict.Add(StatType.Agility, new Stat(StatType.Agility, agility));
-        statDict.Add(StatType.Skill, new Stat(StatType.Skill, skill));
-        statDict.Add(StatType.MoveRange, new Stat(StatType.MoveRange, moveRange));
+        statDict.Add(StatType.Attack, new Stat(attack));
+        statDict.Add(StatType.Defense, new Stat(defense));
+        statDict.Add(StatType.Magic, new Stat(magic));
+        statDict.Add(StatType.MagicDefense, new Stat(magicDefense));
+        statDict.Add(StatType.Skill, new Stat(skill));
+        statDict.Add(StatType.Agility, new Stat(agility));
+        statDict.Add(StatType.MoveRange, new Stat(moveRange));
         //add resistances to dictionary
-        resistDict = new Dictionary<ElementalProperty, int>();
-        resistDict.Add(ElementalProperty.Fire, fireResist);
-        resistDict.Add(ElementalProperty.Ice, iceResist);
-        resistDict.Add(ElementalProperty.Electric, electricResist);
-        resistDict.Add(ElementalProperty.Void, voidResist);
+        elementalResistDict = new Dictionary<ElementalProperty, Stat>();
+        elementalResistDict.Add(ElementalProperty.Fire, new Stat(fireResist));
+        elementalResistDict.Add(ElementalProperty.Ice, new Stat(iceResist));
+        elementalResistDict.Add(ElementalProperty.Electric, new Stat(electricResist));
+        elementalResistDict.Add(ElementalProperty.Dark, new Stat(darkResist));
     }
 
     public virtual void OnDisable()

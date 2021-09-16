@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[System.Serializable]
 public enum ActionType
 {
     Attack,
@@ -13,21 +14,14 @@ public enum ActionType
     Other
 }
 
-public enum AttackProperty
-{
-    None,
-    Melee,
-    Ranged,
-    Magic
-}
-
+[System.Serializable]
 public enum ElementalProperty
 {
     None,
     Fire,
     Ice,
     Electric,
-    Void
+    Dark
 }
 
 [System.Serializable]
@@ -49,7 +43,10 @@ public class Action : ScriptableObject
     public int accuracy;
     public int range;
     public int aoe;
-    public AttackProperty attackProperty;
+    //determines what stat is used to calculate offense
+    public BattleStatType offensiveStat;
+    //determines what stats is used to calculate defense
+    public BattleStatType defensiveStat;
     public ElementalProperty elementalProperty;
     public bool guaranteedHit;
     public bool distancePenalty;

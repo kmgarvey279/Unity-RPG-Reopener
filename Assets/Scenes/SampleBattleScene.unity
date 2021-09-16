@@ -1480,7 +1480,7 @@ PrefabInstance:
     - target: {fileID: 448660548921170568, guid: 4e96c45283b05614e8cf967d906da496,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1373891735903022926, guid: 4e96c45283b05614e8cf967d906da496,
         type: 3}
@@ -1500,7 +1500,7 @@ PrefabInstance:
     - target: {fileID: 3204636709455286624, guid: 4e96c45283b05614e8cf967d906da496,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4897413846455547618, guid: 4e96c45283b05614e8cf967d906da496,
         type: 3}
@@ -1510,7 +1510,7 @@ PrefabInstance:
     - target: {fileID: 4897413846455547618, guid: 4e96c45283b05614e8cf967d906da496,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5579980187692957150, guid: 4e96c45283b05614e8cf967d906da496,
         type: 3}
@@ -1530,17 +1530,17 @@ PrefabInstance:
     - target: {fileID: 6544714657242441080, guid: 4e96c45283b05614e8cf967d906da496,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6544714657242441080, guid: 4e96c45283b05614e8cf967d906da496,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6544714657242441080, guid: 4e96c45283b05614e8cf967d906da496,
         type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8019780655857232196, guid: 4e96c45283b05614e8cf967d906da496,
         type: 3}
@@ -1550,7 +1550,7 @@ PrefabInstance:
     - target: {fileID: 8915151916097324798, guid: 4e96c45283b05614e8cf967d906da496,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.3
+      value: 0.2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4e96c45283b05614e8cf967d906da496, type: 3}
@@ -3307,12 +3307,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   battleManager: {fileID: 0}
   commandPanel: {fileID: 0}
-  defaultButton: {fileID: 0}
-  moveButton: {fileID: 0}
   secondaryPanel: {fileID: 0}
+  defaultButton: {fileID: 0}
+  attackButton: {fileID: 0}
   attack: {fileID: 0}
   item: {fileID: 0}
-  guard: {fileID: 0}
+  defend: {fileID: 0}
 --- !u!1 &667347986
 GameObject:
   m_ObjectHideFlags: 0
@@ -7729,12 +7729,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   battleManager: {fileID: 246777216}
   commandPanel: {fileID: 1657795279}
-  defaultButton: {fileID: 334854503}
-  moveButton: {fileID: 1442550554}
   secondaryPanel: {fileID: 47593041}
+  defaultButton: {fileID: 334854503}
+  attackButton: {fileID: 0}
   attack: {fileID: 11400000, guid: b1fc631006444644b92ef30b0626848c, type: 2}
   item: {fileID: 0}
-  guard: {fileID: 0}
+  defend: {fileID: 0}
 --- !u!1 &1785805321
 GameObject:
   m_ObjectHideFlags: 0
@@ -9394,12 +9394,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   battleManager: {fileID: 246777216}
   commandPanel: {fileID: 0}
-  defaultButton: {fileID: 0}
-  moveButton: {fileID: 0}
   secondaryPanel: {fileID: 0}
+  defaultButton: {fileID: 0}
+  attackButton: {fileID: 0}
   attack: {fileID: 0}
   item: {fileID: 0}
-  guard: {fileID: 0}
+  defend: {fileID: 0}
 --- !u!1 &1987288753
 GameObject:
   m_ObjectHideFlags: 0

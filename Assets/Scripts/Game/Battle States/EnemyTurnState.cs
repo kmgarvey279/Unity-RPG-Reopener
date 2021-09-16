@@ -39,6 +39,7 @@ public class EnemyTurnState : BattleState
 
     public override void OnExit()
     {
+        base.OnExit();
         targetedTile = null;
     }
 

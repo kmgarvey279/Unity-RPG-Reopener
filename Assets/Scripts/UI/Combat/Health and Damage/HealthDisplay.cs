@@ -7,13 +7,6 @@ using TMPro;
 public class HealthDisplay : MonoBehaviour
 {
     private Combatant combatant;
-    private float barTickSpeed = 0.05f;
-
-    // [SerializeField] private GameObject healthBarContainer;
-    // [SerializeField] private SliderBar healthBar;
-    // [SerializeField] private SliderBar damageBar;
-    // [SerializeField] private SliderBar recoveryBar;
-    // [SerializeField] private SliderBar miasmaBar;
 
     [SerializeField] private AnimatedBar healthBar;
     [SerializeField] private DamagePopup damagePopup;
@@ -24,29 +17,32 @@ public class HealthDisplay : MonoBehaviour
         damagePopup = GetComponentInChildren<DamagePopup>();
 
         healthBar.SetInitialValue(combatant.hp.GetValue(), combatant.hp.GetCurrentValue());
-        
-        //set normal health bar
-        // healthBar.SetMaxValue(maxHP);
-        // healthBar.SetCurrentValue(currentHP);
-        // //set damage bar
-        // damageBar.SetMaxValue(maxHP);
-        // damageBar.SetCurrentValue(currentHP);
-        // //set heal bar
-        // recoveryBar.SetMaxValue(maxHP);
-        // //set miasma bar
-        // miasmaBar.SetMaxValue(maxHP);
     }
 
-    public void ToggleBarVisibility(bool isActive)
+    public void DisplayHPBar()
     {
-        healthBar.gameObject.SetActive(isActive);
+        healthBar.gameObject.SetActive(true);
     }
 
     public void HandleHealthChange(DamagePopupType popupType, int amount)
     {
+        DisplayHPBar();
         damagePopup.TriggerPopup(popupType, amount);
         healthBar.UpdateBar(combatant.hp.GetCurrentValue());
+        if(combatant is AllyCombatant)
+        {
+            AllyCombatant allyCombatant = (AllyCombatant)combatant;
+            allyCombatant.battlePartyPanel.UpdateHP(combatant.hp.GetCurrentValue());
+        }
+        StartCoroutine(HideHPBar());
     }
+
+    private IEnumerator HideHPBar()
+    {
+        yield return new WaitForSeconds(1f);
+        healthBar.gameObject.SetActive(false);
+    }
+
 
     // private IEnumerator DisplayDamage(int amount)
     // {
@@ -96,6 +92,6 @@ public class HealthDisplay : MonoBehaviour
     public void Clear()
     {
         damagePopup.ClearPopup();
-        ToggleBarVisibility(false);
+        // ToggleBarVisibility(false);
     }
 }

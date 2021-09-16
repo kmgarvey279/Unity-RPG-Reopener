@@ -18,7 +18,7 @@ namespace BattleCalculationsNamespace
             {
                 distancePenalty = Mathf.RoundToInt((float)distance * 2.5f);
             }
-            return Mathf.Clamp(action.accuracy + attacker.statDict[StatType.Skill].GetValue() - target.statDict[StatType.Agility].GetValue() - distancePenalty, 1, 100);
+            return Mathf.Clamp(action.accuracy + attacker.battleStatDict[BattleStatType.Accuracy].GetValue() - target.battleStatDict[BattleStatType.Evasion].GetValue() - distancePenalty, 1, 100);
         }
 
         //roll to check if action hits target
@@ -45,25 +45,17 @@ namespace BattleCalculationsNamespace
         {
             float offensiveStat = 0;
             float defensiveStat = 0;
-            if(action.attackProperty == AttackProperty.Magic)
-            {
-                offensiveStat = (float)attacker.statDict[StatType.Special].GetValue();
-                defensiveStat = (float)target.statDict[StatType.Special].GetValue();
-            }
-            else
-            {
-                offensiveStat = (float)attacker.statDict[StatType.Attack].GetValue();
-                defensiveStat = (float)target.statDict[StatType.Defense].GetValue();
-            }
-            float crit = CritCheck(); 
+            offensiveStat = (float)attacker.battleStatDict[action.offensiveStat].GetValue();
+            defensiveStat = (float)target.battleStatDict[action.defensiveStat].GetValue();
+            float crit = CritCheck(attacker); 
 
             float damage = Mathf.Clamp((offensiveStat * (float)action.power) * (100f/(100f + defensiveStat)) * Random.Range(0.85f, 1f), 1, 9999);
             return Mathf.FloorToInt(damage);
         }
 
-        public float CritCheck()
+        public float CritCheck(Combatant attacker)
         {
-            float critChance = 5;
+            float critChance = attacker.battleStatDict[BattleStatType.CritRate].GetValue();
             float roll = Random.Range(1, 100);
             if(roll <= critChance)
             {

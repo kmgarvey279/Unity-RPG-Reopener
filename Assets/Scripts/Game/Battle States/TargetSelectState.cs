@@ -28,10 +28,10 @@ public class TargetSelectState : BattleState
     }
     public AttackOptions attackOptions;
     //possible targets
-    private List<Tile> occupiedTiles = new List<Tile>();
-    private List<Tile> targetableTiles = new List<Tile>();
+    [SerializeField] private List<Tile> occupiedTiles = new List<Tile>();
+    [SerializeField] private List<Tile> targetableTiles = new List<Tile>();
     //temp action data
-    private Tile selectedTile;
+    [SerializeField] private Tile selectedTile;
     [SerializeField] private List<Combatant> selectedTargets;
     [Header("Events (Signals)")]
     [SerializeField] private SignalSenderGO onCameraZoomIn;
@@ -40,15 +40,15 @@ public class TargetSelectState : BattleState
     {
         base.OnEnter();
         turnData = battleManager.turnData;
-        //temp target data
-        selectedTargets = new List<Combatant>();
         selectedTile = null;
+        selectedTargets = new List<Combatant>();
         //check max range
         int maxRange;
         if(turnData.action.actionType == ActionType.Attack)
         {
             attackButtons.gameObject.SetActive(true);
-            attackOptions = new AttackOptions(turnData.combatant.meleeAttack, turnData.combatant.rangedAttack);
+            AllyCombatant combatant = (AllyCombatant)turnData.combatant;
+            attackOptions = new AttackOptions(combatant.meleeAttack, combatant.rangedAttack);
 
             maxRange = Mathf.Max(attackOptions.meleeAttack.range, attackOptions.rangedAttack.range);
         }
@@ -132,6 +132,7 @@ public class TargetSelectState : BattleState
     {
         if(Input.GetButtonDown("Select"))
         {
+            Debug.Log("Target Select State: Select is clicked");
             if(turnData.action.actionType == ActionType.Attack && attackOptions.selectedAttack != null)
             {
                 battleManager.SetAction(attackOptions.selectedAttack);
@@ -169,7 +170,7 @@ public class TargetSelectState : BattleState
     public override void OnExit()
     {
         base.OnExit();
-
+        EventSystem.current.SetSelectedGameObject(null);
         //clear list of targetable tiles
         foreach (Tile tile in occupiedTiles)
         {
@@ -177,7 +178,6 @@ public class TargetSelectState : BattleState
         }
         occupiedTiles.Clear();
         targetableTiles.Clear();
-        
         //clear attack data
         if(attackButtons.gameObject.activeInHierarchy)
             attackButtons.gameObject.SetActive(false);
@@ -202,12 +202,6 @@ public class TargetSelectState : BattleState
         // {
         //     battleManager.DisplayActionPreview(turnData.action, selectedTargets);
         // }
-    }
-
-    public void OnConfirmTile()
-    {                 
-        // turnData.targetedTile = selectedTile;
-        // stateMachine.ChangeState((int)BattleStateType.Execute);
     }
 
     private void SetAttacks()

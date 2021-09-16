@@ -7,9 +7,8 @@ public class DynamicStat : Stat
 {
     public int currentValue;
 
-    public DynamicStat(StatType statType, int baseValue) : base(statType, baseValue)
+    public DynamicStat(int baseValue) : base(baseValue)
     {
-        this.statType = statType;
         this.baseValue = baseValue;
         this.currentValue = baseValue;
     }

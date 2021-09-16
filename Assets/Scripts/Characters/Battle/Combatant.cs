@@ -5,19 +5,35 @@ using UnityEngine.Events;
 using Pathfinding;
 using UnityEngine.Tilemaps;
 
+public enum BattleStatType
+{
+    MeleeAttack,
+    RangedAttack,
+    MagicAttack,
+    PhysicalDefense,
+    MagicDefense,
+    Accuracy,
+    Evasion,
+    CritRate,
+    Speed,
+    MoveRange,
+    None
+}
+
 public class Combatant : MonoBehaviour
 {
     [Header("Character Stats")]
     public CharacterInfo characterInfo;
     public string characterName;
+    public int level;
     public DynamicStat hp;
     public DynamicStat mp;
-    public Dictionary<StatType, Stat> statDict;
-    public Dictionary<ElementalProperty, int> resistDict;
-    public Action meleeAttack;
-    public Action rangedAttack;
+    public Dictionary<BattleStatType, Stat> battleStatDict;
+    public Dictionary<ElementalProperty, Stat> elementalResistDict;
     public List<Action> skills;
-    // public List<StatusEffect> StatusEffects;
+    [Header("Status")]
+    public bool ko = false;
+    public List<StatusEffect> statusEffects;
     [Header("Game Object Components")]
     public Animator animator;
     public GameObject spriteFill;
@@ -40,17 +56,20 @@ public class Combatant : MonoBehaviour
     {
         characterName = characterInfo.characterName;
         //stats
+        level = characterInfo.level;
         hp = characterInfo.hp;
         mp = characterInfo.mp;
-        statDict = characterInfo.statDict;
-        resistDict = characterInfo.resistDict;
-        //actions
-        meleeAttack = characterInfo.meleeAttack;
-        rangedAttack = characterInfo.rangedAttack;
+        SetBattleStats(characterInfo.statDict);
+        elementalResistDict = characterInfo.elementalResistDict;
+        //skills
         skills = characterInfo.skills;
         //components
         healthDisplay = GetComponentInChildren<HealthDisplay>();
         maskController = GetComponentInChildren<MaskController>();
+    }
+
+    public virtual void SetBattleStats(Dictionary<StatType, Stat> statDict)
+    {
     }
 
     public virtual void Start()
@@ -129,14 +148,12 @@ public class Combatant : MonoBehaviour
         healthDisplay.HandleHealthChange(DamagePopupType.Miss, 0);
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damageAmount)
     {
         //switch to damage animation
         animator.SetBool("Stun", true);
         //update health
-        hp.ChangeCurrentValue(-damage);
-        //display damage + new health
-        healthDisplay.HandleHealthChange(DamagePopupType.Damage, damage);
+        ChangeHealth(-damageAmount);
         //ko target if hp <= 0
         if(hp.GetCurrentValue() <= 0)
         {
@@ -144,11 +161,34 @@ public class Combatant : MonoBehaviour
         }
         else 
         {
-            StartCoroutine(Recover());
+            StartCoroutine(EndStun());
         }
     }
 
-    private IEnumerator Recover()
+    public void ChangeHealth(int amount)
+    {
+        hp.ChangeCurrentValue(amount);
+        if(amount > 0)
+        {
+        healthDisplay.HandleHealthChange(DamagePopupType.Heal, amount);
+        }
+        else
+        {
+        healthDisplay.HandleHealthChange(DamagePopupType.Damage, amount);
+        }
+    }
+
+    public void AddStatusEffect(StatusEffect statusEffect)
+    {
+        statusEffects.Add(statusEffect);
+    }
+
+    public void RemoveStatusEffect(StatusEffect statusEffect)
+    {
+        statusEffects.Remove(statusEffect);
+    }
+
+    private IEnumerator EndStun()
     {
         yield return new WaitForSeconds(recoveryTime);
         animator.SetBool("Stun", false);
@@ -164,14 +204,14 @@ public class Combatant : MonoBehaviour
     {
         maskController.TriggerSelected();
         onTargetSelect.Raise(this.gameObject);
-        healthDisplay.ToggleBarVisibility(true);
+        // healthDisplay.ToggleBarVisibility(true);
     }
 
     public void Deselect()
     {
         maskController.EndAnimation();
         onTargetDeselect.Raise(this.gameObject);
-        healthDisplay.ToggleBarVisibility(false);
+        // healthDisplay.ToggleBarVisibility(false);
     }
 
     public void GrayOut()

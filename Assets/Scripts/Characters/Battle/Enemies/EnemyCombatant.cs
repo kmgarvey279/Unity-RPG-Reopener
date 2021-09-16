@@ -26,13 +26,31 @@ public class EnemyCombatant : Combatant
     //used when there are no actions an enemy can take
     [SerializeField] private Action wait;
 
-    public override void Start() 
+    public override void Awake()
     {
-        base.Start();
+        base.Awake();        
         foreach (Action action in skills)
         {
             cooldownTimers.Add(action, action.cooldown);
         }
+    }
+
+    public override void SetBattleStats(Dictionary<StatType, Stat> statDict)
+    {
+        battleStatDict.Add(BattleStatType.MeleeAttack, new Stat(statDict[StatType.Attack].GetValue() + level));
+        battleStatDict.Add(BattleStatType.RangedAttack, new Stat(statDict[StatType.Attack].GetValue() + level));
+        battleStatDict.Add(BattleStatType.MagicAttack, new Stat(statDict[StatType.Magic].GetValue() + level));
+
+        battleStatDict.Add(BattleStatType.PhysicalDefense, new Stat(statDict[StatType.Defense].GetValue() + level));
+        battleStatDict.Add(BattleStatType.MagicDefense, new Stat(statDict[StatType.MagicDefense].GetValue() + level));
+
+        battleStatDict.Add(BattleStatType.Accuracy, new Stat(Mathf.FloorToInt(statDict[StatType.Skill].GetValue() + statDict[StatType.Agility].GetValue() / 2)));
+        battleStatDict.Add(BattleStatType.Evasion, new Stat(Mathf.FloorToInt(statDict[StatType.Skill].GetValue() + statDict[StatType.Agility].GetValue() / 2)));
+
+        battleStatDict.Add(BattleStatType.CritRate, new Stat(Mathf.FloorToInt(statDict[StatType.Skill].GetValue() / 3)));
+        battleStatDict.Add(BattleStatType.Speed, new Stat(statDict[StatType.Agility].GetValue()));
+
+        battleStatDict.Add(BattleStatType.MoveRange, new Stat(statDict[StatType.MoveRange].GetValue()));
     }
 
     public EnemyActionData GetActionData()
@@ -45,7 +63,7 @@ public class EnemyCombatant : Combatant
         Dictionary<Action, List<Combatant>> targetsInRange = new Dictionary<Action, List<Combatant>>();
         foreach (Action action in readyActions)
         {
-            int maxRange = statDict[StatType.MoveRange].GetValue() + action.range + action.aoe;
+            int maxRange = battleStatDict[BattleStatType.MoveRange].GetValue() + action.range + action.aoe;
             List<Combatant> targetsTemp = battlefield.gridManager.GetTargetsInRange(tile, maxRange, action.targetHostile, action.targetFriendly);
             targetsInRange.Add(action, targetsTemp);
         }
@@ -56,7 +74,7 @@ public class EnemyCombatant : Combatant
             {
                 actionData.action = action;
                 actionData.targetedTile = GetTargetedTile(action, targetsInRange[action]);
-                actionData.destinationTile = battlefield.gridManager.GetClosestTileInRange(tile, actionData.targetedTile, statDict[StatType.MoveRange].GetValue() + action.range + action.aoe);
+                actionData.destinationTile = battlefield.gridManager.GetClosestTileInRange(tile, actionData.targetedTile, battleStatDict[BattleStatType.MoveRange].GetValue() + action.range + action.aoe);
                 actionData.targets = battlefield.gridManager.GetTargetsInRange(actionData.targetedTile, action.aoe, action.targetHostile, action.targetFriendly);
                 //reset cooldown timer
                 cooldownTimers[action] = action.cooldown;
@@ -191,7 +209,7 @@ public class EnemyCombatant : Combatant
     private bool DebuffCheck(Action debuff, List<Combatant> targets)
     {
         bool validTarget = false;
-        int maxRange = statDict[StatType.MoveRange].GetValue() + debuff.range + debuff.aoe;
+        int maxRange = battleStatDict[BattleStatType.MoveRange].GetValue() + debuff.range + debuff.aoe;
         if(targets.Count > 0)
         {
             foreach (Combatant target in targets)
@@ -210,7 +228,7 @@ public class EnemyCombatant : Combatant
     private bool CureAilmentCheck(Action cure, List<Combatant> targets)
     {
         bool validTarget = false;
-        int maxRange = statDict[StatType.MoveRange].GetValue() + cure.range + cure.aoe;
+        int maxRange = battleStatDict[BattleStatType.MoveRange].GetValue() + cure.range + cure.aoe;
         if(targets.Count > 0)
         {
             foreach (Combatant target in targets)

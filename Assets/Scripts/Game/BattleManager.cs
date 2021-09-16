@@ -60,7 +60,7 @@ public class TurnSlot
 
     public float GetSpeed()
     {
-        float speedTemp = (float)combatant.statDict[StatType.Agility].GetValue() * speedMultiplier;
+        float speedTemp = (float)combatant.battleStatDict[BattleStatType.Speed].GetValue() * speedMultiplier;
         //is character is slowed, round down
         if(speedMultiplier < 1)
         {

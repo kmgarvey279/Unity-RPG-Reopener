@@ -8,16 +8,17 @@ public class CommandMenu : MonoBehaviour
 {
     [SerializeField] private BattleManager battleManager;
     private TurnData turnData;
-
+    [Header("Components")]
     [SerializeField] private GameObject commandPanel;
-    [SerializeField] private GameObject defaultButton;
-    [SerializeField] private Button moveButton;
-
     [SerializeField] private SecondaryBattlePanel secondaryPanel;
+    [Header("Buttons")]
+    [SerializeField] private GameObject defaultButton;
+    [SerializeField] private Button attackButton;
 
+    [Header("Actions")]
     [SerializeField] private Action attack;
     [SerializeField] private Action item;
-    [SerializeField] private Action guard;
+    [SerializeField] private Action defend;
 
     public void DisplayMenu()
     {
@@ -59,5 +60,11 @@ public class CommandMenu : MonoBehaviour
     public void SelectItem()
     {
 
+    }
+
+    public void SelectDefend()
+    {
+        battleManager.SetAction(defend);
+        battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
     }
 }
