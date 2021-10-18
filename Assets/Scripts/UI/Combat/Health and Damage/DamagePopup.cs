@@ -19,7 +19,6 @@ public class DamagePopup : MonoBehaviour
     public Color damageColor;
     public Color healColor;
     public Color missColor;
-    private float popupDuration = 1f;
 
     private void Start()
     {

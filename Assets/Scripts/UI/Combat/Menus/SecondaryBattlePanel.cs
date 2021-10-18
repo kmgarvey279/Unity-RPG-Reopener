@@ -10,6 +10,14 @@ public class SecondaryBattlePanel : MonoBehaviour
     [SerializeField] private GameObject listParent;
     private List<GameObject> selectableList = new List<GameObject>();
 
+    private void Update() 
+    {
+        if(display.activeInHierarchy && Input.GetButtonDown("Cancel"))
+        {
+            Hide();
+        }
+    }
+
     public void DisplayItems()
     {
         display.SetActive(true);
@@ -33,6 +41,10 @@ public class SecondaryBattlePanel : MonoBehaviour
     public void Hide()
     {
         display.SetActive(false);
+        for(int i = 0; i < selectableList.Count; i++)
+        {
+            Destroy(selectableList[i]);
+        }
         selectableList.Clear(); 
     }
 }

@@ -10,6 +10,8 @@ public class BattleStatMultiplier
     public float multiplier;
 }
 
+[System.Serializable]
+[CreateAssetMenu(fileName = "New Status Effect", menuName = "Status Effect")]
 public class StatusEffect : ScriptableObject
 {
     [Header("Effect info")]
@@ -18,10 +20,11 @@ public class StatusEffect : ScriptableObject
     public string effectInfo;
     [Header("Icon + Animation")]
     public Image icon;
+    public string animatorTrigger;
     [SerializeField] private GameObject effectObject;
     [Header("Duration")]
     [SerializeField] private int turnDuration;
-    [SerializeField] private int turnCounter = 0;
+    private int turnCounter;
     [Header("Effects")]
     [SerializeField] private List<BattleStatMultiplier> battleStatMultipliers = new List<BattleStatMultiplier>();
     [SerializeField] private bool changeHealth;
@@ -35,12 +38,14 @@ public class StatusEffect : ScriptableObject
             Stat stat = combatant.battleStatDict[statmultiplier.statToMultiply];
             stat.AddMultiplier(statmultiplier.multiplier);   
         }
+        turnCounter = turnDuration;
     }
 
     public void OnTurnStart(Combatant combatant)
     {
-        turnCounter++;
-        if(turnCounter >= turnDuration)
+        turnCounter--;
+        Debug.Log("test test test");
+        if(turnCounter <= 0)
         {
             RemoveStatusEffect(combatant);
         }
@@ -69,6 +74,7 @@ public class StatusEffect : ScriptableObject
             Stat stat = combatant.battleStatDict[statmultiplier.statToMultiply];
             stat.RemoveMultiplier(statmultiplier.multiplier);   
         }
+        combatant.RemoveStatusEffect(this);
     }
 }
 

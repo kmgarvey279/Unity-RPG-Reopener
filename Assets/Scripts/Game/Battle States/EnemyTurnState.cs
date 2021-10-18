@@ -9,8 +9,6 @@ public class EnemyTurnState : BattleState
 {
     private TurnData turnData;
     private EnemyCombatant enemyCombatant;
-    private Tile targetedTile;
-    private List<Combatant> selectedTargets;
     [SerializeField] GridManager gridManager;
 
     [Header("Unity Events")]
@@ -40,13 +38,11 @@ public class EnemyTurnState : BattleState
     public override void OnExit()
     {
         base.OnExit();
-        targetedTile = null;
     }
 
     private void DecisionPhase()
     {
         EnemyActionData actionData = enemyCombatant.GetActionData();
-        Debug.Log("The Selected action is... " + actionData.action);
 
         battleManager.SetAction(actionData.action);
         battleManager.SetMoveCost(gridManager.GetMoveCost(enemyCombatant.tile, actionData.destinationTile));
@@ -59,11 +55,21 @@ public class EnemyTurnState : BattleState
     {
         yield return new WaitForSeconds(0.2f);
         
-        enemyCombatant.Move(destinationTile);
+        if(enemyCombatant.tile != destinationTile)
+        {
+            List<Tile> path = gridManager.GetPath(enemyCombatant.tile, destinationTile);
+            enemyCombatant.animator.SetTrigger("Move");
+            enemyCombatant.gridMovement.Move(path, MovementType.Move); 
+        }
+        else
+        {
+            StartCoroutine(ActionPhase());
+        }
     }
 
     public void OnMoveComplete()
     {
+        enemyCombatant.animator.SetTrigger("Idle");
         StartCoroutine(ActionPhase());
     }
 

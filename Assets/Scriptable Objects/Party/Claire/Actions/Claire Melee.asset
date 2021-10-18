@@ -20,22 +20,40 @@ MonoBehaviour:
   mpCost: 0
   cooldown: 0
   power: 1
-  accuracy: 95
+  accuracy: 99
   range: 1
   aoe: 0
-  attackProperty: 0
+  excludeStartingTile: 1
+  lineAOE: 0
+  stopAtOccupiedTile: 0
+  offensiveStat: 0
+  defensiveStat: 3
   elementalProperty: 0
-  isMelee: 0
-  isGun: 0
-  isSpecial: 0
   guaranteedHit: 0
   distancePenalty: 0
   effects:
   - {fileID: 11400000, guid: 7b5ff438e848e54438d2d76005586efe, type: 2}
+  statusEffect: {fileID: 0}
+  knockback: 0
+  useDirection: 1
   targetFriendly: 0
   targetHostile: 1
-  fixedTarget: 1
-  useGraphicPrefab: {fileID: 0}
+  targetSelfOnly: 0
+  hasCastAnimation: 0
+  castAnimatorTrigger: 
+  castGraphicPrefab: {fileID: 0}
+  castAnimationDuration: 0
+  castGraphicDelay: 0
+  hasProjectileAnimation: 0
+  projectileAnimatorTrigger: 
+  projectileGraphicPrefab: {fileID: 0}
+  projectileSpeed: 0
+  projectileGraphicDelay: 0
+  hasMoveAnimation: 0
+  moveAnimatorTrigger: 
+  moveGraphicPrefab: {fileID: 0}
+  effectAnimatorTrigger: Melee
   effectGraphicPrefab: {fileID: 173376264066434547, guid: c1c96842e9fb8f748bb5fafd959e002b,
     type: 3}
-  animatorTrigger: Melee
+  effectAnimationDuration: 0.3
+  effectGraphicDelay: 0.15

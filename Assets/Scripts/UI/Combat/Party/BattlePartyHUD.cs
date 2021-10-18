@@ -5,29 +5,29 @@ using UnityEngine;
 public class BattlePartyHUD : MonoBehaviour
 {
     [SerializeField] private GameObject partyPanelPrefab;
-    private Dictionary<AllyCombatant, BattlePartyPanel> panelDict = new Dictionary<AllyCombatant, BattlePartyPanel>();
+    private Dictionary<PlayableCombatant, BattlePartyPanel> panelDict = new Dictionary<PlayableCombatant, BattlePartyPanel>();
 
-    public void CreatePartyPanel(AllyCombatant allyCombatant)
+    public void CreatePartyPanel(PlayableCombatant playableCombatant)
     {
         GameObject partyPanelObject = Instantiate(partyPanelPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         partyPanelObject.transform.SetParent(transform, false);
         BattlePartyPanel partyPanel = partyPanelObject.GetComponent<BattlePartyPanel>();
-        partyPanel.AssignCombatant(allyCombatant);
-        panelDict[allyCombatant] = partyPanel;
+        partyPanel.AssignCombatant(playableCombatant);
+        panelDict[playableCombatant] = partyPanel;
 
-        allyCombatant.AssignBattlePartyPanel(partyPanel);
+        playableCombatant.AssignBattlePartyPanel(partyPanel);
     }
 
     public void OnChangeHP(GameObject combatantObject, int newValue)
     {
-        BattlePartyPanel panel = panelDict[combatantObject.GetComponent<AllyCombatant>()];
+        BattlePartyPanel panel = panelDict[combatantObject.GetComponent<PlayableCombatant>()];
         if(panel)
             panel.UpdateHP(newValue);
     }
 
     public void onChangeMP(GameObject combatantObject, int newValue)
     {
-        BattlePartyPanel panel = panelDict[combatantObject.GetComponent<AllyCombatant>()];
+        BattlePartyPanel panel = panelDict[combatantObject.GetComponent<PlayableCombatant>()];
         if(panel)
             panel.UpdateMP(newValue);
     }

@@ -20,6 +20,9 @@ public enum DamageType
 [CreateAssetMenu(fileName = "New Playable Character Info", menuName = "Character Info/Playable")]
 public class PlayableCharacterInfo : CharacterInfo
 {
+    [Header("Standard Attacks")]
+    public Action meleeAttack;
+    public Action rangedAttack;
     [Header("Equipment")]
     [SerializeField] private WeaponObject weapon;
     [SerializeField] private ArmorObject armor;

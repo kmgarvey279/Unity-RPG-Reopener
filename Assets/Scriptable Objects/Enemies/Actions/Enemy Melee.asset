@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Enemy Melee
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
-  actionName: Attack
+  actionName: Melee Attack
   descripton: 
   actionType: 0
   timeCost: 3
@@ -23,19 +23,36 @@ MonoBehaviour:
   accuracy: 99
   range: 1
   aoe: 0
-  attackProperty: 1
+  offensiveStat: 0
+  defensiveStat: 3
   elementalProperty: 0
-  isMelee: 1
-  isGun: 0
-  isSpecial: 0
   guaranteedHit: 0
   distancePenalty: 0
   effects:
   - {fileID: 11400000, guid: 7b5ff438e848e54438d2d76005586efe, type: 2}
+  statusEffect: {fileID: 0}
+  knockback: 0
+  useDirection: 1
   targetFriendly: 0
   targetHostile: 1
+  targetSelfOnly: 0
   fixedTarget: 1
-  useGraphicPrefab: {fileID: 0}
+  hasCastAnimation: 0
+  castAnimatorTrigger: 
+  castGraphicPrefab: {fileID: 0}
+  castAnimationDuration: 0
+  castGraphicDelay: 0
+  hasProjectileAnimation: 0
+  projectileAnimatorTrigger: 
+  projectileGraphicPrefab: {fileID: 0}
+  projectileSpeed: 0
+  projectileGraphicDelay: 0
+  hasMoveAnimation: 0
+  moveAnimatorTrigger: 
+  moveGraphicPrefab: {fileID: 0}
+  moveSpeed: 0
+  effectAnimatorTrigger: Melee
   effectGraphicPrefab: {fileID: 173376264066434547, guid: c1c96842e9fb8f748bb5fafd959e002b,
     type: 3}
-  animatorTrigger: Melee
+  effectAnimationDuration: 0.3
+  effectGraphicDelay: 0.15

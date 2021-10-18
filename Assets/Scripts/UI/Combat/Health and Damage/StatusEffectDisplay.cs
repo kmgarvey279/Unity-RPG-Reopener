@@ -35,7 +35,6 @@ public class StatusEffectDisplay : MonoBehaviour
 
     public void RemoveStatusIcon(StatusEffect statusEffect)
     {
-        StatusIcon iconToRemove;
         foreach (StatusIcon icon in icons)
         {
             if(icon.statusEffect == statusEffect)

@@ -12,6 +12,7 @@ public class PlayerMoveState : BattleState
 
     private TurnData turnData;
     private Tile selectedTile;
+    private List<Tile> path = new List<Tile>();
 
     [Header("Unity Events (Signals)")]
     [SerializeField] private SignalSender onCameraZoomOut;
@@ -37,7 +38,9 @@ public class PlayerMoveState : BattleState
             battleManager.SetMoveCost(moveCost);
 
             gridManager.HideTiles();
-            turnData.combatant.Move(selectedTile); 
+
+            turnData.combatant.animator.SetTrigger("Move");
+            turnData.combatant.gridMovement.Move(path, MovementType.Move); 
         }
         if(Input.GetButtonDown("Cancel"))
         {
@@ -64,18 +67,14 @@ public class PlayerMoveState : BattleState
     public void OnSelectTile(GameObject tileObject)
     {     
         selectedTile = tileObject.GetComponent<Tile>();
+        path = gridManager.GetPath(turnData.combatant.tile, selectedTile);
+        gridManager.DisplayPath(path);
     }
 
     public void OnMoveComplete()
     {
-        if(turnData.action.fixedTarget)
-        {
-            battleManager.stateMachine.ChangeState((int)BattleStateType.TargetSelect);
-        }
-        else
-        {
-            battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
-        }
+        turnData.combatant.animator.SetTrigger("Idle");
+        battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
     }
 
 

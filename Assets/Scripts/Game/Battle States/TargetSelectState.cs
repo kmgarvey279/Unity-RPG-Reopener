@@ -28,11 +28,11 @@ public class TargetSelectState : BattleState
     }
     public AttackOptions attackOptions;
     //possible targets
-    [SerializeField] private List<Tile> occupiedTiles = new List<Tile>();
-    [SerializeField] private List<Tile> targetableTiles = new List<Tile>();
+    private List<Tile> occupiedTiles = new List<Tile>();
+    private List<Tile> targetableTiles = new List<Tile>();
     //temp action data
-    [SerializeField] private Tile selectedTile;
-    [SerializeField] private List<Combatant> selectedTargets;
+    private Tile selectedTile;
+    private List<Combatant> selectedTargets;
     [Header("Events (Signals)")]
     [SerializeField] private SignalSenderGO onCameraZoomIn;
 
@@ -44,18 +44,18 @@ public class TargetSelectState : BattleState
         selectedTargets = new List<Combatant>();
         //check max range
         int maxRange;
-        if(turnData.action.actionType == ActionType.Attack)
-        {
-            attackButtons.gameObject.SetActive(true);
-            AllyCombatant combatant = (AllyCombatant)turnData.combatant;
-            attackOptions = new AttackOptions(combatant.meleeAttack, combatant.rangedAttack);
+        // if(turnData.action.actionType == ActionType.Attack)
+        // {
+        //     attackButtons.gameObject.SetActive(true);
+        //     AllyCombatant combatant = (AllyCombatant)turnData.combatant;
+        //     attackOptions = new AttackOptions(combatant.meleeAttack, combatant.rangedAttack);
 
-            maxRange = Mathf.Max(attackOptions.meleeAttack.range, attackOptions.rangedAttack.range);
-        }
-        else
-        {
+        //     maxRange = Mathf.Max(attackOptions.meleeAttack.range, attackOptions.rangedAttack.range);
+        // }
+        // else
+        // {
             maxRange = turnData.action.range;
-        }
+        // }
 
         SetTargetableCombatants(maxRange);
     }
@@ -132,11 +132,10 @@ public class TargetSelectState : BattleState
     {
         if(Input.GetButtonDown("Select"))
         {
-            Debug.Log("Target Select State: Select is clicked");
-            if(turnData.action.actionType == ActionType.Attack && attackOptions.selectedAttack != null)
-            {
-                battleManager.SetAction(attackOptions.selectedAttack);
-            }
+            // if(turnData.action.actionType == ActionType.Attack && attackOptions.selectedAttack != null)
+            // {
+            //     battleManager.SetAction(attackOptions.selectedAttack);
+            // }
             battleManager.SetTargets(selectedTile, selectedTargets);
             stateMachine.ChangeState((int)BattleStateType.Execute);
         }     
@@ -186,6 +185,7 @@ public class TargetSelectState : BattleState
 
     public void OnSelectTile(GameObject tileObject)
     {   
+        Debug.Log("select");
         //clear previous target  
         if(selectedTargets.Count > 0)
             selectedTargets.Clear();
@@ -195,8 +195,15 @@ public class TargetSelectState : BattleState
         //set attack options
         if(turnData.action.actionType == ActionType.Attack)
         {
-            SetAttacks();  
+            // SetAttacks();  
         //     battleManager.DisplayActionPreview(attackOptions.selectedAttack, selectedTargets);
+        }
+        if(turnData.action.knockback > 0)
+        {
+            Debug.Log("Knockback");
+            Vector2 direction = (selectedTile.transform.position - turnData.combatant.tile.transform.position).normalized;
+            List<Tile> path = gridManager.GetRow(selectedTile, direction, turnData.action.knockback, true);
+            gridManager.DisplayPath(path);
         }   
         // else
         // {

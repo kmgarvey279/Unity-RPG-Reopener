@@ -29,10 +29,10 @@ public class HealthDisplay : MonoBehaviour
         DisplayHPBar();
         damagePopup.TriggerPopup(popupType, amount);
         healthBar.UpdateBar(combatant.hp.GetCurrentValue());
-        if(combatant is AllyCombatant)
+        if(combatant is PlayableCombatant)
         {
-            AllyCombatant allyCombatant = (AllyCombatant)combatant;
-            allyCombatant.battlePartyPanel.UpdateHP(combatant.hp.GetCurrentValue());
+            PlayableCombatant playableCombatant = (PlayableCombatant)combatant;
+            playableCombatant.battlePartyPanel.UpdateHP(combatant.hp.GetCurrentValue());
         }
         StartCoroutine(HideHPBar());
     }
@@ -52,7 +52,7 @@ public class HealthDisplay : MonoBehaviour
     //     // int damageBarValue = healBarValue;
     //     // healthBar.SetDamage(damageBarValue);
     //     // healthBar.SetHealth(healthBarValue);
-    //     // if(combatant is AllyCombatant)
+    //     // if(combatant is PlayableCombatant)
     //     //     battlePartyPanel.UpdateStatusBar(StatusBarType.HP, recoveryBarValue);
 
     //     // while(damageBarValue > healthBarValue) 
@@ -61,7 +61,7 @@ public class HealthDisplay : MonoBehaviour
     //     //     damageBarValue = damageBarValue - 1;
     //     //     // damageBar.SetCurrentValue(damageBarValue);
     //     //     healthBar.SetDamage(damageBarValue);
-    //     //     if(combatant is AllyCombatant)
+    //     //     if(combatant is PlayableCombatant)
     //     //         battlePartyPanel.UpdateStatusBar(StatusBarType.HPDamage, recoveryBarValue);
     //     // }
     //     // healBar.SetDamage(0);
@@ -73,7 +73,7 @@ public class HealthDisplay : MonoBehaviour
     //     // int recoveryBarValue = combatant.hp.GetCurrentValue();
     //     // // healBar.SetCurrentValue(healBarValue);
     //     // healthBar.SetRecovery(recoveryBarValue);
-    //     // if(combatant is AllyCombatant)
+    //     // if(combatant is PlayableCombatant)
     //     //     battlePartyPanel.UpdateStatusBar(StatusBarType.HPRecovery, recoveryBarValue);
     //     //     // onChangeRecovery.Raise(combatant.gameObject, recoveryBarValue);
 
@@ -83,7 +83,7 @@ public class HealthDisplay : MonoBehaviour
     //     //     healthBarValue = healthBarValue++;
     //     //     // healthBar.SetCurrentValue(healthBarValue);
     //     //     healthBar.SetHealth(healthBarValue);
-    //     //     if(combatant is AllyCombatant)
+    //     //     if(combatant is PlayableCombatant)
     //     //         battlePartyPanel.UpdateStatusBar(StatusBarType.HP, recoveryBarValue);
     //     // }
     //     // healBar.SetRecovery(0);

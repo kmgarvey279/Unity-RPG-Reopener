@@ -16,32 +16,25 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     public int x;
     public int y;
     public Combatant occupier;
-    private Targetability targetability = Targetability.Default;
+    public Targetability targetability = Targetability.Default;
     [Header("Display")]
     [SerializeField] private Image tileImage;
     [SerializeField] private Button tileButton;
     [SerializeField] private Image aoeImage;
     [SerializeField] private Image selectedImage;
+    [SerializeField] private Image pathNodeImage;
     [Header("Events")]
     [SerializeField] private SignalSenderGO onTileSelect;
     [SerializeField] private SignalSender onTileConfirm;
     [Header("Color/Cost")]
+    [SerializeField] private Color inaccessibleColor;
     [SerializeField] private Color invisibleColor;
     [SerializeField] private Color defaultColor;
-    [SerializeField] private List<Color> costColors = new List<Color>();
     public int moveCost;
 
-    public void Display(int moveCost = -1)
+    public void Display()
     {
-        if(moveCost > -1)
-        {
-            this.moveCost = moveCost;
-            tileImage.color = costColors[moveCost];
-        }
-        else
-        {
-            tileImage.color = defaultColor;
-        }
+        tileImage.color = defaultColor;
         tileButton.enabled = true;
     }
 
@@ -50,7 +43,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
         aoeImage.enabled = true;
         if(occupier)
         {
-            if(occupier is AllyCombatant && targetPlayer)
+            if(occupier is PlayableCombatant && targetPlayer)
             {
                 occupier.Select();
             }
@@ -61,13 +54,23 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
         }
     }
 
-    public void ClearAOE()
+    public void HideAOE()
     {
         aoeImage.enabled = false;
         if(occupier)
         {
             occupier.Deselect();
         }
+    }
+
+    public void DisplayPathNode()
+    {
+        pathNodeImage.enabled = true;
+    }
+
+    public void HidePathNode()
+    {
+        pathNodeImage.enabled = false;
     }
 
     public void ChangeTargetability(Targetability newStatus)
@@ -98,7 +101,6 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
 
     public void Hide()
     {
-        moveCost = -1;
         tileImage.color = invisibleColor;
         tileButton.enabled = false;
         aoeImage.enabled = false;

@@ -11,6 +11,9 @@ public class EffectDamage : ActionEffect
     public override void ApplyEffect(Action action, Combatant attacker, Combatant target)
     {
         int damage = battleCalculations.GetDamageAmount(action, attacker, target);
-        target.TakeDamage(damage);
+        Vector2 attackDirection = new Vector2(0,0);
+        if(action.useDirection)
+            attackDirection = attacker.lookDirection;
+        target.TakeDamage(damage, attackDirection);
     }
 }

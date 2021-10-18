@@ -13,30 +13,48 @@ MonoBehaviour:
   m_Name: Claire Ranged
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
-  actionName: Gun Attack
+  actionName: 
   descripton: 
   actionType: 0
   timeCost: 3
   mpCost: 0
   cooldown: 0
   power: 0
-  accuracy: 80
-  range: 99
+  accuracy: 99
+  range: 3
   aoe: 0
-  attackProperty: 0
+  excludeStartingTile: 1
+  lineAOE: 0
+  stopAtOccupiedTile: 0
+  offensiveStat: 1
+  defensiveStat: 3
   elementalProperty: 0
-  isMelee: 0
-  isGun: 0
-  isSpecial: 0
   guaranteedHit: 0
-  distancePenalty: 0
+  distancePenalty: 1
   effects:
   - {fileID: 11400000, guid: 7b5ff438e848e54438d2d76005586efe, type: 2}
+  statusEffect: {fileID: 0}
+  knockback: 0
+  useDirection: 1
   targetFriendly: 0
   targetHostile: 1
-  fixedTarget: 1
-  useGraphicPrefab: {fileID: 9080087516260223380, guid: a9a53ad4435f66448b4a1b4e852a9413,
+  targetSelfOnly: 0
+  hasCastAnimation: 0
+  castAnimatorTrigger: 
+  castGraphicPrefab: {fileID: 0}
+  castAnimationDuration: 0
+  castGraphicDelay: 0
+  hasProjectileAnimation: 1
+  projectileAnimatorTrigger: Melee
+  projectileGraphicPrefab: {fileID: 9080087516260223380, guid: a9a53ad4435f66448b4a1b4e852a9413,
     type: 3}
-  effectGraphicPrefab: {fileID: 9080087516260223380, guid: a9a53ad4435f66448b4a1b4e852a9413,
+  projectileSpeed: 0
+  projectileGraphicDelay: 0.15
+  hasMoveAnimation: 0
+  moveAnimatorTrigger: 
+  moveGraphicPrefab: {fileID: 0}
+  effectAnimatorTrigger: 
+  effectGraphicPrefab: {fileID: 173376264066434547, guid: c1c96842e9fb8f748bb5fafd959e002b,
     type: 3}
-  animatorTrigger: Melee
+  effectAnimationDuration: 0.3
+  effectGraphicDelay: 0.15

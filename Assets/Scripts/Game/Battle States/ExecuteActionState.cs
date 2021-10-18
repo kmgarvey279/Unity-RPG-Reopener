@@ -17,7 +17,7 @@ public class ExecuteActionState : BattleState
     public override void OnEnter()
     {
         base.OnEnter();
-        Debug.Log("Eneter execute state");
+        Debug.Log("Enter execute state");
         battleCalculations = new BattleCalculations();
         
         turnData = battleManager.turnData;
@@ -38,7 +38,7 @@ public class ExecuteActionState : BattleState
 
     public override void OnExit()
     {
-
+        base.OnExit();
     }
 
     public void ExecuteAction()
@@ -48,36 +48,126 @@ public class ExecuteActionState : BattleState
         {
             turnData.combatant.FaceTarget(turnData.targetedTile.transform);
         }
-        TriggerAnimation();
+        StartCoroutine(CastAnimationCo());
     }
 
-    public void TriggerAnimation()
+    //trigger action animation + visual effect on user
+    public IEnumerator CastAnimationCo()
     {
-        if(turnData.action.animatorTrigger != null)
+        //cast animation
+        if(turnData.action.hasCastAnimation)
         {
-            turnData.combatant.animator.SetTrigger(turnData.action.animatorTrigger);
+            if(turnData.action.castAnimatorTrigger != null)
+            {
+                turnData.combatant.animator.SetTrigger(turnData.action.castAnimatorTrigger);
+            }
+            //spawn casting effect
+            if(turnData.action.castGraphicPrefab != null)
+            {
+                yield return new WaitForSeconds(turnData.action.castGraphicDelay); 
+                Vector3 spawnPosition = turnData.combatant.transform.position;
+                GameObject graphicObject = Instantiate(turnData.action.castGraphicPrefab, spawnPosition, Quaternion.identity);
+            }
+            yield return new WaitForSeconds(turnData.action.castAnimationDuration);
+            MoveAnimation();
         }
-        StartCoroutine(SpawnGraphicCo());
+        else
+        {
+            MoveAnimation();
+        }
     }
 
-    public IEnumerator SpawnGraphicCo()
+    private void MoveAnimation()
     {
-        yield return new WaitForSeconds(0.25f);
-        
-        GameObject graphicObject = null;
-        if(turnData.action.effectGraphicPrefab != null)
+        if(turnData.action.hasMoveAnimation && turnData.targetedTile != turnData.combatant.tile)
         {
-            graphicObject = Instantiate(turnData.action.effectGraphicPrefab, turnData.targetedTile.transform.position, Quaternion.identity);
+            turnData.combatant.gridMovement.Move(new List<Tile>(){turnData.combatant.tile, turnData.targetedTile}, MovementType.Dash); 
         }
-        yield return new WaitForSeconds(0.5f);
+        else
+        {
+            StartCoroutine(ProjectileAnimationCo());
+        }
+    }
+
+    public void OnMoveEnd()
+    {
+        StartCoroutine(ProjectileAnimationCo());
+    }
+
+    public IEnumerator ProjectileAnimationCo()
+    {
+            if(turnData.action.hasProjectileAnimation && turnData.action.projectileGraphicPrefab != null)
+            {
+                if(turnData.action.projectileAnimatorTrigger != null)
+                {
+                    turnData.combatant.animator.SetTrigger(turnData.action.projectileAnimatorTrigger);
+                }
+                yield return new WaitForSeconds(turnData.action.projectileGraphicDelay);
+                Vector3 startPosition = new Vector3(turnData.combatant.tile.transform.position.x + (turnData.combatant.lookDirection.x * 0.1f), turnData.combatant.transform.position.y + (turnData.combatant.lookDirection.y * 0.1f));
+                GameObject projectileObject = Instantiate(turnData.action.projectileGraphicPrefab, startPosition, Quaternion.identity);
+                projectileObject.GetComponent<Projectile>().Move(turnData.targetedTile.transform.position);
+            }
+            else
+            {
+                yield return null; 
+                StartCoroutine(EffectAnimationCo());
+            }
+    }
+
+    public void OnProjectileEnd()
+    {
+        StartCoroutine(EffectAnimationCo());
+    }
+
+    private IEnumerator EffectAnimationCo()
+    {
+        //user animation
+        if(turnData.action.effectAnimatorTrigger != null)
+        {
+            turnData.combatant.animator.SetTrigger(turnData.action.effectAnimatorTrigger);
+        }
+        //spawn visual effect
+        if(turnData.action.effectGraphicPrefab)
+        {
+            yield return new WaitForSeconds(turnData.action.effectGraphicDelay); 
+            Vector3 spawnPosition = turnData.targetedTile.transform.position;
+            GameObject graphicObject = Instantiate(turnData.action.effectGraphicPrefab, spawnPosition, Quaternion.identity);
+            //destory visual effect
+            yield return new WaitForSeconds(turnData.action.effectAnimationDuration);
+            Destroy(graphicObject);
+        }
+        else 
+        {
+            yield return new WaitForSeconds(turnData.action.effectAnimationDuration);
+        }
+        KnockbackAnimation();
+    }
+
+    private void KnockbackAnimation()
+    {
+        if(turnData.action.knockback > 0)
+        {
+            foreach (Combatant target in turnData.targets)
+            {
+                Tile destination = target.tile;
+                //find furthest tile target can be knocked back to
+                List<Tile> row = gridManager.GetRow(target.tile, turnData.combatant.lookDirection, turnData.action.knockback, true);
+
+                destination = row[row.Count - 1];
+                if(destination != target.tile)
+                {
+                    target.gridMovement.Move(new List<Tile>(){target.tile, destination}, MovementType.Knockback); 
+                }
+            }
+        }
+    }
+
+    public void OnKnockbackEnd()
+    {
         StartCoroutine(TriggerActionEffectsCo());
-        // if(graphicObject.GetComponent<ActionGraphic>() is ProjectileGraphic)
-        // {
-        //     ProjectileGraphic projectileGraphic = graphicObject.GetComponent<ProjectileGraphic>();
-        //     projectileGraphic.destination = destination;
-        // }
     }
 
+    //trigger effects of action (ex: damage, heal, status effect)
     public IEnumerator TriggerActionEffectsCo()
     {
         if(turnData.targets.Count > 0)
@@ -88,6 +178,8 @@ public class ExecuteActionState : BattleState
                 if(didHit)
                 {
                     Debug.Log(target.characterName + " was hit!");
+                    
+                    //damage/effects
                     foreach (ActionEffect effect in turnData.action.effects)
                     {
                         effect.ApplyEffect(turnData.action, turnData.combatant, target);
@@ -103,7 +195,7 @@ public class ExecuteActionState : BattleState
         } 
         else
         {
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.3f);
         }
         EndAction();
     }
@@ -111,6 +203,7 @@ public class ExecuteActionState : BattleState
     public void EndAction()
     {
         Debug.Log("action complete!");
+        turnData.combatant.animator.SetTrigger("Idle");
         battleManager.EndTurn();
     }
 }

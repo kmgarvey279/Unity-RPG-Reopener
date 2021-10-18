@@ -13,36 +13,30 @@ MonoBehaviour:
   m_Name: New Enemy Info 1
   m_EditorClassIdentifier: 
   characterName: Enemy
-  level: 1
+  level: 10
   baseHP: 50
   hp:
     baseValue: 50
-    statType: 0
     modifiers: 
+    multipliers: []
     currentValue: 50
   baseMP: 0
   mp:
     baseValue: 0
-    statType: 1
     modifiers: 
+    multipliers: []
     currentValue: 0
-  meleePower: 10
-  rangedPower: 5
-  magicPower: 5
-  meleeResistance: 10
-  rangedResistance: 5
-  magicResistance: 5
   attack: 7
-  skill: 7
   defense: 7
-  special: 7
+  magic: 7
+  magicDefense: 7
+  skill: 7
   agility: 7
   moveRange: 3
-  fireResist: 0
-  iceResist: 0
-  electricResist: 0
-  voidResist: 0
-  meleeAttack: {fileID: 11400000, guid: 70fc9a8249db6c84f9541a7bf04d24b2, type: 2}
-  rangedAttack: {fileID: 0}
+  fireResist: 5
+  iceResist: 5
+  electricResist: 5
+  darkResist: 5
   skills:
   - {fileID: 11400000, guid: 70fc9a8249db6c84f9541a7bf04d24b2, type: 2}
+  - {fileID: 11400000, guid: 823b4bcd44b18ac4c8b05a0b9d9c80a0, type: 2}

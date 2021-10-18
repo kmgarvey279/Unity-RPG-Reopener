@@ -28,7 +28,7 @@ public class Combatant : MonoBehaviour
     public int level;
     public DynamicStat hp;
     public DynamicStat mp;
-    public Dictionary<BattleStatType, Stat> battleStatDict;
+    public Dictionary<BattleStatType, Stat> battleStatDict = new Dictionary<BattleStatType, Stat>();
     public Dictionary<ElementalProperty, Stat> elementalResistDict;
     public List<Action> skills;
     [Header("Status")]
@@ -41,14 +41,15 @@ public class Combatant : MonoBehaviour
     public Battlefield battlefield;
     [Header("Child Scripts")]
     public HealthDisplay healthDisplay;
+    public StatusEffectDisplay statusEffectDisplay;
     public MaskController maskController;
     [Header("Events")]
-    public SignalSender onMoveComplete;
     public SignalSenderGO onTargetSelect;
     public SignalSenderGO onTargetDeselect;
-    [Header("Grid")]
+    [Header("Position/Direction")]
     public Tile tile;
-    [HideInInspector] public List<Tile> path = new List<Tile>();
+    public Vector2 lookDirection;
+    public GridMovement gridMovement;
     [HideInInspector] public float recoveryTime = 1f;
     [HideInInspector] public float koTime = 1f;
 
@@ -65,7 +66,9 @@ public class Combatant : MonoBehaviour
         skills = characterInfo.skills;
         //components
         healthDisplay = GetComponentInChildren<HealthDisplay>();
+        statusEffectDisplay = GetComponentInChildren<StatusEffectDisplay>();
         maskController = GetComponentInChildren<MaskController>();
+        gridMovement = GetComponentInChildren<GridMovement>();
     }
 
     public virtual void SetBattleStats(Dictionary<StatType, Stat> statDict)
@@ -87,6 +90,17 @@ public class Combatant : MonoBehaviour
         transform.position = newPosition;
     }
 
+    public void OnTurnStart()
+    {
+        if(statusEffects.Count > 0)
+        {
+            for(int i = statusEffects.Count - 1; i >= 0; i--)
+            {
+                statusEffects[i].OnTurnStart(this);            
+            }
+        }
+    }
+
     public Vector2 GetDirection()
     {
         return new Vector2(animator.GetFloat("Look X"), animator.GetFloat("Look Y"));
@@ -97,50 +111,17 @@ public class Combatant : MonoBehaviour
         this.tile = tile;
     }
 
-    public void Move(Tile destination)
-    {
-        path = battlefield.gridManager.GetPath(tile, destination);
-        animator.SetBool("Moving", true);
-    }
-
-    public virtual void EndMove()
-    {
-        onMoveComplete.Raise();
-    }
-
     public void FaceTarget(Transform target)
     {
-        Vector3 direction = (target.position - transform.position).normalized;
-        animator.SetFloat("Look X", direction.x);
-        animator.SetFloat("Look Y", direction.y);
+        Vector2 direction = (target.position - transform.position).normalized;
+        SetLookDirection(direction);
     }
 
-    private void Update()
+    public void SetLookDirection(Vector2 newDirection)
     {
-        float speed = 4f;
-        if(path.Count > 0)
-        {
-            if(Vector3.Distance(transform.position, path[0].transform.position) < 0.0001f)
-            {
-                path.RemoveAt(0);
-                if(path.Count == 0)
-                {
-                    animator.SetBool("Moving", false);
-                    EndMove();
-                }
-            }
-            else
-            {
-                Vector3 moveDirection = (path[0].transform.position - transform.position).normalized;
-                if(!Mathf.Approximately(moveDirection.x, 0.0f) || !Mathf.Approximately(moveDirection.y, 0.0f))
-                {
-                    animator.SetFloat("Look X", Mathf.Round(moveDirection.x));
-                    animator.SetFloat("Look Y", Mathf.Round(moveDirection.y));
-                }
-                float step = speed * Time.deltaTime; 
-                transform.position = Vector3.MoveTowards(transform.position, path[0].transform.position, step);   
-            }
-        }
+        lookDirection = newDirection;
+        animator.SetFloat("Look X", newDirection.x);
+        animator.SetFloat("Look Y", newDirection.y);
     }
 
     public void EvadeAttack()
@@ -148,10 +129,19 @@ public class Combatant : MonoBehaviour
         healthDisplay.HandleHealthChange(DamagePopupType.Miss, 0);
     }
 
-    public void TakeDamage(int damageAmount)
+    public void TakeDamage(int damageAmount, Vector2 attackDirection)
     {
+        if(statusEffects.Count > 0)
+        {
+            for(int i = statusEffects.Count - 1; i >= 0; i--)
+            {
+                statusEffects[i].OnHit(this);            
+            }
+        }
+        if(attackDirection.x != 0 || attackDirection.y !=0)
+            SetLookDirection(new Vector2(-attackDirection.x, -attackDirection.y));
         //switch to damage animation
-        animator.SetBool("Stun", true);
+        animator.SetTrigger("Stun");
         //update health
         ChangeHealth(-damageAmount);
         //ko target if hp <= 0
@@ -170,28 +160,34 @@ public class Combatant : MonoBehaviour
         hp.ChangeCurrentValue(amount);
         if(amount > 0)
         {
-        healthDisplay.HandleHealthChange(DamagePopupType.Heal, amount);
+            healthDisplay.HandleHealthChange(DamagePopupType.Heal, amount);
         }
         else
         {
-        healthDisplay.HandleHealthChange(DamagePopupType.Damage, amount);
+            healthDisplay.HandleHealthChange(DamagePopupType.Damage, amount);
         }
     }
 
     public void AddStatusEffect(StatusEffect statusEffect)
     {
         statusEffects.Add(statusEffect);
+        statusEffectDisplay.AddStatusIcon(statusEffect);
+        if(statusEffect.animatorTrigger != null)
+            animator.SetTrigger(statusEffect.animatorTrigger);
     }
 
     public void RemoveStatusEffect(StatusEffect statusEffect)
     {
         statusEffects.Remove(statusEffect);
+        statusEffectDisplay.RemoveStatusIcon(statusEffect);
+        if(statusEffect.animatorTrigger != null)
+            animator.SetTrigger("Idle");
     }
 
     private IEnumerator EndStun()
     {
         yield return new WaitForSeconds(recoveryTime);
-        animator.SetBool("Stun", false);
+        animator.SetTrigger("Idle");
     }
 
     private IEnumerator KO()

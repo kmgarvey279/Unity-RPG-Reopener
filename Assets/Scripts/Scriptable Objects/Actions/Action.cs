@@ -39,10 +39,15 @@ public class Action : ScriptableObject
     //enemies only
     public int cooldown;
     [Header("Properties")]
-    public int power;
+    public float power;
     public int accuracy;
     public int range;
     public int aoe;
+    public bool excludeStartingTile;
+    //generates a line AOE instead of a circle
+    public bool lineAOE;
+    //end line AOE if it hits a target
+    public bool stopAtOccupiedTile;
     //determines what stat is used to calculate offense
     public BattleStatType offensiveStat;
     //determines what stats is used to calculate defense
@@ -52,13 +57,33 @@ public class Action : ScriptableObject
     public bool distancePenalty;
     [Header("Effects")]
     public List<ActionEffect> effects = new List<ActionEffect>();
+    public StatusEffect statusEffect;
+    public int knockback;
+    public bool useDirection;
     [Header("Targeting")]
     public bool targetFriendly;
     public bool targetHostile;
-    public bool fixedTarget;
-    [Header("Animation")]
-    public GameObject useGraphicPrefab;
+    public bool targetSelfOnly;
+    [Header("Animation (Cast)")]
+    public bool hasCastAnimation;
+    public string castAnimatorTrigger;
+    public GameObject castGraphicPrefab;
+    public float castAnimationDuration;
+    public float castGraphicDelay;
+    [Header("Animation (Projectile)")]
+    public bool hasProjectileAnimation;
+    public string projectileAnimatorTrigger;
+    public GameObject projectileGraphicPrefab;
+    public float projectileSpeed;
+    public float projectileGraphicDelay;
+    [Header("Animation (Move)")]
+    public bool hasMoveAnimation;
+    public string moveAnimatorTrigger;
+    public GameObject moveGraphicPrefab;
+    [Header("Animation (Effect)")]
+    public string effectAnimatorTrigger;
     public GameObject effectGraphicPrefab;
-    public string animatorTrigger;
+    public float effectAnimationDuration;
+    public float effectGraphicDelay;
 }
 

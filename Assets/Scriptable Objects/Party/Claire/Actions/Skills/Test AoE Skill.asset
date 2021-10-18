@@ -16,18 +16,26 @@ MonoBehaviour:
   actionName: 
   descripton: Nuke it!
   actionType: 1
-  mpCost: 10
-  timeModifier: 0
-  power: 15
-  accuracy: 95
+  timeCost: 4
+  mpCost: 15
+  cooldown: 0
+  power: 1.5
+  accuracy: 99
   range: 3
   aoe: 2
-  attackProperty1: 4
-  attackProperty2: 0
-  effects: []
+  offensiveStat: 2
+  defensiveStat: 4
+  elementalProperty: 1
+  guaranteedHit: 0
+  distancePenalty: 0
+  effects:
+  - {fileID: 11400000, guid: 7b5ff438e848e54438d2d76005586efe, type: 2}
+  statusEffect: {fileID: 0}
   targetFriendly: 0
   targetHostile: 1
+  targetSelfOnly: 0
   fixedTarget: 0
   useGraphicPrefab: {fileID: 0}
-  effectGraphicPrefab: {fileID: 0}
-  animatorTrigger: 
+  effectGraphicPrefab: {fileID: 7816962457026261443, guid: 8b57e975f2ff9fe4ca6873371a6bb4e7,
+    type: 3}
+  animatorTrigger: Defend

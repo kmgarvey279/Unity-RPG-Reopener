@@ -33,6 +33,7 @@ public class EnemyCombatant : Combatant
         {
             cooldownTimers.Add(action, action.cooldown);
         }
+        SetLookDirection(new Vector2(-1, 0));
     }
 
     public override void SetBattleStats(Dictionary<StatType, Stat> statDict)
@@ -55,7 +56,10 @@ public class EnemyCombatant : Combatant
 
     public EnemyActionData GetActionData()
     {
+        //set default action (wait)
         EnemyActionData actionData = new EnemyActionData(wait, tile);
+        actionData.targetedTile = GetTargetedTile(wait, battlefield.gridManager.GetTargetsInRange(tile, 99, true, false));
+        actionData.destinationTile = battlefield.gridManager.GetClosestTileInRange(tile, actionData.targetedTile, battleStatDict[BattleStatType.MoveRange].GetValue());
 
         //get all actions that can be used this turn
         List<Action> readyActions = GetReadyActions();
@@ -74,7 +78,7 @@ public class EnemyCombatant : Combatant
             {
                 actionData.action = action;
                 actionData.targetedTile = GetTargetedTile(action, targetsInRange[action]);
-                actionData.destinationTile = battlefield.gridManager.GetClosestTileInRange(tile, actionData.targetedTile, battleStatDict[BattleStatType.MoveRange].GetValue() + action.range + action.aoe);
+                actionData.destinationTile = battlefield.gridManager.GetClosestTileInRange(tile, actionData.targetedTile, battleStatDict[BattleStatType.MoveRange].GetValue());
                 actionData.targets = battlefield.gridManager.GetTargetsInRange(actionData.targetedTile, action.aoe, action.targetHostile, action.targetFriendly);
                 //reset cooldown timer
                 cooldownTimers[action] = action.cooldown;

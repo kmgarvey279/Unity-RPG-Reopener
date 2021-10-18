@@ -12,19 +12,8 @@ public class SpriteAnimator : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    // public void ChangeStateTrigger(string parameter)
-    // {
-    //     animator.SetTrigger(parameter);
-    // }
-
-    // public void ChangeStateBool(string parameter, bool newBool)
-    // {
-    //     animator.SetTrigger(parameter, newBool);
-    // }
-
     public void ReturnToIdleState()
     {
-        Debug.Log("idle");
         animator.SetTrigger("Idle");
     }
 

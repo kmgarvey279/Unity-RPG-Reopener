@@ -17,38 +17,36 @@ MonoBehaviour:
   baseHP: 50
   hp:
     baseValue: 50
-    statType: 0
     modifiers: 
+    multipliers: []
     currentValue: 50
   baseMP: 25
   mp:
     baseValue: 25
-    statType: 1
     modifiers: 
+    multipliers: []
     currentValue: 25
-  meleePower: 0
-  rangedPower: 0
-  magicPower: 0
-  meleeResistance: 0
-  rangedResistance: 0
-  magicResistance: 0
   attack: 10
-  skill: 10
   defense: 10
-  special: 10
+  magic: 10
+  magicDefense: 10
+  skill: 10
   agility: 10
   moveRange: 3
   fireResist: 0
   iceResist: 0
   electricResist: 0
-  voidResist: 0
-  meleeAttack: {fileID: 11400000, guid: 49078961aba57e64590b3560444824a7, type: 2}
-  rangedAttack: {fileID: 11400000, guid: d0271b7210b12624186c868c9dc3043f, type: 2}
+  darkResist: 0
   skills:
   - {fileID: 11400000, guid: 675c277a63d62164bac38a220a7998a1, type: 2}
   - {fileID: 11400000, guid: 44bb599697fb8414795981df292281fc, type: 2}
   - {fileID: 11400000, guid: 95ae621aec7ee3d41b7c76dade20ea2a, type: 2}
-  characterID: 0
+  - {fileID: 11400000, guid: 11f1b375349a2b747a484a855566acab, type: 2}
+  - {fileID: 11400000, guid: cb5d6bb5b84d527459eb0ab6c410120e, type: 2}
+  - {fileID: 11400000, guid: a7f0227fe49ff7742b2af109d2127f71, type: 2}
+  meleeAttack: {fileID: 11400000, guid: 49078961aba57e64590b3560444824a7, type: 2}
+  rangedAttack: {fileID: 11400000, guid: d0271b7210b12624186c868c9dc3043f, type: 2}
   weapon: {fileID: 0}
   armor: {fileID: 0}
   accessory: {fileID: 0}
+  characterID: 0

@@ -6,43 +6,31 @@ using System;
 
 public class Projectile : MonoBehaviour
 {
-    public Rigidbody2D projectileRB;
-    public GameObject impactPrefab;
-    [Header("Speed")]
-    public float speed;
-    [Header("Lifetime")]
-    public float lifetime;
-    [HideInInspector] public float lifetimeCounter;
+    private bool moving;
+    private Vector3 target;
+    private float moveSpeed = 4f;
+    [SerializeField] private SignalSender onProjectileEnd;
 
-    // Start is called before the first frame update
-    void Awake()
+    private void Update()
     {
-        projectileRB = GetComponent<Rigidbody2D>();
-        lifetimeCounter = lifetime;
-    }
-
-    public virtual void Update()
-    {
-        lifetimeCounter -= Time.deltaTime;
-        if(lifetimeCounter <= 0)
+        if(moving)
         {
-            Destroy(this.gameObject);
+            if(Vector3.Distance(transform.position, target) < 0.0001f)
+            {
+                onProjectileEnd.Raise();
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                float step = moveSpeed * Time.deltaTime; 
+                transform.position = Vector3.MoveTowards(transform.position, target, step);   
+            }
         }
     }
 
-    public void Launch(Vector3 direction)
+    public void Move(Vector3 target)
     {
-        projectileRB.velocity = direction * speed;
-        // transform.rotation = Quaternion.Euler(direction);
-    }
-
-    private void OnCollisionEnter2D(Collision2D other)
-    {        
-        Destroy(this.gameObject);
-        Instantiate(impactPrefab, transform.position, Quaternion.identity);
-    }
-
-    public virtual void OnTriggerEnter2D(Collider2D other)
-    {
+        this.target = target;
+        moving = true;
     }
 }

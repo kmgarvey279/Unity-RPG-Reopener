@@ -16,15 +16,15 @@ public class BattlePartyPanel : MonoBehaviour
     [SerializeField] private AnimatedBar mpBar;
 
 
-    public void AssignCombatant(AllyCombatant allyCombatant)
+    public void AssignCombatant(PlayableCombatant playableCombatant)
     {
         //set basic hp bar
-        hpBar.SetInitialValue(allyCombatant.hp.GetValue(), allyCombatant.hp.GetCurrentValue());
-        hpNum.text = allyCombatant.hp.GetCurrentValue().ToString();
+        hpBar.SetInitialValue(playableCombatant.hp.GetValue(), playableCombatant.hp.GetCurrentValue());
+        hpNum.text = playableCombatant.hp.GetCurrentValue().ToString();
 
         //set basic mp bar
-        mpBar.SetInitialValue(allyCombatant.mp.GetCurrentValue(), allyCombatant.mp.GetCurrentValue());
-        mpNum.text = allyCombatant.mp.GetCurrentValue().ToString();
+        mpBar.SetInitialValue(playableCombatant.mp.GetCurrentValue(), playableCombatant.mp.GetCurrentValue());
+        mpNum.text = playableCombatant.mp.GetCurrentValue().ToString();
     }
 
     public void UpdateHP(int newValue)

@@ -137,7 +137,7 @@ public class BattleManager : MonoBehaviour
             TurnSlot newSlot = new TurnSlot(combatant);
             turnForecast.Add(newSlot);
             //create playable character status panel
-            battlePartyHUD.CreatePartyPanel((AllyCombatant)combatant);
+            battlePartyHUD.CreatePartyPanel((PlayableCombatant)combatant);
         }
         foreach(Combatant combatant in enemyParty.combatants)
         {
@@ -179,8 +179,10 @@ public class BattleManager : MonoBehaviour
         //create temp turn data
         turnData = new TurnData(currentTurnSlot.combatant);
 
+        currentTurnSlot.combatant.OnTurnStart();
+
         //get next state
-        if(currentTurnSlot.combatant is AllyCombatant)
+        if(currentTurnSlot.combatant is PlayableCombatant)
         {
             stateMachine.ChangeState((int)BattleStateType.Menu);
         }
@@ -237,7 +239,6 @@ public class BattleManager : MonoBehaviour
 
     public void EndTurn()
     {   
-        Debug.Log("End Turn");
         battleTimeline.ToggleNextTurnIndicator(currentTurnSlot, false);
         turnData = null;
         AdvanceTimeline();
@@ -268,7 +269,6 @@ public class BattleManager : MonoBehaviour
 
     public void OnTargetDeselect(GameObject gameObject)
     {
-        Debug.Log("Deselect");
         Combatant target = gameObject.GetComponent<Combatant>();
         TurnSlot selectedTurnSlot = turnForecast.FirstOrDefault(turnSlot => turnSlot.combatant == target);
         if(selectedTurnSlot != null)

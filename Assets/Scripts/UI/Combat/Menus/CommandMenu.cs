@@ -14,9 +14,9 @@ public class CommandMenu : MonoBehaviour
     [Header("Buttons")]
     [SerializeField] private GameObject defaultButton;
     [SerializeField] private Button attackButton;
+    [SerializeField] private Button moveButton;
 
     [Header("Actions")]
-    [SerializeField] private Action attack;
     [SerializeField] private Action item;
     [SerializeField] private Action defend;
 
@@ -37,7 +37,18 @@ public class CommandMenu : MonoBehaviour
 
     public void SelectAttack()
     {
-        battleManager.SetAction(attack);
+        PlayableCombatant playableCombatant = (PlayableCombatant)battleManager.turnData.combatant;
+        Action attack;
+        if(playableCombatant.rangedAttack)
+        {
+            attack = playableCombatant.rangedAttack;
+        }
+        else 
+        {
+            attack = playableCombatant.meleeAttack;
+        }
+        if(attack != null)
+            battleManager.SetAction(attack);
         battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
     }
 
@@ -62,8 +73,16 @@ public class CommandMenu : MonoBehaviour
 
     }
 
+    public void SelectMove()
+    {
+        Debug.Log("Defend!");
+        battleManager.SetAction(defend);
+        battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
+    }
+
     public void SelectDefend()
     {
+        Debug.Log("Defend!");
         battleManager.SetAction(defend);
         battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
     }

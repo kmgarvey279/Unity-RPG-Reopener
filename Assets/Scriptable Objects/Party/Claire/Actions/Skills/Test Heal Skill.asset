@@ -16,18 +16,41 @@ MonoBehaviour:
   actionName: 
   descripton: It heals
   actionType: 1
+  timeCost: 3
   mpCost: 10
-  timeModifier: 0
+  cooldown: 0
   power: 0
   accuracy: 0
   range: 0
   aoe: 3
-  attackProperty1: 0
-  attackProperty2: 0
+  lineAOE: 0
+  offensiveStat: 0
+  defensiveStat: 0
+  elementalProperty: 0
+  guaranteedHit: 0
+  distancePenalty: 0
   effects: []
+  statusEffect: {fileID: 0}
+  knockback: 0
+  useDirection: 0
   targetFriendly: 1
   targetHostile: 1
-  fixedTarget: 0
-  useGraphicPrefab: {fileID: 0}
+  targetSelfOnly: 0
+  hasCastAnimation: 0
+  castAnimatorTrigger: 
+  castGraphicPrefab: {fileID: 0}
+  castAnimationDuration: 0
+  castGraphicDelay: 0
+  hasProjectileAnimation: 0
+  projectileAnimatorTrigger: 
+  projectileGraphicPrefab: {fileID: 0}
+  projectileSpeed: 0
+  projectileGraphicDelay: 0
+  hasMoveAnimation: 0
+  moveAnimatorTrigger: 
+  moveGraphicPrefab: {fileID: 0}
+  moveSpeed: 0
+  effectAnimatorTrigger: 
   effectGraphicPrefab: {fileID: 0}
-  animatorTrigger: 
+  effectAnimationDuration: 0
+  effectGraphicDelay: 0
