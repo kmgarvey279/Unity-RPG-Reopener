@@ -58,7 +58,6 @@ public class EnemyTurnState : BattleState
         if(enemyCombatant.tile != destinationTile)
         {
             List<Tile> path = gridManager.GetPath(enemyCombatant.tile, destinationTile);
-            enemyCombatant.animator.SetTrigger("Move");
             enemyCombatant.gridMovement.Move(path, MovementType.Move); 
         }
         else
@@ -69,7 +68,6 @@ public class EnemyTurnState : BattleState
 
     public void OnMoveComplete()
     {
-        enemyCombatant.animator.SetTrigger("Idle");
         StartCoroutine(ActionPhase());
     }
 

@@ -28,17 +28,28 @@ public class GridMovement : MonoBehaviour
     {
         this.path = path;
         this.movementType = movementType;
+        if(movementType == MovementType.Move)
+        {
+            combatant.animator.SetTrigger("Move");
+        }
     }
 
     public virtual void EndMove()
     {
-        combatant.SnapToTileCenter();
         if(movementType == MovementType.Move)
+        {
+            combatant.animator.SetTrigger("Idle");
             onMoveComplete.Raise();
-        if(movementType == MovementType.Dash)
+        }
+        else if(movementType == MovementType.Dash)
+        {
+            combatant.animator.SetTrigger("Idle");
             onDashComplete.Raise();
-        if(movementType == MovementType.Knockback)
+        }
+        else if(movementType == MovementType.Knockback)
+        {
             onKnockbackComplete.Raise();
+        }
     }
 
     private void Update()

@@ -31,7 +31,8 @@ MonoBehaviour:
   elementalProperty: 4
   guaranteedHit: 0
   distancePenalty: 0
-  effects: []
+  effects:
+  - {fileID: 11400000, guid: 7b5ff438e848e54438d2d76005586efe, type: 2}
   statusEffect: {fileID: 0}
   knockback: 0
   useDirection: 1
@@ -39,19 +40,19 @@ MonoBehaviour:
   targetHostile: 1
   targetSelfOnly: 0
   hasCastAnimation: 1
-  castAnimatorTrigger: Melee
+  castAnimatorTrigger: Defend
   castGraphicPrefab: {fileID: 0}
-  castAnimationDuration: 0.3
-  castGraphicDelay: 0
-  hasProjectileAnimation: 0
+  castAnimationDuration: 0.4
+  castGraphicDelay: 0.15
+  hasProjectileAnimation: 1
   projectileAnimatorTrigger: 
-  projectileGraphicPrefab: {fileID: 0}
-  projectileSpeed: 0
-  projectileGraphicDelay: 0
+  projectileGraphicPrefab: {fileID: 9080087516260223380, guid: a9a53ad4435f66448b4a1b4e852a9413,
+    type: 3}
+  projectileGraphicDelay: 0.15
   hasMoveAnimation: 0
   moveAnimatorTrigger: 
   moveGraphicPrefab: {fileID: 0}
-  effectAnimatorTrigger: 
+  effectAnimatorTrigger: Melee
   effectGraphicPrefab: {fileID: 0}
-  effectAnimationDuration: 0
-  effectGraphicDelay: 0
+  effectAnimationDuration: 0.4
+  effectGraphicDelay: 0.15

@@ -92,17 +92,11 @@ MonoBehaviour:
   statusEffects: []
   animator: {fileID: 4318611025402815799}
   spriteFill: {fileID: 0}
-  battlefield: {fileID: 0}
-  healthDisplay: {fileID: 0}
-  statusEffectDisplay: {fileID: 0}
-  maskController: {fileID: 0}
   onTargetSelect: {fileID: 11400000, guid: 9643ea6fcd7523f49b0b77952933ff6e, type: 2}
   onTargetDeselect: {fileID: 11400000, guid: 12a71b399520515489f510970c00b7ef, type: 2}
   tile: {fileID: 0}
   lookDirection: {x: 0, y: 0}
   gridMovement: {fileID: 0}
-  recoveryTime: 0.5
-  koTime: 0.5
   wait: {fileID: 11400000, guid: 87818ae46e5748c45afe5f916dd34148, type: 2}
 --- !u!50 &8108459132740079107
 Rigidbody2D:
@@ -209,7 +203,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.8, y: 0.8}
+  m_Size: {x: 0.24, y: 0.24}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

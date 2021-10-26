@@ -56,6 +56,10 @@ public class TileSelectState : BattleState
             if(selectedTargets.Count > 0) 
             {
                 battleManager.SetTargets(selectedTile, selectedTargets);
+                if(turnData.action == turnData.combatant.rangedAttack && gridManager.GetMoveCost(turnData.combatant.tile, selectedTile) <= 1 && turnData.combatant.meleeAttack != null)
+                {
+                    turnData.action = turnData.combatant.meleeAttack;
+                }
                 stateMachine.ChangeState((int)BattleStateType.Execute); 
             }
             else 

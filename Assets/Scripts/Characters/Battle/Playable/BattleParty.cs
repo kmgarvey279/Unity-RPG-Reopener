@@ -30,26 +30,22 @@ public class BattleParty : MonoBehaviour
         allyPrefabs.Add("Shad", shad);  
         allyPrefabs.Add("Blaine", blaine);
         allyPrefabs.Add("Lucy", lucy);
-
         SpawnAllies();
     }
 
     public void SpawnAllies()
     {
+        BattleManager battleManager = GetComponentInParent<BattleManager>();
         int allyCount = 0;
-        
         for(int i = 0; i < partyData.partyList.Count; i++)
         {
             PartyMember partyMember = partyData.partyList[i];
-            
             if(partyMember.inActiveParty)
             {
                 string characterName = partyMember.characterName; 
-
                 GameObject allyObject = Instantiate(allyPrefabs[characterName], battlePositions[allyCount].position, Quaternion.identity);
                 allyObject.transform.parent = gameObject.transform;
-                combatants.Add(allyObject.GetComponent<Combatant>());
-
+                battleManager.AddPlayableCombatant(allyObject.GetComponent<Combatant>());
                 allyCount++;
                 if(allyCount == 3)
                     return;

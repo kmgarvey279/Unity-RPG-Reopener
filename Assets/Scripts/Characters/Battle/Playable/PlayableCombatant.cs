@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class PlayableCombatant : Combatant
 {
-    public Action meleeAttack;
-    public Action rangedAttack;
     public BattlePartyPanel battlePartyPanel;
 
     public override void Awake()
@@ -13,8 +11,6 @@ public class PlayableCombatant : Combatant
         base.Awake();
         //set attacks
         PlayableCharacterInfo playableCharacterInfo = (PlayableCharacterInfo)characterInfo;
-        meleeAttack = playableCharacterInfo.meleeAttack;
-        rangedAttack = playableCharacterInfo.rangedAttack;
         //set default direction
         SetLookDirection(new Vector2(1, 0));
     }

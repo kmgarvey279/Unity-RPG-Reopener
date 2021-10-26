@@ -39,7 +39,6 @@ public class PlayerMoveState : BattleState
 
             gridManager.HideTiles();
 
-            turnData.combatant.animator.SetTrigger("Move");
             turnData.combatant.gridMovement.Move(path, MovementType.Move); 
         }
         if(Input.GetButtonDown("Cancel"))
@@ -73,7 +72,6 @@ public class PlayerMoveState : BattleState
 
     public void OnMoveComplete()
     {
-        turnData.combatant.animator.SetTrigger("Idle");
         battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
     }
 

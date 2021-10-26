@@ -82,7 +82,6 @@ Transform:
   - {fileID: 1104867729}
   - {fileID: 1522742266}
   - {fileID: 375621007}
-  - {fileID: 1790431373}
   - {fileID: 1600802481}
   - {fileID: 1360154139}
   - {fileID: 1068160557}
@@ -106,7 +105,6 @@ MonoBehaviour:
   - {fileID: 1104867730}
   - {fileID: 1522742267}
   - {fileID: 375621008}
-  - {fileID: 1790431374}
   - {fileID: 1600802482}
   - {fileID: 1360154140}
   - {fileID: 1068160558}
@@ -142,7 +140,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 692242124}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &871918601
 MonoBehaviour:
@@ -190,7 +188,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 692242124}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1068160558
 MonoBehaviour:
@@ -209,6 +207,7 @@ MonoBehaviour:
   battleStateType: 6
   battleManager: {fileID: 0}
   signalListeners: []
+  gridManager: {fileID: 0}
   onCameraZoomOut: {fileID: 11400000, guid: 7d39b1d704621c640a8ce91a6ae94a29, type: 2}
 --- !u!1 &1104867728
 GameObject:
@@ -287,7 +286,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 692242124}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1360154140
 MonoBehaviour:
@@ -306,6 +305,7 @@ MonoBehaviour:
   battleStateType: 5
   battleManager: {fileID: 0}
   signalListeners: []
+  gridManager: {fileID: 0}
   onCameraZoomIn: {fileID: 0}
 --- !u!1 &1522742265
 GameObject:
@@ -386,7 +386,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 692242124}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1600802482
 MonoBehaviour:
@@ -407,57 +407,6 @@ MonoBehaviour:
   signalListeners: []
   gridManager: {fileID: 0}
   onCameraZoomOut: {fileID: 0}
---- !u!1 &1790431372
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1790431373}
-  - component: {fileID: 1790431374}
-  m_Layer: 0
-  m_Name: Target Select
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1790431373
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1790431372}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 692242124}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1790431374
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1790431372}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfca52920fe41f040b7e1d11a16b5489, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stateMachine: {fileID: 0}
-  id: 0
-  battleStateType: 3
-  battleManager: {fileID: 0}
-  signalListeners: []
-  gridManager: {fileID: 0}
-  attackSwitch: {fileID: 0}
-  onCameraZoomIn: {fileID: 11400000, guid: 1b526e957c88b6e40aa2172d13ee6bf3, type: 2}
 --- !u!1 &2036527992414714683
 GameObject:
   m_ObjectHideFlags: 0
@@ -502,9 +451,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7812e0711bdcbfc479cf4d1d6fb6ea11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gridManager: {fileID: 0}
   gameData: {fileID: 11400000, guid: 97b5f51ad52814e4aa93a00c54b2d5eb, type: 2}
   allyParty: {fileID: 0}
   enemyParty: {fileID: 0}
+  battlePartyHUD: {fileID: 0}
   battleTimeline: {fileID: 0}
   turnForecast: []
   stateMachine: {fileID: 692242123}

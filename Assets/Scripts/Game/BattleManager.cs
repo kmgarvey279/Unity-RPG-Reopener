@@ -108,13 +108,13 @@ public class TurnData
 public class BattleManager : MonoBehaviour
 {
     private BattleCalculations battleCalculations;
-    [SerializeField] private GridManager gridManager;
+    public GridManager gridManager;
     [Header("Game Data Scriptable Object")]
     [SerializeField] private GameData gameData;
     
     [Header("Parties")]
-    public BattleParty allyParty;
-    public EnemyParty enemyParty;
+    private List<Combatant> playableCombatants = new List<Combatant>();
+    private List<Combatant> enemyCombatants = new List<Combatant>();
     [SerializeField] private BattlePartyHUD battlePartyHUD;
     
     [Header("Turn Order Display")]
@@ -128,18 +128,28 @@ public class BattleManager : MonoBehaviour
     [Header("Current Turn Data")]
     public TurnData turnData;
 
+    public void AddPlayableCombatant(Combatant combatant)
+    {
+        playableCombatants.Add(combatant);
+    }
+
+    public void AddEnemyCombatant(Combatant combatant)
+    {
+        enemyCombatants.Add(combatant);
+    }
+
     public void Start()
     {
         battleCalculations = new BattleCalculations();
         //generate turn forecast & display it
-        foreach(Combatant combatant in allyParty.combatants)
+        foreach(Combatant combatant in playableCombatants)
         {
             TurnSlot newSlot = new TurnSlot(combatant);
             turnForecast.Add(newSlot);
             //create playable character status panel
             battlePartyHUD.CreatePartyPanel((PlayableCombatant)combatant);
         }
-        foreach(Combatant combatant in enemyParty.combatants)
+        foreach(Combatant combatant in enemyCombatants)
         {
             TurnSlot newSlot = new TurnSlot(combatant);
             turnForecast.Add(newSlot);
@@ -161,11 +171,6 @@ public class BattleManager : MonoBehaviour
             battleTimeline.UpdateTurnPanels(turnForecast);
         }
         StartTurn();
-    }
-
-    public void EndBattle()
-    {
-        Debug.Log("End Battle");
     }
 
     public void StartTurn()
@@ -239,9 +244,53 @@ public class BattleManager : MonoBehaviour
 
     public void EndTurn()
     {   
-        battleTimeline.ToggleNextTurnIndicator(currentTurnSlot, false);
-        turnData = null;
-        AdvanceTimeline();
+        bool allPartyMembersKO = true;
+        foreach (Combatant combatant in playableCombatants)
+        {
+            if(combatant.ko == false)
+            {
+                allPartyMembersKO = false;
+            }
+        }
+        if(enemyCombatants.Count <= 0)
+        {
+            WinBattle();
+        }
+        else if(allPartyMembersKO == true)
+        {
+            LoseBattle();
+        }
+        else
+        {
+            battleTimeline.ToggleNextTurnIndicator(currentTurnSlot, false);
+            turnData = null;
+            AdvanceTimeline();
+        }
+    }
+
+    private void WinBattle()
+    {
+        Debug.Log("You Win!");
+    }
+
+    private void LoseBattle()
+    {
+        Debug.Log("Game Over");
+    }
+
+    private void EscapeBattle()
+    {
+        Debug.Log("You escaped!");
+    }
+
+    public void OnCombatantKO(Combatant combatant)
+    {
+        TurnSlot selectedTurnSlot = turnForecast.FirstOrDefault(turnSlot => turnSlot.combatant == combatant);
+        TurnForecastRemove(selectedTurnSlot);
+        if(combatant is EnemyCombatant)
+        {
+            enemyCombatants.Remove(combatant);
+        } 
     }
 
     public void OnTileSelect(GameObject tileObject)

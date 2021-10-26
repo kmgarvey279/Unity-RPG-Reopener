@@ -55,11 +55,11 @@ public class Action : ScriptableObject
     public ElementalProperty elementalProperty;
     public bool guaranteedHit;
     public bool distancePenalty;
-    [Header("Effects")]
-    public List<ActionEffect> effects = new List<ActionEffect>();
-    public StatusEffect statusEffect;
-    public int knockback;
     public bool useDirection;
+    [Header("Secondary Effects")]
+    public StatusEffect statusEffect;
+    public int statusEffectChance;
+    public int knockback;
     [Header("Targeting")]
     public bool targetFriendly;
     public bool targetHostile;
@@ -68,14 +68,13 @@ public class Action : ScriptableObject
     public bool hasCastAnimation;
     public string castAnimatorTrigger;
     public GameObject castGraphicPrefab;
-    public float castAnimationDuration;
-    public float castGraphicDelay;
+    public float castAnimationDuration = 0.4f;
+    public float castGraphicDelay = 0.15f;
     [Header("Animation (Projectile)")]
     public bool hasProjectileAnimation;
     public string projectileAnimatorTrigger;
     public GameObject projectileGraphicPrefab;
-    public float projectileSpeed;
-    public float projectileGraphicDelay;
+    public float projectileGraphicDelay = 0.15f;
     [Header("Animation (Move)")]
     public bool hasMoveAnimation;
     public string moveAnimatorTrigger;
@@ -83,7 +82,7 @@ public class Action : ScriptableObject
     [Header("Animation (Effect)")]
     public string effectAnimatorTrigger;
     public GameObject effectGraphicPrefab;
-    public float effectAnimationDuration;
-    public float effectGraphicDelay;
+    public float effectAnimationDuration = 0.4f;
+    public float effectGraphicDelay = 0.15f;
 }
 

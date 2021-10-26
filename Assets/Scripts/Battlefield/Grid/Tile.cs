@@ -11,6 +11,14 @@ public enum Targetability
     Untargetable
 }
 
+public enum PathType
+{
+    Start,
+    Straight, 
+    Turn,
+    End
+}
+
 public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public int x;
@@ -22,7 +30,13 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     [SerializeField] private Button tileButton;
     [SerializeField] private Image aoeImage;
     [SerializeField] private Image selectedImage;
-    [SerializeField] private Image pathNodeImage;
+    [SerializeField] private Image destinationImage;
+    [Header("Path")]
+    [SerializeField] private SpriteRenderer startPathImage;
+    [SerializeField] private SpriteRenderer endPathImage;
+    [SerializeField] private SpriteRenderer straightPathImage;
+    [SerializeField] private SpriteRenderer turnPathImage;
+    public GameObject[,] tileArray;
     [Header("Events")]
     [SerializeField] private SignalSenderGO onTileSelect;
     [SerializeField] private SignalSender onTileConfirm;
@@ -63,14 +77,67 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
         }
     }
 
-    public void DisplayPathNode()
+    public void DisplayPathNode(PathType pathType, Vector2 direction1, Vector2 direction2)
     {
-        pathNodeImage.enabled = true;
+        SpriteRenderer image;
+            image = straightPathImage;
+            if(pathType == PathType.Turn)
+            {
+                image = turnPathImage;
+            }
+            else if(pathType == PathType.Start)
+            {
+                image = startPathImage;
+            }
+            else if(pathType == PathType.End)
+            {
+                image = endPathImage;
+            }
+            int z = 0;
+            if(direction1.y > 0)
+            {
+                z = 0;
+            }
+            else if(direction1.x < 0)
+            {
+                z = 90;
+            }
+            else if(direction1.y < 0)
+            {
+                z = 180;
+            }
+            else if(direction1.x > 0)
+            {
+                z = 270;
+            }
+            image.transform.rotation = Quaternion.Euler(0, 0, z);
+            if(pathType == PathType.Turn)
+            {
+                if(direction1.x > 0 && direction2.y > 0 || direction1.x < 0 && direction2.y < 0)
+                {
+                    image.flipX = true;  
+                } 
+                else 
+                {
+                    image.flipX = false;
+                    image.flipY = false;
+                }
+            }
+        image.enabled = true;
     }
 
     public void HidePathNode()
     {
-        pathNodeImage.enabled = false;
+        if(startPathImage.enabled)
+            startPathImage.enabled = false;
+        if(endPathImage.enabled)
+            endPathImage.enabled = false;
+        if(straightPathImage.enabled)
+            straightPathImage.enabled = false;
+        if(turnPathImage.enabled)
+            turnPathImage.enabled = false;
+        // if(destinationImage.enabled)
+        //     destinationImage.enabled = false;
     }
 
     public void ChangeTargetability(Targetability newStatus)

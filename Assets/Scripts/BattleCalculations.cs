@@ -22,15 +22,10 @@ namespace BattleCalculationsNamespace
         }
 
         //roll to check if action hits target
-        public bool HitCheck(Action action, Combatant attacker, Combatant target, int distance)
+        public bool HitCheck(int hitChance)
         {
-            if(action.guaranteedHit)
-            {
-                return true;
-            }
-            int hitChance = GetHitChance(action, attacker, target, distance);
             int roll = Random.Range(1, 100);
-            if(roll <= hitChance )
+            if(roll <= hitChance)
             {
                 return true;
             }
@@ -51,6 +46,13 @@ namespace BattleCalculationsNamespace
 
             float damage = Mathf.Clamp((offensiveStat * (float)action.power) * (100f/(100f + defensiveStat)) * Random.Range(0.85f, 1f), 1, 9999);
             return Mathf.FloorToInt(damage);
+        }
+
+        public int GetHealAmount(Action action, Combatant healer)
+        {
+            float healingStat = (float)healer.battleStatDict[action.offensiveStat].GetValue();
+            float heal = Mathf.Clamp((healingStat * (float)action.power) * Random.Range(0.85f, 1f), 1, 9999);
+            return Mathf.FloorToInt(heal);
         }
 
         public float CritCheck(Combatant attacker)

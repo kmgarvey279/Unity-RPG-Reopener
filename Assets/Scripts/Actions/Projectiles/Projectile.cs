@@ -8,7 +8,7 @@ public class Projectile : MonoBehaviour
 {
     private bool moving;
     private Vector3 target;
-    private float moveSpeed = 4f;
+    private float moveSpeed = 5f;
     [SerializeField] private SignalSender onProjectileEnd;
 
     private void Update()

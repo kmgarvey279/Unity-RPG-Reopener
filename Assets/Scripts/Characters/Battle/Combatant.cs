@@ -23,35 +23,39 @@ public enum BattleStatType
 public class Combatant : MonoBehaviour
 {
     [Header("Character Stats")]
-    public CharacterInfo characterInfo;
+    [SerializeField] protected CharacterInfo characterInfo;
     public string characterName;
     public int level;
     public DynamicStat hp;
     public DynamicStat mp;
     public Dictionary<BattleStatType, Stat> battleStatDict = new Dictionary<BattleStatType, Stat>();
     public Dictionary<ElementalProperty, Stat> elementalResistDict;
+    [Header("Actions")]
+    public Action meleeAttack;
+    public Action rangedAttack;
     public List<Action> skills;
     [Header("Status")]
     public bool ko = false;
     public List<StatusEffect> statusEffects;
     [Header("Game Object Components")]
-    public Animator animator;
-    public GameObject spriteFill;
+    [HideInInspector] public Animator animator;
+    [SerializeField] protected GameObject spriteFill;
     [Header("Parent Scripts")]
-    public Battlefield battlefield;
+    protected BattleManager battleManager;
+    protected GridManager gridManager;
     [Header("Child Scripts")]
-    public HealthDisplay healthDisplay;
-    public StatusEffectDisplay statusEffectDisplay;
-    public MaskController maskController;
+    protected HealthDisplay healthDisplay;
+    protected StatusEffectDisplay statusEffectDisplay;
+    protected MaskController maskController;
     [Header("Events")]
-    public SignalSenderGO onTargetSelect;
-    public SignalSenderGO onTargetDeselect;
+    [SerializeField] protected SignalSenderGO onTargetSelect;
+    [SerializeField] protected SignalSenderGO onTargetDeselect;
     [Header("Position/Direction")]
     public Tile tile;
     public Vector2 lookDirection;
-    public GridMovement gridMovement;
-    [HideInInspector] public float recoveryTime = 1f;
-    [HideInInspector] public float koTime = 1f;
+    [HideInInspector] public GridMovement gridMovement;
+    protected float recoveryTime = 1f;
+    protected float koTime = 1f;
 
     public virtual void Awake()
     {
@@ -63,12 +67,17 @@ public class Combatant : MonoBehaviour
         SetBattleStats(characterInfo.statDict);
         elementalResistDict = characterInfo.elementalResistDict;
         //skills
+        meleeAttack = characterInfo.meleeAttack;
+        rangedAttack = characterInfo.rangedAttack;
         skills = characterInfo.skills;
-        //components
+        //child components
         healthDisplay = GetComponentInChildren<HealthDisplay>();
         statusEffectDisplay = GetComponentInChildren<StatusEffectDisplay>();
         maskController = GetComponentInChildren<MaskController>();
         gridMovement = GetComponentInChildren<GridMovement>();
+        //parent/sibling components
+        battleManager = GetComponentInParent<BattleManager>();
+        gridManager = battleManager.gridManager;
     }
 
     public virtual void SetBattleStats(Dictionary<StatType, Stat> statDict)
@@ -77,13 +86,12 @@ public class Combatant : MonoBehaviour
 
     public virtual void Start()
     {
-        battlefield = GetComponentInParent<Battlefield>();
         SnapToTileCenter();
     }
 
     public void SnapToTileCenter()
     {
-        Tilemap tilemap = battlefield.gridManager.tilemap;
+        Tilemap tilemap = gridManager.tilemap;
         
         Vector3Int cellPosition = tilemap.WorldToCell(transform.position);
         Vector3 newPosition = tilemap.GetCellCenterWorld(cellPosition);
@@ -124,12 +132,12 @@ public class Combatant : MonoBehaviour
         animator.SetFloat("Look Y", newDirection.y);
     }
 
-    public void EvadeAttack()
+    public void EvadeAttack(Vector2 attackDirection)
     {
         healthDisplay.HandleHealthChange(DamagePopupType.Miss, 0);
     }
 
-    public void TakeDamage(int damageAmount, Vector2 attackDirection)
+    public void TakeHit(Vector2 attackDirection)
     {
         if(statusEffects.Count > 0)
         {
@@ -142,17 +150,6 @@ public class Combatant : MonoBehaviour
             SetLookDirection(new Vector2(-attackDirection.x, -attackDirection.y));
         //switch to damage animation
         animator.SetTrigger("Stun");
-        //update health
-        ChangeHealth(-damageAmount);
-        //ko target if hp <= 0
-        if(hp.GetCurrentValue() <= 0)
-        {
-            StartCoroutine(KO());
-        }
-        else 
-        {
-            StartCoroutine(EndStun());
-        }
     }
 
     public void ChangeHealth(int amount)
@@ -184,16 +181,10 @@ public class Combatant : MonoBehaviour
             animator.SetTrigger("Idle");
     }
 
-    private IEnumerator EndStun()
+    public void KO()
     {
-        yield return new WaitForSeconds(recoveryTime);
-        animator.SetTrigger("Idle");
-    }
-
-    private IEnumerator KO()
-    {
-        yield return new WaitForSeconds(koTime);
-        Debug.Log("Dead");
+        animator.SetTrigger("KO");
+        battleManager.OnCombatantKO(this);
     }
 
     public void Select()

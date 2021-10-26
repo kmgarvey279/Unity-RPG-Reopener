@@ -56,6 +56,9 @@ public class CharacterInfo : ScriptableObject
     [SerializeField] private int darkResist;
     public Dictionary<ElementalProperty, Stat> elementalResistDict;
 
+    [Header("Standard Attacks")]
+    public Action meleeAttack;
+    public Action rangedAttack;
 
     [Header("Skills")]
     public List<Action> skills = new List<Action>();

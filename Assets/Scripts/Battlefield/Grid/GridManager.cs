@@ -208,6 +208,11 @@ public class GridManager : MonoBehaviour
         return Mathf.Abs(end.x - start.x) + Mathf.Abs(end.y - start.y);
     }
 
+    public Vector2 GetDirection(Tile tile1, Tile tile2)
+    {
+        return new Vector2(tile2.x - tile1.x, tile2.y - tile1.y);
+    }
+
     public List<Tile> GetRow(Tile start, Vector2 direction, int range, bool stopAtOccupiedTile)
     {
        List<Tile> row = new List<Tile>(){start}; 
@@ -271,12 +276,10 @@ public class GridManager : MonoBehaviour
             {
                 Debug.Log("Found the end");
                 Node node = currentNode;
-                int loopCount = 0;
                 for(int i = 0; i < currentNode.g + 1; i++)
                 {
                     path.Insert(0, node.tile);
                     node = node.parent;
-                    loopCount++;
                 }
                 return path;
             }
@@ -321,10 +324,30 @@ public class GridManager : MonoBehaviour
         {
             ClearPathNodes();
         }
-        foreach (Tile tile in path)
+        for(int i = 0; i < path.Count; i++)
         {
-            tile.DisplayPathNode(); 
-            pathNodes.Add(tile);
+            if(i == 0)
+            {
+                path[i].DisplayPathNode(PathType.Start, GetDirection(path[i], path[i + 1]), new Vector2(0,0));
+            }
+            else if(i == path.Count - 1)
+            {
+                path[i].DisplayPathNode(PathType.End, GetDirection(path[i - 1], path[i]), new Vector2(0, 0));
+            }
+            else 
+            {
+                Vector2 direction1 = GetDirection(path[i - 1], path[i]);
+                Vector2 direction2 = GetDirection(path[i], path[i + 1]);
+                if(direction1 != direction2)
+                {
+                    path[i].DisplayPathNode(PathType.Turn, direction1, direction2);
+                }
+                else
+                {
+                    path[i].DisplayPathNode(PathType.Straight, direction1, new Vector2(0, 0));
+                }
+            }
+            pathNodes.Add(path[i]);
         }
     }
 
@@ -334,7 +357,7 @@ public class GridManager : MonoBehaviour
 
         // if(getDiagonal)
         // {
-        //     if(tile.x + 1 < xCount && tile.y + 1 < yCount)
+        //     iftile.x + 1 < xCount && tile.y + 1 < yCount)
         //     {
         //         adjacentTiles.Add(tileArray[tile.x + 1, tile.y + 1].GetComponent<Tile>());
         //     }

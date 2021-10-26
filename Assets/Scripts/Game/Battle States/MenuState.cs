@@ -35,8 +35,7 @@ public class MenuState : BattleState
     private void ResetPosition()
     {
         turnData.combatant.transform.position = turnData.startingPosition;
-        turnData.combatant.animator.SetFloat("Look X", turnData.startingDirection.x);
-        turnData.combatant.animator.SetFloat("Look Y", turnData.startingDirection.y);
+        turnData.combatant.SetLookDirection(new Vector2(turnData.startingDirection.x, turnData.startingDirection.y));
     }
 
     public override void StateUpdate()

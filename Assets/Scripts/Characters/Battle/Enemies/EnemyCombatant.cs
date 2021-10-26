@@ -58,8 +58,8 @@ public class EnemyCombatant : Combatant
     {
         //set default action (wait)
         EnemyActionData actionData = new EnemyActionData(wait, tile);
-        actionData.targetedTile = GetTargetedTile(wait, battlefield.gridManager.GetTargetsInRange(tile, 99, true, false));
-        actionData.destinationTile = battlefield.gridManager.GetClosestTileInRange(tile, actionData.targetedTile, battleStatDict[BattleStatType.MoveRange].GetValue());
+        actionData.targetedTile = GetTargetedTile(wait, gridManager.GetTargetsInRange(tile, 99, true, false));
+        actionData.destinationTile = gridManager.GetClosestTileInRange(tile, actionData.targetedTile, battleStatDict[BattleStatType.MoveRange].GetValue());
 
         //get all actions that can be used this turn
         List<Action> readyActions = GetReadyActions();
@@ -68,7 +68,7 @@ public class EnemyCombatant : Combatant
         foreach (Action action in readyActions)
         {
             int maxRange = battleStatDict[BattleStatType.MoveRange].GetValue() + action.range + action.aoe;
-            List<Combatant> targetsTemp = battlefield.gridManager.GetTargetsInRange(tile, maxRange, action.targetHostile, action.targetFriendly);
+            List<Combatant> targetsTemp = gridManager.GetTargetsInRange(tile, maxRange, action.targetHostile, action.targetFriendly);
             targetsInRange.Add(action, targetsTemp);
         }
         //check if actions are applicable
@@ -78,8 +78,8 @@ public class EnemyCombatant : Combatant
             {
                 actionData.action = action;
                 actionData.targetedTile = GetTargetedTile(action, targetsInRange[action]);
-                actionData.destinationTile = battlefield.gridManager.GetClosestTileInRange(tile, actionData.targetedTile, battleStatDict[BattleStatType.MoveRange].GetValue());
-                actionData.targets = battlefield.gridManager.GetTargetsInRange(actionData.targetedTile, action.aoe, action.targetHostile, action.targetFriendly);
+                actionData.destinationTile = gridManager.GetClosestTileInRange(tile, actionData.targetedTile, battleStatDict[BattleStatType.MoveRange].GetValue());
+                actionData.targets = gridManager.GetTargetsInRange(actionData.targetedTile, action.aoe, action.targetHostile, action.targetFriendly);
                 //reset cooldown timer
                 cooldownTimers[action] = action.cooldown;
                 break;
@@ -95,10 +95,10 @@ public class EnemyCombatant : Combatant
             return tauntUser.tile;
         }
         Combatant selectedTarget = targetsInRange[0];
-        int shortestDistance = battlefield.gridManager.GetMoveCost(tile, targetsInRange[0].tile);
+        int shortestDistance = gridManager.GetMoveCost(tile, targetsInRange[0].tile);
         foreach (Combatant target in targetsInRange)
         {
-            int tempDistance = battlefield.gridManager.GetMoveCost(tile, target.tile);
+            int tempDistance = gridManager.GetMoveCost(tile, target.tile);
             if(tempDistance < shortestDistance)
             {
                 selectedTarget = target;
