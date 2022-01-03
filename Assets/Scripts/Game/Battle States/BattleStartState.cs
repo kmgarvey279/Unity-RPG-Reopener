@@ -6,13 +6,10 @@ using StateMachineNamespace;
 [System.Serializable]
 public class BattleStartState : BattleState
 {
-    public override void Start()
-    {
-        base.Start();
-    }
 
     public override void OnEnter()
     {
+        base.OnEnter();
     }
 
     public override void StateUpdate()
@@ -27,6 +24,7 @@ public class BattleStartState : BattleState
 
     public override void OnExit()
     {
+        base.OnExit();
     }
 }
 

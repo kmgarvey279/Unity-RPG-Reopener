@@ -12,43 +12,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd7c3aa6ce019147804e90e0136ea53, type: 3}
   m_Name: Blaine Info
   m_EditorClassIdentifier: 
-  name: Blaine
+  characterName: Blaine
   level: 1
-  health:
-    baseValue: 25
-    statType: 0
-    modifiers: []
+  baseHP: 150
+  hp:
+    baseValue: 0
+    modifiers: 
+    multipliers: []
     currentValue: 0
-  mana:
-    baseValue: 10
-    statType: 1
-    modifiers: []
+  baseMP: 40
+  mp:
+    baseValue: 0
+    modifiers: 
+    multipliers: []
     currentValue: 0
-  attack:
-    baseValue: 8
-    statType: 2
-    modifiers: []
-  defense:
-    baseValue: 8
-    statType: 3
-    modifiers: []
-  special:
-    baseValue: 5
-    statType: 4
-    modifiers: []
-  agility:
-    baseValue: 6
-    statType: 5
-    modifiers: []
-  moveRange:
-    baseValue: 3
-    statType: 6
-    modifiers: []
-  fire: 0
-  ice: 0
-  electric: 0
-  dark: 0
-  skills: []
+  attack: 15
+  defense: 15
+  magic: 7
+  magicDefense: 7
+  skill: 7
+  agility: 7
+  moveRange: 3
+  fireResist: 0
+  iceResist: 0
+  electricResist: 0
+  darkResist: 0
+  meleeAttack: {fileID: 11400000, guid: b1ee06fb7b8e69b4fbfeec0d9507136f, type: 2}
+  rangedAttack: {fileID: 0}
+  skills:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   weapon: {fileID: 0}
   armor: {fileID: 0}
   accessory: {fileID: 0}
+  characterID: 0

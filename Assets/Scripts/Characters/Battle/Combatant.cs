@@ -20,29 +20,40 @@ public enum BattleStatType
     None
 }
 
+public class StatusEffectInstance
+{
+    public StatusEffectSO statusEffectSO;
+    public int turnCounter;
+    public int userPower;
+
+    public StatusEffectInstance(StatusEffectSO statusEffectSO, int userPower)
+    {
+        this.statusEffectSO = statusEffectSO;
+        this.turnCounter = statusEffectSO.turnDuration;
+        this.userPower = userPower;
+    }
+}
+
 public class Combatant : MonoBehaviour
 {
     [Header("Character Stats")]
-    [SerializeField] protected CharacterInfo characterInfo;
+    public CharacterInfo characterInfo;
     public string characterName;
     public int level;
     public DynamicStat hp;
     public DynamicStat mp;
     public Dictionary<BattleStatType, Stat> battleStatDict = new Dictionary<BattleStatType, Stat>();
-    public Dictionary<ElementalProperty, Stat> elementalResistDict;
-    [Header("Actions")]
-    public Action meleeAttack;
-    public Action rangedAttack;
-    public List<Action> skills;
+    public Dictionary<ElementalProperty, Stat> resistDict;
+    // [Header("Triggerable Effects")]
+    // public List<SubEffect> triggerableSubEffects = new List<TriggerableSubEffect>();
     [Header("Status")]
     public bool ko = false;
-    public List<StatusEffect> statusEffects;
+    public List<StatusEffectInstance> statusEffects;
     [Header("Game Object Components")]
     [HideInInspector] public Animator animator;
     [SerializeField] protected GameObject spriteFill;
     [Header("Parent Scripts")]
-    protected BattleManager battleManager;
-    protected GridManager gridManager;
+    public GridManager gridManager;
     [Header("Child Scripts")]
     protected HealthDisplay healthDisplay;
     protected StatusEffectDisplay statusEffectDisplay;
@@ -52,10 +63,7 @@ public class Combatant : MonoBehaviour
     [SerializeField] protected SignalSenderGO onTargetDeselect;
     [Header("Position/Direction")]
     public Tile tile;
-    public Vector2 lookDirection;
     [HideInInspector] public GridMovement gridMovement;
-    protected float recoveryTime = 1f;
-    protected float koTime = 1f;
 
     public virtual void Awake()
     {
@@ -64,28 +72,27 @@ public class Combatant : MonoBehaviour
         level = characterInfo.level;
         hp = characterInfo.hp;
         mp = characterInfo.mp;
-        SetBattleStats(characterInfo.statDict);
-        elementalResistDict = characterInfo.elementalResistDict;
-        //skills
-        meleeAttack = characterInfo.meleeAttack;
-        rangedAttack = characterInfo.rangedAttack;
-        skills = characterInfo.skills;
+        resistDict = characterInfo.resistDict;
+        SetBattleStats();
+        SetTraitEffects();
         //child components
         healthDisplay = GetComponentInChildren<HealthDisplay>();
         statusEffectDisplay = GetComponentInChildren<StatusEffectDisplay>();
         maskController = GetComponentInChildren<MaskController>();
         gridMovement = GetComponentInChildren<GridMovement>();
-        //parent/sibling components
-        battleManager = GetComponentInParent<BattleManager>();
-        gridManager = battleManager.gridManager;
     }
 
-    public virtual void SetBattleStats(Dictionary<StatType, Stat> statDict)
+    public virtual void SetBattleStats()
+    {
+    }
+
+    public virtual void SetTraitEffects()
     {
     }
 
     public virtual void Start()
     {
+        gridManager = GetComponentInParent<GridManager>();
         SnapToTileCenter();
     }
 
@@ -98,20 +105,53 @@ public class Combatant : MonoBehaviour
         transform.position = newPosition;
     }
 
-    public void OnTurnStart()
+    public virtual void OnTurnStart()
     {
         if(statusEffects.Count > 0)
         {
             for(int i = statusEffects.Count - 1; i >= 0; i--)
             {
-                statusEffects[i].OnTurnStart(this);            
+                if(statusEffects[i].statusEffectSO.hasDuration)
+                {
+                    statusEffects[i].turnCounter--;
+                    if(statusEffects[i].turnCounter <= 0)
+                    {
+                        RemoveStatusEffect(statusEffects[i]);
+                    }
+                }
             }
         }
     }
 
-    public Vector2 GetDirection()
+    public virtual void OnTurnEnd()
     {
-        return new Vector2(animator.GetFloat("Look X"), animator.GetFloat("Look Y"));
+        if(statusEffects.Count > 0)
+        {
+            int cumHealthEffect = 0;
+            foreach(StatusEffectInstance statusEffect in statusEffects)
+            {
+                float potency = (float)statusEffect.statusEffectSO.potency;
+                float userPower = (float)statusEffect.userPower / (100f + (float)statusEffect.userPower);
+                if(statusEffect.statusEffectSO.healOverTime)
+                {
+                    float healAmount = Mathf.Clamp(potency * userPower * Random.Range(0.85f, 1f), 1f, 9999f);
+                    cumHealthEffect += Mathf.FloorToInt(healAmount);
+                }    
+                if(statusEffect.statusEffectSO.damageOverTime)
+                {
+                    float damageAmount = Mathf.Clamp(potency * userPower * Random.Range(0.85f, 1f), 1f, 9999f);
+                    cumHealthEffect -= Mathf.FloorToInt(damageAmount);
+                }   
+            }
+            if(cumHealthEffect > 0)
+            {
+                Heal(cumHealthEffect);
+            }
+            else if(cumHealthEffect < 0)
+            {
+                Damage(Mathf.Abs(cumHealthEffect));
+            }
+        }
     }
 
     public void SetTile(Tile tile)
@@ -122,69 +162,124 @@ public class Combatant : MonoBehaviour
     public void FaceTarget(Transform target)
     {
         Vector2 direction = (target.position - transform.position).normalized;
-        SetLookDirection(direction);
+        SetDirection(direction);
     }
 
-    public void SetLookDirection(Vector2 newDirection)
+    public Vector2 GetDirection()
     {
-        lookDirection = newDirection;
+        return new Vector2(animator.GetFloat("Look X"), animator.GetFloat("Look Y"));
+    }
+
+    public void SetDirection(Vector2 newDirection)
+    {
         animator.SetFloat("Look X", newDirection.x);
         animator.SetFloat("Look Y", newDirection.y);
     }
 
-    public void EvadeAttack(Vector2 attackDirection)
+    public virtual void EvadeAttack(Combatant attacker)
     {
+        Vector2 attackDirection = attacker.GetDirection();
+        if(attackDirection.x != 0 || attackDirection.y !=0)
+            SetDirection(new Vector2(-attackDirection.x, -attackDirection.y));
+        animator.SetTrigger("Stun");
         healthDisplay.HandleHealthChange(DamagePopupType.Miss, 0);
     }
 
-    public void TakeHit(Vector2 attackDirection)
+    public void TakeHit(Combatant attacker)
     {
-        if(statusEffects.Count > 0)
-        {
-            for(int i = statusEffects.Count - 1; i >= 0; i--)
-            {
-                statusEffects[i].OnHit(this);            
-            }
-        }
+        Vector2 attackDirection = attacker.GetDirection();
         if(attackDirection.x != 0 || attackDirection.y !=0)
-            SetLookDirection(new Vector2(-attackDirection.x, -attackDirection.y));
+            SetDirection(new Vector2(-attackDirection.x, -attackDirection.y));
         //switch to damage animation
         animator.SetTrigger("Stun");
     }
 
-    public void ChangeHealth(int amount)
+    public virtual void Damage(int damage, Combatant attacker = null, bool isCrit = false)
     {
-        hp.ChangeCurrentValue(amount);
-        if(amount > 0)
+        hp.ChangeCurrentValue(-damage);
+        if(isCrit)
         {
-            healthDisplay.HandleHealthChange(DamagePopupType.Heal, amount);
+            healthDisplay.HandleHealthChange(DamagePopupType.Crit, damage);
         }
         else
         {
-            healthDisplay.HandleHealthChange(DamagePopupType.Damage, amount);
+            healthDisplay.HandleHealthChange(DamagePopupType.Damage, damage);
         }
     }
 
-    public void AddStatusEffect(StatusEffect statusEffect)
+    public virtual void Heal(int amount)
     {
-        statusEffects.Add(statusEffect);
-        statusEffectDisplay.AddStatusIcon(statusEffect);
-        if(statusEffect.animatorTrigger != null)
-            animator.SetTrigger(statusEffect.animatorTrigger);
+        hp.ChangeCurrentValue(amount);
+        healthDisplay.HandleHealthChange(DamagePopupType.Heal, amount);
     }
 
-    public void RemoveStatusEffect(StatusEffect statusEffect)
+    public void AddStatusEffect(StatusEffectSO statusEffectSO, int userPower)
     {
-        statusEffects.Remove(statusEffect);
-        statusEffectDisplay.RemoveStatusIcon(statusEffect);
-        if(statusEffect.animatorTrigger != null)
-            animator.SetTrigger("Idle");
+        //clear duplicates
+        foreach(StatusEffectInstance thisStatusInstance in statusEffects)
+        {
+            if(thisStatusInstance.statusEffectSO == statusEffectSO)
+            {
+                if(thisStatusInstance.statusEffectSO.cannotRefresh)
+                {
+                    return;
+                }
+                RemoveStatusEffect(thisStatusInstance);
+            }
+        }
+        StatusEffectInstance newStatusInstance = new StatusEffectInstance(statusEffectSO, userPower);
+        //add status effect to list
+        statusEffects.Add(newStatusInstance);
+        //apply stat modifiers        
+        foreach(BattleStatModifier battleStatModifier in newStatusInstance.statusEffectSO.battleStatModifiers)
+        {
+            battleStatDict[battleStatModifier.statToModify].AddMultiplier(battleStatModifier.multiplier);  
+        }
+        foreach(ResistanceModifier resistanceModifier in newStatusInstance.statusEffectSO.resistanceModifiers)
+        {
+            resistDict[resistanceModifier.resistanceToModify].AddMultiplier(resistanceModifier.multiplier);  
+        }
+        //display icon
+        statusEffectDisplay.AddStatusIcon(statusEffectSO);
+        //change character sprite (if applicable);
+        if(statusEffectSO.animatorTrigger != null)
+            animator.SetTrigger(statusEffectSO.animatorTrigger);
+    }
+
+    public void RemoveStatusEffect(StatusEffectInstance statusEffectInstance)
+    {
+        if(statusEffects.Contains(statusEffectInstance))
+        {
+            RemoveStatusEffect(statusEffectInstance);
+            foreach(BattleStatModifier battleStatModifier in statusEffectInstance.statusEffectSO.battleStatModifiers)
+            {
+                battleStatDict[battleStatModifier.statToModify].RemoveMultiplier(battleStatModifier.multiplier);  
+            }
+            foreach(ResistanceModifier resistanceModifier in statusEffectInstance.statusEffectSO.resistanceModifiers)
+            {
+                resistDict[resistanceModifier.resistanceToModify].RemoveMultiplier(resistanceModifier.multiplier);  
+            }
+            statusEffectDisplay.RemoveStatusIcon(statusEffectInstance.statusEffectSO);
+            if(statusEffectInstance.statusEffectSO.animatorTrigger != null)
+                animator.SetTrigger("Idle");
+        }
+    }
+
+
+    public bool KOCheck()
+    {
+        if(hp.GetValue() <= 0)
+        {
+            KO();
+            return true;
+        }
+        return false;
     }
 
     public void KO()
     {
         animator.SetTrigger("KO");
-        battleManager.OnCombatantKO(this);
+        // battleManager.OnCombatantKO(this);
     }
 
     public void Select()

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class PartySlot : MonoBehaviour
 {
-    public Party partyData;
+    public PartyData partyData;
     public PartyMember partyMember;
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private Image slotImage;
@@ -14,11 +14,10 @@ public class PartySlot : MonoBehaviour
     [SerializeField] private Color reservePartyColor;
     [SerializeField] private SignalSender onActivePartyChange;
 
-    public void AssignSlot(PartyMember newPartyMember)
+    public void AssignSlot(PartyMember newPartyMember, int orderNum)
     {
         partyMember = newPartyMember;
-        nameText.text = partyMember.characterName;
-        if(partyMember.inActiveParty)
+        if(orderNum < 3)
         {
             slotImage.color = activePartyColor;
         }
@@ -26,28 +25,5 @@ public class PartySlot : MonoBehaviour
         {
             slotImage.color = reservePartyColor;
         }
-    }
-
-    public void ChangeActiveParty()
-    {
-        if(partyMember.characterName != "Claire")
-        {
-            if(partyMember.inActiveParty)
-            {
-                partyMember.inActiveParty = false;
-                slotImage.color = reservePartyColor;
-                partyData.activePartySize--;
-            }
-            else
-            {
-                if(partyData.activePartySize < 3)
-                {
-                    partyMember.inActiveParty = true;
-                    slotImage.color = activePartyColor;
-                    partyData.activePartySize++;
-                }
-            }
-            onActivePartyChange.Raise();
-        } 
     }
 }

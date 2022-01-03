@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class BattleSkillSlot : MonoBehaviour, ISelectHandler, IPointerEnterHandler
 {
     [Header("Skill In Slot")]
-    public Action skill;
+    public Action action;
     [Header("UI Display")]
     [SerializeField] private Image skillIcon;
     [SerializeField] private TextMeshProUGUI nameText;
@@ -17,12 +17,12 @@ public class BattleSkillSlot : MonoBehaviour, ISelectHandler, IPointerEnterHandl
     [SerializeField] private SignalSenderGO onSelectBattleSkill;
     [SerializeField] private SignalSenderGO onConfirmBattleSkill;
 
-    public void AssignSlot(Action skill)
+    public void AssignSlot(Action action)
     {
-        this.skill = skill;
-        skillIcon = skill.icon;
-        nameText.text = skill.name;
-        costText.text = skill.mpCost.ToString("n0");
+        this.action = action;
+        skillIcon = action.icon;
+        nameText.text = action.name;
+        costText.text = action.mpCost.ToString("n0");
     }
 
     public void OnSelect(BaseEventData eventData)

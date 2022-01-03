@@ -60,6 +60,10 @@ public class GridManager : MonoBehaviour
 
     public void DisplayTilesInRange(Tile start, int range, bool stopAtOccupiedTile = false, bool excludeStartingTile = false)
     {
+        // foreach (GameObject tileObject in tileArray)
+        // {
+        //     tileObject.GetComponent<Tile>().Display();
+        // }
         List<Tile> tilesInRange = GetTilesInRange(start, range, stopAtOccupiedTile, excludeStartingTile);
         foreach (Tile tile in tilesInRange)
         {
@@ -142,12 +146,6 @@ public class GridManager : MonoBehaviour
                     }    
                 } 
             }
-            // }
-            // if(isMoveRange)
-            // {   
-            //     int moveCost = Mathf.Abs(tile.x - start.x) + Mathf.Abs(tile.y - start.y);
-            // }
-        // }
             openList.Remove(currentTile);
             //endless loop safeguard
             loops++;
@@ -191,9 +189,8 @@ public class GridManager : MonoBehaviour
 
     public Tile GetClosestTileInRange(Tile start, Tile end, int range)
     {
-        List<Tile> path = GetPath(end, start);
-        path.Remove(end);
-        for(int i = 0; i < path.Count; i++)
+        List<Tile> path = GetPath(start, end);
+        for(int i = path.Count - 1; i > 0; i--)
         {
             if(GetMoveCost(path[i], start) <= range)
             {
@@ -324,56 +321,39 @@ public class GridManager : MonoBehaviour
         {
             ClearPathNodes();
         }
-        for(int i = 0; i < path.Count; i++)
+        if(path.Count > 1)
         {
-            if(i == 0)
+            for(int i = 0; i < path.Count; i++)
             {
-                path[i].DisplayPathNode(PathType.Start, GetDirection(path[i], path[i + 1]), new Vector2(0,0));
-            }
-            else if(i == path.Count - 1)
-            {
-                path[i].DisplayPathNode(PathType.End, GetDirection(path[i - 1], path[i]), new Vector2(0, 0));
-            }
-            else 
-            {
-                Vector2 direction1 = GetDirection(path[i - 1], path[i]);
-                Vector2 direction2 = GetDirection(path[i], path[i + 1]);
-                if(direction1 != direction2)
+                if(i == 0)
                 {
-                    path[i].DisplayPathNode(PathType.Turn, direction1, direction2);
+                    path[i].DisplayPathNode(PathType.Start, GetDirection(path[i], path[i + 1]), new Vector2(0,0));
                 }
-                else
+                else if(i == path.Count - 1)
                 {
-                    path[i].DisplayPathNode(PathType.Straight, direction1, new Vector2(0, 0));
+                    path[i].DisplayPathNode(PathType.End, GetDirection(path[i - 1], path[i]), new Vector2(0, 0));
                 }
+                else 
+                {
+                    Vector2 direction1 = GetDirection(path[i - 1], path[i]);
+                    Vector2 direction2 = GetDirection(path[i], path[i + 1]);
+                    if(direction1 != direction2)
+                    {
+                        path[i].DisplayPathNode(PathType.Turn, direction1, direction2);
+                    }
+                    else
+                    {
+                        path[i].DisplayPathNode(PathType.Straight, direction1, new Vector2(0, 0));
+                    }
+                }
+                pathNodes.Add(path[i]);
             }
-            pathNodes.Add(path[i]);
         }
     }
 
     public List<Tile> GetAdjacentTiles(Tile tile)
     {
         List<Tile> adjacentTiles = new List<Tile>();
-
-        // if(getDiagonal)
-        // {
-        //     iftile.x + 1 < xCount && tile.y + 1 < yCount)
-        //     {
-        //         adjacentTiles.Add(tileArray[tile.x + 1, tile.y + 1].GetComponent<Tile>());
-        //     }
-        //     if(tile.x + 1 < xCount && tile.y - 1 > 0)
-        //     {
-        //         adjacentTiles.Add(tileArray[tile.x + 1, tile.y - 1].GetComponent<Tile>());
-        //     }
-        //     if(tile.x - 1 > 0 && tile.y + 1 < yCount)
-        //     {
-        //         adjacentTiles.Add(tileArray[tile.x - 1, tile.y + 1].GetComponent<Tile>());
-        //     }
-        //     if(tile.x - 1 > 0 && tile.y - 1 > 0)
-        //     {
-        //         adjacentTiles.Add(tileArray[tile.x - 1, tile.y - 1].GetComponent<Tile>());
-        //     }  
-        // }
 
         if(tile.x + 1 < xCount)
         {

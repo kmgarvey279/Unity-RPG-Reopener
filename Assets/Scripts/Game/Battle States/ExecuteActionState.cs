@@ -7,7 +7,6 @@ using BattleCalculationsNamespace;
 [System.Serializable]
 public class ExecuteActionState : BattleState
 {
-    private TurnData turnData;
     [SerializeField] private GridManager gridManager;
     private BattleCalculations battleCalculations;
     
@@ -19,8 +18,6 @@ public class ExecuteActionState : BattleState
         base.OnEnter();
         Debug.Log("Enter execute state");
         battleCalculations = new BattleCalculations();
-        
-        turnData = battleManager.turnData;
 
         // onCameraZoomIn.Raise(turnData.targetedTile.gameObject);
         ExecuteAction();
@@ -106,7 +103,7 @@ public class ExecuteActionState : BattleState
                     turnData.combatant.animator.SetTrigger(turnData.action.projectileAnimatorTrigger);
                 }
                 yield return new WaitForSeconds(turnData.action.projectileGraphicDelay);
-                Vector3 startPosition = new Vector3(turnData.combatant.tile.transform.position.x + (turnData.combatant.lookDirection.x * 0.1f), turnData.combatant.transform.position.y + (turnData.combatant.lookDirection.y * 0.1f));
+                Vector3 startPosition = new Vector3(turnData.combatant.tile.transform.position.x + (turnData.combatant.GetDirection().x * 0.1f), turnData.combatant.transform.position.y + (turnData.combatant.GetDirection().y * 0.1f));
                 GameObject projectileObject = Instantiate(turnData.action.projectileGraphicPrefab, startPosition, Quaternion.identity);
                 projectileObject.GetComponent<Projectile>().Move(turnData.targetedTile.transform.position);
             }
@@ -157,18 +154,16 @@ public class ExecuteActionState : BattleState
             {
                 Debug.Log("is attack");
                 Combatant target = turnData.targets[i];
-                Vector2 attackDirection = new Vector2(0,0);
-                if(turnData.action.useDirection)
-                    attackDirection = turnData.combatant.lookDirection;
-                bool didHit = battleCalculations.HitCheck(battleCalculations.GetHitChance(turnData.action, turnData.combatant, target, gridManager.GetMoveCost(turnData.combatant.tile, target.tile)));
+                int hitChance = Mathf.Clamp(turnData.combatant.battleStatDict[BattleStatType.Accuracy].GetValue() - target.battleStatDict[BattleStatType.Evasion].GetValue(), 1, 100);
+                bool didHit = HitCheck(hitChance);
                 if(didHit)
                 {
-                    target.TakeHit(attackDirection);
+                    target.TakeHit(turnData.combatant);
                     Debug.Log(target.characterName + " was hit!");
                 }
                 else
                 {
-                    target.EvadeAttack(attackDirection);
+                    target.EvadeAttack(turnData.combatant);
                     turnData.targets.Remove(target);
                     Debug.Log(target.characterName + " dodged the attack!");
                 }
@@ -180,7 +175,20 @@ public class ExecuteActionState : BattleState
         }
         else
         {
-            EndAction();
+            EndActionPhase();
+        }
+    }
+
+    public bool HitCheck(int hitChance)
+    {
+        int roll = Random.Range(1, 100);
+        if(roll <= hitChance)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 
@@ -193,7 +201,7 @@ public class ExecuteActionState : BattleState
             {
                 Tile destination = target.tile;
                 //find furthest tile target can be knocked back to
-                List<Tile> row = gridManager.GetRow(target.tile, turnData.combatant.lookDirection, turnData.action.knockback, true);
+                List<Tile> row = gridManager.GetRow(target.tile, turnData.combatant.GetDirection(), turnData.action.knockback, true);
 
                 destination = row[row.Count - 1];
                 if(destination != target.tile)
@@ -217,30 +225,19 @@ public class ExecuteActionState : BattleState
     public IEnumerator HealthEffectPhase()
     {
         Debug.Log("Damage/heal phase");
-        if(turnData.targets.Count > 0)
+        if(turnData.action.actionType != ActionType.Other && turnData.targets.Count > 0)
         {
             foreach(Combatant target in turnData.targets)
             {
-                if(turnData.action.actionType == ActionType.Attack)
-                {
-                    int damage = battleCalculations.GetDamageAmount(turnData.action, turnData.combatant, target);
-                    target.ChangeHealth(-damage);
-                }
-                else if(turnData.action.actionType == ActionType.Heal)
-                {
-                    int heal = battleCalculations.GetHealAmount(turnData.action, turnData.combatant);
-                    target.ChangeHealth(heal);
-                }
+                turnData.action.TriggerDamageEffect(turnData.combatant, target);
             }
             yield return new WaitForSeconds(1f);
             for(int i = turnData.targets.Count - 1; i > 0; i--)
             {
-                Combatant target = turnData.targets[i];
-                if(target.hp.GetValue() <= 0)
+                if(turnData.targets[i].KOCheck())
                 {
                     Debug.Log("Dead");
-                    target.KO();
-                    turnData.targets.Remove(target);
+                    turnData.targets.RemoveAt(i);
                 }
             }
             if(turnData.targets.Count > 0)
@@ -249,41 +246,37 @@ public class ExecuteActionState : BattleState
             }
             else
             {
-                EndAction();
+                StartCoroutine(EndActionPhase());
             }
         } 
     }
 
     private IEnumerator StatusEffectPhase()
     {
-        if(turnData.action.statusEffect != null)
+        if(turnData.action.statusEffectSO != null)
         {
             foreach(Combatant target in turnData.targets)
             {
-                bool hitCheck = battleCalculations.HitCheck(turnData.action.statusEffectChance);
-                if(hitCheck)
-                {
-                    target.AddStatusEffect(turnData.action.statusEffect);
-                }
+                turnData.action.TriggerStatusEffect(turnData.combatant, target);
             }
+            yield return new WaitForSeconds(1f);
         }
-        yield return new WaitForSeconds(1f);
-        EndAction();
+        StartCoroutine(EndActionPhase());
     }
 
-    public void EndAction()
+    public IEnumerator EndActionPhase()
     {
         Debug.Log("action complete!");
         turnData.combatant.animator.SetTrigger("Idle");
-        foreach(Combatant target in turnData.targets)
+        if(turnData.targets.Count > 0)
         {
-            bool hitCheck = battleCalculations.HitCheck(turnData.action.statusEffectChance);
-            if(hitCheck)
+            foreach(Combatant target in turnData.targets)
             {
                 target.animator.SetTrigger("Idle");
             }
-        }
-        stateMachine.ChangeState((int)BattleStateType.End); 
+        }        
+        yield return new WaitForSeconds(0.5f);
+        StartCoroutine(battleManager.EndTurnCo()); 
     }
 }
 

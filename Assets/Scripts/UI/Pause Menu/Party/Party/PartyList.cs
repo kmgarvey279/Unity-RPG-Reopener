@@ -4,19 +4,22 @@ using UnityEngine;
 
 public class PartyList : MonoBehaviour
 {
-    public Party partyData;
+    public PartyData partyData;
     public List<PartySlot> partySlots = new List<PartySlot>();
     public GameObject slotPrefab;
 
     private void OnEnable()
     {
-        foreach(PartyMember partyMember in partyData.partyList)
+        for(int i = 0; i < partyData.partyMembers.Count; i++)
         {
-            GameObject newSlot = Instantiate(slotPrefab, transform.position, Quaternion.identity);
-            PartySlot partySlot = newSlot.GetComponent<PartySlot>();
-            partySlot.AssignSlot(partyMember);
-            partySlot.transform.parent = gameObject.transform; 
-            partySlots.Add(partySlot);
+            if(partyData.partyMembers[i].inParty)
+            {
+                GameObject newSlot = Instantiate(slotPrefab, transform.position, Quaternion.identity);
+                PartySlot partySlot = newSlot.GetComponent<PartySlot>();
+                partySlot.AssignSlot(partyData.partyMembers[i], i);
+                partySlot.transform.parent = gameObject.transform; 
+                partySlots.Add(partySlot);
+            }
         }
     }
 }

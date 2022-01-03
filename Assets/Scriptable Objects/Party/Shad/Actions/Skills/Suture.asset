@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
+  m_Name: Suture
+  m_EditorClassIdentifier: 
+  actionName: Suture
+  actionType: 1
+  icon: {fileID: 0}
+  descripton: Restores a moderate amount of HP.
+  mpCost: 10
+  timeModifier: 0
+  power: 250
+  range: 3
+  aoe: 0
+  excludeStartingTile: 0
+  lineAOE: 0
+  stopAtOccupiedTile: 0
+  offensiveStat: 2
+  defensiveStat: 10
+  elementalProperty: 0
+  guaranteedHit: 1
+  distancePenalty: 0
+  useDirection: 0
+  statusEffectSO: {fileID: 0}
+  statusEffectChance: 0
+  knockback: 0
+  targetFriendly: 1
+  targetHostile: 0
+  targetSelfOnly: 0
+  hasCastAnimation: 1
+  castAnimatorTrigger: Defend
+  castGraphicPrefab: {fileID: 0}
+  castAnimationDuration: 0.4
+  castGraphicDelay: 0.15
+  hasProjectileAnimation: 0
+  projectileAnimatorTrigger: 
+  projectileGraphicPrefab: {fileID: 0}
+  projectileGraphicDelay: 0
+  hasMoveAnimation: 0
+  moveAnimatorTrigger: 
+  moveGraphicPrefab: {fileID: 0}
+  effectAnimatorTrigger: Melee
+  effectGraphicPrefab: {fileID: 9080087516260223380, guid: b2ca6791570b1944abf90e8b335cc8c1,
+    type: 3}
+  effectAnimationDuration: 0.4
+  effectGraphicDelay: 0.15

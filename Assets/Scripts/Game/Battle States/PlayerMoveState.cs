@@ -3,31 +3,31 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using StateMachineNamespace;
-using UnityEngine.EventSystems;
+// using UnityEngine.EventSystems;
 
 [System.Serializable]
 public class PlayerMoveState : BattleState
 {
     [SerializeField] private GridManager gridManager;
 
-    private TurnData turnData;
     private Tile selectedTile;
     private List<Tile> path = new List<Tile>();
-
-    [Header("Unity Events (Signals)")]
-    [SerializeField] private SignalSender onCameraZoomOut;
-    [SerializeField] private SignalSenderGO onCameraZoomIn;
 
     public override void OnEnter()
     {
         base.OnEnter();
+        // onCameraZoomOut.Raise();
 
-        turnData = battleManager.turnData;
-        onCameraZoomOut.Raise();
-
+        //checks if player is canceling a move
+        if(turnData.combatant.tile != turnData.startingTile)
+        {
+            battleManager.SetMoveCost(0);
+            turnData.combatant.transform.position = turnData.startingTile.transform.position;
+            turnData.combatant.SetDirection(new Vector2(turnData.startingDirection.x, turnData.startingDirection.y));
+        }
+        
         int range = turnData.combatant.battleStatDict[BattleStatType.MoveRange].GetValue();
         gridManager.DisplayTilesInRange(turnData.combatant.tile, range, true);
-
     }
 
     public override void StateUpdate()
@@ -40,14 +40,6 @@ public class PlayerMoveState : BattleState
             gridManager.HideTiles();
 
             turnData.combatant.gridMovement.Move(path, MovementType.Move); 
-        }
-        if(Input.GetButtonDown("Cancel"))
-        {
-            selectedTile = null;
-            gridManager.HideTiles();
-
-            battleManager.CancelAction();
-            stateMachine.ChangeState((int)BattleStateType.Menu);
         }
     }
 
@@ -72,8 +64,6 @@ public class PlayerMoveState : BattleState
 
     public void OnMoveComplete()
     {
-        battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
+        battleManager.stateMachine.ChangeState((int)BattleStateType.Menu);
     }
-
-
 }

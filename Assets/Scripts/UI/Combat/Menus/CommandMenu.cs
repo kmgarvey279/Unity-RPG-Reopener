@@ -14,7 +14,6 @@ public class CommandMenu : MonoBehaviour
     [Header("Buttons")]
     [SerializeField] private GameObject defaultButton;
     [SerializeField] private Button attackButton;
-    [SerializeField] private Button moveButton;
 
     [Header("Actions")]
     [SerializeField] private Action item;
@@ -37,7 +36,7 @@ public class CommandMenu : MonoBehaviour
 
     public void SelectAttack()
     {
-        PlayableCombatant playableCombatant = (PlayableCombatant)battleManager.turnData.combatant;
+        PlayableCombatant playableCombatant = (PlayableCombatant)turnData.combatant;
         Action attack;
         if(playableCombatant.rangedAttack)
         {
@@ -49,18 +48,20 @@ public class CommandMenu : MonoBehaviour
         }
         if(attack != null)
             battleManager.SetAction(attack);
-        battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
+        battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
+        // battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
     }
 
     public void DisplaySkillList()
     {
-        secondaryPanel.DisplaySkills(turnData.combatant);
+        PlayableCombatant playableCombatant = (PlayableCombatant)turnData.combatant;
+        secondaryPanel.DisplaySkills(playableCombatant.skills);
     }
 
     public void SelectSkill(GameObject skillSlot)
     {
-        battleManager.SetAction(skillSlot.GetComponent<BattleSkillSlot>().skill);
-        battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
+        battleManager.SetAction((Action)skillSlot.GetComponent<BattleSkillSlot>().action);
+        battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
     }
 
     public void DisplayItemList()
@@ -73,17 +74,17 @@ public class CommandMenu : MonoBehaviour
 
     }
 
-    public void SelectMove()
-    {
-        Debug.Log("Defend!");
-        battleManager.SetAction(defend);
-        battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
-    }
+    // public void SelectMove()
+    // {
+    //     Debug.Log("Defend!");
+    //     battleManager.SetAction(defend);
+    //     battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
+    // }
 
     public void SelectDefend()
     {
         Debug.Log("Defend!");
         battleManager.SetAction(defend);
-        battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
+        battleManager.stateMachine.ChangeState((int)BattleStateType.Execute);
     }
 }

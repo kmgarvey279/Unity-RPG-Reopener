@@ -2,272 +2,83 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyActionData
-{
-    public Action action;
-    public Tile destinationTile;
-    public Tile targetedTile;
-    public List<Combatant> targets;
-    public EnemyActionData(Action action, Tile startingTile)
-    {
-        this.action = action;
-        this.destinationTile = startingTile;
-        this.targetedTile = startingTile;
-        this.targets = new List<Combatant>();
-    }
-
-}
-
 public class EnemyCombatant : Combatant
 {
-    private Dictionary<Action, int> cooldownTimers = new Dictionary<Action, int>();
-    private Combatant mostRecentAttacker;
-    private Combatant tauntUser;
-    //used when there are no actions an enemy can take
-    [SerializeField] private Action wait;
+    [SerializeField] private EnemyBattleAI enemyBattleAI;
 
     public override void Awake()
     {
-        base.Awake();        
-        foreach (Action action in skills)
-        {
-            cooldownTimers.Add(action, action.cooldown);
-        }
-        SetLookDirection(new Vector2(-1, 0));
+        base.Awake();   
+        enemyBattleAI = GetComponentInChildren<EnemyBattleAI>();
+        SetDirection(new Vector2(-1, 0));
     }
 
-    public override void SetBattleStats(Dictionary<StatType, Stat> statDict)
+    public override void Start()
     {
-        battleStatDict.Add(BattleStatType.MeleeAttack, new Stat(statDict[StatType.Attack].GetValue() + level));
-        battleStatDict.Add(BattleStatType.RangedAttack, new Stat(statDict[StatType.Attack].GetValue() + level));
-        battleStatDict.Add(BattleStatType.MagicAttack, new Stat(statDict[StatType.Magic].GetValue() + level));
-
-        battleStatDict.Add(BattleStatType.PhysicalDefense, new Stat(statDict[StatType.Defense].GetValue() + level));
-        battleStatDict.Add(BattleStatType.MagicDefense, new Stat(statDict[StatType.MagicDefense].GetValue() + level));
-
-        battleStatDict.Add(BattleStatType.Accuracy, new Stat(Mathf.FloorToInt(statDict[StatType.Skill].GetValue() + statDict[StatType.Agility].GetValue() / 2)));
-        battleStatDict.Add(BattleStatType.Evasion, new Stat(Mathf.FloorToInt(statDict[StatType.Skill].GetValue() + statDict[StatType.Agility].GetValue() / 2)));
-
-        battleStatDict.Add(BattleStatType.CritRate, new Stat(Mathf.FloorToInt(statDict[StatType.Skill].GetValue() / 3)));
-        battleStatDict.Add(BattleStatType.Speed, new Stat(statDict[StatType.Agility].GetValue()));
-
-        battleStatDict.Add(BattleStatType.MoveRange, new Stat(statDict[StatType.MoveRange].GetValue()));
+        base.Start();
     }
 
-    public EnemyActionData GetActionData()
+    public override void SetBattleStats()
     {
-        //set default action (wait)
-        EnemyActionData actionData = new EnemyActionData(wait, tile);
-        actionData.targetedTile = GetTargetedTile(wait, gridManager.GetTargetsInRange(tile, 99, true, false));
-        actionData.destinationTile = gridManager.GetClosestTileInRange(tile, actionData.targetedTile, battleStatDict[BattleStatType.MoveRange].GetValue());
+        battleStatDict.Add(BattleStatType.MeleeAttack, new Stat(characterInfo.statDict[StatType.Attack].GetValue() + level + 5));
+        battleStatDict.Add(BattleStatType.RangedAttack, new Stat(characterInfo.statDict[StatType.Attack].GetValue() + level + 5));
+        battleStatDict.Add(BattleStatType.MagicAttack, new Stat(characterInfo.statDict[StatType.Magic].GetValue() + level + 5));
 
-        //get all actions that can be used this turn
-        List<Action> readyActions = GetReadyActions();
-        //create dictionary of all possible targets for each action (and remove any with no targets)
-        Dictionary<Action, List<Combatant>> targetsInRange = new Dictionary<Action, List<Combatant>>();
-        foreach (Action action in readyActions)
-        {
-            int maxRange = battleStatDict[BattleStatType.MoveRange].GetValue() + action.range + action.aoe;
-            List<Combatant> targetsTemp = gridManager.GetTargetsInRange(tile, maxRange, action.targetHostile, action.targetFriendly);
-            targetsInRange.Add(action, targetsTemp);
-        }
-        //check if actions are applicable
-        foreach (Action action in readyActions)
-        {
-            if(targetsInRange[action].Count > 0 && ActionCheck(action, targetsInRange[action]))
-            {
-                actionData.action = action;
-                actionData.targetedTile = GetTargetedTile(action, targetsInRange[action]);
-                actionData.destinationTile = gridManager.GetClosestTileInRange(tile, actionData.targetedTile, battleStatDict[BattleStatType.MoveRange].GetValue());
-                actionData.targets = gridManager.GetTargetsInRange(actionData.targetedTile, action.aoe, action.targetHostile, action.targetFriendly);
-                //reset cooldown timer
-                cooldownTimers[action] = action.cooldown;
-                break;
-            }
-        }
-        return actionData;
+        battleStatDict.Add(BattleStatType.PhysicalDefense, new Stat(characterInfo.statDict[StatType.Defense].GetValue() + level + 5));
+        battleStatDict.Add(BattleStatType.MagicDefense, new Stat(characterInfo.statDict[StatType.MagicDefense].GetValue() + level + 5));
+
+        battleStatDict.Add(BattleStatType.Accuracy, new Stat(Mathf.FloorToInt(characterInfo.statDict[StatType.Skill].GetValue() + characterInfo.statDict[StatType.Agility].GetValue() / 2)));
+        battleStatDict.Add(BattleStatType.Evasion, new Stat(Mathf.FloorToInt(characterInfo.statDict[StatType.Skill].GetValue() + characterInfo.statDict[StatType.Agility].GetValue() / 2)));
+
+        battleStatDict.Add(BattleStatType.CritRate, new Stat(Mathf.FloorToInt(characterInfo.statDict[StatType.Skill].GetValue() / 3)));
+        battleStatDict.Add(BattleStatType.Speed, new Stat(characterInfo.statDict[StatType.Agility].GetValue()));
+
+        battleStatDict.Add(BattleStatType.MoveRange, new Stat(characterInfo.statDict[StatType.MoveRange].GetValue()));
     }
 
-    public Tile GetTargetedTile(Action action, List<Combatant> targetsInRange)
+    public void CreateAggroList(List<Combatant> targets)
     {
-        if(action.targetHostile && tauntUser != null)
+        foreach(Combatant target in targets)
         {
-            return tauntUser.tile;
+            AddTarget(target);
         }
-        Combatant selectedTarget = targetsInRange[0];
-        int shortestDistance = gridManager.GetMoveCost(tile, targetsInRange[0].tile);
-        foreach (Combatant target in targetsInRange)
-        {
-            int tempDistance = gridManager.GetMoveCost(tile, target.tile);
-            if(tempDistance < shortestDistance)
-            {
-                selectedTarget = target;
-                shortestDistance = tempDistance;
-            }
-            else if(tempDistance == shortestDistance)
-            {
-                if(target == mostRecentAttacker)
-                {
-                    selectedTarget = target;
-                    shortestDistance = tempDistance;
-                }
-            }
-        }
-        return selectedTarget.tile;
     }
 
-    private List<Action> GetReadyActions()
+    public void AddTarget(Combatant combatant)
     {
-        List<Action> readyActions = new List<Action>();
-        //check cooldowns
-        foreach (Action action in skills)
-        {
-            //check if action is on cooldown, if so decerase by 1
-            if(cooldownTimers[action] > 0)
-            {
-                cooldownTimers[action] = cooldownTimers[action] - 1;
-                //if action is now off cooldown, add to list of actions
-                if(cooldownTimers[action] == 0)
-                {
-                    readyActions.Add(action);
-                }
-            }
-            else
-            {
-                readyActions.Add(action);
-            }
-        }
-        return readyActions;
+        enemyBattleAI.AddTargetToAggroList(combatant);
     }
 
-    //checks if action is applicable to current situation
-    private bool ActionCheck(Action action, List<Combatant> targets)
+    public void RemoveTarget(Combatant combatant)
     {
-        bool useAction = false;
-        switch (action.actionType)
-        {
-        case ActionType.Attack:
-            useAction = AttackCheck(action, targets);
-            break;
-        case ActionType.Heal:
-            useAction = HealCheck(action, targets);
-            break;
-        case ActionType.CureAilment:
-            useAction = CureAilmentCheck(action, targets);
-            break;
-        case ActionType.Buff:
-            useAction = BuffCheck(action, targets);
-            break;
-        case ActionType.Debuff:
-            useAction = DebuffCheck(action, targets);
-            break;
-        case ActionType.Other:
-            useAction = true;
-            break;
-        default:
-            useAction = false;
-            break;
-        }
-        return useAction;
+        enemyBattleAI.RemoveTargetFromAggroList(combatant);
     }
 
-    private bool AttackCheck(Action attack, List<Combatant> targets)
+    public void UpdateAggro(Combatant combatant, int aggroChange)
     {
-        if(tauntUser != null && !targets.Contains(tauntUser))
-        {
-            return false;
-        }
-        return true;
+        enemyBattleAI.UpdateAggro(combatant, aggroChange);
     }
 
-    private bool HealCheck(Action heal, List<Combatant> targets)
+    public override void EvadeAttack(Combatant attacker)
     {
-        bool validTarget = false;
-        if(targets.Count > 0)
-        {
-            foreach (Combatant target in targets)
-            {
-                if(target.hp.GetCurrentValue() < Mathf.FloorToInt((float)target.hp.GetValue() / 4f))
-                {
-                    validTarget = true;
-                }
-            }
-        }
-        return validTarget;
+        base.EvadeAttack(attacker);
+        enemyBattleAI.UpdateAggro(attacker, attacker.level * 10);
     }
 
-    private bool BuffCheck(Action buff, List<Combatant> targets)
+    public override void Damage(int damage, Combatant attacker, bool isCrit)
     {
-        bool validTarget = false;
-
-        if(targets.Count > 0)
-        {
-            foreach (Combatant target in targets)
-            {
-                //if target is not currently buffed
-            }
-        }
-        return validTarget;
+        base.Damage(damage, attacker, isCrit);
+        enemyBattleAI.UpdateAggro(attacker, damage);
     }
 
-    private bool DebuffCheck(Action debuff, List<Combatant> targets)
+    public override void OnTurnEnd()
     {
-        bool validTarget = false;
-        int maxRange = battleStatDict[BattleStatType.MoveRange].GetValue() + debuff.range + debuff.aoe;
-        if(targets.Count > 0)
-        {
-            foreach (Combatant target in targets)
-            {
-                //if target is not currently debuffed
-            }
-        }
-        //exclude attacks that can't reach taunt user if the enemy is taunted
-        if(tauntUser != null && !targets.Contains(tauntUser))
-        {
-            validTarget = false;
-        }
-        return validTarget;
+        enemyBattleAI.TriggerAggroFalloff();
+        base.OnTurnEnd();
     }
 
-    private bool CureAilmentCheck(Action cure, List<Combatant> targets)
+    public PotentialAction GetTurnAction()
     {
-        bool validTarget = false;
-        int maxRange = battleStatDict[BattleStatType.MoveRange].GetValue() + cure.range + cure.aoe;
-        if(targets.Count > 0)
-        {
-            foreach (Combatant target in targets)
-            {
-                //if target is debuffed
-            }
-        }
-        return validTarget;
+        return enemyBattleAI.GetTurnAction();
     }
-
-    // private Tile GetAOEPosition(Action action)
-    // {
-    //     int mostTargets = 0;
-    //     int shortestRange = 99;
-    //     Tile tileWithMostTargets;
-    //     foreach (GameObject tileObject in battlefield.gridManager.tileArray)
-    //     {
-    //         Tile tileToCheck = tileObject.GetComponent<Tile>();
-    //         //check all reachable squares (movement and attack ranged)
-    //         if(battlefield.gridManager.GetMoveCost(tileToCheck, tile) <= (GetStatValue(StatType.MoveRange) + action.range))
-    //         {
-    //             List<Combatant> targetsInAOE = battlefield.gridManager.GetTargetsInRange(tile, action.aoe, action.targetPlayer, action.targetEnemy);
-    //             //if aoe effects more or targets than in previous position...
-    //             if(targetsInAOE.Count > mostTargets 
-    //                 || targetsInAOE.Count == mostTargets && battlefield.gridManager.GetMoveCost(tileToCheck, tile) <= shortestRange)
-    //             {
-    //                 if(tauntUser == null || tauntUser != null && targetsInAOE.Contains(tauntUser))
-    //                 {
-    //                     mostTargets = targetsInAOE.Count;
-    //                     shortestRange = battlefield.gridManager.GetMoveCost(tileToCheck, tile);
-    //                     tileWithMostTargets = tileToCheck;
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     return tileWithMostTargets;
-    // }
 }

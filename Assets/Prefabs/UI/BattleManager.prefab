@@ -453,9 +453,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridManager: {fileID: 0}
   gameData: {fileID: 11400000, guid: 97b5f51ad52814e4aa93a00c54b2d5eb, type: 2}
-  allyParty: {fileID: 0}
-  enemyParty: {fileID: 0}
+  partyData: {fileID: 0}
+  enemyPartyData: {fileID: 0}
   battlePartyHUD: {fileID: 0}
+  playableCharacterSpawner: {fileID: 0}
+  enemySpawner: {fileID: 0}
   battleTimeline: {fileID: 0}
   turnForecast: []
   stateMachine: {fileID: 692242123}

@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
+  m_Name: Time Dilation
+  m_EditorClassIdentifier: 
+  actionName: Time Dillation (Absolute)
+  actionType: 0
+  icon: {fileID: 0}
+  descripton: "Doubles the current duration of all status effects. Has no effect
+    on any status effect already extended by time dillation. \n\nSecondary Effects:\n\nEnemies:
+    reduce the poteny of all effected buffs by 40% and all effected debuffs by 20%
+    (including damage over time effects). Does not effect heal over time effects.\n\nAllies:
+    reduce the potency of all extended buffs by 20% (including heal over time effects)
+    and the potency of all effected debuffs by 40% (including damage over time effects).
+    \n\n-If any target is currenly casting, the remaining cast time is doubled (cannot
+    exceed the ability's total cast time)."
+  mpCost: 0
+  timeModifier: 0
+  power: 0
+  range: 0
+  aoe: 0
+  excludeStartingTile: 0
+  lineAOE: 0
+  stopAtOccupiedTile: 0
+  offensiveStat: 0
+  defensiveStat: 0
+  elementalProperty: 0
+  guaranteedHit: 0
+  distancePenalty: 0
+  useDirection: 0
+  statusEffectSO: {fileID: 0}
+  statusEffectChance: 0
+  knockback: 0
+  targetFriendly: 0
+  targetHostile: 0
+  targetSelfOnly: 0
+  hasCastAnimation: 0
+  castAnimatorTrigger: 
+  castGraphicPrefab: {fileID: 0}
+  castAnimationDuration: 0.4
+  castGraphicDelay: 0.15
+  hasProjectileAnimation: 0
+  projectileAnimatorTrigger: 
+  projectileGraphicPrefab: {fileID: 0}
+  projectileGraphicDelay: 0.15
+  hasMoveAnimation: 0
+  moveAnimatorTrigger: 
+  moveGraphicPrefab: {fileID: 0}
+  effectAnimatorTrigger: 
+  effectGraphicPrefab: {fileID: 0}
+  effectAnimationDuration: 0.4
+  effectGraphicDelay: 0.15

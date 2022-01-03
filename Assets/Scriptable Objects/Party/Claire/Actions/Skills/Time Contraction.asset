@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
+  m_Name: Time Contraction
+  m_EditorClassIdentifier: 
+  actionName: 
+  actionType: 0
+  icon: {fileID: 0}
+  descripton: "If the target is currently casting, the spell will be cast the following
+    turn.\n\nAllies: \n-Removes all heal over time effects and immediatly restores
+    80% of the remaining heal amount. \n-Removes all negative status effects with
+    turn durations and immediatly inflicts 40% of the remaining damage for any damage
+    over time effect. \n-If target is effected by Doom, HP is reduced to 1. \n-Effects
+    are applied in the listed order.\n\nEnemies: \n-Removes all positive status effects
+    with turn durations. -Removes all damage over time effects and inflicts 60% of
+    their remaining damage.\n-If target is effected by doom, immediatly KOs the target.\n-Does
+    not effect heal over time status effects. "
+  mpCost: 0
+  timeModifier: 0
+  power: 0
+  range: 0
+  aoe: 0
+  excludeStartingTile: 0
+  lineAOE: 0
+  stopAtOccupiedTile: 0
+  offensiveStat: 0
+  defensiveStat: 0
+  elementalProperty: 0
+  guaranteedHit: 0
+  distancePenalty: 0
+  useDirection: 0
+  statusEffectSO: {fileID: 0}
+  statusEffectChance: 0
+  knockback: 0
+  targetFriendly: 0
+  targetHostile: 0
+  targetSelfOnly: 0
+  hasCastAnimation: 0
+  castAnimatorTrigger: 
+  castGraphicPrefab: {fileID: 0}
+  castAnimationDuration: 0.4
+  castGraphicDelay: 0.15
+  hasProjectileAnimation: 0
+  projectileAnimatorTrigger: 
+  projectileGraphicPrefab: {fileID: 0}
+  projectileGraphicDelay: 0.15
+  hasMoveAnimation: 0
+  moveAnimatorTrigger: 
+  moveGraphicPrefab: {fileID: 0}
+  effectAnimatorTrigger: 
+  effectGraphicPrefab: {fileID: 0}
+  effectAnimationDuration: 0.4
+  effectGraphicDelay: 0.15

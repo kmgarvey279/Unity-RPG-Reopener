@@ -26,7 +26,7 @@ public class EquipmentObject : ItemObject
     [SerializeField] private int iceResistance;
     [SerializeField] private int electricResistance;
     [SerializeField] private int darkResistance;
-    public Dictionary<ElementalProperty, int> elementalResistDict = new Dictionary<ElementalProperty, int>();
+    public Dictionary<ElementalProperty, int> resistDict = new Dictionary<ElementalProperty, int>();
     [Header("Who can equip it?")]
     [SerializeField] private bool claireEquip;
     [SerializeField] private bool mutinyEquip;
@@ -55,10 +55,10 @@ public class EquipmentObject : ItemObject
         modifierDict.Add(StatType.Skill, skillModifier);
         modifierDict.Add(StatType.Agility, agilityModifier);
         //elemental resistance
-        elementalResistDict.Add(ElementalProperty.Fire, fireResistance);
-        elementalResistDict.Add(ElementalProperty.Ice, iceResistance);
-        elementalResistDict.Add(ElementalProperty.Electric, electricResistance);
-        elementalResistDict.Add(ElementalProperty.Dark, darkResistance);
+        resistDict.Add(ElementalProperty.Fire, fireResistance);
+        resistDict.Add(ElementalProperty.Ice, iceResistance);
+        resistDict.Add(ElementalProperty.Electric, electricResistance);
+        resistDict.Add(ElementalProperty.Dark, darkResistance);
         //status resistance
         //characters who can equip
         equipableDict.Add(PlayableCharacterID.Claire, claireEquip);

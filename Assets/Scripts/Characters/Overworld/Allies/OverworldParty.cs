@@ -7,24 +7,24 @@ using StateMachineNamespace;
 public class OverworldParty : MonoBehaviour
 {
     [Header("Party Scriptable Object")]
-    public Party partyData;
+    public PartyData partyData;
     
     [Header("Party Member Prefabs")]
     [SerializeField] private GameObject mutiny;
     [SerializeField] private GameObject shad;
     [SerializeField] private GameObject blaine;
     [SerializeField] private GameObject lucy;
-    private Dictionary<string, GameObject> allyPrefabs = new Dictionary<string, GameObject>();
+    private Dictionary<PlayableCharacterID, GameObject> allyPrefabs = new Dictionary<PlayableCharacterID, GameObject>();
     
     [Header("Active Party Slots")]
     public List<GameObject> allyObjects = new List<GameObject>();
 
     private void Start()
     {
-        allyPrefabs.Add("Mutiny", mutiny);
-        allyPrefabs.Add("Shad", shad);  
-        allyPrefabs.Add("Blaine", blaine);
-        allyPrefabs.Add("Lucy", lucy);
+        allyPrefabs.Add(PlayableCharacterID.Mutiny, mutiny);
+        allyPrefabs.Add(PlayableCharacterID.Shad, shad);  
+        allyPrefabs.Add(PlayableCharacterID.Blaine, blaine);
+        allyPrefabs.Add(PlayableCharacterID.Lucy, lucy);
 
         SpawnAllies();
     }
@@ -32,23 +32,22 @@ public class OverworldParty : MonoBehaviour
     public void SpawnAllies()
     {
         GameObject nextAlly = allyObjects[0];
-        int partyOrder = 1;
+        int partySize = 0;
 
-        for(int i = 1; i < partyData.partyList.Count; i++)
+        foreach(PartyMember partyMember in partyData.partyMembers)
         {
-            PartyMember partyMember = partyData.partyList[i];
-            if(partyMember.inActiveParty)
+            if(partySize < 3 && partyMember.inParty)
             {
-                string characterName = partyMember.characterName; 
+                partySize++;
+
                 Transform partyPosition = nextAlly.GetComponent<Ally>().followerPosition.transform;
 
-                GameObject allyObject = Instantiate(allyPrefabs[characterName], partyPosition.position, Quaternion.identity);
+                GameObject allyObject = Instantiate(allyPrefabs[partyMember.playableCharacterID], partyPosition.position, Quaternion.identity);
                 allyObject.transform.parent = gameObject.transform;
                 allyObject.GetComponent<Follower>().partyPosition = partyPosition;
                 allyObjects.Add(allyObject);
-
+                
                 nextAlly = allyObject;
-                partyOrder++;
             }
         }
     }

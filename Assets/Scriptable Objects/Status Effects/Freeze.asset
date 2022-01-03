@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 458e207d70dac8147a5a6332498da853, type: 3}
+  m_Name: Freeze
+  m_EditorClassIdentifier: 
+  effectName: Frost
+  effectInfo: Prevents all action. Physical defense reduced by 50%. Reduce evasion
+    by 100%. Ends on hit.
+  isBuff: 0
+  icon: {fileID: 0}
+  animatorTrigger: Stun
+  effectObject: {fileID: 0}
+  turnDuration: 1
+  battleStatMultipliers:
+  - statToMultiply: 6
+    multiplier: -1
+  - statToMultiply: 3
+    multiplier: -0.5
+  damageEffect: 0
+  healEffect: 0
+  potency: 0
+  endOnHit: 1

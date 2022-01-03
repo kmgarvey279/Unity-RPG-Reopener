@@ -430,25 +430,19 @@ MonoBehaviour:
     modifiers: 
     multipliers: []
     currentValue: 0
-  skills: []
   ko: 0
   statusEffects: []
   animator: {fileID: 2119515496622217038}
   spriteFill: {fileID: 6529827472571875514}
-  battlefield: {fileID: 0}
-  healthDisplay: {fileID: 2759678169418468688}
-  statusEffectDisplay: {fileID: 0}
-  maskController: {fileID: 0}
   onTargetSelect: {fileID: 11400000, guid: 9643ea6fcd7523f49b0b77952933ff6e, type: 2}
   onTargetDeselect: {fileID: 11400000, guid: 12a71b399520515489f510970c00b7ef, type: 2}
   tile: {fileID: 0}
   lookDirection: {x: 0, y: 0}
   gridMovement: {fileID: 0}
-  recoveryTime: 0.5
-  koTime: 0.5
-  meleeAttack: {fileID: 11400000, guid: 49078961aba57e64590b3560444824a7, type: 2}
-  rangedAttack: {fileID: 11400000, guid: d0271b7210b12624186c868c9dc3043f, type: 2}
   battlePartyPanel: {fileID: 0}
+  skills: []
+  meleeAttack: {fileID: 0}
+  rangedAttack: {fileID: 11400000, guid: d0271b7210b12624186c868c9dc3043f, type: 2}
 --- !u!1001 &1402383867595480895
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -664,18 +658,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1402383867595480895}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2759678169418468688 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3835408952067281519, guid: fd4af50d8bb62e34c9792e3827f5d6a8,
-    type: 3}
-  m_PrefabInstance: {fileID: 1402383867595480895}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9b9ed025a8cae54a9a60a45a58491dd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &8612918479412783894 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7273734561724347433, guid: fd4af50d8bb62e34c9792e3827f5d6a8,

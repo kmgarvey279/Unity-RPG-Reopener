@@ -19,7 +19,6 @@ public class TurnSlot
     [Header("Cost of movement this turn")]
     public float moveCost;
     public float defaultMoveCost = 0f;
-
     private float speedMultiplier = 1f;
 
     public TurnSlot(Combatant _combatant)
@@ -40,9 +39,9 @@ public class TurnSlot
         turnCounter = Mathf.FloorToInt((actionCost + moveCost) * 100 / GetSpeed());
     }
 
-    public void SetActionCost(float actionCost)
+    public void SetActionCost(float costModifier)
     {
-        this.actionCost = actionCost;
+        this.actionCost = defaultActionCost + costModifier;
         UpdateTurnCounter();
     }
 
@@ -94,13 +93,13 @@ public class TurnData
     public List<Combatant> targets = new List<Combatant>();
     public Tile targetedTile;
     [Header("Starting Location")]
-    public Vector3 startingPosition;
+    public Tile startingTile;
     public Vector2 startingDirection;
 
     public TurnData(Combatant combatant)
     {
         this.combatant = combatant;
-        this.startingPosition = combatant.transform.position;
+        this.startingTile = combatant.tile;
         this.startingDirection = combatant.GetDirection();
     }
 }
@@ -113,9 +112,13 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private GameData gameData;
     
     [Header("Parties")]
+    [SerializeField] private PartyData partyData;
+    [SerializeField] private EnemyPartyData enemyPartyData;
     private List<Combatant> playableCombatants = new List<Combatant>();
     private List<Combatant> enemyCombatants = new List<Combatant>();
     [SerializeField] private BattlePartyHUD battlePartyHUD;
+    [SerializeField] private PlayableCharacterSpawner playableCharacterSpawner;
+    [SerializeField] private EnemySpawner enemySpawner;
     
     [Header("Turn Order Display")]
     [SerializeField] private BattleTimeline battleTimeline;
@@ -140,23 +143,46 @@ public class BattleManager : MonoBehaviour
 
     public void Start()
     {
-        battleCalculations = new BattleCalculations();
-        //generate turn forecast & display it
-        foreach(Combatant combatant in playableCombatants)
+        int partySize = 0;
+        foreach(PartyMember partyMember in partyData.partyMembers)
         {
-            TurnSlot newSlot = new TurnSlot(combatant);
-            turnForecast.Add(newSlot);
-            //create playable character status panel
-            battlePartyHUD.CreatePartyPanel((PlayableCombatant)combatant);
+            if(partySize < 3 && partyMember.inParty)
+            {
+                partySize++;
+                Combatant combatant = playableCharacterSpawner.SpawnPlayableCharacter(partyMember.playableCharacterID, partySize);
+                if(combatant != null)
+                {
+                    playableCombatants.Add(combatant);
+                
+                    battlePartyHUD.CreatePartyPanel((PlayableCombatant)combatant);
+                
+                    TurnSlot newSlot = new TurnSlot(combatant);
+                    TurnForecastAdd(newSlot);
+                }
+            }
         }
-        foreach(Combatant combatant in enemyCombatants)
+        int enemyPartySize = 0;
+        foreach(GameObject enemyPrefab in enemyPartyData.enemyPrefabs)
         {
-            TurnSlot newSlot = new TurnSlot(combatant);
-            turnForecast.Add(newSlot);
-        }
-        turnForecast = turnForecast.OrderBy(o=>o.turnCounter).ToList();
-        battleTimeline.CreateTurnPanels(turnForecast);
+            enemyPartySize++;
+            Combatant combatant = enemySpawner.SpawnEnemy(enemyPrefab, enemyPartySize);
+            if(combatant != null)
+            {
+                enemyCombatants.Add(combatant);
+                
+                TurnSlot newSlot = new TurnSlot(combatant);
+                TurnForecastAdd(newSlot);
 
+                EnemyCombatant enemyCombatant = (EnemyCombatant)combatant;
+                enemyCombatant.CreateAggroList(playableCombatants);
+            }
+        }
+        StartCoroutine(BattleStartCo());
+    }
+
+    private IEnumerator BattleStartCo()
+    {
+        yield return new WaitForSeconds(0.4f);
         AdvanceTimeline();
     }
 
@@ -177,22 +203,21 @@ public class BattleManager : MonoBehaviour
     {   
         currentTurnSlot = turnForecast[0];
         battleTimeline.ChangeCurrentTurn(currentTurnSlot);
-        battleTimeline.ToggleNextTurnIndicator(currentTurnSlot, true);
         currentTurnSlot.SetTurnCounterToDefault();
         UpdateTurnOrder();
 
         //create temp turn data
         turnData = new TurnData(currentTurnSlot.combatant);
 
-        currentTurnSlot.combatant.OnTurnStart();
-
         //get next state
         if(currentTurnSlot.combatant is PlayableCombatant)
         {
-            stateMachine.ChangeState((int)BattleStateType.Menu);
+            Debug.Log("Player Turn Start");
+            stateMachine.ChangeState((int)BattleStateType.Move);
         }
         else
         {
+            Debug.Log("Enemy Turn Start");
             stateMachine.ChangeState((int)BattleStateType.EnemyTurn);
         }
     }
@@ -200,6 +225,7 @@ public class BattleManager : MonoBehaviour
     public void TurnForecastAdd(TurnSlot turnSlot)
     {
         turnForecast.Add(turnSlot);
+        battleTimeline.CreateTurnPanel(turnForecast.Count - 1, turnSlot);
         UpdateTurnOrder();
     }
 
@@ -214,6 +240,7 @@ public class BattleManager : MonoBehaviour
         turnForecast = turnForecast.OrderBy(o=>o.turnCounter).ToList();
         battleTimeline.UpdateTurnPanels(turnForecast);
     }
+
     public void SetMoveCost(int moveCost)
     {
         currentTurnSlot.SetMoveCost(moveCost);
@@ -224,7 +251,7 @@ public class BattleManager : MonoBehaviour
     {
         turnData.action = action;
         
-        currentTurnSlot.SetActionCost(action.timeCost);
+        currentTurnSlot.SetActionCost(action.timeModifier);
         UpdateTurnOrder();
     }
     //set tile and combatants to be targeted in execution phase
@@ -242,7 +269,7 @@ public class BattleManager : MonoBehaviour
         UpdateTurnOrder();
     }
 
-    public void EndTurn()
+    public IEnumerator EndTurnCo()
     {   
         bool allPartyMembersKO = true;
         foreach (Combatant combatant in playableCombatants)
@@ -252,6 +279,7 @@ public class BattleManager : MonoBehaviour
                 allPartyMembersKO = false;
             }
         }
+        yield return new WaitForSeconds(1f);
         if(enemyCombatants.Count <= 0)
         {
             WinBattle();
@@ -262,7 +290,6 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            battleTimeline.ToggleNextTurnIndicator(currentTurnSlot, false);
             turnData = null;
             AdvanceTimeline();
         }
@@ -281,6 +308,18 @@ public class BattleManager : MonoBehaviour
     private void EscapeBattle()
     {
         Debug.Log("You escaped!");
+    }
+
+    public void OnPlayableCombatantHeal(Combatant healer, int amount)
+    {
+        if(enemyCombatants.Count > 0)
+        {
+            foreach(Combatant combatant in enemyCombatants)
+            {
+                EnemyCombatant enemyCombatant = (EnemyCombatant)combatant;
+                enemyCombatant.UpdateAggro(healer, Mathf.RoundToInt(amount / 2f));
+            }
+        }
     }
 
     public void OnCombatantKO(Combatant combatant)
@@ -308,21 +347,11 @@ public class BattleManager : MonoBehaviour
         //find target in turn forecast
         Combatant target = gameObject.GetComponent<Combatant>();
         TurnSlot selectedTurnSlot = turnForecast.FirstOrDefault(turnSlot => turnSlot.combatant == target);
-        //get accuracy
-        if(selectedTurnSlot != null)
-        {
-            int accuracy = battleCalculations.GetHitChance(turnData.action, turnData.combatant, target, gridManager.GetMoveCost(turnData.combatant.tile, target.tile));
-            battleTimeline.DisplayAccuracyPreview(selectedTurnSlot, accuracy);
-        }
     }
 
     public void OnTargetDeselect(GameObject gameObject)
     {
         Combatant target = gameObject.GetComponent<Combatant>();
         TurnSlot selectedTurnSlot = turnForecast.FirstOrDefault(turnSlot => turnSlot.combatant == target);
-        if(selectedTurnSlot != null)
-        { 
-            battleTimeline.ClearAccuracyPreview(selectedTurnSlot);
-        }
     }
 }

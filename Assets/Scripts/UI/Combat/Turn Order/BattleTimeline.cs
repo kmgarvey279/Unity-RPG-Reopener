@@ -16,19 +16,18 @@ public class BattleTimeline : MonoBehaviour
 
     [SerializeField] private List<Transform> slotLocations;
 
-    public void CreateTurnPanels(List<TurnSlot> turnForecast)
-    {
-        for(int i = 0; i < turnForecast.Count; i++)
-        {
-            CreateTurnPanel(i, turnForecast[i]);
-        }
-    }
+    // public void CreateTurnPanels(List<TurnSlot> turnForecast)
+    // {
+    //     for(int i = 0; i < turnForecast.Count; i++)
+    //     {
+    //         CreateTurnPanel(i, turnForecast[i]);
+    //     }
+    // }
 
     public void UpdateTurnPanels(List<TurnSlot> turnForecast)
     {
         foreach(KeyValuePair<TurnSlot, TurnPanel> entry in turnPanels)
         {
-            entry.Value.UpdateSliderValue();
             Vector3 updatedPosition = slotLocations[turnForecast.IndexOf(entry.Key)].position;
             if(entry.Value.transform.position != updatedPosition)
             {
@@ -37,7 +36,7 @@ public class BattleTimeline : MonoBehaviour
         }
     }
 
-    private void CreateTurnPanel(int index, TurnSlot turnSlot)
+    public void CreateTurnPanel(int index, TurnSlot turnSlot)
     {
         //create panel
         GameObject turnPanelObject = Instantiate(turnPanelPrefab, new Vector3(0, 0, 0), Quaternion.identity);
@@ -51,40 +50,26 @@ public class BattleTimeline : MonoBehaviour
         turnPanels.Add(turnSlot, turnPanel);
     }
 
-    private void MoveTurnPanel(TurnPanel turnPanel)
-    {
-
-    }
-
-    public void RemoveTurnPanel()
-    {
-    }
-
     public void ChangeCurrentTurn(TurnSlot newCurrentSlot)
     {
         currentTurnPanel.AssignTurnSlot(newCurrentSlot);
     }
 
-    public void ToggleNextTurnIndicator(TurnSlot turnSlot, bool isNextTurn)
-    {
-        turnPanels[turnSlot].ToggleNextTurnIndicator(isNextTurn);
-    }
+    // public void DisplayAccuracyPreview(TurnSlot turnSlot, int accuracy)
+    // {
+    //     turnPanels[turnSlot].DisplayAccuracyPreview(accuracy);
+    // }
 
-    public void DisplayAccuracyPreview(TurnSlot turnSlot, int accuracy)
-    {
-        turnPanels[turnSlot].DisplayAccuracyPreview(accuracy);
-    }
+    // public void ClearAccuracyPreview(TurnSlot turnSlot)
+    // {
+    //     turnPanels[turnSlot].ClearAccuracyPreview();
+    // }
 
-    public void ClearAccuracyPreview(TurnSlot turnSlot)
-    {
-        turnPanels[turnSlot].ClearAccuracyPreview();
-    }
-
-    public void ClearAllTargeted()
-    {
-        foreach(KeyValuePair<TurnSlot, TurnPanel> entry in turnPanels)
-        {
-           entry.Value.ClearAccuracyPreview(); 
-        }
-    }
+    // public void ClearAllTargeted()
+    // {
+    //     foreach(KeyValuePair<TurnSlot, TurnPanel> entry in turnPanels)
+    //     {
+    //        entry.Value.ClearAccuracyPreview(); 
+    //     }
+    // }
 }

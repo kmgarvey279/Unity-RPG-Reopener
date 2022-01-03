@@ -24,7 +24,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     public int x;
     public int y;
     public Combatant occupier;
-    public Targetability targetability = Targetability.Default;
+    public bool targetable;
     [Header("Display")]
     [SerializeField] private Image tileImage;
     [SerializeField] private Button tileButton;
@@ -50,6 +50,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     {
         tileImage.color = defaultColor;
         tileButton.enabled = true;
+        targetable = true;
     }
 
     public void DisplayAOE(bool targetPlayer, bool targetEnemy)
@@ -113,7 +114,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
             image.transform.rotation = Quaternion.Euler(0, 0, z);
             if(pathType == PathType.Turn)
             {
-                if(direction1.x > 0 && direction2.y > 0 || direction1.x < 0 && direction2.y < 0)
+                if(direction1.x > 0 && direction2.y > 0 || direction1.x < 0 && direction2.y < 0 || direction1.y < 0 && direction2.x > 0 || direction1.y > 0 && direction2.x < 0)
                 {
                     image.flipX = true;  
                 } 
@@ -140,31 +141,31 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
         //     destinationImage.enabled = false;
     }
 
-    public void ChangeTargetability(Targetability newStatus)
-    {
-        if(occupier)
-        {
-            targetability = newStatus;
-            switch((int)targetability) 
-            {
-                //default
-                case 0:
-                    tileButton.enabled = false;
-                    occupier.ClearSpriteMask();
-                    break;
-                //targetable
-                case 1:
-                    tileButton.enabled = true;
-                    occupier.ClearSpriteMask();
-                    break;
-                //untargetable
-                case 2:
-                    tileButton.enabled = false;
-                    occupier.GrayOut();
-                    break;
-            }
-        }
-    }
+    // public void ChangeTargetability(Targetability newStatus)
+    // {
+    //     if(occupier)
+    //     {
+    //         targetability = newStatus;
+    //         switch((int)targetability) 
+    //         {
+    //             //default
+    //             case 0:
+    //                 tileButton.enabled = false;
+    //                 occupier.ClearSpriteMask();
+    //                 break;
+    //             //targetable
+    //             case 1:
+    //                 tileButton.enabled = true;
+    //                 occupier.ClearSpriteMask();
+    //                 break;
+    //             //untargetable
+    //             case 2:
+    //                 tileButton.enabled = false;
+    //                 occupier.GrayOut();
+    //                 break;
+    //         }
+    //     }
+    // }
 
     public void Hide()
     {
@@ -172,6 +173,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
         tileButton.enabled = false;
         aoeImage.enabled = false;
         selectedImage.enabled = false;
+        targetable = false;
         // ChangeTargetability(Targetability.Default);
     }
 
@@ -185,7 +187,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     {
         onTileSelect.Raise(this.gameObject);
         selectedImage.enabled = true;
-        if(occupier && targetability == Targetability.Targetable)
+        if(aoeImage.enabled && occupier)
         {
             occupier.Select();
         }
@@ -224,11 +226,10 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        // if(other.gameObject.CompareTag("Combatant") && other.isTrigger)
-        // {
-        //     occupier.GetComponent<Combatant>().SetTile(null); 
-        // }
-        occupier = null;
+        if(other.gameObject.CompareTag("Combatant") && other.isTrigger)
+        {
+            occupier = null; 
+        }
     }
 
     public void OnClick()

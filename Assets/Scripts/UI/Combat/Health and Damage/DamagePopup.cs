@@ -5,7 +5,8 @@ using TMPro;
 
 public enum DamagePopupType
 {
-    Damage,
+    Damage,    
+    Crit,
     Heal,
     Miss
 }
@@ -17,6 +18,7 @@ public class DamagePopup : MonoBehaviour
     [SerializeField] private TextMeshProUGUI popupText;
     [Header("Value Displayed")]
     public Color damageColor;
+    public Color critColor;
     public Color healColor;
     public Color missColor;
 
@@ -34,10 +36,14 @@ public class DamagePopup : MonoBehaviour
             popupText.text = amount.ToString("n0");
             break;
         case 1:
-            popupText.color = healColor; 
+            popupText.color = critColor; 
             popupText.text = amount.ToString("n0");
             break;
         case 2:
+            popupText.color = healColor; 
+            popupText.text = amount.ToString("n0");
+            break;
+        case 3:
             popupText.color = missColor; 
             popupText.text = "MISS";
             break;

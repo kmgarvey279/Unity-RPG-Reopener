@@ -12,43 +12,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd7c3aa6ce019147804e90e0136ea53, type: 3}
   m_Name: MutinyInfo
   m_EditorClassIdentifier: 
-  name: Mutiny
+  characterName: Mutiny
   level: 1
-  health:
-    baseValue: 20
-    statType: 0
-    modifiers: []
-    currentValue: 0
-  mana:
-    baseValue: 10
-    statType: 1
-    modifiers: []
-    currentValue: 0
-  attack:
-    baseValue: 5
-    statType: 2
-    modifiers: []
-  defense:
-    baseValue: 5
-    statType: 3
-    modifiers: []
-  special:
-    baseValue: 5
-    statType: 4
-    modifiers: []
-  agility:
-    baseValue: 30
-    statType: 5
-    modifiers: []
-  moveRange:
-    baseValue: 4
-    statType: 6
-    modifiers: []
-  fire: 0
-  ice: 0
-  electric: 0
-  dark: 0
+  baseHP: 100
+  hp:
+    baseValue: 100
+    modifiers: 
+    multipliers: []
+    currentValue: 100
+  baseMP: 50
+  mp:
+    baseValue: 50
+    modifiers: 
+    multipliers: []
+    currentValue: 50
+  attack: 8
+  defense: 8
+  magic: 7
+  magicDefense: 7
+  skill: 12
+  agility: 12
+  moveRange: 3
+  fireResist: 0
+  iceResist: 0
+  electricResist: 0
+  darkResist: 0
+  traits: []
+  meleeAttack: {fileID: 11400000, guid: d5d7301e34e951c4fa9b4beeda7e7bcb, type: 2}
+  rangedAttack: {fileID: 11400000, guid: 831011b60e8f04541aacc431bf5aa8ae, type: 2}
   skills: []
   weapon: {fileID: 0}
   armor: {fileID: 0}
   accessory: {fileID: 0}
+  characterID: 0

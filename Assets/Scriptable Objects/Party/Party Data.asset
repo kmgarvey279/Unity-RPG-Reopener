@@ -12,15 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fec686f237d3ed4184fc303f387d407, type: 3}
   m_Name: Party Data
   m_EditorClassIdentifier: 
-  partyList:
-  - characterName: Claire
-    inActiveParty: 1
-  - characterName: 
-    inActiveParty: 0
-  - characterName: 
-    inActiveParty: 0
-  - characterName: 
-    inActiveParty: 0
-  - characterName: 
-    inActiveParty: 0
-  activePartySize: 1
+  partyMembers:
+  - playableCharacterID: 0
+    inParty: 1
+  - playableCharacterID: 1
+    inParty: 1
+  - playableCharacterID: 2
+    inParty: 1
+  - playableCharacterID: 3
+    inParty: 0
+  - playableCharacterID: 4
+    inParty: 0

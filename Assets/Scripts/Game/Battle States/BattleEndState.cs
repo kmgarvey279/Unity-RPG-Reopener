@@ -8,22 +8,19 @@ public class BattleEndState : BattleState
 {
     public override void OnEnter()
     {
-        base.Start();
-        battleManager.EndTurn();
+        base.OnEnter();
     }
 
     public override void StateUpdate()
     {
-
     }
 
     public override void StateFixedUpdate()
     {
-
     }
 
     public override void OnExit()
     {
-
+        base.OnExit();
     }
 }

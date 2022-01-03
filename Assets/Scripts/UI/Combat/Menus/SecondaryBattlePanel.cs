@@ -23,10 +23,8 @@ public class SecondaryBattlePanel : MonoBehaviour
         display.SetActive(true);
     }
 
-    public void DisplaySkills(Combatant combatant)
+    public void DisplaySkills(List<Action> skills)
     {
-        List<Action> skills = combatant.skills;
-        display.SetActive(true);
         for (int i = 0; i < skills.Count; i++)
         {
             GameObject skillSlotObject = Instantiate(skillSlotPrefab, Vector3.zero, Quaternion.identity);   
@@ -34,6 +32,7 @@ public class SecondaryBattlePanel : MonoBehaviour
             skillSlotObject.GetComponent<BattleSkillSlot>().AssignSlot(skills[i]); 
             selectableList.Add(skillSlotObject);
         } 
+        display.SetActive(true);
         EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(selectableList[0]);
     }

@@ -8,7 +8,6 @@ public enum BattleStateType
     Start,
     Menu,
     Move,
-    TargetSelect,
     TileSelect,
     Execute,
     EnemyTurn,
@@ -19,10 +18,11 @@ public class BattleState : StateMachine.State
 {
     public BattleStateType battleStateType;
     [HideInInspector] public BattleManager battleManager;
+    [HideInInspector] public TurnData turnData;
     [Header("Unity Events (Listeners)")]
     public List<MonoBehaviour> signalListeners;
 
-    public virtual void Start()
+    public void Awake()
     {
         //state machine
         stateMachine = GetComponentInParent<StateMachine>(); 
@@ -40,6 +40,7 @@ public class BattleState : StateMachine.State
                 script.enabled = true;
             }
         }
+        turnData = battleManager.turnData;  
     }
 
     public override void StateUpdate()

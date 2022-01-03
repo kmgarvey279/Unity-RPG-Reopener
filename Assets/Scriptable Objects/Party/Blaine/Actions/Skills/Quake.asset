@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
+  m_Name: Quake
+  m_EditorClassIdentifier: 
+  actionName: AOE
+  actionType: 0
+  icon: {fileID: 0}
+  descripton: Deals physical damage to all nearby targets. Power inceases with proximity.
+  mpCost: 12
+  timeModifier: 0
+  power: 1.1
+  range: 0
+  aoe: 3
+  excludeStartingTile: 1
+  lineAOE: 0
+  stopAtOccupiedTile: 0
+  offensiveStat: 0
+  defensiveStat: 3
+  elementalProperty: 0
+  guaranteedHit: 0
+  distancePenalty: 0
+  useDirection: 0
+  statusEffectSO: {fileID: 0}
+  statusEffectChance: 0
+  knockback: 0
+  targetFriendly: 0
+  targetHostile: 1
+  targetSelfOnly: 0
+  hasCastAnimation: 1
+  castAnimatorTrigger: Defend
+  castGraphicPrefab: {fileID: 0}
+  castAnimationDuration: 0.4
+  castGraphicDelay: 0.15
+  hasProjectileAnimation: 0
+  projectileAnimatorTrigger: 
+  projectileGraphicPrefab: {fileID: 0}
+  projectileGraphicDelay: 0
+  hasMoveAnimation: 0
+  moveAnimatorTrigger: 
+  moveGraphicPrefab: {fileID: 0}
+  effectAnimatorTrigger: Melee
+  effectGraphicPrefab: {fileID: 7816962457026261443, guid: 8b57e975f2ff9fe4ca6873371a6bb4e7,
+    type: 3}
+  effectAnimationDuration: 0.4
+  effectGraphicDelay: 0.15

@@ -54,15 +54,10 @@ public class CharacterInfo : ScriptableObject
     [SerializeField] private int iceResist;
     [SerializeField] private int electricResist;
     [SerializeField] private int darkResist;
-    public Dictionary<ElementalProperty, Stat> elementalResistDict;
+    public Dictionary<ElementalProperty, Stat> resistDict;
 
-    [Header("Standard Attacks")]
-    public Action meleeAttack;
-    public Action rangedAttack;
-
-    [Header("Skills")]
-    public List<Action> skills = new List<Action>();
-
+    [Header("Traits")]
+    public List<Trait> traits;
 
     protected virtual void OnEnable()
     {
@@ -78,11 +73,11 @@ public class CharacterInfo : ScriptableObject
         statDict.Add(StatType.Agility, new Stat(agility));
         statDict.Add(StatType.MoveRange, new Stat(moveRange));
         //add resistances to dictionary
-        elementalResistDict = new Dictionary<ElementalProperty, Stat>();
-        elementalResistDict.Add(ElementalProperty.Fire, new Stat(fireResist));
-        elementalResistDict.Add(ElementalProperty.Ice, new Stat(iceResist));
-        elementalResistDict.Add(ElementalProperty.Electric, new Stat(electricResist));
-        elementalResistDict.Add(ElementalProperty.Dark, new Stat(darkResist));
+        resistDict = new Dictionary<ElementalProperty, Stat>();
+        resistDict.Add(ElementalProperty.Fire, new Stat(fireResist));
+        resistDict.Add(ElementalProperty.Ice, new Stat(iceResist));
+        resistDict.Add(ElementalProperty.Electric, new Stat(electricResist));
+        resistDict.Add(ElementalProperty.Dark, new Stat(darkResist));
     }
 
     public virtual void OnDisable()

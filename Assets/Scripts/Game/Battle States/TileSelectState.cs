@@ -9,7 +9,6 @@ public class TileSelectState : BattleState
 {
     [SerializeField] private GridManager gridManager;
 
-    private TurnData turnData;
     private Tile selectedTile;
     private List<Combatant> selectedTargets;
     private int maxRange;
@@ -20,7 +19,6 @@ public class TileSelectState : BattleState
     {
         base.OnEnter();
 
-        turnData = battleManager.turnData;
         onCameraZoomOut.Raise();
         //display tiles
         gridManager.DisplayTilesInRange(turnData.combatant.tile, turnData.action.range, false, turnData.action.excludeStartingTile);
@@ -33,13 +31,16 @@ public class TileSelectState : BattleState
 
         if(raycastResults.Count > 0)
         {
+            Debug.Log("raycast hit");
             foreach(RaycastResult result in raycastResults)
             {  
                 if(result.gameObject.GetComponent<Tile>() != null)
                 {
+                    Debug.Log("found tile");
                     Tile tile = result.gameObject.GetComponent<Tile>();
-                    if(tile.targetability == Targetability.Targetable)
+                    if(tile.targetable)
                     {
+                        Debug.Log("selecting tile");
                         tile.Select();
                     }
                     break;
@@ -56,9 +57,10 @@ public class TileSelectState : BattleState
             if(selectedTargets.Count > 0) 
             {
                 battleManager.SetTargets(selectedTile, selectedTargets);
-                if(turnData.action == turnData.combatant.rangedAttack && gridManager.GetMoveCost(turnData.combatant.tile, selectedTile) <= 1 && turnData.combatant.meleeAttack != null)
+                PlayableCombatant playableCombatant = (PlayableCombatant)turnData.combatant;
+                if(turnData.action == playableCombatant.rangedAttack && gridManager.GetMoveCost(playableCombatant.tile, selectedTile) <= 1 && playableCombatant.meleeAttack != null)
                 {
-                    turnData.action = turnData.combatant.meleeAttack;
+                    turnData.action = playableCombatant.meleeAttack;
                 }
                 stateMachine.ChangeState((int)BattleStateType.Execute); 
             }
@@ -97,7 +99,7 @@ public class TileSelectState : BattleState
             List<Tile> path = new List<Tile>();
             if(selectedTile.occupier && selectedTile.occupier is EnemyCombatant)
                 path = gridManager.GetRow(selectedTile, direction, turnData.action.knockback, true);
-            gridManager.DisplayPath(path);
+            // gridManager.DisplayPath(path);
         } 
         if(turnData.action.lineAOE)
         {

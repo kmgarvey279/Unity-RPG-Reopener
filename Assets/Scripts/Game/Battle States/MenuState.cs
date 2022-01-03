@@ -7,8 +7,6 @@ using StateMachineNamespace;
 [System.Serializable]
 public class MenuState : BattleState
 {
-    private TurnData turnData;
-
     [Header("Battle Menu")]
     [SerializeField] private CommandMenu commandMenu;
 
@@ -18,29 +16,19 @@ public class MenuState : BattleState
     public override void OnEnter()
     {
         base.OnEnter();
-        turnData = battleManager.turnData;  
-        
-        //checks if player is canceling a move
-        if(turnData.combatant.transform.position != turnData.startingPosition)
-        {
-            battleManager.SetMoveCost(0);
-            ResetPosition();
-        }
+        Debug.Log("Enter Menu State");
 
         // onCameraZoomIn.Raise(turnData.combatant.gameObject);
 
         commandMenu.DisplayMenu();
     }
 
-    private void ResetPosition()
-    {
-        turnData.combatant.transform.position = turnData.startingPosition;
-        turnData.combatant.SetLookDirection(new Vector2(turnData.startingDirection.x, turnData.startingDirection.y));
-    }
-
     public override void StateUpdate()
     {
-
+        if(Input.GetButtonDown("Cancel"))
+        {
+            stateMachine.ChangeState((int)BattleStateType.Move);
+        }
     }
 
     public override void StateFixedUpdate()

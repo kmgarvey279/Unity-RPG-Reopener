@@ -20,6 +20,13 @@ public enum DamageType
 [CreateAssetMenu(fileName = "New Playable Character Info", menuName = "Character Info/Playable")]
 public class PlayableCharacterInfo : CharacterInfo
 {
+    [Header("Standard Attacks")]
+    public Action meleeAttack;
+    public Action rangedAttack;
+
+    [Header("Skills")]
+    public List<Action> skills;
+
     [Header("Equipment")]
     [SerializeField] private WeaponObject weapon;
     [SerializeField] private ArmorObject armor;
@@ -59,9 +66,9 @@ public class PlayableCharacterInfo : CharacterInfo
                 stat.Value.RemoveModifier(equipmentDict[equipmentType].modifierDict[stat.Key]);
             }
             //clear elemental modifiers
-            foreach(KeyValuePair<ElementalProperty, Stat> stat in elementalResistDict)
+            foreach(KeyValuePair<ElementalProperty, Stat> stat in resistDict)
             { 
-                stat.Value.RemoveModifier(equipmentDict[equipmentType].elementalResistDict[stat.Key]);
+                stat.Value.RemoveModifier(equipmentDict[equipmentType].resistDict[stat.Key]);
             }
             equipmentDict.Remove(equipmentType);
         }
@@ -81,9 +88,9 @@ public class PlayableCharacterInfo : CharacterInfo
             { 
                 stat.Value.RemoveModifier(entry.Value.modifierDict[stat.Key]);
             }
-            foreach(KeyValuePair<ElementalProperty, Stat> stat in elementalResistDict)
+            foreach(KeyValuePair<ElementalProperty, Stat> stat in resistDict)
             { 
-                stat.Value.RemoveModifier(entry.Value.elementalResistDict[stat.Key]);
+                stat.Value.RemoveModifier(entry.Value.resistDict[stat.Key]);
             }
         }  
         equipmentDict.Clear(); 
