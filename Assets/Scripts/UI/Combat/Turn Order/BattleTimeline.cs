@@ -16,14 +16,6 @@ public class BattleTimeline : MonoBehaviour
 
     [SerializeField] private List<Transform> slotLocations;
 
-    // public void CreateTurnPanels(List<TurnSlot> turnForecast)
-    // {
-    //     for(int i = 0; i < turnForecast.Count; i++)
-    //     {
-    //         CreateTurnPanel(i, turnForecast[i]);
-    //     }
-    // }
-
     public void UpdateTurnPanels(List<TurnSlot> turnForecast)
     {
         foreach(KeyValuePair<TurnSlot, TurnPanel> entry in turnPanels)
@@ -50,26 +42,28 @@ public class BattleTimeline : MonoBehaviour
         turnPanels.Add(turnSlot, turnPanel);
     }
 
+    public void DestroyTurnPanel(TurnSlot turnSlot)
+    {
+        TurnPanel turnPanel = turnPanels[turnSlot];
+        turnPanels.Remove(turnSlot);
+        Destroy(turnPanel.gameObject);
+    }
+
     public void ChangeCurrentTurn(TurnSlot newCurrentSlot)
     {
         currentTurnPanel.AssignTurnSlot(newCurrentSlot);
     }
 
-    // public void DisplayAccuracyPreview(TurnSlot turnSlot, int accuracy)
-    // {
-    //     turnPanels[turnSlot].DisplayAccuracyPreview(accuracy);
-    // }
+    public void ToggleTargetingPreview(TurnSlot turnSlot, bool isTargeted)
+    {
+        turnPanels[turnSlot].ToggleTargetingPreview(isTargeted);
+    }
 
-    // public void ClearAccuracyPreview(TurnSlot turnSlot)
-    // {
-    //     turnPanels[turnSlot].ClearAccuracyPreview();
-    // }
-
-    // public void ClearAllTargeted()
-    // {
-    //     foreach(KeyValuePair<TurnSlot, TurnPanel> entry in turnPanels)
-    //     {
-    //        entry.Value.ClearAccuracyPreview(); 
-    //     }
-    // }
+    public void ClearAllTargetingPreviews()
+    {
+        foreach(KeyValuePair<TurnSlot, TurnPanel> entry in turnPanels)
+        {
+           entry.Value.ToggleTargetingPreview(false); 
+        }
+    }
 }

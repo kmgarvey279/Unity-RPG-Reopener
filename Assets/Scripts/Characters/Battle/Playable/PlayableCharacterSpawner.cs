@@ -13,7 +13,7 @@ public class PlayableCharacterSpawner : MonoBehaviour
     private Dictionary<PlayableCharacterID, GameObject> playableCharacterPrefabs = new Dictionary<PlayableCharacterID, GameObject>();
 
     [Header("Spawn Positions")]
-    public List<Transform> spawnPositions = new List<Transform>();
+    public List<Tile> spawnPositions = new List<Tile>();
 
     private void Awake()
     {
@@ -26,8 +26,17 @@ public class PlayableCharacterSpawner : MonoBehaviour
 
     public Combatant SpawnPlayableCharacter(PlayableCharacterID playableCharacterID, int positionNum)
     {
-        GameObject playableCharacterObject = Instantiate(playableCharacterPrefabs[playableCharacterID], spawnPositions[positionNum - 1].position, Quaternion.identity);
-        playableCharacterObject.transform.parent = gameObject.transform;
-        return playableCharacterObject.GetComponent<Combatant>();
+        if(positionNum <= spawnPositions.Count)
+        {
+            Tile tile = spawnPositions[positionNum - 1];
+            GameObject playableCharacterObject = Instantiate(playableCharacterPrefabs[playableCharacterID], tile.transform.position, Quaternion.identity);
+            playableCharacterObject.transform.parent = gameObject.transform;
+
+            Combatant combatant = playableCharacterObject.GetComponent<Combatant>();
+            tile.AssignOccupier(combatant);
+            combatant.tile = tile;
+            return combatant;
+        }
+        return null;
     }
 }

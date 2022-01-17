@@ -13,7 +13,6 @@ public class GridMovement : MonoBehaviour
 {
     private Combatant combatant; 
     [SerializeField] private List<Tile> path = new List<Tile>();
-    [SerializeField] private float moveSpeed = 0f;
     private MovementType movementType;
     [SerializeField] private SignalSender onMoveComplete;
     [SerializeField] private SignalSender onDashComplete;

@@ -40,7 +40,9 @@ MonoBehaviour:
   traits: []
   meleeAttack: {fileID: 11400000, guid: d5d7301e34e951c4fa9b4beeda7e7bcb, type: 2}
   rangedAttack: {fileID: 11400000, guid: 831011b60e8f04541aacc431bf5aa8ae, type: 2}
-  skills: []
+  skills:
+  - {fileID: 11400000, guid: 48fcfc47a577d7e4a88e44d925b92c5f, type: 2}
+  - {fileID: 11400000, guid: dfbe01681ad7be6469edb93ecfc2eeb5, type: 2}
   weapon: {fileID: 0}
   armor: {fileID: 0}
   accessory: {fileID: 0}

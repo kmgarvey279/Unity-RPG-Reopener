@@ -15,10 +15,10 @@ MonoBehaviour:
   actionName: 
   actionType: 0
   icon: {fileID: 0}
-  descripton: 
+  description: 
   mpCost: 0
   timeModifier: 0
-  power: 0
+  power: 10
   offensiveStat: 1
   defensiveStat: 3
   statusEffectPower: 0

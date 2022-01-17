@@ -21,7 +21,7 @@ public class TileSelectState : BattleState
 
         onCameraZoomOut.Raise();
         //display tiles
-        gridManager.DisplayTilesInRange(turnData.combatant.tile, turnData.action.range, false, turnData.action.excludeStartingTile);
+        gridManager.DisplayTilesInRange(turnData.combatant.tile, turnData.action.range, false);
         
         PointerEventData pointer = new PointerEventData(EventSystem.current);
         pointer.position = Input.mousePosition;
@@ -38,11 +38,11 @@ public class TileSelectState : BattleState
                 {
                     Debug.Log("found tile");
                     Tile tile = result.gameObject.GetComponent<Tile>();
-                    if(tile.targetable)
-                    {
+                    // if(tile.targetable)
+                    // {
                         Debug.Log("selecting tile");
                         tile.Select();
-                    }
+                    // }
                     break;
                 }
             }
@@ -92,7 +92,7 @@ public class TileSelectState : BattleState
     public void OnSelectTile(GameObject tileObject)
     {     
         selectedTile = tileObject.GetComponent<Tile>();     
-        selectedTargets = gridManager.GetTargetsInRange(selectedTile, turnData.action.aoe, turnData.action.targetFriendly, turnData.action.targetHostile);   
+        // selectedTargets = gridManager.GetTargetsInRange(selectedTile, turnData.action.aoe, turnData.action.targetFriendly, turnData.action.targetHostile);   
         if(turnData.action.knockback > 0)
         {
             Vector2 direction = (selectedTile.transform.position - turnData.combatant.tile.transform.position).normalized;
@@ -104,11 +104,11 @@ public class TileSelectState : BattleState
         if(turnData.action.lineAOE)
         {
             Vector2 direction = (selectedTile.transform.position - turnData.combatant.tile.transform.position).normalized;
-            gridManager.DisplayLineAOE(selectedTile, direction, turnData.action.aoe, turnData.action.targetFriendly, turnData.action.targetHostile, turnData.action.stopAtOccupiedTile);
+            selectedTargets = gridManager.DisplayLineAOE(selectedTile, direction, turnData.action.aoe, turnData.action.targetFriendly, turnData.action.targetHostile, turnData.action.stopAtOccupiedTile);
         }
         else
         {
-            gridManager.DisplayAOE(selectedTile, turnData.action.aoe, turnData.action.targetFriendly, turnData.action.targetHostile);
+            selectedTargets = gridManager.DisplayAOE(selectedTile, turnData.action.aoe, turnData.action.targetFriendly, turnData.action.targetHostile);
         }  
     }
 

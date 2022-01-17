@@ -61,9 +61,10 @@ public class Combatant : MonoBehaviour
     [Header("Events")]
     [SerializeField] protected SignalSenderGO onTargetSelect;
     [SerializeField] protected SignalSenderGO onTargetDeselect;
-    [Header("Position/Direction")]
+    [Header("Grid and Targeting")]
     public Tile tile;
     [HideInInspector] public GridMovement gridMovement;
+    private bool selected = false;
 
     public virtual void Awake()
     {
@@ -93,17 +94,17 @@ public class Combatant : MonoBehaviour
     public virtual void Start()
     {
         gridManager = GetComponentInParent<GridManager>();
-        SnapToTileCenter();
+        // SnapToTileCenter();
     }
 
-    public void SnapToTileCenter()
-    {
-        Tilemap tilemap = gridManager.tilemap;
+    // public void SnapToTileCenter()
+    // {
+    //     // Tilemap tilemap = gridManager.tilemap;
         
-        Vector3Int cellPosition = tilemap.WorldToCell(transform.position);
-        Vector3 newPosition = tilemap.GetCellCenterWorld(cellPosition);
-        transform.position = newPosition;
-    }
+    //     // Vector3Int cellPosition = tilemap.WorldToCell(transform.position);
+    //     // Vector3 newPosition = tilemap.GetCellCenterWorld(cellPosition);
+    //     // transform.position = newPosition;
+    // }
 
     public virtual void OnTurnStart()
     {
@@ -154,9 +155,17 @@ public class Combatant : MonoBehaviour
         }
     }
 
-    public void SetTile(Tile tile)
+    public void Move(List<Tile> path, MovementType movementType)
     {
-        this.tile = tile;
+        SetTile(tile, path[path.Count - 1]);
+        gridMovement.Move(path, movementType);
+    }
+
+    public void SetTile(Tile originalTile, Tile newTile)
+    {
+        originalTile.UnassignOccupier();
+        newTile.AssignOccupier(this);
+        this.tile = newTile;
     }
 
     public void FaceTarget(Transform target)
@@ -284,16 +293,24 @@ public class Combatant : MonoBehaviour
 
     public void Select()
     {
-        maskController.TriggerSelected();
-        onTargetSelect.Raise(this.gameObject);
-        // healthDisplay.ToggleBarVisibility(true);
+        if(!selected)
+        {
+            selected = true;
+            maskController.TriggerSelected();
+            onTargetSelect.Raise(this.gameObject);
+            // healthDisplay.ToggleBarVisibility(true);
+        }
     }
 
     public void Deselect()
     {
-        maskController.EndAnimation();
-        onTargetDeselect.Raise(this.gameObject);
-        // healthDisplay.ToggleBarVisibility(false);
+        if(selected)
+        {
+            selected = false;
+            maskController.EndAnimation();
+            onTargetDeselect.Raise(this.gameObject);
+            // healthDisplay.ToggleBarVisibility(false);
+        }
     }
 
     public void GrayOut()

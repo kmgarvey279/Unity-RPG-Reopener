@@ -31,7 +31,7 @@ public class Action : ScriptableObject
     [Header("Player Only")]
     public Image icon;
     [TextArea(5,10)]
-    public string descripton;
+    public string description;
     public int mpCost;
     [Header("Properties")]
     public int timeModifier;

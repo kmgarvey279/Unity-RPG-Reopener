@@ -141,56 +141,56 @@ public class ExecuteActionState : BattleState
         {
             yield return new WaitForSeconds(turnData.action.effectAnimationDuration);
         }
-        HitCheckPhase();
+        KnockbackAnimationPhase();
     }
 
-    private void HitCheckPhase()
-    {
-        Debug.Log("Hit check phase");
-        for(int i = turnData.targets.Count - 1; i >= 0; i--)
-        {
-            Debug.Log("checking target");
-            if(turnData.action.actionType == ActionType.Attack)
-            {
-                Debug.Log("is attack");
-                Combatant target = turnData.targets[i];
-                int hitChance = Mathf.Clamp(turnData.combatant.battleStatDict[BattleStatType.Accuracy].GetValue() - target.battleStatDict[BattleStatType.Evasion].GetValue(), 1, 100);
-                bool didHit = HitCheck(hitChance);
-                if(didHit)
-                {
-                    target.TakeHit(turnData.combatant);
-                    Debug.Log(target.characterName + " was hit!");
-                }
-                else
-                {
-                    target.EvadeAttack(turnData.combatant);
-                    turnData.targets.Remove(target);
-                    Debug.Log(target.characterName + " dodged the attack!");
-                }
-            }
-        }
-        if(turnData.targets.Count > 0)
-        {
-            KnockbackAnimationPhase();
-        }
-        else
-        {
-            EndActionPhase();
-        }
-    }
+    // private void HitCheckPhase()
+    // {
+        // Debug.Log("Hit check phase");
+        // for(int i = turnData.targets.Count - 1; i >= 0; i--)
+        // {
+            // Debug.Log("checking target");
+            // if(turnData.action.actionType == ActionType.Attack)
+            // {
+            //     Debug.Log("is attack");
+            //     Combatant target = turnData.targets[i];
+            //     int hitChance = Mathf.Clamp(turnData.combatant.battleStatDict[BattleStatType.Accuracy].GetValue() - target.battleStatDict[BattleStatType.Evasion].GetValue(), 1, 100);
+            //     bool didHit = HitCheck(hitChance);
+            //     if(didHit)
+            //     {
+                    // target.TakeHit(turnData.combatant);
+                //     Debug.Log(target.characterName + " was hit!");
+                // }
+                // else
+                // {
+                //     target.EvadeAttack(turnData.combatant);
+                //     turnData.targets.Remove(target);
+                //     Debug.Log(target.characterName + " dodged the attack!");
+                // }
+    //         }
+    //     }
+    //     if(turnData.targets.Count > 0)
+    //     {
+    //         KnockbackAnimationPhase();
+    //     }
+    //     else
+    //     {
+    //         EndActionPhase();
+    //     }
+    // }
 
-    public bool HitCheck(int hitChance)
-    {
-        int roll = Random.Range(1, 100);
-        if(roll <= hitChance)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+    // public bool HitCheck(int hitChance)
+    // {
+    //     int roll = Random.Range(1, 100);
+    //     if(roll <= hitChance)
+    //     {
+    //         return true;
+    //     }
+    //     else
+    //     {
+    //         return false;
+    //     }
+    // }
 
     private void KnockbackAnimationPhase()
     {

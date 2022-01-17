@@ -9,6 +9,6 @@ public class SkillInfo : MonoBehaviour
 
     public void DisplayInfo(GameObject skillSlot)
     {
-        descriptionText.text = skillSlot.GetComponent<BattleSkillSlot>().action.descripton;    
+        descriptionText.text = skillSlot.GetComponent<BattleSkillSlot>().action.description;    
     }
 }

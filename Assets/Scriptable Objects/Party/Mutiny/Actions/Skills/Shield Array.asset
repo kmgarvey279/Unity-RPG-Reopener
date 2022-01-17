@@ -10,32 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
-  m_Name: Deploy Shield Generator
+  m_Name: Shield Array
   m_EditorClassIdentifier: 
-  actionName: 
+  actionName: Shield Array
   actionType: 0
   icon: {fileID: 0}
-  descripton: "Deploys a shield generator to designated location.\n-Only three machines
-    may be deployed at once. \n-Reduce ally damage by 15% when within range.\n+Restores
-    a small amount of HP to targets in range at the end of their turn.\n+Overlapping
-    shields reduces damage by an additional 5% for each shield."
+  description: Deploys a shield generator that will automatically reduce damage receaved
+    for all alies within three tiles.
   mpCost: 0
   timeModifier: 0
   power: 0
+  offensiveStat: 0
+  defensiveStat: 0
+  statusEffectPower: 0
+  statusEffectChance: 0
+  statusEffectSO: {fileID: 0}
+  knockback: 0
+  additionalEffects: []
   range: 0
   aoe: 0
   excludeStartingTile: 0
   lineAOE: 0
   stopAtOccupiedTile: 0
-  offensiveStat: 0
-  defensiveStat: 0
-  elementalProperty: 0
-  guaranteedHit: 0
-  distancePenalty: 0
-  useDirection: 0
-  statusEffectSO: {fileID: 0}
-  statusEffectChance: 0
-  knockback: 0
   targetFriendly: 0
   targetHostile: 0
   targetSelfOnly: 0

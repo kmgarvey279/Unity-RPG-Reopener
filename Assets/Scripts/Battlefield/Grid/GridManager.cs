@@ -7,15 +7,13 @@ using UnityEngine.EventSystems;
 
 public class GridManager : MonoBehaviour
 {
-    public Tilemap tilemap;
+    // public Tilemap tilemap;
     [Header("Grid Parameters")]
     [SerializeField] private int xCount;
     [SerializeField] private int yCount;
-    [SerializeField] private Transform startWorld;
-    private float tileSize = 1f;
     
     [Header("Array of tiles")]
-    public GameObject[,] tileArray;
+    public Tile[,] tileArray;
 
     [Header("Currently Displayed Tiles")]
     private List<Tile> displayedTiles = new List<Tile>();
@@ -27,44 +25,99 @@ public class GridManager : MonoBehaviour
     [SerializeField] private GameObject canvas;
     [SerializeField] private BattleManager battleManager;
 
+    public GameObject tileParent;
+
     private void Start()
     {
-        tilemap = GetComponentInChildren<Tilemap>();
-        tileArray = new GameObject[xCount, yCount];
-        GenerateGrid(); 
+        // tilemap = GetComponentInChildren<Tilemap>();
+        tileArray = new Tile[xCount, yCount];
+        GenerateGrid();
     }
 
-    void GenerateGrid()
+    private void GenerateGrid()
     {
-        for(int x = 0; x < xCount; x++)
-        {  
-            for(int y = 0; y < yCount; y++)
+        int x = 0;
+        int y = 0;
+        
+        List<Tile> tiles = new List<Tile>();
+        foreach(Transform child in tileParent.transform)
+        {
+            Tile tile = child.GetComponent<Tile>();
+            tile.x = x;
+            tile.y = y;
+            tileArray[x, y] = tile;
+
+            y++;
+            if(y >= yCount)
             {
-                float xPos = tileSize * (float)x + startWorld.position.x;
-                float yPos = tileSize * (float)y + startWorld.position.y;
-                Vector3 spawnPos = new Vector3(xPos, yPos);
-                SpawnTile(x, y, spawnPos);
+                y = 0;
+                x++;
             }
         }
+
+
+        // foreach(Transform child in tiles.transform)
+        // {
+            // Tile tile = child.GetComponent<Tile>();
+            // tile.x = x;
+            // tile.y = y;
+            // tileArray[x, y] = tile;
+            // tile.Display();
+            // x++;
+            // if(x >= xCount)
+            // {
+            //     x = 0;
+            //     y++;
+            // }
+            // y++;
+            // if(y >= yCount)
+            // {
+            //     y = 0;
+            // }
+        // }
+        // for(int x = 0; x < xCount; x++)
+        // {  
+        //     for(int y = 0; y < yCount; y++)
+        //     {
+        //         float xPos = tileSize * (float)x + startWorld.position.x;
+        //         float yPos = tileSize * (float)y + startWorld.position.y;
+        //         Vector3 spawnPos = new Vector3(xPos, yPos);
+        //         SpawnTile(x, y, spawnPos);
+        //     }
+        // }
     }
 
-    void SpawnTile(int x, int y, Vector3 spawnPos)
-    {
-        GameObject tile = Instantiate(tilePrefab, spawnPos, Quaternion.identity);
-        tile.transform.SetParent(canvas.transform);
-        tile.GetComponent<Tile>().x = x;
-        tile.GetComponent<Tile>().y = y;
-        //store gameobject in grid array 
-        tileArray[x, y] = tile;
-    }
+    // public void GenerateEnemyNodes()
+    // {
+    //     for(int x = 0; x < xCount - 1; x++)
+    //     {  
+    //         for(int y = 0; y < yCount - 1; y++)
+    //         {
+    //             float xPos = (float)x + startWorld.position.x;
+    //             float yPos = (float)y + startWorld.position.y;
+    //             Vector3 spawnPos = new Vector3(xPos, yPos);
+    //             SpawnLargeEnemyNode(x, y, spawnPos);
+    //         }
+    //     }
+    // }
 
-    public void DisplayTilesInRange(Tile start, int range, bool stopAtOccupiedTile = false, bool excludeStartingTile = false)
+    // void SpawnTile(int x, int y, Vector3 spawnPos)
+    // {
+    //     GameObject tile = Instantiate(tilePrefab, spawnPos, Quaternion.identity);
+    //     tile.transform.SetParent(canvas.transform);
+    //     tile.GetComponent<Tile>().x = x;
+    //     tile.GetComponent<Tile>().y = y;
+    //     //store gameobject in grid array 
+    //     tileArray[x, y] = tile;
+    // }
+
+    public void DisplayTilesInRange(Tile start, int range, bool stopAtOccupiedTile = false)
     {
         // foreach (GameObject tileObject in tileArray)
         // {
         //     tileObject.GetComponent<Tile>().Display();
         // }
-        List<Tile> tilesInRange = GetTilesInRange(start, range, stopAtOccupiedTile, excludeStartingTile);
+        List<Tile> tilesInRange = GetTilesInRange(start, range, stopAtOccupiedTile);
         foreach (Tile tile in tilesInRange)
         {
             tile.Display();
@@ -72,8 +125,9 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    public void DisplayAOE(Tile start, int range, bool targetPlayer, bool targetEnemy)
+    public List<Combatant> DisplayAOE(Tile start, int range, bool targetPlayer, bool targetEnemy)
     {
+        List<Combatant> targets = new List<Combatant>();
         if(aoeTiles.Count > 0)
         {
             ClearAOE();
@@ -81,13 +135,20 @@ public class GridManager : MonoBehaviour
         List<Tile> tilesInRange = GetTilesInRange(start, range);
         foreach (Tile tile in tilesInRange)
         {
-            tile.DisplayAOE(targetPlayer, targetEnemy); 
+            tile.DisplayAOE(); 
             aoeTiles.Add(tile);
+            if(tile.occupier != null && (tile.occupier is PlayableCombatant && targetPlayer || tile.occupier is EnemyCombatant && targetEnemy))
+            {
+                tile.occupier.Select();
+                targets.Add(tile.occupier);  
+            }
         }
+        return targets;
     }
 
-    public void DisplayLineAOE(Tile start, Vector2 direction, int range, bool targetPlayer, bool targetEnemy, bool stopAtOccupiedTile)
+    public List<Combatant> DisplayLineAOE(Tile start, Vector2 direction, int range, bool targetPlayer, bool targetEnemy, bool stopAtOccupiedTile)
     {
+        List<Combatant> targets = new List<Combatant>();
         if(aoeTiles.Count > 0)
         {
             ClearAOE();
@@ -95,9 +156,15 @@ public class GridManager : MonoBehaviour
         List<Tile> tilesInRange = GetRow(start, direction, range, stopAtOccupiedTile);
         foreach (Tile tile in tilesInRange)
         {
-            tile.DisplayAOE(targetPlayer, targetEnemy); 
+            tile.DisplayAOE(); 
+            aoeTiles.Add(tile);
+            if(tile.occupier != null && (tile.occupier is PlayableCombatant && targetPlayer || tile.occupier is EnemyCombatant && targetEnemy))
+            {
+                tile.occupier.Select();
+                targets.Add(tile.occupier);  
+            }
         }
-        aoeTiles = tilesInRange;
+        return targets;
     }
 
     public List<Combatant> GetTargetsInRange(Tile start, int range, bool targetPlayer, bool targetEnemy)
@@ -117,7 +184,7 @@ public class GridManager : MonoBehaviour
         return targets;
     }
 
-    public List<Tile> GetTilesInRange(Tile start, int range, bool stopAtOccupiedTile = false, bool excludeStartingTile = false)
+    public List<Tile> GetTilesInRange(Tile start, int range, bool stopAtOccupiedTile = false)
     {
         //endless loop safeguard
         int loops = 0;
@@ -135,8 +202,6 @@ public class GridManager : MonoBehaviour
             {
                 foreach (Tile adjacentTile in adjacentTiles)
                 {
-                    bool inOpenList = false;
-                    bool inClosedList = false;
                     if((stopAtOccupiedTile && adjacentTile.occupier == null || !stopAtOccupiedTile) && currentTileMoveCost + 1 <= range)
                     {
                         if(!closedList.Contains(adjacentTile) && !openList.Contains(adjacentTile))
@@ -150,8 +215,6 @@ public class GridManager : MonoBehaviour
             //endless loop safeguard
             loops++;
         }
-        if(excludeStartingTile)
-            closedList.Remove(start);
         return closedList;
     }
 
@@ -171,8 +234,12 @@ public class GridManager : MonoBehaviour
 
     private void ClearAOE()
     {
-        foreach (Tile tile in aoeTiles)
+        foreach(Tile tile in aoeTiles)
         {
+            if(tile.occupier != null)
+            {
+                tile.occupier.Deselect();
+            }
             tile.HideAOE();
         }
         aoeTiles.Clear();
@@ -222,7 +289,7 @@ public class GridManager : MonoBehaviour
            //check if next tile is included in grid
            if(currentX < xCount && currentX >= 0 && currentY < yCount && currentY >= 0)
            {
-                Tile thisTile = tileArray[currentX, currentY].GetComponent<Tile>();
+                Tile thisTile = tileArray[currentX, currentY];
                 if(stopAtOccupiedTile && thisTile.occupier != null)
                 {
                     return row;
@@ -357,19 +424,19 @@ public class GridManager : MonoBehaviour
 
         if(tile.x + 1 < xCount)
         {
-            adjacentTiles.Add(tileArray[tile.x + 1, tile.y].GetComponent<Tile>());
+            adjacentTiles.Add(tileArray[tile.x + 1, tile.y]);
         }
         if(tile.x - 1 >= 0)
         {
-            adjacentTiles.Add(tileArray[tile.x - 1, tile.y].GetComponent<Tile>());
+            adjacentTiles.Add(tileArray[tile.x - 1, tile.y]);
         }
         if(tile.y + 1 < yCount)
         {
-            adjacentTiles.Add(tileArray[tile.x, tile.y + 1].GetComponent<Tile>());
+            adjacentTiles.Add(tileArray[tile.x, tile.y + 1]);
         }
         if(tile.y - 1 >= 0)
         {
-            adjacentTiles.Add(tileArray[tile.x, tile.y - 1].GetComponent<Tile>());
+            adjacentTiles.Add(tileArray[tile.x, tile.y - 1]);
         }
         return adjacentTiles;
     }

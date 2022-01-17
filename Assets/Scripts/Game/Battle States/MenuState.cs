@@ -17,9 +17,7 @@ public class MenuState : BattleState
     {
         base.OnEnter();
         Debug.Log("Enter Menu State");
-
         // onCameraZoomIn.Raise(turnData.combatant.gameObject);
-
         commandMenu.DisplayMenu();
     }
 
@@ -27,13 +25,12 @@ public class MenuState : BattleState
     {
         if(Input.GetButtonDown("Cancel"))
         {
-            stateMachine.ChangeState((int)BattleStateType.Move);
+            commandMenu.ExitCurrentMenu();
         }
     }
 
     public override void StateFixedUpdate()
     {
-
     }
 
     public override void OnExit()

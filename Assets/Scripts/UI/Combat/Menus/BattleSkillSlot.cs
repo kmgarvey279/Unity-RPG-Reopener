@@ -16,6 +16,7 @@ public class BattleSkillSlot : MonoBehaviour, ISelectHandler, IPointerEnterHandl
     [Header("Events")]
     [SerializeField] private SignalSenderGO onSelectBattleSkill;
     [SerializeField] private SignalSenderGO onConfirmBattleSkill;
+    [SerializeField] private SignalSenderString onUpdateBattleLog;
 
     public void AssignSlot(Action action)
     {
@@ -27,7 +28,8 @@ public class BattleSkillSlot : MonoBehaviour, ISelectHandler, IPointerEnterHandl
 
     public void OnSelect(BaseEventData eventData)
     {
-        onSelectBattleSkill.Raise(this.gameObject);
+        // onSelectBattleSkill.Raise(this.gameObject);
+        onUpdateBattleLog.Raise(action.description);
     }
 
     public void OnPointerEnter(PointerEventData eventData)

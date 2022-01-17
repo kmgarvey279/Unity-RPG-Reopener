@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using StateMachineNamespace;
-// using UnityEngine.EventSystems;
+using UnityEngine.EventSystems;
 
 [System.Serializable]
 public class PlayerMoveState : BattleState
 {
     [SerializeField] private GridManager gridManager;
+    // [SerializeField] private SignalSender onCameraZoomOut;
 
     private Tile selectedTile;
     private List<Tile> path = new List<Tile>();
@@ -23,11 +24,15 @@ public class PlayerMoveState : BattleState
         {
             battleManager.SetMoveCost(0);
             turnData.combatant.transform.position = turnData.startingTile.transform.position;
+            turnData.combatant.SetTile(turnData.combatant.tile, turnData.startingTile);
             turnData.combatant.SetDirection(new Vector2(turnData.startingDirection.x, turnData.startingDirection.y));
         }
-        
+
         int range = turnData.combatant.battleStatDict[BattleStatType.MoveRange].GetValue();
         gridManager.DisplayTilesInRange(turnData.combatant.tile, range, true);
+        
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(turnData.combatant.tile.gameObject);
     }
 
     public override void StateUpdate()
@@ -39,8 +44,9 @@ public class PlayerMoveState : BattleState
 
             gridManager.HideTiles();
 
-            turnData.combatant.gridMovement.Move(path, MovementType.Move); 
+            turnData.combatant.Move(path, MovementType.Move); 
         }
+        
     }
 
 

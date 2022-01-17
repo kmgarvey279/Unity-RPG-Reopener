@@ -8,31 +8,26 @@ public class TurnPanel : MonoBehaviour
 {
     [Header("Data")]
     public TurnSlot turnSlot;
-    [Header("Bar")]
-    [SerializeField] private SliderBar sliderBarPositive;
-    [SerializeField] private SliderBar sliderBarNegative;
-    private int sliderMax = 1000;
     [Header("Text")]
     [SerializeField] private TextMeshProUGUI nameText;
     [Header("Panel")]
-    [SerializeField] private Image panel;
+    [SerializeField] private GameObject display;
     [SerializeField] private Color defaultColor;
     [SerializeField] private Color previewColor;
-    [Header("Info")]
-    [SerializeField] private GameObject targetedIcon;
-    [SerializeField] private TextMeshProUGUI accuracyText;
     [Header("Animations/Movement")]
     private Animator animator;
+    RectTransform rt;
     [SerializeField] float moveTime;
+    private float defaultXPos;
 
     private void Start()
     {
-        animator = GetComponent<Animator>();    
+        animator = GetComponentInChildren<Animator>();   
     }
 
     public void Move(Vector3 newPosition)
     {
-        Vector2 start = transform.position; 
+        Vector3 start = transform.position; 
         float t = 0;
         while(transform.position != newPosition)
         {
@@ -45,47 +40,19 @@ public class TurnPanel : MonoBehaviour
     {
         turnSlot = newSlot;
         nameText.text = turnSlot.combatant.characterName;
-        sliderBarPositive.SetMaxValue(sliderMax);
-        sliderBarNegative.SetMaxValue(sliderMax);
-        UpdateSliderValue();
     }
 
-    public void UpdateSliderValue()
+    public void ToggleTargetingPreview(bool isTargeted)
     {
-        if(turnSlot.turnCounter < 0)
+        animator.SetBool("Targeted", isTargeted);
+        RectTransform rt = display.GetComponent<RectTransform>();
+        if(isTargeted)
         {
-            sliderBarPositive.SetCurrentValue(0);
-            sliderBarNegative.SetCurrentValue(-turnSlot.turnCounter);
+            rt.anchoredPosition = new Vector2(-10, 0);
         }
         else 
         {
-            sliderBarNegative.SetCurrentValue(0);
-            sliderBarPositive.SetCurrentValue(turnSlot.turnCounter);  
-        }
-    }
-
-    public void DisplayAccuracyPreview(int accuracy)
-    {
-        animator.SetBool("Targeted", true);
-        targetedIcon.SetActive(true);
-        accuracyText.text = accuracy.ToString() + "%";
-    }
-
-    public void ClearAccuracyPreview()
-    {
-        animator.SetBool("Targeted", false);
-        targetedIcon.SetActive(false);;
-    }
-
-    public void ToggleNextTurnIndicator(bool isNextTurn)
-    {
-        if(isNextTurn)
-        {
-            panel.color = previewColor;
-        }
-        else
-        {
-            panel.color = defaultColor;
+            rt.anchoredPosition = new Vector2(0, 0);
         }
     }
 }

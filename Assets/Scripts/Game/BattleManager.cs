@@ -15,7 +15,7 @@ public class TurnSlot
     public int turnCounter;
     [Header("Cost of action this turn")]
     public float actionCost;
-    public float defaultActionCost = 4f;
+    public float defaultActionCost = 3f;
     [Header("Cost of movement this turn")]
     public float moveCost;
     public float defaultMoveCost = 0f;
@@ -131,16 +131,6 @@ public class BattleManager : MonoBehaviour
     [Header("Current Turn Data")]
     public TurnData turnData;
 
-    public void AddPlayableCombatant(Combatant combatant)
-    {
-        playableCombatants.Add(combatant);
-    }
-
-    public void AddEnemyCombatant(Combatant combatant)
-    {
-        enemyCombatants.Add(combatant);
-    }
-
     public void Start()
     {
         int partySize = 0;
@@ -177,12 +167,14 @@ public class BattleManager : MonoBehaviour
                 enemyCombatant.CreateAggroList(playableCombatants);
             }
         }
-        StartCoroutine(BattleStartCo());
+        currentTurnSlot = turnForecast[0];
+        battleTimeline.ChangeCurrentTurn(currentTurnSlot);
+        StartCoroutine(StartBattleCo());
     }
 
-    private IEnumerator BattleStartCo()
+    private IEnumerator StartBattleCo()
     {
-        yield return new WaitForSeconds(0.4f);
+        yield return new WaitForSeconds(0.2f);
         AdvanceTimeline();
     }
 
@@ -204,6 +196,8 @@ public class BattleManager : MonoBehaviour
         currentTurnSlot = turnForecast[0];
         battleTimeline.ChangeCurrentTurn(currentTurnSlot);
         currentTurnSlot.SetTurnCounterToDefault();
+        TurnForecastRemove(currentTurnSlot);
+
         UpdateTurnOrder();
 
         //create temp turn data
@@ -232,6 +226,7 @@ public class BattleManager : MonoBehaviour
     public void TurnForecastRemove(TurnSlot turnSlot)
     {
         turnForecast.Remove(turnSlot);
+        battleTimeline.DestroyTurnPanel(turnSlot);
         UpdateTurnOrder();
     }
 
@@ -290,6 +285,10 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
+            if(currentTurnSlot != null)
+            {
+                TurnForecastAdd(currentTurnSlot);
+            }
             turnData = null;
             AdvanceTimeline();
         }
@@ -335,23 +334,29 @@ public class BattleManager : MonoBehaviour
     public void OnTileSelect(GameObject tileObject)
     {
         Tile tile = tileObject.GetComponent<Tile>();
-        if(tile.moveCost > -1)
-        {
-            currentTurnSlot.SetMoveCost(tile.moveCost);
-            UpdateTurnOrder();
-        }
+        // if(tile.moveCost > -1)
+        // {
+        //     currentTurnSlot.SetMoveCost(tile.moveCost);
+        //     UpdateTurnOrder();
+        // }
     }
 
     public void OnTargetSelect(GameObject gameObject)
     {
-        //find target in turn forecast
         Combatant target = gameObject.GetComponent<Combatant>();
         TurnSlot selectedTurnSlot = turnForecast.FirstOrDefault(turnSlot => turnSlot.combatant == target);
+        battleTimeline.ToggleTargetingPreview(selectedTurnSlot, true);
     }
 
     public void OnTargetDeselect(GameObject gameObject)
     {
         Combatant target = gameObject.GetComponent<Combatant>();
         TurnSlot selectedTurnSlot = turnForecast.FirstOrDefault(turnSlot => turnSlot.combatant == target);
+        battleTimeline.ToggleTargetingPreview(selectedTurnSlot, false);
+    }
+
+    public void OnActionSelect(GameObject gameObject)
+    {
+        Action action = gameObject.GetComponent<BattleSkillSlot>().action;        
     }
 }

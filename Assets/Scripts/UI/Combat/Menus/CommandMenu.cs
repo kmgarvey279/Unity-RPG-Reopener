@@ -9,77 +9,91 @@ public class CommandMenu : MonoBehaviour
     [SerializeField] private BattleManager battleManager;
     private TurnData turnData;
     [Header("Components")]
-    [SerializeField] private GameObject commandPanel;
-    [SerializeField] private SecondaryBattlePanel secondaryPanel;
+    [SerializeField] private GameObject display;
+    [SerializeField] private CommandSubmenu submenu;
     [Header("Buttons")]
-    [SerializeField] private GameObject defaultButton;
-    [SerializeField] private Button attackButton;
-
+    [SerializeField] private GameObject attackButton;
     [Header("Actions")]
     [SerializeField] private Action item;
     [SerializeField] private Action defend;
+    [Header("Events")]
+    [SerializeField] private SignalSenderString onUpdateBattleLog;
 
     public void DisplayMenu()
     {
         turnData = battleManager.turnData;
-        commandPanel.SetActive(true);
+        display.SetActive(true);
         
         EventSystem.current.SetSelectedGameObject(null);
-        EventSystem.current.SetSelectedGameObject(defaultButton);
+        EventSystem.current.SetSelectedGameObject(attackButton);
     }
 
     public void HideMenus()
     {
-        commandPanel.SetActive(false);
-        secondaryPanel.Hide();
+        if(submenu.isDisplayed)
+        {
+            submenu.Hide();
+        }
+        display.SetActive(false);
+    }
+
+    public void ExitCurrentMenu()
+    {
+        if(submenu.isDisplayed)
+        {
+            submenu.Hide();
+        }
+        else
+        {
+            display.SetActive(false);
+            battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
+        }
     }
 
     public void SelectAttack()
     {
         PlayableCombatant playableCombatant = (PlayableCombatant)turnData.combatant;
-        Action attack;
         if(playableCombatant.rangedAttack)
         {
-            attack = playableCombatant.rangedAttack;
+            battleManager.SetAction(playableCombatant.rangedAttack);
         }
         else 
         {
-            attack = playableCombatant.meleeAttack;
+            battleManager.SetAction(playableCombatant.meleeAttack);
         }
-        if(attack != null)
-            battleManager.SetAction(attack);
         battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
-        // battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
     }
 
     public void DisplaySkillList()
     {
         PlayableCombatant playableCombatant = (PlayableCombatant)turnData.combatant;
-        secondaryPanel.DisplaySkills(playableCombatant.skills);
+        submenu.DisplaySkills(playableCombatant.skills);
     }
 
-    public void SelectSkill(GameObject skillSlot)
+    private void SelectSkill(GameObject skillSlotObject)
     {
-        battleManager.SetAction((Action)skillSlot.GetComponent<BattleSkillSlot>().action);
+        BattleSkillSlot skillSlot = skillSlotObject.GetComponent<BattleSkillSlot>();
+        PlayableCombatant playableCombatant = (PlayableCombatant)turnData.combatant;
+        if(playableCombatant.rangedAttack)
+        {
+            battleManager.SetAction(playableCombatant.rangedAttack);
+        }
+        else 
+        {
+            battleManager.SetAction(playableCombatant.meleeAttack);
+        }
         battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
     }
 
     public void DisplayItemList()
     {
-        secondaryPanel.DisplayItems();
+        submenu.DisplayItems();
     }
 
-    public void SelectItem()
+    public void HideSubMenu()
     {
-
+        submenu.Hide();
     }
-
-    // public void SelectMove()
-    // {
-    //     Debug.Log("Defend!");
-    //     battleManager.SetAction(defend);
-    //     battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
-    // }
 
     public void SelectDefend()
     {
