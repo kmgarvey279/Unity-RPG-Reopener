@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d60841806187fe7448bdd835df63eadb, type: 3}
+  m_Name: TestSword
+  m_EditorClassIdentifier: 
+  itemId: TestWeapon1
+  itemName: Weapon 1
+  itemDescription: 'Weapon. '
+  icon: {fileID: 21300000, guid: a2c6f6d826b925a47956c0b33a527b42, type: 3}
+  itemType: 1
+  equipmentType: 1
+  equipmentMeleeAttack: 10
+  equipmentRangedAttack: 0
+  equipmentMagicAttack: 0
+  equipmentPhysicalDefense: 0
+  equipmentMagicDefense: 0
+  hpModifier: 0
+  mpModifier: 0
+  attackModifier: 0
+  defenseModifier: 0
+  magicModifier: 0
+  magicDefenseModifier: 0
+  skillModifier: 0
+  agilityModifier: 0
+  fireResistance: 0
+  iceResistance: 0
+  electricResistance: 0
+  darkResistance: 0
+  claireEquip: 1
+  mutinyEquip: 1
+  shadEquip: 0
+  blaineEquip: 1
+  lucyEquip: 0

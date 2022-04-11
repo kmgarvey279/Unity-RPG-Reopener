@@ -54,6 +54,18 @@ public class BattleTimeline : MonoBehaviour
         currentTurnPanel.AssignTurnSlot(newCurrentSlot);
     }
 
+    public void ToggleNextTurnColor(TurnSlot turnSlot, bool isTargeted)
+    {
+        if(isTargeted)
+        {
+           turnPanels[turnSlot].SetToPreviewColor(); 
+        }
+        else
+        {
+            turnPanels[turnSlot].SetToDefaultColor();
+        }
+    }
+
     public void ToggleTargetingPreview(TurnSlot turnSlot, bool isTargeted)
     {
         turnPanels[turnSlot].ToggleTargetingPreview(isTargeted);

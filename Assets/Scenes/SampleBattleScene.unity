@@ -5158,6 +5158,34 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &919532107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919532102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 272a739046db15849909a4cabd8041cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  signalSender: {fileID: 11400000, guid: 25f9c5d3374f4e8489c63661d314e8a8, type: 2}
+  signalEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 246777216}
+        m_TargetAssemblyTypeName: BattleManager, Assembly-CSharp
+        m_MethodName: OnCombatantKO
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!224 &939361914 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1305625966038601597, guid: b9e6fd3120e7b08448e2a2551027c801,
@@ -11341,10 +11369,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 762821389}
     m_Modifications:
-    - target: {fileID: 100669020, guid: 940b6332318e7e64184724ee48346892, type: 3}
-      propertyPath: m_text
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 949227578252034284, guid: 940b6332318e7e64184724ee48346892,
         type: 3}
       propertyPath: m_Name
@@ -11453,36 +11477,6 @@ PrefabInstance:
     - target: {fileID: 1215943222399948043, guid: 940b6332318e7e64184724ee48346892,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245492502556794715, guid: 940b6332318e7e64184724ee48346892,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -0.000030517578
-      objectReference: {fileID: 0}
-    - target: {fileID: 6809692509948508417, guid: 940b6332318e7e64184724ee48346892,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8039459106333996778, guid: 940b6332318e7e64184724ee48346892,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -0.000019073486
-      objectReference: {fileID: 0}
-    - target: {fileID: 8279686143474019611, guid: 940b6332318e7e64184724ee48346892,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -0.000076293945
-      objectReference: {fileID: 0}
-    - target: {fileID: 8279686143859640565, guid: 940b6332318e7e64184724ee48346892,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8279686143859640565, guid: 940b6332318e7e64184724ee48346892,
-        type: 3}
-      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

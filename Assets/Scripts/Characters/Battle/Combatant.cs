@@ -47,7 +47,6 @@ public class Combatant : MonoBehaviour
     // [Header("Triggerable Effects")]
     // public List<SubEffect> triggerableSubEffects = new List<TriggerableSubEffect>();
     [Header("Status")]
-    public bool ko = false;
     public List<StatusEffectInstance> statusEffects;
     [Header("Game Object Components")]
     [HideInInspector] public Animator animator;
@@ -61,6 +60,7 @@ public class Combatant : MonoBehaviour
     [Header("Events")]
     [SerializeField] protected SignalSenderGO onTargetSelect;
     [SerializeField] protected SignalSenderGO onTargetDeselect;
+    [SerializeField] protected SignalSenderGO OnCombatantKO;
     [Header("Grid and Targeting")]
     public Tile tile;
     [HideInInspector] public GridMovement gridMovement;
@@ -71,8 +71,8 @@ public class Combatant : MonoBehaviour
         characterName = characterInfo.characterName;
         //stats
         level = characterInfo.level;
-        hp = characterInfo.hp;
-        mp = characterInfo.mp;
+        hp = new DynamicStat(characterInfo.hp.GetValue(), characterInfo.hp.GetCurrentValue());
+        mp = new DynamicStat(characterInfo.mp.GetValue(), characterInfo.hp.GetCurrentValue());
         resistDict = characterInfo.resistDict;
         SetBattleStats();
         SetTraitEffects();
@@ -90,21 +90,6 @@ public class Combatant : MonoBehaviour
     public virtual void SetTraitEffects()
     {
     }
-
-    public virtual void Start()
-    {
-        gridManager = GetComponentInParent<GridManager>();
-        // SnapToTileCenter();
-    }
-
-    // public void SnapToTileCenter()
-    // {
-    //     // Tilemap tilemap = gridManager.tilemap;
-        
-    //     // Vector3Int cellPosition = tilemap.WorldToCell(transform.position);
-    //     // Vector3 newPosition = tilemap.GetCellCenterWorld(cellPosition);
-    //     // transform.position = newPosition;
-    // }
 
     public virtual void OnTurnStart()
     {
@@ -151,6 +136,7 @@ public class Combatant : MonoBehaviour
             else if(cumHealthEffect < 0)
             {
                 Damage(Mathf.Abs(cumHealthEffect));
+                KOCheck();
             }
         }
     }
@@ -205,6 +191,7 @@ public class Combatant : MonoBehaviour
 
     public virtual void Damage(int damage, Combatant attacker = null, bool isCrit = false)
     {
+        Debug.Log(characterName + " took " + damage + " damage");
         hp.ChangeCurrentValue(-damage);
         if(isCrit)
         {
@@ -277,18 +264,20 @@ public class Combatant : MonoBehaviour
 
     public bool KOCheck()
     {
-        if(hp.GetValue() <= 0)
+        Debug.Log("ko check");
+        if(hp.GetCurrentValue() <= 0)
         {
-            KO();
+            Debug.Log("ko start");
+            OnCombatantKO.Raise(this.gameObject);
+            StartCoroutine(KO());
             return true;
         }
         return false;
     }
 
-    public void KO()
+    public virtual IEnumerator KO()
     {
-        animator.SetTrigger("KO");
-        // battleManager.OnCombatantKO(this);
+        yield return null;
     }
 
     public void Select()

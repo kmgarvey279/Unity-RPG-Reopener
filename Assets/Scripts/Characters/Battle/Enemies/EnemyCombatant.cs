@@ -13,11 +13,6 @@ public class EnemyCombatant : Combatant
         SetDirection(new Vector2(-1, 0));
     }
 
-    public override void Start()
-    {
-        base.Start();
-    }
-
     public override void SetBattleStats()
     {
         battleStatDict.Add(BattleStatType.MeleeAttack, new Stat(characterInfo.statDict[StatType.Attack].GetValue() + level + 5));
@@ -80,5 +75,13 @@ public class EnemyCombatant : Combatant
     public PotentialAction GetTurnAction()
     {
         return enemyBattleAI.GetTurnAction();
+    }
+
+    public override IEnumerator KO()
+    {
+        animator.SetTrigger("KO");
+        yield return new WaitForSeconds(1f);
+        tile.UnassignOccupier();
+        Destroy(this.gameObject);
     }
 }

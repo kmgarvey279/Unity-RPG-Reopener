@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class PlayableCombatant : Combatant
 {
-    public BattlePartyPanel battlePartyPanel;
-    public List<Action> skills;
-    public Action meleeAttack;
-    public Action rangedAttack;
+    public bool ko = false;
+    private BattlePartyPanel battlePartyPanel;
+    [HideInInspector] public List<Action> skills;
+    [HideInInspector] public Action meleeAttack;
+    [HideInInspector] public Action rangedAttack;
 
     public override void Awake()
     {
@@ -19,11 +20,6 @@ public class PlayableCombatant : Combatant
         skills = playableCharacterInfo.skills;
         //set default direction
         SetDirection(new Vector2(1, 0));
-    }
-
-    public override void Start()
-    {
-        base.Start();
     }
 
     public void AssignBattlePartyPanel(BattlePartyPanel battlePartyPanel)
@@ -61,5 +57,25 @@ public class PlayableCombatant : Combatant
         //         }
         //     }
         // }
+    }
+
+    public override void Heal(int amount)
+    {
+        base.Heal(amount);
+        battlePartyPanel.UpdateHP(hp.GetCurrentValue());
+    }
+
+    public override void Damage(int amount, Combatant attacker = null, bool isCrit = false)
+    {
+        base.Damage(amount, attacker, isCrit);
+        battlePartyPanel.UpdateHP(hp.GetCurrentValue());
+    }
+
+    public override IEnumerator KO()
+    {
+        base.KO();
+        animator.SetTrigger("KO");
+        yield return new WaitForSeconds(1f);
+        ko = true;
     }
 }

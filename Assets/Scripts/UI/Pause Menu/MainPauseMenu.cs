@@ -5,8 +5,9 @@ using UnityEngine.EventSystems;
 
 public class MainPauseMenu : MonoBehaviour
 {
-    public GameObject defaultMenu;
-    public GameObject defaultButton;
+    [SerializeField] private GameObject display;
+    [SerializeField] private GameObject defaultMenu;
+    [SerializeField] private GameObject defaultButton;
     private GameObject activeMenu;
 
     private void OnEnable()
@@ -14,6 +15,16 @@ public class MainPauseMenu : MonoBehaviour
         activeMenu = defaultMenu;
         EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(defaultButton);
+    }
+
+    public void Display()
+    {
+        display.SetActive(true);
+    }
+
+    public void Hide()
+    {
+        display.SetActive(false);
     }
 
     public void ChangeMenu(GameObject newMenu)

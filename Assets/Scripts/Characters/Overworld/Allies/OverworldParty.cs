@@ -31,25 +31,29 @@ public class OverworldParty : MonoBehaviour
 
     public void SpawnAllies()
     {
-        GameObject nextAlly = allyObjects[0];
-        int partySize = 0;
+        // GameObject nextAlly = allyObjects[0];
+        // int partySize = 0;
 
-        foreach(PartyMember partyMember in partyData.partyMembers)
-        {
-            if(partySize < 3 && partyMember.inParty)
-            {
-                partySize++;
+        // foreach(PartyMember partyMember in partyData.partyMembers)
+        // {
+        //     if(partyMember.playableCharacterID == PlayableCharacterID.Claire)
+        //     {
+        //         break;
+        //     }
+        //     if(partySize < 3 && partyMember.inParty)
+        //     {
+        //         partySize++;
 
-                Transform partyPosition = nextAlly.GetComponent<Ally>().followerPosition.transform;
+        //         Transform partyPosition = nextAlly.GetComponent<Follower>().followerPosition.transform;
 
-                GameObject allyObject = Instantiate(allyPrefabs[partyMember.playableCharacterID], partyPosition.position, Quaternion.identity);
-                allyObject.transform.parent = gameObject.transform;
-                allyObject.GetComponent<Follower>().partyPosition = partyPosition;
-                allyObjects.Add(allyObject);
+        //         GameObject allyObject = Instantiate(allyPrefabs[partyMember.playableCharacterID], partyPosition.position, Quaternion.identity);
+        //         allyObject.transform.parent = gameObject.transform;
+        //         allyObject.GetComponent<Follower>().partyPosition = partyPosition;
+        //         allyObjects.Add(allyObject);
                 
-                nextAlly = allyObject;
-            }
-        }
+        //         nextAlly = allyObject;
+        //     }
+        // }
     }
 
     // public void UpdateCharacters()

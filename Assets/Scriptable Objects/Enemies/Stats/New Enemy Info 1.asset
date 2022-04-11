@@ -28,8 +28,8 @@ MonoBehaviour:
     currentValue: 0
   attack: 7
   defense: 7
-  magic: 7
-  magicDefense: 7
+  magic: 5
+  magicDefense: 5
   skill: 7
   agility: 7
   moveRange: 3
@@ -37,6 +37,9 @@ MonoBehaviour:
   iceResist: 5
   electricResist: 5
   darkResist: 5
+  traits: []
   weightedActions:
   - action: {fileID: 11400000, guid: 70fc9a8249db6c84f9541a7bf04d24b2, type: 2}
     weightType: 4
+    ignoreAggro: 0
+    alwaysTargetHighestAggro: 0

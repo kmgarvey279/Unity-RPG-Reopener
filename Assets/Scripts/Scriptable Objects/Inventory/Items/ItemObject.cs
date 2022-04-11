@@ -9,13 +9,6 @@ public enum ItemType
     Collectable,
     Key
 }
-public enum EquipmentType
-{
-    None,
-    Weapon,
-    Armor, 
-    Accessory
-}
 [CreateAssetMenu(fileName = "New Item Object", menuName = "Inventory/Items/Generic Item")]
 public class ItemObject: ScriptableObject
 {
@@ -25,7 +18,6 @@ public class ItemObject: ScriptableObject
     public string itemDescription = "New Item";
     public Sprite icon = null;
     public ItemType itemType;
-    public EquipmentType equipmentType;
 
     public virtual void Use(){}
 }

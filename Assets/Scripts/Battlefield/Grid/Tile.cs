@@ -30,6 +30,11 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     [SerializeField] private SpriteRenderer endPathImage;
     [SerializeField] private SpriteRenderer straightPathImage;
     [SerializeField] private SpriteRenderer turnPathImage;
+    [Header("Cursor")]
+    private bool cursorActive;
+    [SerializeField] private SpriteRenderer cursorDefault;
+    [SerializeField] private SpriteRenderer cursorMelee;
+    [SerializeField] private SpriteRenderer cursorRanged;
     public GameObject[,] tileArray;
     [Header("Events")]
     [SerializeField] private SignalSenderGO onTileSelect;
@@ -49,6 +54,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
 
     public void Hide()
     {
+        cursorDefault.enabled = false;
         tileImage.color = invisibleColor;
         tileButton.enabled = false;
         aoeImage.enabled = false;
@@ -158,6 +164,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     {
         onTileSelect.Raise(this.gameObject);
         selectedImage.enabled = true;
+        cursorDefault.enabled = true;
         // if(aoeImage.enabled && occupier)
         // {
         //     occupier.Select();
@@ -173,6 +180,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     public void OnDeselect(BaseEventData eventData)
     {
         selectedImage.enabled = false;
+        cursorDefault.enabled = false;
         // if(occupier)
         // {
         //     occupier.Deselect();

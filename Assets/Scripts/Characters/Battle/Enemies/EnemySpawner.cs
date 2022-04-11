@@ -7,15 +7,16 @@ public class EnemySpawner : MonoBehaviour
     [Header("Spawn Positions")]
     public List<Tile> spawnPositions = new List<Tile>();
 
-    public Combatant SpawnEnemy(GameObject EnemyPrefab, int positionNum)
+    public Combatant SpawnEnemy(GameObject enemyPrefab, int positionNum)
     {
         if(positionNum <= spawnPositions.Count)
         {
             Tile tile = spawnPositions[positionNum - 1];
-            GameObject enemyObject = Instantiate(EnemyPrefab, tile.transform.position, Quaternion.identity);
+            GameObject enemyObject = Instantiate(enemyPrefab, tile.transform.position, Quaternion.identity);
             enemyObject.transform.parent = gameObject.transform;
 
             Combatant combatant = enemyObject.GetComponent<Combatant>();
+            enemyObject.name = combatant.characterName + positionNum;
             tile.AssignOccupier(combatant);
             combatant.tile = tile;
             return combatant;

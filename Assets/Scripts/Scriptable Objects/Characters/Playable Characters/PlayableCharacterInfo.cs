@@ -11,12 +11,6 @@ public enum PlayableCharacterID
     Lucy
 }
 
-public enum DamageType
-{
-    Physical,
-    Magic
-}
-
 [CreateAssetMenu(fileName = "New Playable Character Info", menuName = "Character Info/Playable")]
 public class PlayableCharacterInfo : CharacterInfo
 {
@@ -28,9 +22,12 @@ public class PlayableCharacterInfo : CharacterInfo
     public List<Action> skills;
 
     [Header("Equipment")]
-    [SerializeField] private WeaponObject weapon;
-    [SerializeField] private ArmorObject armor;
-    [SerializeField] private AccessoryObject accessory;
+    [SerializeField] private bool canEquipMelee;
+    [SerializeField] private EquipmentObject meleeWeapon;
+    [SerializeField] private bool canEquipRanged;
+    [SerializeField] private EquipmentObject rangedWeapon;
+    [SerializeField] private EquipmentObject armor;
+    [SerializeField] private EquipmentObject accessory;
     public Dictionary<EquipmentType, EquipmentObject> equipmentDict = new Dictionary<EquipmentType, EquipmentObject>();
     
     [Header("ID")]
@@ -46,12 +43,14 @@ public class PlayableCharacterInfo : CharacterInfo
         statDict.Add(StatType.EquipmentPhysicalDefense, new Stat(0));
         statDict.Add(StatType.EquipmentMagicDefense, new Stat(0));
 
-        if(weapon)
-            ChangeEquipment((EquipmentObject)weapon);
+        if(meleeWeapon)
+            ChangeEquipment(meleeWeapon);
+        if(rangedWeapon)
+            ChangeEquipment(rangedWeapon);
         if(armor)
-            ChangeEquipment((EquipmentObject)armor);
+            ChangeEquipment(armor);
         if(accessory)
-            ChangeEquipment((EquipmentObject)accessory);
+            ChangeEquipment(accessory);
     }
 
     public void ChangeEquipment(EquipmentObject newEquipment)

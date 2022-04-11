@@ -72,16 +72,9 @@ public class CommandMenu : MonoBehaviour
 
     private void SelectSkill(GameObject skillSlotObject)
     {
-        BattleSkillSlot skillSlot = skillSlotObject.GetComponent<BattleSkillSlot>();
+        Action skill = skillSlotObject.GetComponent<BattleSkillSlot>().action;
         PlayableCombatant playableCombatant = (PlayableCombatant)turnData.combatant;
-        if(playableCombatant.rangedAttack)
-        {
-            battleManager.SetAction(playableCombatant.rangedAttack);
-        }
-        else 
-        {
-            battleManager.SetAction(playableCombatant.meleeAttack);
-        }
+        battleManager.SetAction(skill);
         battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
     }
 

@@ -15,10 +15,10 @@ MonoBehaviour:
   actionName: Melee Attack
   actionType: 0
   icon: {fileID: 0}
-  descripton: Melee Attack
+  description: 
   mpCost: 0
   timeModifier: 0
-  power: 1
+  power: 10
   offensiveStat: 0
   defensiveStat: 3
   statusEffectPower: 0

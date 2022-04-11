@@ -10,10 +10,10 @@ public class NPC : Interactable
     [Header("Dialogue")]
     private string dialogue;
     [Header("Event")]
-    [SerializeField] private SignalSenderString triggerDialogue;
+    [SerializeField] private SignalSenderString onTriggerDialogue;
 
     public override void Interact()
     {  
-        triggerDialogue.Raise("Test...");
+        onTriggerDialogue.Raise("Test...");
     }
 }

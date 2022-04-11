@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class OffRamp : MonoBehaviour
 {
-    public void OnTriggerEnter2D(Collider2D other)
-    {
-        if(other.gameObject.CompareTag("Playable Character"))
-        {
-            Leader player = other.GetComponent<Leader>();
-            player.sprite.sortingOrder = player.sprite.sortingOrder - 1;
-            player.gameObject.layer = player.gameObject.layer - 1;
-        }
-    }
+    // public void OnTriggerEnter2D(Collider2D other)
+    // {
+    //     if(other.gameObject.CompareTag("Playable Character"))
+    //     {
+    //         Leader player = other.GetComponent<Leader>();
+    //         player.sprite.sortingOrder = player.sprite.sortingOrder - 1;
+    //         player.gameObject.layer = player.gameObject.layer - 1;
+    //     }
+    // }
 }

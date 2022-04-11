@@ -16,16 +16,16 @@ MonoBehaviour:
   level: 1
   baseHP: 80
   hp:
-    baseValue: 0
+    baseValue: 80
     modifiers: 
     multipliers: []
-    currentValue: 0
+    currentValue: 80
   baseMP: 80
   mp:
-    baseValue: 0
+    baseValue: 80
     modifiers: 
     multipliers: []
-    currentValue: 0
+    currentValue: 80
   attack: 10
   defense: 7
   magic: 13
@@ -37,10 +37,14 @@ MonoBehaviour:
   iceResist: 0
   electricResist: 0
   darkResist: 0
+  traits: []
   meleeAttack: {fileID: 0}
-  rangedAttack: {fileID: 0}
+  rangedAttack: {fileID: 11400000, guid: 3ea64f3f664001d448226a78e134908a, type: 2}
   skills: []
-  weapon: {fileID: 0}
+  canEquipMelee: 0
+  meleeWeapon: {fileID: 0}
+  canEquipRanged: 1
+  rangedWeapon: {fileID: 0}
   armor: {fileID: 0}
   accessory: {fileID: 0}
   characterID: 0

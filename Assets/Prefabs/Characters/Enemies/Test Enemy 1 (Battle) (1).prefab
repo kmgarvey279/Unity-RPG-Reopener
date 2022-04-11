@@ -88,12 +88,12 @@ MonoBehaviour:
     modifiers: 
     multipliers: []
     currentValue: 0
-  ko: 0
   animator: {fileID: 4318611025402815799}
   spriteFill: {fileID: 0}
   gridManager: {fileID: 0}
   onTargetSelect: {fileID: 11400000, guid: 9643ea6fcd7523f49b0b77952933ff6e, type: 2}
   onTargetDeselect: {fileID: 11400000, guid: 12a71b399520515489f510970c00b7ef, type: 2}
+  OnCombatantKO: {fileID: 11400000, guid: 25f9c5d3374f4e8489c63661d314e8a8, type: 2}
   tile: {fileID: 0}
   gridMovement: {fileID: 0}
   enemyBattleAI: {fileID: 1524006130486152593}

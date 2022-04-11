@@ -23,6 +23,7 @@ public class TurnPanel : MonoBehaviour
     private void Start()
     {
         animator = GetComponentInChildren<Animator>();   
+        SetToDefaultColor();
     }
 
     public void Move(Vector3 newPosition)
@@ -54,5 +55,15 @@ public class TurnPanel : MonoBehaviour
         {
             rt.anchoredPosition = new Vector2(0, 0);
         }
+    }
+
+    public void SetToPreviewColor()
+    {
+        display.GetComponent<Image>().color = previewColor;
+    }
+
+    public void SetToDefaultColor()
+    {
+        display.GetComponent<Image>().color = defaultColor;
     }
 }

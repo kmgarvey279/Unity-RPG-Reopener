@@ -2,9 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum EquipmentType
+{
+    MeleeWeapon,
+    RangedWeapon,
+    Armor, 
+    Accessory
+}
+
 [CreateAssetMenu(fileName = "New Equipment", menuName = "Inventory/Items/Equipment")]
 public class EquipmentObject : ItemObject
 {
+    public EquipmentType equipmentType;
     [Header("Equipment Stats")]
     [SerializeField] private int equipmentMeleeAttack;
     [SerializeField] private int equipmentRangedAttack;
@@ -59,7 +68,6 @@ public class EquipmentObject : ItemObject
         resistDict.Add(ElementalProperty.Ice, iceResistance);
         resistDict.Add(ElementalProperty.Electric, electricResistance);
         resistDict.Add(ElementalProperty.Dark, darkResistance);
-        //status resistance
         //characters who can equip
         equipableDict.Add(PlayableCharacterID.Claire, claireEquip);
         equipableDict.Add(PlayableCharacterID.Mutiny, mutinyEquip);
@@ -72,6 +80,13 @@ public class EquipmentObject : ItemObject
     {
         base.Use();
         // EquipmentManager.Equip(this);
+    }
+
+    private void OnDisable()
+    {
+        modifierDict.Clear();
+        resistDict.Clear();
+        equipableDict.Clear(); 
     }
 }
 

@@ -61,8 +61,8 @@ public class CharacterInfo : ScriptableObject
 
     protected virtual void OnEnable()
     {
-        hp = new DynamicStat(baseHP);
-        mp = new DynamicStat(baseMP);
+        hp = new DynamicStat(baseHP, baseHP);
+        mp = new DynamicStat(baseMP, baseMP);
         //add each stat to dictionary
         statDict = new Dictionary<StatType, Stat>();
         statDict.Add(StatType.Attack, new Stat(attack));

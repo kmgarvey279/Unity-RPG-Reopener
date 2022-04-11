@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
   m_Name: Mutiny Ranged
   m_EditorClassIdentifier: 
-  actionName: 
+  actionName: Ranged Attack
   actionType: 0
   icon: {fileID: 0}
   description: 

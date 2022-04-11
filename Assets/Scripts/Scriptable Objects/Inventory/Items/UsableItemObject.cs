@@ -10,7 +10,6 @@ public class UsableItemObject : ItemObject
     public virtual void OnEnable()
     {
         itemType = ItemType.Usable;
-        equipmentType = EquipmentType.None;
     }
 
 

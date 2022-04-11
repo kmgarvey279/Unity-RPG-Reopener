@@ -42,9 +42,11 @@ public class EquipmentSelect : MonoBehaviour
         foreach(KeyValuePair<string,int> item in inventory.itemDict)
         {
             ItemObject itemObject = itemMasterList.masterDict[item.Key];
-            if(itemObject.itemType == ItemType.Equipment && itemObject.equipmentType == selectedEquipmentSlot.equipmentType)
+            if(itemObject.itemType == ItemType.Equipment)
             {
-                CreateSlot(itemMasterList.masterDict[item.Key], item.Value);
+                EquipmentObject equipmentObject = (EquipmentObject)itemObject;
+                if(equipmentObject.equipmentType == selectedEquipmentSlot.equipmentType)
+                    CreateSlot(itemMasterList.masterDict[item.Key], item.Value);
             }
         }
         //select first item in list (if it isn't empty)

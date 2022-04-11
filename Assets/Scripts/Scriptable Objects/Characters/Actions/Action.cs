@@ -89,6 +89,7 @@ public class Action : ScriptableObject
             return;
         }
         float rawDamage = Mathf.Clamp((float)power * (user.battleStatDict[offensiveStat].GetValue() / 100f + user.battleStatDict[offensiveStat].GetValue()) * Random.Range(0.85f, 1f), 1, 9999);
+        Debug.Log("raw damage: " + rawDamage);
         if(actionType == ActionType.Heal)
         {
             int finalHeal = Mathf.FloorToInt(rawDamage);
@@ -96,12 +97,14 @@ public class Action : ScriptableObject
         }
         else
         {
-            bool didCrit = CritCheck(user); 
+            bool didCrit = HitCheck(user.battleStatDict[BattleStatType.CritRate].GetValue()); 
             if(didCrit)
             {
                 rawDamage = rawDamage * 1.75f;
             }
-            int finalDamage = Mathf.FloorToInt(rawDamage * (100 / (100 + target.battleStatDict[defensiveStat].GetValue())));
+            Debug.Log("Multiplier: " + 100f / (100f + target.battleStatDict[defensiveStat].GetValue()));
+            int finalDamage = Mathf.FloorToInt(rawDamage * (100f / (100f + target.battleStatDict[defensiveStat].GetValue())));
+                    Debug.Log("final damage: " + finalDamage);
             target.Damage(finalDamage, user, didCrit);
         }
     }
@@ -110,20 +113,6 @@ public class Action : ScriptableObject
     {
         int roll = Random.Range(1, 100);
         if(roll <= hitChance)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public bool CritCheck(Combatant user)
-    {
-        float critChance = user.battleStatDict[BattleStatType.CritRate].GetValue();
-        float roll = Random.Range(1, 100);
-        if(roll <= critChance)
         {
             return true;
         }

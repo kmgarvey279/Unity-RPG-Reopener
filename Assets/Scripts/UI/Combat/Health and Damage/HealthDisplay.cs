@@ -29,11 +29,6 @@ public class HealthDisplay : MonoBehaviour
         DisplayHPBar();
         damagePopup.TriggerPopup(popupType, amount);
         healthBar.UpdateBar(combatant.hp.GetCurrentValue());
-        if(combatant is PlayableCombatant)
-        {
-            PlayableCombatant playableCombatant = (PlayableCombatant)combatant;
-            playableCombatant.battlePartyPanel.UpdateHP(combatant.hp.GetCurrentValue());
-        }
         StartCoroutine(HideHPBar());
     }
 
