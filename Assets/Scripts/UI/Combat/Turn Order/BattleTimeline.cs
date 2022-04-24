@@ -66,16 +66,37 @@ public class BattleTimeline : MonoBehaviour
         }
     }
 
-    public void ToggleTargetingPreview(TurnSlot turnSlot, bool isTargeted)
-    {
-        turnPanels[turnSlot].ToggleTargetingPreview(isTargeted);
-    }
-
     public void ClearAllTargetingPreviews()
     {
         foreach(KeyValuePair<TurnSlot, TurnPanel> entry in turnPanels)
         {
            entry.Value.ToggleTargetingPreview(false); 
+        }
+    }
+
+    public void OnTargetSelect(GameObject gameObject)
+    {
+        Combatant target = gameObject.GetComponent<Combatant>();
+        foreach(KeyValuePair<TurnSlot, TurnPanel> entry in turnPanels)
+        {
+            if(entry.Key.combatant == target)
+            {
+                entry.Value.ToggleTargetingPreview(true);
+                return;
+            }
+        }
+    }
+
+    public void OnTargetDeselect(GameObject gameObject)
+    {
+        Combatant target = gameObject.GetComponent<Combatant>();
+        foreach(KeyValuePair<TurnSlot, TurnPanel> entry in turnPanels)
+        {
+            if(entry.Key.combatant == target)
+            {
+                entry.Value.ToggleTargetingPreview(false);
+                return;
+            }
         }
     }
 }

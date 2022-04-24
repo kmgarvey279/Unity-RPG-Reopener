@@ -8,68 +8,76 @@ using UnityEngine.EventSystems;
 [System.Serializable]
 public class PlayerMoveState : BattleState
 {
-    [SerializeField] private GridManager gridManager;
-    // [SerializeField] private SignalSender onCameraZoomOut;
+    // [SerializeField] private GridManager gridManager;
+    // // [SerializeField] private SignalSender onCameraZoomOut;
 
-    private Tile selectedTile;
-    private List<Tile> path = new List<Tile>();
+    // private Tile selectedTile;
+    // private List<Tile> path = new List<Tile>();
 
-    public override void OnEnter()
-    {
-        base.OnEnter();
-        // onCameraZoomOut.Raise();
+    // public override void OnEnter()
+    // {
+    //     base.OnEnter();
+    //     // onCameraZoomOut.Raise();
 
-        //checks if player is canceling a move
-        if(turnData.combatant.tile != turnData.startingTile)
-        {
-            battleManager.SetMoveCost(0);
-            turnData.combatant.transform.position = turnData.startingTile.transform.position;
-            turnData.combatant.SetTile(turnData.combatant.tile, turnData.startingTile);
-            turnData.combatant.SetDirection(new Vector2(turnData.startingDirection.x, turnData.startingDirection.y));
-        }
-
-        int range = turnData.combatant.battleStatDict[BattleStatType.MoveRange].GetValue();
-        gridManager.DisplayTilesInRange(turnData.combatant.tile, range, true);
+    //     // int range = turnData.combatant.battleStatDict[BattleStatType.MoveRange].GetValue();
+    //     gridManager.DisplaySelectableTiles(true, false);
         
-        EventSystem.current.SetSelectedGameObject(null);
-        EventSystem.current.SetSelectedGameObject(turnData.combatant.tile.gameObject);
-    }
+    //     EventSystem.current.SetSelectedGameObject(null);
+    //     EventSystem.current.SetSelectedGameObject(turnData.combatant.tile.gameObject);
+    // }
 
-    public override void StateUpdate()
-    {
-        if(Input.GetButtonDown("Select"))
-        {
-            int moveCost = gridManager.GetMoveCost(selectedTile, turnData.combatant.tile);      
-            battleManager.SetMoveCost(moveCost);
+    // public override void StateUpdate()
+    // {
+    //     if(Input.GetButtonDown("Select"))
+    //     {
+    //         if(selectedTile == turnData.combatant.tile)
+    //         {
+    //             battleManager.CancelAction();
+    //             stateMachine.ChangeState((int)BattleStateType.Menu);
+    //         }
+    //         else
+    //         { 
+    //             battleManager.UpdateActionCost(1);
+                
+    //             if(selectedTile.occupier)
+    //             {
+    //                 List<Tile> reversePath = new List<Tile>();
+    //                 reversePath.AddRange(path);
+    //                 reversePath.Reverse();
+    //                 selectedTile.occupier.Move(reversePath, MovementType.Move);
+    //             }
+    //             turnData.combatant.Move(path, MovementType.Move); 
+    //         }
+    //     }
+    //     else if(Input.GetButtonDown("Cancel"))
+    //     {
+    //         battleManager.CancelAction();
+    //         stateMachine.ChangeState((int)BattleStateType.Menu);
+    //     }
+    // }
 
-            gridManager.HideTiles();
 
-            turnData.combatant.Move(path, MovementType.Move); 
-        }
-        
-    }
+    // public override void StateFixedUpdate()
+    // {
 
+    // }
 
-    public override void StateFixedUpdate()
-    {
+    // public override void OnExit()
+    // {
+    //     base.OnExit();
+    //     selectedTile = null; 
+    //     gridManager.HideTiles();
+    // }
 
-    }
+    // public void OnSelectTile(GameObject tileObject)
+    // {     
+    //     selectedTile = tileObject.GetComponent<Tile>();
+    //     path = gridManager.GetPath(turnData.combatant.tile, selectedTile);
+    //     gridManager.DisplayPath(path);
+    // }
 
-    public override void OnExit()
-    {
-        base.OnExit();
-        selectedTile = null; 
-    }
-
-    public void OnSelectTile(GameObject tileObject)
-    {     
-        selectedTile = tileObject.GetComponent<Tile>();
-        path = gridManager.GetPath(turnData.combatant.tile, selectedTile);
-        gridManager.DisplayPath(path);
-    }
-
-    public void OnMoveComplete()
-    {
-        battleManager.stateMachine.ChangeState((int)BattleStateType.Menu);
-    }
+    // public void OnMoveComplete()
+    // {
+    //     battleManager.stateMachine.ChangeState((int)BattleStateType.Menu);
+    // }
 }

@@ -16,9 +16,7 @@ public enum PathType
 public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnterHandler
 {
     public int x;
-    public TextMeshProUGUI xText;
     public int y;
-    public TextMeshProUGUI yText;
     public Combatant occupier;
     [Header("Display")]
     [SerializeField] private Image tileImage;
@@ -30,31 +28,31 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     [SerializeField] private SpriteRenderer endPathImage;
     [SerializeField] private SpriteRenderer straightPathImage;
     [SerializeField] private SpriteRenderer turnPathImage;
-    [Header("Cursor")]
-    private bool cursorActive;
-    [SerializeField] private SpriteRenderer cursorDefault;
-    [SerializeField] private SpriteRenderer cursorMelee;
-    [SerializeField] private SpriteRenderer cursorRanged;
     public GameObject[,] tileArray;
     [Header("Events")]
     [SerializeField] private SignalSenderGO onTileSelect;
     [SerializeField] private SignalSender onTileConfirm;
     [Header("Color/Cost")]
     [SerializeField] private Color invisibleColor;
-    [SerializeField] private Color defaultColor;
+    [SerializeField] private Color selectableColor;
+    [SerializeField] private Color unselectableColor;
     public int moveCost;
 
-    public void Display()
+    public void Display(bool canSelect)
     {
-        tileImage.color = defaultColor;
-        tileButton.enabled = true;
-        xText.text = x.ToString();
-        yText.text = y.ToString();
+        if(canSelect)
+        {
+            tileImage.color = selectableColor;
+            tileButton.enabled = true;
+        }
+        else
+        {
+            tileImage.color = unselectableColor;
+        }
     }
 
     public void Hide()
     {
-        cursorDefault.enabled = false;
         tileImage.color = invisibleColor;
         tileButton.enabled = false;
         aoeImage.enabled = false;
@@ -64,33 +62,11 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     public void DisplayAOE()
     {
         aoeImage.enabled = true;
-        // if(occupier != null)
-        // {
-        //     if(occupier is PlayableCombatant && targetPlayer)
-        //     {
-        //         occupier.Select();
-        //     }
-        //     if(occupier is EnemyCombatant && targetEnemy)
-        //     {
-        //         occupier.Select();
-        //     }
-        // }
     }
 
     public void HideAOE()
     {
         aoeImage.enabled = false;
-        // if(occupier != null)
-        // {
-        //     if(occupier is PlayableCombatant && targetPlayer)
-        //     {
-        //         occupier.Deselect();
-        //     }
-        //     if(occupier is EnemyCombatant && targetEnemy)
-        //     {
-        //         occupier.Deselect();
-        //     }
-        // }
     }
 
     public void DisplayPathNode(PathType pathType, Vector2 direction1, Vector2 direction2)
@@ -164,11 +140,6 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     {
         onTileSelect.Raise(this.gameObject);
         selectedImage.enabled = true;
-        cursorDefault.enabled = true;
-        // if(aoeImage.enabled && occupier)
-        // {
-        //     occupier.Select();
-        // }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -180,18 +151,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     public void OnDeselect(BaseEventData eventData)
     {
         selectedImage.enabled = false;
-        cursorDefault.enabled = false;
-        // if(occupier)
-        // {
-        //     occupier.Deselect();
-        // }
     }
-
-    // public void OnPointerExit(PointerEventData eventData)
-    // {
-    //     // if(tileButton.enabled)
-    //     //     EventSystem.current.SetSelectedGameObject(null);
-    // }
 
     public void AssignOccupier(Combatant occupier)
     {
@@ -202,24 +162,6 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     {
         this.occupier = null;
     }
-
-    // private void OnTriggerEnter2D(Collider2D other)
-    // {
-    //     if(other.gameObject.CompareTag("Combatant") && other.isTrigger)
-    //     {
-    //         Combatant combatant = other.GetComponent<Combatant>();
-    //         combatant.SetTile(this); 
-    //         occupier = combatant;
-    //     }
-    // }
-
-    // private void OnTriggerExit2D(Collider2D other)
-    // {
-    //     if(other.gameObject.CompareTag("Combatant") && other.isTrigger)
-    //     {
-    //         occupier = null; 
-    //     }
-    // }
 
     public void OnClick()
     {

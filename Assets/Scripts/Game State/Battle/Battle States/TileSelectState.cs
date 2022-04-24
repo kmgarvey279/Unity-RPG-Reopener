@@ -10,8 +10,9 @@ public class TileSelectState : BattleState
     [SerializeField] private GridManager gridManager;
 
     private Tile selectedTile;
-    private List<Combatant> selectedTargets;
-    private int maxRange;
+    private List<Combatant> selectedTargets = new List<Combatant>();
+    private TargetType targetType;
+    private bool flip;
     [Header("Events")]
     [SerializeField] private SignalSender onCameraZoomOut;
 
@@ -21,58 +22,53 @@ public class TileSelectState : BattleState
 
         onCameraZoomOut.Raise();
         //display tiles
-        gridManager.DisplayTilesInRange(turnData.combatant.tile, turnData.action.range, false);
-        
-        PointerEventData pointer = new PointerEventData(EventSystem.current);
-        pointer.position = Input.mousePosition;
-
-        List<RaycastResult> raycastResults = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(pointer, raycastResults);
-
-        if(raycastResults.Count > 0)
+        targetType = TargetType.TargetEnemy;
+        flip = false;
+        if(turnData.action.targetFriendly)
         {
-            // Debug.Log("raycast hit");
-            // foreach(RaycastResult result in raycastResults)
-            // {  
-            //     if(result.gameObject.GetComponent<Tile>() != null)
-            //     {
-            //         Debug.Log("found tile");
-            //         Tile tile = result.gameObject.GetComponent<Tile>();
-            //         // if(tile.targetable)
-            //         // {
-            //             Debug.Log("selecting tile");
-            //             tile.Select();
-            //         // }
-            //         break;
-            //     }
-            // }
+            targetType = TargetType.TargetPlayer;
         }
-        // GetNearestTargetableTile().Select();
+
+        if(turnData.action.isFixedTarget)
+        {
+            gridManager.DisplaySelectableTargets(turnData.combatant.tile.x, targetType, turnData.action.isMelee);
+        }
+        else if(turnData.action.isFixedAOE)
+        {
+            selectedTargets = gridManager.DisplayFixedAOE(turnData.combatant.tile, turnData.action, targetType, flip);
+        }
+        else
+        {
+            gridManager.DisplaySelectableTiles(targetType);
+        }
     }
 
     public override void StateUpdate()
     {
         if(Input.GetButtonDown("Select"))
         {
-            if(selectedTargets.Count > 0) 
+            if(selectedTargets.Count > 0 || turnData.action.actionType == ActionType.Move) 
             {
-                battleManager.SetTargets(selectedTile, selectedTargets);
-                PlayableCombatant playableCombatant = (PlayableCombatant)turnData.combatant;
-                if(turnData.action == playableCombatant.rangedAttack && gridManager.GetMoveCost(playableCombatant.tile, selectedTile) <= 1 && playableCombatant.meleeAttack != null)
-                {
-                    turnData.action = playableCombatant.meleeAttack;
-                }
+                battleManager.SetTargets(selectedTile, selectedTargets, targetType);
                 stateMachine.ChangeState((int)BattleStateType.Execute); 
             }
             else 
             {
                 Debug.Log("No target selected");
             }
-        }
-        if(Input.GetButtonDown("Cancel"))
+        } 
+        else if(Input.GetButtonDown("Cancel"))
         {
             battleManager.CancelAction();
             stateMachine.ChangeState((int)BattleStateType.Menu);
+        }
+        else if(Input.GetButtonDown("Switch"))
+        {
+            flip = !flip;
+            if(turnData.action.aoes.Count > 0)
+            {
+                selectedTargets = gridManager.DisplayAOE(selectedTile, turnData.action, targetType, flip);
+            }
         }
     }
 
@@ -93,38 +89,22 @@ public class TileSelectState : BattleState
     {     
         selectedTile = tileObject.GetComponent<Tile>();     
         // selectedTargets = gridManager.GetTargetsInRange(selectedTile, turnData.action.aoe, turnData.action.targetFriendly, turnData.action.targetHostile);   
-        if(turnData.action.knockback > 0)
-        {
-            Vector2 direction = (selectedTile.transform.position - turnData.combatant.tile.transform.position).normalized;
-            List<Tile> path = new List<Tile>();
-            if(selectedTile.occupier && selectedTile.occupier is EnemyCombatant)
-                path = gridManager.GetRow(selectedTile, direction, turnData.action.knockback, true);
+        // if(turnData.action.knockback)
+        // {
+        //     Vector2 direction = (selectedTile.transform.position - turnData.combatant.tile.transform.position).normalized;
+        //     List<Tile> path = new List<Tile>();
+            // if(selectedTile.occupier && selectedTile.occupier is EnemyCombatant)
+            //     path = gridManager.GetRow(selectedTile, direction);
             // gridManager.DisplayPath(path);
-        } 
-        if(turnData.action.lineAOE)
+        // } 
+        if(turnData.action.aoes.Count > 0)
         {
-            Vector2 direction = (selectedTile.transform.position - turnData.combatant.tile.transform.position).normalized;
-            selectedTargets = gridManager.DisplayLineAOE(selectedTile, direction, turnData.action.aoe, turnData.action.targetFriendly, turnData.action.targetHostile, turnData.action.stopAtOccupiedTile);
+            selectedTargets = gridManager.DisplayAOE(selectedTile, turnData.action, targetType, flip);
         }
-        else
+        if(turnData.action.actionType == ActionType.Move)
         {
-            selectedTargets = gridManager.DisplayAOE(selectedTile, turnData.action.aoe, turnData.action.targetFriendly, turnData.action.targetHostile);
-        }  
+            List<Tile> path = gridManager.GetPath(turnData.combatant.tile, selectedTile, TargetType.TargetPlayer);
+            gridManager.DisplayPath(path); 
+        } 
     }
-
-    // private Tile GetNearestTargetableTile()
-    // {
-    //     Tile closestTargetableTile = turnData.combatant.tile;
-    //     int smallestDistance = turnData.action.range;
-    //     foreach(Combatant target in gridManager.GetTargetsInRange(turnData.combatant.tile, turnData.action.range, turnData.action.targetFriendly, turnData.action.targetHostile))
-    //     {
-    //         int thisDistance = gridManager.GetMoveCost(target.tile, turnData.combatant.tile);
-    //         if(thisDistance <= smallestDistance)
-    //         {
-    //             smallestDistance = thisDistance;
-    //             closestTargetableTile = target.tile;
-    //         }
-    //     }
-    //     return closestTargetableTile;
-    // }
 }

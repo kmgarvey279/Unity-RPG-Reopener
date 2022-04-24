@@ -15,17 +15,16 @@ public class EquipmentObject : ItemObject
 {
     public EquipmentType equipmentType;
     [Header("Equipment Stats")]
-    [SerializeField] private int equipmentMeleeAttack;
-    [SerializeField] private int equipmentRangedAttack;
+    [SerializeField] private int equipmentAttack;
+    [SerializeField] private int equipmentDefense;
     [SerializeField] private int equipmentMagicAttack;
-    [SerializeField] private int equipmentPhysicalDefense;
     [SerializeField] private int equipmentMagicDefense;
     [Header("Stat Modifiers")]
     [SerializeField] private int hpModifier;
     [SerializeField] private int mpModifier;
     [SerializeField] private int attackModifier;
     [SerializeField] private int defenseModifier;
-    [SerializeField] private int magicModifier;
+    [SerializeField] private int magicAttackModifier;
     [SerializeField] private int magicDefenseModifier;
     [SerializeField] private int skillModifier;
     [SerializeField] private int agilityModifier;
@@ -49,17 +48,16 @@ public class EquipmentObject : ItemObject
     {
         itemType = ItemType.Equipment;
         //equipment stats
-        modifierDict.Add(StatType.EquipmentMeleeAttack, equipmentMeleeAttack);
-        modifierDict.Add(StatType.EquipmentRangedAttack, equipmentRangedAttack);
+        modifierDict.Add(StatType.EquipmentAttack, equipmentAttack);
+        modifierDict.Add(StatType.EquipmentDefense, equipmentDefense);
         modifierDict.Add(StatType.EquipmentMagicAttack, equipmentMagicAttack);
-        modifierDict.Add(StatType.EquipmentPhysicalDefense, equipmentPhysicalDefense);
         modifierDict.Add(StatType.EquipmentMagicDefense, equipmentMagicDefense);
         //stat modifiers
         modifierDict.Add(StatType.HP, hpModifier);
         modifierDict.Add(StatType.MP, mpModifier);
         modifierDict.Add(StatType.Attack, attackModifier);
         modifierDict.Add(StatType.Defense, defenseModifier);
-        modifierDict.Add(StatType.Magic, magicModifier);
+        modifierDict.Add(StatType.MagicAttack, magicAttackModifier);
         modifierDict.Add(StatType.MagicDefense, magicDefenseModifier);
         modifierDict.Add(StatType.Skill, skillModifier);
         modifierDict.Add(StatType.Agility, agilityModifier);

@@ -430,7 +430,6 @@ MonoBehaviour:
     modifiers: 
     multipliers: []
     currentValue: 0
-  ko: 0
   animator: {fileID: 2119515496622217038}
   spriteFill: {fileID: 6529827472571875514}
   gridManager: {fileID: 0}
@@ -439,10 +438,9 @@ MonoBehaviour:
   OnCombatantKO: {fileID: 11400000, guid: 25f9c5d3374f4e8489c63661d314e8a8, type: 2}
   tile: {fileID: 0}
   gridMovement: {fileID: 0}
-  battlePartyPanel: {fileID: 0}
+  defaultDirection: {x: 0, y: 0}
+  ko: 0
   skills: []
-  meleeAttack: {fileID: 0}
-  rangedAttack: {fileID: 0}
 --- !u!1001 &1402383867595480895
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -791,6 +789,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Movement
       objectReference: {fileID: 0}
+    - target: {fileID: 8717373191667936191, guid: 3277a169b75a1cd478d5ed3eeb50c74b,
+        type: 3}
+      propertyPath: onMoveComplete
+      value: 
+      objectReference: {fileID: 11400000, guid: 28cbdabb858de644f939cf0318a8a708,
+        type: 2}
+    - target: {fileID: 8717373191667936191, guid: 3277a169b75a1cd478d5ed3eeb50c74b,
+        type: 3}
+      propertyPath: onKnockbackComplete
+      value: 
+      objectReference: {fileID: 11400000, guid: 1a33abae39a8b9c4793ef971f834a175,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3277a169b75a1cd478d5ed3eeb50c74b, type: 3}
 --- !u!4 &7392806457516410282 stripped

@@ -53,34 +53,35 @@ public class ExecuteActionState : BattleState
     {
         Debug.Log("Cast Phase");
         //cast animation
-        if(turnData.action.hasCastAnimation)
+        if(turnData.action.castAnimatorTrigger != "")
         {
-            if(turnData.action.castAnimatorTrigger != "")
-            {
-                turnData.combatant.animator.SetTrigger(turnData.action.castAnimatorTrigger);
-            }
-            //spawn casting effect
-            if(turnData.action.castGraphicPrefab != null)
-            {
-                yield return new WaitForSeconds(turnData.action.castGraphicDelay); 
-                Vector3 spawnPosition = turnData.combatant.transform.position;
-                GameObject graphicObject = Instantiate(turnData.action.castGraphicPrefab, spawnPosition, Quaternion.identity);
-            }
-            yield return new WaitForSeconds(turnData.action.castAnimationDuration);
-            MoveAnimationPhase();
+            turnData.combatant.animator.SetTrigger(turnData.action.castAnimatorTrigger);
         }
-        else
+        //spawn casting effect
+        if(turnData.action.castGraphicPrefab != null)
         {
-            MoveAnimationPhase();
+            yield return new WaitForSeconds(turnData.action.castGraphicDelay); 
+            Vector3 spawnPosition = turnData.combatant.transform.position;
+            GameObject graphicObject = Instantiate(turnData.action.castGraphicPrefab, spawnPosition, Quaternion.identity);
         }
+        yield return new WaitForSeconds(turnData.action.castAnimationDuration);
+        MoveAnimationPhase();
     }
 
     private void MoveAnimationPhase()
     {
         Debug.Log("Move Phase");
-        if(turnData.action.hasMoveAnimation && turnData.targetedTile != turnData.combatant.tile)
+        if(turnData.action.actionType == ActionType.Move && turnData.targetedTile != turnData.combatant.tile)
         {
-            turnData.combatant.gridMovement.Move(new List<Tile>(){turnData.combatant.tile, turnData.targetedTile}, MovementType.Dash); 
+            List<Tile> path = gridManager.GetPath(turnData.combatant.tile, turnData.targetedTile, TargetType.TargetPlayer);
+            if(turnData.targetedTile.occupier)
+            {
+                    List<Tile> reversePath = new List<Tile>();
+                    reversePath.AddRange(path);
+                    reversePath.Reverse();
+                    turnData.targetedTile.occupier.Move(reversePath, MovementType.Move);
+            }
+            turnData.combatant.Move(path, MovementType.Move);  
         }
         else
         {
@@ -88,9 +89,12 @@ public class ExecuteActionState : BattleState
         }
     }
 
-    public void OnMoveEnd()
+    public void OnMoveEnd(GameObject combatantObject)
     {
-        StartCoroutine(ProjectileAnimationPhase());
+        if(combatantObject.GetComponent<Combatant>() == turnData.combatant)
+        {
+            StartCoroutine(ProjectileAnimationPhase());
+        }
     }
 
     public IEnumerator ProjectileAnimationPhase()
@@ -131,11 +135,43 @@ public class ExecuteActionState : BattleState
         if(turnData.action.effectGraphicPrefab)
         {
             yield return new WaitForSeconds(turnData.action.effectGraphicDelay); 
-            Vector3 spawnPosition = turnData.targetedTile.transform.position;
-            GameObject graphicObject = Instantiate(turnData.action.effectGraphicPrefab, spawnPosition, Quaternion.identity);
+            List<GameObject> effects = new List<GameObject>();
+            Tile[,] tileArray = gridManager.GetTileArray(turnData.targetType);
+            foreach(AOE aoe in turnData.action.aoes)
+            {
+                //default spawn position (center of battlefield)
+                Vector2 spawnPosition = tileArray[1, 1].transform.position;
+                if(turnData.action.isFixedAOE)
+                {
+                    spawnPosition = tileArray[aoe.fixedStartPosition.x, aoe.fixedStartPosition.y].transform.position;
+                }
+                else
+                {
+                    if(turnData.targetedTile && aoe.aoeType != AOEType.All && aoe.aoeType != AOEType.Diagonal)
+                    {
+                        if(aoe.aoeType == AOEType.Row)
+                        {
+                            spawnPosition = tileArray[1, turnData.targetedTile.y].transform.position;
+                        }  
+                        else if(aoe.aoeType == AOEType.Column)
+                        {
+                            spawnPosition = tileArray[turnData.targetedTile.x, 1].transform.position;
+                        }   
+                        else
+                        { 
+                            spawnPosition = turnData.targetedTile.transform.position;
+                        }
+                    }
+                }
+                GameObject graphicObject = Instantiate(turnData.action.effectGraphicPrefab, spawnPosition, turnData.action.effectGraphicPrefab.transform.rotation);
+                effects.Add(graphicObject);
+            }
             //destory visual effect
             yield return new WaitForSeconds(turnData.action.effectAnimationDuration);
-            Destroy(graphicObject);
+            foreach(GameObject effect in effects)
+            {
+                Destroy(effect);
+            }
         }
         else 
         {
@@ -195,28 +231,28 @@ public class ExecuteActionState : BattleState
     private void KnockbackAnimationPhase()
     {
         Debug.Log("Knockback Phase");
-        if(turnData.action.knockback > 0)
-        {
-            foreach (Combatant target in turnData.targets)
-            {
-                Tile destination = target.tile;
-                //find furthest tile target can be knocked back to
-                List<Tile> row = gridManager.GetRow(target.tile, turnData.combatant.GetDirection(), turnData.action.knockback, true);
+        // if(turnData.action.knockback)
+        // {
+        //     foreach(Combatant target in turnData.targets)
+        //     {
+        //         Tile destination = target.tile;
+        //         //find furthest tile target can be knocked back to
+        //         List<Tile> row = gridManager.GetRow(target.tile, turnData.combatant.GetDirection());
 
-                destination = row[row.Count - 1];
-                if(destination != target.tile)
-                {
-                    target.gridMovement.Move(new List<Tile>(){target.tile, destination}, MovementType.Knockback); 
-                }
-            }
-        }
-        else 
-        {
+        //         destination = row[row.Count - 1];
+        //         if(destination != target.tile)
+        //         {
+        //             target.Move(new List<Tile>(){target.tile, destination}, MovementType.Knockback); 
+        //         }
+        //     }
+        // }
+        // else 
+        // {
             StartCoroutine(HealthEffectPhase());
-        }
+        // }
     }
 
-    public void OnKnockbackEnd()
+    public void OnKnockbackEnd(GameObject combatantObject)
     {
         StartCoroutine(HealthEffectPhase());
     }
@@ -225,8 +261,9 @@ public class ExecuteActionState : BattleState
     public IEnumerator HealthEffectPhase()
     {
         Debug.Log("Damage/heal phase");
-        if(turnData.action.actionType != ActionType.Other && turnData.targets.Count > 0)
+        if(turnData.targets.Count > 0)
         {
+            Debug.Log("targets!");
             foreach(Combatant target in turnData.targets)
             {
                 Debug.Log(target.name + " was hit");
@@ -250,6 +287,10 @@ public class ExecuteActionState : BattleState
                 StartCoroutine(EndActionPhase());
             }
         } 
+        else
+        {
+            StartCoroutine(EndActionPhase());
+        }
     }
 
     private IEnumerator StatusEffectPhase()
@@ -277,7 +318,7 @@ public class ExecuteActionState : BattleState
             }
         }        
         yield return new WaitForSeconds(0.5f);
-        StartCoroutine(battleManager.EndTurnCo()); 
+        battleManager.EndAction(); 
     }
 }
 

@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class Connector : MonoBehaviour
 {
     public Transform spawnPoint;
+    public Entrance entrance;
     public RuntimeData runtimeData;
     [Header("Events")]
     public SignalSender onScreenFadeIn;

@@ -12,30 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
   m_Name: Test Knockback
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
   actionName: Knockback
-  descripton: 
   actionType: 0
-  timeCost: 3
+  icon: {fileID: 0}
+  description: 
   mpCost: 10
-  cooldown: 0
+  apCost: 2
   power: 1
-  accuracy: 99
-  range: 1
-  aoe: 0
-  excludeStartingTile: 1
-  lineAOE: 0
-  stopAtOccupiedTile: 0
   offensiveStat: 0
   defensiveStat: 3
   elementalProperty: 0
-  guaranteedHit: 0
-  distancePenalty: 0
-  effects:
-  - {fileID: 11400000, guid: 7b5ff438e848e54438d2d76005586efe, type: 2}
-  statusEffect: {fileID: 0}
+  statusEffectPower: 0
+  statusEffectChance: 0
+  statusEffectSO: {fileID: 0}
   knockback: 2
-  useDirection: 1
+  additionalEffects: []
+  isFixedTarget: 0
+  isMelee: 0
+  aoe: 0
+  lineAOE: 0
   targetFriendly: 0
   targetHostile: 1
   targetSelfOnly: 0

@@ -5,7 +5,6 @@ using UnityEngine;
 public enum MovementType
 {
     Move,
-    Dash,
     Knockback
 }
 
@@ -14,9 +13,8 @@ public class GridMovement : MonoBehaviour
     private Combatant combatant; 
     [SerializeField] private List<Tile> path = new List<Tile>();
     private MovementType movementType;
-    [SerializeField] private SignalSender onMoveComplete;
-    [SerializeField] private SignalSender onDashComplete;
-    [SerializeField] private SignalSender onKnockbackComplete;
+    [SerializeField] private SignalSenderGO onMoveComplete;
+    [SerializeField] private SignalSenderGO onKnockbackComplete;
 
     private void Start()
     {
@@ -28,7 +26,7 @@ public class GridMovement : MonoBehaviour
         this.path = path;
         if(path.Count <= 1 )
         {
-            onMoveComplete.Raise();
+            onMoveComplete.Raise(combatant.gameObject);
         }
         else
         {
@@ -45,16 +43,19 @@ public class GridMovement : MonoBehaviour
         if(movementType == MovementType.Move)
         {
             combatant.animator.SetTrigger("Idle");
-            onMoveComplete.Raise();
-        }
-        else if(movementType == MovementType.Dash)
-        {
-            combatant.animator.SetTrigger("Idle");
-            onDashComplete.Raise();
+            onMoveComplete.Raise(combatant.gameObject);
         }
         else if(movementType == MovementType.Knockback)
         {
-            onKnockbackComplete.Raise();
+            onKnockbackComplete.Raise(combatant.gameObject);
+        }
+        if(combatant is PlayableCombatant)
+        {
+            combatant.SetDirection(new Vector2(1,0));
+        }
+        else if(combatant is EnemyCombatant)
+        {
+            combatant.SetDirection(new Vector2(-1,0));
         }
     }
 

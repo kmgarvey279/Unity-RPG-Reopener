@@ -8,6 +8,7 @@ TagManager:
   - Combatant
   - Tile
   - Interactable
+  - Playable Character
   layers:
   - Default
   - TransparentFX
@@ -17,8 +18,8 @@ TagManager:
   - UI
   - HUD
   - Ground
-  - 
-  - 
+  - Collision
+  - Boundary
   - 
   - 
   - 

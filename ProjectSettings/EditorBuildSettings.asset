@@ -4,5 +4,14 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/SampleOverworld1.unity
+    guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/SampleCave1.unity
+    guid: fa240e3a17c0a5a459fb8d1c80161c22
+  - enabled: 1
+    path: Assets/Scenes/SampleBattleScene.unity
+    guid: a423675c5ba4bf34d8f46e7982d4c428
   m_configObjects: {}

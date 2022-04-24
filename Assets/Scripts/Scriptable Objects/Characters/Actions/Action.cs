@@ -8,6 +8,7 @@ public enum ActionType
 {
     Attack, 
     Heal,
+    Move,
     Other
 }
 
@@ -22,6 +23,25 @@ public enum ElementalProperty
 }
 
 [System.Serializable]
+public enum AOEType
+{
+    Single,
+    Cross,
+    X,
+    Row,
+    Column,
+    Diagonal,
+    All
+}
+
+[System.Serializable]
+public class AOE
+{
+    public AOEType aoeType;
+    public Vector2Int fixedStartPosition = new Vector2Int(0,0);
+}
+
+[System.Serializable]
 [CreateAssetMenu(fileName = "New Action", menuName = "Action/Action")]
 public class Action : ScriptableObject
 {   
@@ -33,36 +53,30 @@ public class Action : ScriptableObject
     [TextArea(5,10)]
     public string description;
     public int mpCost;
-    [Header("Properties")]
-    public int timeModifier;
+    public int apCost;
     [Header("Damage")]
     public int power;
     public BattleStatType offensiveStat;
     public BattleStatType defensiveStat;
-    ElementalProperty elementalProperty;
+    public ElementalProperty elementalProperty;
     [Header("Status Effect")]
     public float statusEffectPower;
     public int statusEffectChance;
     public StatusEffectSO statusEffectSO;
     [Header("Knockback")]
-    public int knockback;
+    public bool knockback;
     //other effects
     [Header("Additional Effects")]
     public List<SubEffect> additionalEffects;
-    [Header("Range and Radius")]
-    public int range;
-    public int aoe;
-    public bool excludeStartingTile;
+    [Header("AOE")]
+    public List<AOE> aoes = new List<AOE>();
+    public bool isFixedAOE = false;
     //generates a line AOE instead of a circle
-    public bool lineAOE;
-    //end line AOE if it hits a target
-    public bool stopAtOccupiedTile;
     [Header("Targeting")]
+    public bool isMelee;
+    public bool isFixedTarget;
     public bool targetFriendly;
-    public bool targetHostile;
-    public bool targetSelfOnly;
     [Header("Animation (Cast)")]
-    public bool hasCastAnimation;
     public string castAnimatorTrigger;
     public GameObject castGraphicPrefab;
     public float castAnimationDuration = 0.4f;
@@ -72,15 +86,14 @@ public class Action : ScriptableObject
     public string projectileAnimatorTrigger;
     public GameObject projectileGraphicPrefab;
     public float projectileGraphicDelay = 0.15f;
-    [Header("Animation (Move)")]
-    public bool hasMoveAnimation;
-    public string moveAnimatorTrigger;
-    public GameObject moveGraphicPrefab;
     [Header("Animation (Effect)")]
     public string effectAnimatorTrigger;
     public GameObject effectGraphicPrefab;
     public float effectAnimationDuration = 0.4f;
     public float effectGraphicDelay = 0.15f;
+    [Header("Animation (Tile Effect)")]
+    public GameObject tileEffectGraphicPrefab;
+    public float tileEffectAnimationDuration = 0.4f;
 
     public void TriggerDamageEffect(Combatant user, Combatant target)
     {
@@ -104,7 +117,7 @@ public class Action : ScriptableObject
             }
             Debug.Log("Multiplier: " + 100f / (100f + target.battleStatDict[defensiveStat].GetValue()));
             int finalDamage = Mathf.FloorToInt(rawDamage * (100f / (100f + target.battleStatDict[defensiveStat].GetValue())));
-                    Debug.Log("final damage: " + finalDamage);
+            Debug.Log("final damage: " + finalDamage);
             target.Damage(finalDamage, user, didCrit);
         }
     }

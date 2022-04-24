@@ -28,27 +28,22 @@ MonoBehaviour:
     currentValue: 60
   attack: 10
   defense: 10
-  magic: 10
+  magicAttack: 0
   magicDefense: 10
   skill: 10
-  agility: 10
-  moveRange: 3
+  agility: 99
   fireResist: 0
   iceResist: 0
   electricResist: 0
   darkResist: 0
   traits: []
-  meleeAttack: {fileID: 11400000, guid: 49078961aba57e64590b3560444824a7, type: 2}
-  rangedAttack: {fileID: 11400000, guid: d0271b7210b12624186c868c9dc3043f, type: 2}
   skills:
-  - {fileID: 11400000, guid: 593ce78c41108a345a511dae94082617, type: 2}
-  - {fileID: 11400000, guid: 675c277a63d62164bac38a220a7998a1, type: 2}
-  - {fileID: 11400000, guid: 11f1b375349a2b747a484a855566acab, type: 2}
+  - {fileID: 11400000, guid: 49078961aba57e64590b3560444824a7, type: 2}
   - {fileID: 11400000, guid: cb5d6bb5b84d527459eb0ab6c410120e, type: 2}
-  canEquipMelee: 1
-  meleeWeapon: {fileID: 0}
-  canEquipRanged: 1
-  rangedWeapon: {fileID: 0}
+  - {fileID: 11400000, guid: 675c277a63d62164bac38a220a7998a1, type: 2}
+  - {fileID: 11400000, guid: 593ce78c41108a345a511dae94082617, type: 2}
+  - {fileID: 11400000, guid: 11f1b375349a2b747a484a855566acab, type: 2}
+  weapon: {fileID: 0}
   armor: {fileID: 0}
   accessory: {fileID: 0}
   characterID: 0

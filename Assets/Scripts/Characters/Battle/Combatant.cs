@@ -7,16 +7,14 @@ using UnityEngine.Tilemaps;
 
 public enum BattleStatType
 {
-    MeleeAttack,
-    RangedAttack,
+    Attack,
+    Defense,
     MagicAttack,
-    PhysicalDefense,
     MagicDefense,
-    Accuracy,
-    Evasion,
     CritRate,
+    Accuracy,
     Speed,
-    MoveRange,
+    Evasion,
     None
 }
 
@@ -61,9 +59,10 @@ public class Combatant : MonoBehaviour
     [SerializeField] protected SignalSenderGO onTargetSelect;
     [SerializeField] protected SignalSenderGO onTargetDeselect;
     [SerializeField] protected SignalSenderGO OnCombatantKO;
-    [Header("Grid and Targeting")]
+    [Header("Movement and Targeting")]
     public Tile tile;
     [HideInInspector] public GridMovement gridMovement;
+    public Vector2 defaultDirection;
     private bool selected = false;
 
     public virtual void Awake()

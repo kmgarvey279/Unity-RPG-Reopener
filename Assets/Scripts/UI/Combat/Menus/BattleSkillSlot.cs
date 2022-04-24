@@ -22,7 +22,7 @@ public class BattleSkillSlot : MonoBehaviour, ISelectHandler, IPointerEnterHandl
     {
         this.action = action;
         skillIcon = action.icon;
-        nameText.text = action.name;
+        nameText.text = action.actionName;
         costText.text = action.mpCost.ToString("n0");
     }
 

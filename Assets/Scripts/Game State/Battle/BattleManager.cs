@@ -12,76 +12,31 @@ public class TurnSlot
 {
     public Combatant combatant;
     [Header("Number of ticks remaining until next turn")]
-    public int turnCounter;
-    [Header("Cost of action this turn")]
-    public float actionCost;
-    public float defaultActionCost = 3f;
-    [Header("Cost of movement this turn")]
-    public float moveCost;
-    public float defaultMoveCost = 0f;
-    private float speedMultiplier = 1f;
-    [Header("Is it a preview?")]
-    public bool isPreview = false;
+    private int turnCounter = 100;
+    public int finalTurnCounter;
 
     public TurnSlot(Combatant combatant)
     {
         this.combatant = combatant;
-        SetTurnCounterToDefault();
     }
 
     public void SetTurnCounterToDefault()
     {
-        actionCost = defaultActionCost;
-        moveCost = defaultMoveCost;
-        UpdateTurnCounter();
+        turnCounter = 100;
     }
 
-    public void UpdateTurnCounter()
+    public int GetCounterValue()
     {
-        turnCounter = Mathf.FloorToInt((actionCost + moveCost) * 100 / GetSpeed());
-    }
-
-    public void SetActionCost(float costModifier)
-    {
-        this.actionCost = defaultActionCost + costModifier;
-        UpdateTurnCounter();
-    }
-
-    public void SetMoveCost(float moveCost)
-    {
-        this.moveCost = moveCost;
-        UpdateTurnCounter();
-    }
-
-    public void SetSpeedMultiplier(float newModifier)
-    {
-        speedMultiplier = newModifier;
-        UpdateTurnCounter();
-    }
-
-    public float GetSpeed()
-    {
-        float speedTemp = (float)combatant.battleStatDict[BattleStatType.Speed].GetValue() * speedMultiplier;
-        //is character is slowed, round down
-        if(speedMultiplier < 1)
-        {
-            return Mathf.Floor(speedTemp);
-        }
-        //if speed up, round up
-        else if(speedMultiplier > 1)
-        {
-            return Mathf.Ceil(speedTemp);
-        }
-        //otherwise, round normally
-        else
-        {
-            return Mathf.Round(speedTemp);
-        }
+        int speedBonus = Mathf.FloorToInt((float)combatant.battleStatDict[BattleStatType.Speed].GetValue() / 2f);
+        return Mathf.Clamp((turnCounter - speedBonus), 0, 100);
     }
 
     public void Tick()
     {
-        turnCounter = turnCounter - 1;
+        if(turnCounter > 0)
+        {
+            turnCounter = turnCounter - 1;
+        }
     }
 }
 
@@ -91,18 +46,15 @@ public class TurnData
 {
     public Combatant combatant;
     public Action action;
+    public int actionPoints = 0;
     [Header("Targets")]
     public List<Combatant> targets = new List<Combatant>();
     public Tile targetedTile;
-    [Header("Starting Location")]
-    public Tile startingTile;
-    public Vector2 startingDirection;
+    public TargetType targetType;
 
     public TurnData(Combatant combatant)
     {
-        this.combatant = combatant;
-        this.startingTile = combatant.tile;
-        this.startingDirection = combatant.GetDirection();
+        this.combatant = combatant;;
     }
 }
 
@@ -126,6 +78,9 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private BattleTimeline battleTimeline;
     private TurnSlot currentTurnSlot;
     public List<TurnSlot> turnForecast = new List<TurnSlot>();
+
+    [Header("Action Points")]
+    [SerializeField] private ActionPointDisplay actionPointDisplay;
     
     [Header("States")]
     public StateMachine stateMachine;
@@ -182,41 +137,51 @@ public class BattleManager : MonoBehaviour
 
     private void AdvanceTimeline()
     {
-        while(turnForecast[0].turnCounter > 0)
+        while(turnForecast[0].GetCounterValue() > 0)
         {
             foreach(TurnSlot turnSlot in turnForecast)
             {
                 turnSlot.Tick();
             }
-            battleTimeline.UpdateTurnPanels(turnForecast);
+            // battleTimeline.UpdateTurnPanels(turnForecast);
         }
         StartTurn();
     }
 
     public void StartTurn()
     {   
+        //set combatant turn slot as current turn
         currentTurnSlot = turnForecast[0];
         battleTimeline.ChangeCurrentTurn(currentTurnSlot);
         currentTurnSlot.SetTurnCounterToDefault();
-        // TurnForecastRemove(currentTurnSlot);
-        battleTimeline.ToggleNextTurnColor(currentTurnSlot, true);
 
+        //update timeline
+        battleTimeline.ToggleNextTurnColor(currentTurnSlot, true);
         UpdateTurnOrder();
 
         //create temp turn data
         turnData = new TurnData(currentTurnSlot.combatant);
 
+        //update action point display
+        UpdateActionPoints(2);
+
         //get next state
         if(currentTurnSlot.combatant is PlayableCombatant)
         {
             Debug.Log("Player Turn Start");
-            stateMachine.ChangeState((int)BattleStateType.Move);
+            stateMachine.ChangeState((int)BattleStateType.Menu);
         }
         else
         {
             Debug.Log("Enemy Turn Start");
             stateMachine.ChangeState((int)BattleStateType.EnemyTurn);
         }
+    }
+
+    private void UpdateActionPoints(int actionPointChange)
+    {
+        turnData.actionPoints += actionPointChange;
+        actionPointDisplay.DisplayAP(turnData.actionPoints);
     }
 
     public void TurnForecastAdd(TurnSlot turnSlot)
@@ -235,36 +200,51 @@ public class BattleManager : MonoBehaviour
 
     public void UpdateTurnOrder()
     {
-        turnForecast = turnForecast.OrderBy(o=>o.turnCounter).ToList();
+        turnForecast = turnForecast.OrderBy(o=>o.GetCounterValue()).ToList();
         battleTimeline.UpdateTurnPanels(turnForecast);
-    }
-
-    public void SetMoveCost(int moveCost)
-    {
-        currentTurnSlot.SetMoveCost(moveCost);
-        UpdateTurnOrder();
     }
     //set action to be executed in execution phase
     public void SetAction(Action action)
     {
         turnData.action = action;
-        
-        currentTurnSlot.SetActionCost(action.timeModifier);
-        UpdateTurnOrder();
+        // turnData.combatant.ShowMPPreview(action.mpCost);
+        actionPointDisplay.ShowPreview(action.apCost);
     }
     //set tile and combatants to be targeted in execution phase
-    public void SetTargets(Tile selectedTile, List<Combatant> selectedTargets)
+    public void SetTargets(Tile selectedTile, List<Combatant> selectedTargets, TargetType targetType)
     {
         turnData.targets = selectedTargets;
         turnData.targetedTile = selectedTile;
+        turnData.targetType = targetType;
+    }
+    public void UpdateActionCost(int actionCost)
+    {
+        turnData.actionPoints -= actionCost;
     }
     //cancel selected action and movement
     public void CancelAction()
     {
         turnData.action = null;
-        
-        currentTurnSlot.SetTurnCounterToDefault();
-        UpdateTurnOrder();
+        actionPointDisplay.HidePreview();
+    }
+    public void EndAction()
+    {
+        UpdateActionPoints(-turnData.action.apCost);
+        if(turnData.actionPoints > 0)
+        {
+            if(currentTurnSlot.combatant is PlayableCombatant)
+            {
+                stateMachine.ChangeState((int)BattleStateType.Menu);
+            }
+            else
+            {
+                stateMachine.ChangeState((int)BattleStateType.EnemyTurn);
+            }
+        }
+        else
+        {
+            StartCoroutine(EndTurnCo());
+        }
     }
 
     public IEnumerator EndTurnCo()
@@ -331,34 +311,5 @@ public class BattleManager : MonoBehaviour
         {
             enemyCombatants.Remove(combatant);
         } 
-    }
-
-    public void OnTileSelect(GameObject tileObject)
-    {
-        Tile tile = tileObject.GetComponent<Tile>();
-        // if(tile.moveCost > -1)
-        // {
-        //     currentTurnSlot.SetMoveCost(tile.moveCost);
-        //     UpdateTurnOrder();
-        // }
-    }
-
-    public void OnTargetSelect(GameObject gameObject)
-    {
-        Combatant target = gameObject.GetComponent<Combatant>();
-        TurnSlot selectedTurnSlot = turnForecast.FirstOrDefault(turnSlot => turnSlot.combatant == target);
-        battleTimeline.ToggleTargetingPreview(selectedTurnSlot, true);
-    }
-
-    public void OnTargetDeselect(GameObject gameObject)
-    {
-        Combatant target = gameObject.GetComponent<Combatant>();
-        TurnSlot selectedTurnSlot = turnForecast.FirstOrDefault(turnSlot => turnSlot.combatant == target);
-        battleTimeline.ToggleTargetingPreview(selectedTurnSlot, false);
-    }
-
-    public void OnActionSelect(GameObject gameObject)
-    {
-        Action action = gameObject.GetComponent<BattleSkillSlot>().action;     
     }
 }

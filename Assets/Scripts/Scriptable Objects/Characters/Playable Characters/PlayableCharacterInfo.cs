@@ -14,18 +14,12 @@ public enum PlayableCharacterID
 [CreateAssetMenu(fileName = "New Playable Character Info", menuName = "Character Info/Playable")]
 public class PlayableCharacterInfo : CharacterInfo
 {
-    [Header("Standard Attacks")]
-    public Action meleeAttack;
-    public Action rangedAttack;
 
     [Header("Skills")]
     public List<Action> skills;
 
     [Header("Equipment")]
-    [SerializeField] private bool canEquipMelee;
-    [SerializeField] private EquipmentObject meleeWeapon;
-    [SerializeField] private bool canEquipRanged;
-    [SerializeField] private EquipmentObject rangedWeapon;
+    [SerializeField] private EquipmentObject weapon;
     [SerializeField] private EquipmentObject armor;
     [SerializeField] private EquipmentObject accessory;
     public Dictionary<EquipmentType, EquipmentObject> equipmentDict = new Dictionary<EquipmentType, EquipmentObject>();
@@ -37,16 +31,13 @@ public class PlayableCharacterInfo : CharacterInfo
     {
         base.OnEnable();
 
-        statDict.Add(StatType.EquipmentMeleeAttack, new Stat(0));
-        statDict.Add(StatType.EquipmentRangedAttack, new Stat(0));
+        statDict.Add(StatType.EquipmentAttack, new Stat(0));
+        statDict.Add(StatType.EquipmentDefense, new Stat(0));
         statDict.Add(StatType.EquipmentMagicAttack, new Stat(0));
-        statDict.Add(StatType.EquipmentPhysicalDefense, new Stat(0));
         statDict.Add(StatType.EquipmentMagicDefense, new Stat(0));
 
-        if(meleeWeapon)
-            ChangeEquipment(meleeWeapon);
-        if(rangedWeapon)
-            ChangeEquipment(rangedWeapon);
+        if(weapon)
+            ChangeEquipment(weapon);
         if(armor)
             ChangeEquipment(armor);
         if(accessory)

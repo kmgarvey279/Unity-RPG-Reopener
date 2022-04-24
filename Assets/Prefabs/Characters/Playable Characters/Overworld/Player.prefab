@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 383195109}
   - component: {fileID: 383195110}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Action Prompt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,7 +93,7 @@ GameObject:
   - component: {fileID: 1397927986}
   - component: {fileID: 1397927988}
   - component: {fileID: 1397927987}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -194,7 +194,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1268470412104155553}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Melee Attacks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -227,7 +227,7 @@ GameObject:
   - component: {fileID: 7887917971999117455}
   - component: {fileID: 7887917971999117441}
   - component: {fileID: 7887917971999117440}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Attack Southeast
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -337,7 +337,7 @@ GameObject:
   - component: {fileID: 7887917972134750332}
   - component: {fileID: 7887917972134750334}
   - component: {fileID: 7887917972134750333}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Attack South
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -448,7 +448,7 @@ GameObject:
   - component: {fileID: 7887917972336964153}
   - component: {fileID: 7887917972336964152}
   - component: {fileID: 8565279428536689977}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -532,6 +532,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionPrompt: {fileID: 383195110}
+  animator: {fileID: 1397927987}
   sprite: {fileID: 1397927988}
   runtimeData: {fileID: 11400000, guid: 97b5f51ad52814e4aa93a00c54b2d5eb, type: 2}
 --- !u!1 &7887917972736612484
@@ -545,7 +546,7 @@ GameObject:
   - component: {fileID: 7887917972736612485}
   - component: {fileID: 7887917972736612487}
   - component: {fileID: 7887917972736612486}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Attack North
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -655,7 +656,7 @@ GameObject:
   - component: {fileID: 7887917972883870828}
   - component: {fileID: 7887917972883870830}
   - component: {fileID: 7887917972883870829}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Attack Northwest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -765,7 +766,7 @@ GameObject:
   - component: {fileID: 7887917973018387564}
   - component: {fileID: 7887917973018387566}
   - component: {fileID: 7887917973018387565}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Attack Northeast
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -875,7 +876,7 @@ GameObject:
   - component: {fileID: 7887917973254318551}
   - component: {fileID: 7887917973254318537}
   - component: {fileID: 7887917973254318536}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Attack Southwest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -983,7 +984,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7887917973318389077}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Melee Hitboxes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1023,7 +1024,7 @@ GameObject:
   - component: {fileID: 7887917973916298500}
   - component: {fileID: 7887917973916298502}
   - component: {fileID: 7887917973916298501}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Attack West
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1133,7 +1134,7 @@ GameObject:
   - component: {fileID: 7887917974009482402}
   - component: {fileID: 7887917974009482404}
   - component: {fileID: 7887917974009482403}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Attack East
   m_TagString: Untagged
   m_Icon: {fileID: 0}

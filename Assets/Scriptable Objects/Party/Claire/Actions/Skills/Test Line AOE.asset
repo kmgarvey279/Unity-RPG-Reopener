@@ -12,47 +12,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
   m_Name: Test Line AOE
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
   actionName: Line AOE
-  descripton: 
   actionType: 0
-  timeCost: 4
+  icon: {fileID: 0}
+  description: 
   mpCost: 15
-  cooldown: 0
-  power: 1.5
-  accuracy: 99
-  range: 1
-  aoe: 4
-  excludeStartingTile: 1
-  lineAOE: 1
-  stopAtOccupiedTile: 0
+  apCost: 2
+  power: 1
   offensiveStat: 2
   defensiveStat: 4
   elementalProperty: 4
-  guaranteedHit: 0
-  distancePenalty: 0
-  effects:
-  - {fileID: 11400000, guid: 7b5ff438e848e54438d2d76005586efe, type: 2}
-  statusEffect: {fileID: 0}
+  statusEffectPower: 0
+  statusEffectChance: 0
+  statusEffectSO: {fileID: 0}
   knockback: 0
-  useDirection: 1
+  additionalEffects: []
+  aoes:
+  - aoeType: 5
+    fixedStartPosition: {x: 1, y: 1}
+  isFixedAOE: 0
+  isMelee: 0
+  isFixedTarget: 0
   targetFriendly: 0
-  targetHostile: 1
-  targetSelfOnly: 0
-  hasCastAnimation: 1
   castAnimatorTrigger: Defend
   castGraphicPrefab: {fileID: 0}
   castAnimationDuration: 0.4
   castGraphicDelay: 0.15
-  hasProjectileAnimation: 1
+  hasProjectileAnimation: 0
   projectileAnimatorTrigger: 
-  projectileGraphicPrefab: {fileID: 9080087516260223380, guid: a9a53ad4435f66448b4a1b4e852a9413,
-    type: 3}
+  projectileGraphicPrefab: {fileID: 0}
   projectileGraphicDelay: 0.15
-  hasMoveAnimation: 0
-  moveAnimatorTrigger: 
-  moveGraphicPrefab: {fileID: 0}
   effectAnimatorTrigger: Melee
-  effectGraphicPrefab: {fileID: 0}
-  effectAnimationDuration: 0.4
+  effectGraphicPrefab: {fileID: 6544932892447281848, guid: 4f44e89a09d5e9e40a4bba576c5a553a,
+    type: 3}
+  effectAnimationDuration: 0.5
   effectGraphicDelay: 0.15
+  tileEffectGraphicPrefab: {fileID: 0}
+  tileEffectAnimationDuration: 0.4

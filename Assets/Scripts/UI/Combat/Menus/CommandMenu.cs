@@ -12,8 +12,9 @@ public class CommandMenu : MonoBehaviour
     [SerializeField] private GameObject display;
     [SerializeField] private CommandSubmenu submenu;
     [Header("Buttons")]
-    [SerializeField] private GameObject attackButton;
-    [Header("Actions")]
+    [SerializeField] private GameObject actionsButton;
+    [Header("Other Actions")]
+    [SerializeField] private Action move;
     [SerializeField] private Action item;
     [SerializeField] private Action defend;
     [Header("Events")]
@@ -25,7 +26,7 @@ public class CommandMenu : MonoBehaviour
         display.SetActive(true);
         
         EventSystem.current.SetSelectedGameObject(null);
-        EventSystem.current.SetSelectedGameObject(attackButton);
+        EventSystem.current.SetSelectedGameObject(actionsButton);
     }
 
     public void HideMenus()
@@ -50,30 +51,15 @@ public class CommandMenu : MonoBehaviour
         }
     }
 
-    public void SelectAttack()
-    {
-        PlayableCombatant playableCombatant = (PlayableCombatant)turnData.combatant;
-        if(playableCombatant.rangedAttack)
-        {
-            battleManager.SetAction(playableCombatant.rangedAttack);
-        }
-        else 
-        {
-            battleManager.SetAction(playableCombatant.meleeAttack);
-        }
-        battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
-    }
-
-    public void DisplaySkillList()
+    public void DisplayActions()
     {
         PlayableCombatant playableCombatant = (PlayableCombatant)turnData.combatant;
         submenu.DisplaySkills(playableCombatant.skills);
     }
 
-    private void SelectSkill(GameObject skillSlotObject)
+    public void SelectAction(GameObject skillSlotObject)
     {
         Action skill = skillSlotObject.GetComponent<BattleSkillSlot>().action;
-        PlayableCombatant playableCombatant = (PlayableCombatant)turnData.combatant;
         battleManager.SetAction(skill);
         battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
     }
@@ -86,6 +72,12 @@ public class CommandMenu : MonoBehaviour
     public void HideSubMenu()
     {
         submenu.Hide();
+    }
+
+    public void SelectMove()
+    {
+        battleManager.SetAction(move);
+        battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
     }
 
     public void SelectDefend()

@@ -25,8 +25,9 @@ public class PlayerSpawner : MonoBehaviour
                 {
                     GameObject playerObject = Instantiate(playerPrefab, sceneConnectors[i].spawnPoint.position, Quaternion.identity);
                     playerObject.transform.parent = gameObject.transform;        
-                    Vector2 direction = (sceneConnectors[i].transform.position - sceneConnectors[i].spawnPoint.position).normalized;
-                    playerObject.GetComponent<Player>().SetDirection(direction);        
+                    Vector2 direction = (sceneConnectors[i].spawnPoint.position - sceneConnectors[i].entrance.transform.position).normalized;
+                    playerObject.GetComponent<Player>().SetDirection(direction); 
+                    runtimeData.lockInput = false;       
                 }
             }
         }
@@ -37,7 +38,12 @@ public class PlayerSpawner : MonoBehaviour
         }
         else
         {
-            Debug.Log("Nowhere to spawn player!");
+            Debug.Log("Nowhere to spawn player! Spawning at first entrance");
+            GameObject playerObject = Instantiate(playerPrefab, sceneConnectors[0].spawnPoint.position, Quaternion.identity);
+            playerObject.transform.parent = gameObject.transform;        
+            Vector2 direction = (sceneConnectors[0].spawnPoint.position - sceneConnectors[0].entrance.transform.position).normalized;
+            playerObject.GetComponent<Player>().SetDirection(direction); 
+            runtimeData.lockInput = false;  
         }
     }
 }

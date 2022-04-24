@@ -9,16 +9,14 @@ public enum StatType
     MP,
     Attack,
     Defense,
-    Magic,
+    MagicAttack,
     MagicDefense,
     Skill,
     Agility,
-    MoveRange,
     //gear stats
-    EquipmentMeleeAttack,
-    EquipmentRangedAttack,
+    EquipmentAttack,
     EquipmentMagicAttack,
-    EquipmentPhysicalDefense,
+    EquipmentDefense,
     EquipmentMagicDefense
 }
 
@@ -40,13 +38,12 @@ public class CharacterInfo : ScriptableObject
     //determine defense against physical/gun attacks
     [SerializeField] private int defense;
     //determine offensive and defensive magic power + mp regen
-    [SerializeField] private int magic;
+    [SerializeField] private int magicAttack;
     [SerializeField] private int magicDefense;
     //determine accuracy and crit rate/damage
     [SerializeField] private int skill;
     //determine action speed/cost and evasion 
     [SerializeField] private int agility;
-    [SerializeField] private int moveRange;
     public Dictionary<StatType, Stat> statDict;
 
     [Header("Elemental Resistances")]
@@ -67,11 +64,10 @@ public class CharacterInfo : ScriptableObject
         statDict = new Dictionary<StatType, Stat>();
         statDict.Add(StatType.Attack, new Stat(attack));
         statDict.Add(StatType.Defense, new Stat(defense));
-        statDict.Add(StatType.Magic, new Stat(magic));
+        statDict.Add(StatType.MagicAttack, new Stat(magicAttack));
         statDict.Add(StatType.MagicDefense, new Stat(magicDefense));
         statDict.Add(StatType.Skill, new Stat(skill));
         statDict.Add(StatType.Agility, new Stat(agility));
-        statDict.Add(StatType.MoveRange, new Stat(moveRange));
         //add resistances to dictionary
         resistDict = new Dictionary<ElementalProperty, Stat>();
         resistDict.Add(ElementalProperty.Fire, new Stat(fireResist));

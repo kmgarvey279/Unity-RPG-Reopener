@@ -13,7 +13,7 @@ public class Player : MonoBehaviour
     
     [Header("Sprite/Animation")]
     [SerializeField] private SpriteRenderer actionPrompt;
-    private Animator animator;
+    [SerializeField] private Animator animator;
     [SerializeField] private SpriteRenderer sprite;
 
     [Header("Interactable")]

@@ -438,10 +438,9 @@ MonoBehaviour:
   OnCombatantKO: {fileID: 11400000, guid: 25f9c5d3374f4e8489c63661d314e8a8, type: 2}
   tile: {fileID: 0}
   gridMovement: {fileID: 0}
+  defaultDirection: {x: 0, y: 0}
   ko: 0
   skills: []
-  meleeAttack: {fileID: 0}
-  rangedAttack: {fileID: 0}
 --- !u!1001 &1402383867595480895
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -799,13 +798,18 @@ PrefabInstance:
         type: 3}
       propertyPath: onDashComplete
       value: 
-      objectReference: {fileID: 11400000, guid: f37f16f7df7822c4f832a10acd64dda2,
+      objectReference: {fileID: 0}
+    - target: {fileID: 8717373191667936191, guid: 3277a169b75a1cd478d5ed3eeb50c74b,
+        type: 3}
+      propertyPath: onMoveComplete
+      value: 
+      objectReference: {fileID: 11400000, guid: 28cbdabb858de644f939cf0318a8a708,
         type: 2}
     - target: {fileID: 8717373191667936191, guid: 3277a169b75a1cd478d5ed3eeb50c74b,
         type: 3}
       propertyPath: onKnockbackComplete
       value: 
-      objectReference: {fileID: 11400000, guid: 80a1a26d92d559144bf42be914951ef2,
+      objectReference: {fileID: 11400000, guid: 1a33abae39a8b9c4793ef971f834a175,
         type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3277a169b75a1cd478d5ed3eeb50c74b, type: 3}

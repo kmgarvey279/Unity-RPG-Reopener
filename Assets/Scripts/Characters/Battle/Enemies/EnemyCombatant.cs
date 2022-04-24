@@ -10,25 +10,23 @@ public class EnemyCombatant : Combatant
     {
         base.Awake();   
         enemyBattleAI = GetComponentInChildren<EnemyBattleAI>();
-        SetDirection(new Vector2(-1, 0));
+        defaultDirection = new Vector2(-1, 0);
+        SetDirection(defaultDirection);
     }
 
     public override void SetBattleStats()
     {
-        battleStatDict.Add(BattleStatType.MeleeAttack, new Stat(characterInfo.statDict[StatType.Attack].GetValue() + level + 5));
-        battleStatDict.Add(BattleStatType.RangedAttack, new Stat(characterInfo.statDict[StatType.Attack].GetValue() + level + 5));
-        battleStatDict.Add(BattleStatType.MagicAttack, new Stat(characterInfo.statDict[StatType.Magic].GetValue() + level + 5));
+        battleStatDict.Add(BattleStatType.Attack, new Stat(characterInfo.statDict[StatType.Attack].GetValue() + level + 5));
+        battleStatDict.Add(BattleStatType.Defense, new Stat(characterInfo.statDict[StatType.Defense].GetValue() + level + 5));
 
-        battleStatDict.Add(BattleStatType.PhysicalDefense, new Stat(characterInfo.statDict[StatType.Defense].GetValue() + level + 5));
+        battleStatDict.Add(BattleStatType.MagicAttack, new Stat(characterInfo.statDict[StatType.MagicAttack].GetValue() + level + 5));
         battleStatDict.Add(BattleStatType.MagicDefense, new Stat(characterInfo.statDict[StatType.MagicDefense].GetValue() + level + 5));
 
-        battleStatDict.Add(BattleStatType.Accuracy, new Stat(Mathf.FloorToInt(characterInfo.statDict[StatType.Skill].GetValue() + characterInfo.statDict[StatType.Agility].GetValue() / 2)));
-        battleStatDict.Add(BattleStatType.Evasion, new Stat(Mathf.FloorToInt(characterInfo.statDict[StatType.Skill].GetValue() + characterInfo.statDict[StatType.Agility].GetValue() / 2)));
-
         battleStatDict.Add(BattleStatType.CritRate, new Stat(Mathf.FloorToInt(characterInfo.statDict[StatType.Skill].GetValue() / 3)));
-        battleStatDict.Add(BattleStatType.Speed, new Stat(characterInfo.statDict[StatType.Agility].GetValue()));
+        battleStatDict.Add(BattleStatType.Accuracy, new Stat(Mathf.FloorToInt(characterInfo.statDict[StatType.Skill].GetValue() / 2)));
 
-        battleStatDict.Add(BattleStatType.MoveRange, new Stat(characterInfo.statDict[StatType.MoveRange].GetValue()));
+        battleStatDict.Add(BattleStatType.Speed, new Stat(characterInfo.statDict[StatType.Agility].GetValue()));
+        battleStatDict.Add(BattleStatType.Evasion, new Stat(Mathf.FloorToInt(characterInfo.statDict[StatType.Agility].GetValue() / 2)));
     }
 
     public void CreateAggroList(List<Combatant> targets)

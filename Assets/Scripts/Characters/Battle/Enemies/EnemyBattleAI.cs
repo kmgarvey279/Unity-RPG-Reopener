@@ -218,8 +218,8 @@ public class EnemyBattleAI : MonoBehaviour
         //     }
         // }
         Debug.Log("action: wait");
-        Tile destinationTemp = thisEnemy.gridManager.GetClosestTileInRange(thisEnemy.tile, GetRandomTarget(true).tile, thisEnemy.battleStatDict[BattleStatType.MoveRange].GetValue());
-        return new PotentialAction(wait, 0, 0, thisEnemy.tile, destinationTemp, destinationTemp, new List<Combatant>());
+        // Tile destinationTemp = thisEnemy.gridManager.GetClosestTileInRange(thisEnemy.tile, GetRandomTarget(true).tile, thisEnemy.battleStatDict[BattleStatType.MoveRange].GetValue());
+        return new PotentialAction(wait, 0, 0, thisEnemy.tile, thisEnemy.tile, thisEnemy.tile, new List<Combatant>());
     }
 
     private Combatant GetRandomTarget(bool weighBasedOnAggro)
@@ -316,22 +316,22 @@ public class EnemyBattleAI : MonoBehaviour
 
     private bool RemoveStatusEffectsCheck(Action action, Combatant target)
     {
-        if(target.statusEffects.Count > 0)
-        {
-            foreach(StatusEffectInstance statusEffectInstance in target.statusEffects)
-            {
-                //if ally has a negative status effect...
-                if(action.targetFriendly && !statusEffectInstance.statusEffectSO.isBuff)
-                {
-                    return true;
-                }
-                //if playablable character had a positive status effect
-                else if(action.targetHostile && statusEffectInstance.statusEffectSO.isBuff)
-                {
-                    return true;
-                }
-            }
-        }
+        // if(target.statusEffects.Count > 0)
+        // {
+        //     foreach(StatusEffectInstance statusEffectInstance in target.statusEffects)
+        //     {
+        //         //if ally has a negative status effect...
+        //         if(action.targetFriendly && !statusEffectInstance.statusEffectSO.isBuff)
+        //         {
+        //             return true;
+        //         }
+        //         //if playablable character had a positive status effect
+        //         else if(action.targetHostile && statusEffectInstance.statusEffectSO.isBuff)
+        //         {
+        //             return true;
+        //         }
+        //     }
+        // }
         return false;
     }
 }
