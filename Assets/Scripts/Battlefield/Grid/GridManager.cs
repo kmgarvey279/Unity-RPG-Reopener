@@ -67,10 +67,9 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    public void DisplaySelectableTargets(int userRow, TargetType targetType, bool isMelee)
+    public void DisplaySelectableTargets(Tile start, TargetType targetType, bool isMelee)
     {
-        List<int> meleeRows = new List<int> {2, 1, 0};
-        bool selected = false;
+        List<int> meleeColumns = new List<int> {2, 1, 0};
 
         if(targetType == TargetType.TargetEnemy)
         {
@@ -78,30 +77,39 @@ public class GridManager : MonoBehaviour
             {
                 tile.Display(false);
             }
+
+            Tile tileToSelect = null;
+            int lowestMoveCost = 99;
             foreach(Tile tile in enemyTileArray)
             {   
                 tile.Display(false);
                 if(tile.occupier)
                 {
-                    List<int> rowsInRange = meleeRows;
-                    for(int i = rowsInRange.Count - 1; i >= 0; i--)
+                    List<int> columnsInRange = meleeColumns;
+                    for(int i = columnsInRange.Count - 1; i >= 0; i--)
                     {
-                        if(i > userRow)
+                        if(i > start.x)
                         {
-                            rowsInRange.RemoveAt(i);
+                            columnsInRange.RemoveAt(i);
                         }
                     }
 
-                    if(!isMelee || rowsInRange.Contains(tile.x))
+                    if(!isMelee || columnsInRange.Contains(tile.x))
                     {   
                         tile.Display(true);
-                        if(!selected)
+
+                        int thisMoveCost = GetMoveCost(tile, enemyTileArray[2,2]);
+                        if(thisMoveCost < lowestMoveCost)
                         {
-                            tile.Select();
-                            selected = true;
+                            tileToSelect = tile;
+                            lowestMoveCost = thisMoveCost;
                         }
                     }
-                } 
+                }
+            }
+            if(tileToSelect != null)
+            {
+                tileToSelect.Select();
             }
         } 
         else if(targetType == TargetType.TargetPlayer)
@@ -115,72 +123,56 @@ public class GridManager : MonoBehaviour
                 if(tile.occupier)
                 {
                     tile.Display(true);
-                    if(!selected)
-                    {
-                        tile.Select();
-                        selected = true;
-                    }
                 } 
             }
+            start.Select();
         }
     }
 
-    public List<Combatant> DisplayFixedAOE(Tile start, Action action, TargetType targetType, bool flip)
+    public void DisplaySelectableTiles(Action action, TargetType targetType, Tile start)
     {
-        foreach(Tile tile in enemyTileArray)
-        {
-            tile.Display(false);
-        }
-        foreach(Tile tile in playerTileArray)
-        {
-            tile.Display(false);
-        }
-        return DisplayAOE(start, action, targetType, flip);
-    }
-
-    public void DisplaySelectableTiles(TargetType targetType)
-    {
-        bool selected = false;
-        if(targetType == TargetType.TargetPlayer)
-        {
-            foreach (Tile tile in enemyTileArray)
-            {
-                tile.Display(false);
-            }
-            foreach(Tile tile in playerTileArray)
-            {
-                tile.Display(true);
-                if(tile.occupier && !selected)
-                {
-                    tile.Select();
-                    selected = true;
-                }
-            }
-        }
-        else if(targetType == TargetType.TargetEnemy)
-        {
-            foreach(Tile tile in playerTileArray)
-            {
-                tile.Display(false);
-            }
-            Tile tileToSelect = null;
-            int lowestMoveCost = 99;
             foreach(Tile tile in enemyTileArray)
             {
-                tile.Display(true);
-                if(tile.occupier)
+                tile.Display(false);
+            }
+            foreach(Tile tile in playerTileArray)
+            {
+                tile.Display(false);
+            }
+        if(!action.isFixedAOE)
+        {
+            if(targetType == TargetType.TargetPlayer)
+            {
+                foreach(Tile tile in playerTileArray)
                 {
-                    int thisMoveCost = GetMoveCost(tile, enemyTileArray[2,0]);
-                    if(thisMoveCost < lowestMoveCost)
+                    if(!(action.actionType == ActionType.Move && tile.occupier && tile.occupier is EnemyCombatant))
                     {
-                        tileToSelect = tile;
-                        lowestMoveCost = thisMoveCost;
+                        tile.Display(true);
                     }
                 }
+                start.Select();
             }
-            if(tileToSelect != null)
+            else if(targetType == TargetType.TargetEnemy)
             {
-                tileToSelect.Select();
+                Tile tileToSelect = null;
+                int lowestMoveCost = 99;
+                foreach(Tile tile in enemyTileArray)
+                {
+                    tile.Display(true);
+                    if(tile.occupier)
+                    {
+                        int thisMoveCost = GetMoveCost(tile, enemyTileArray[2,0]);
+                        if(thisMoveCost < lowestMoveCost)
+                        {
+                            tileToSelect = tile;
+                            lowestMoveCost = thisMoveCost;
+                        }
+                    }
+                }
+                if(tileToSelect != null)
+                {
+                    tileToSelect.Select();
+                }
             }
         }
     }
@@ -197,11 +189,8 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    public List<Combatant> DisplayAOE(Tile start, Action action, TargetType targetType, bool flip)
+    public List<Tile> GetAOETiles(Tile start, Action action, TargetType targetType, bool flip)
     {
-        List<Combatant> targets = new List<Combatant>();
-        ClearAOE();
-
         List<Tile> aoeTiles = new List<Tile>(){};
         foreach(AOE aoe in action.aoes)
         {
@@ -243,24 +232,58 @@ public class GridManager : MonoBehaviour
 
             foreach(Tile tile in newTiles)
             {
-                if(!aoeTiles.Contains(tile))
+                Tile tileToAdd = tile;
+                if(flip)
                 {
-                    aoeTiles.Add(tile);
+                    tileToAdd = FlipTile(tileToAdd, targetType);
+                }
+                if(!aoeTiles.Contains(tileToAdd))
+                {
+                    aoeTiles.Add(tileToAdd);
                 }
             }
         }
+        return aoeTiles;
+    }
 
-        foreach (Tile tile in aoeTiles)
+    private Tile FlipTile(Tile tile, TargetType targetType)
+    {
+        int xValue = tile.x;
+        if(xValue == 0)
         {
-            tile.DisplayAOE(); 
+            xValue = 2;
+        }
+        else if(xValue == 2)
+        {
+            xValue = 0;
+        }
+        return GetTileArray(targetType)[xValue, tile.y];
+    }
 
+    public List<Combatant> GetTargetsInAOE(List<Tile> aoeTiles, TargetType targetType)
+    {
+        List<Combatant> targets = new List<Combatant>();
+        foreach(Tile tile in aoeTiles)
+        {
             if(tile.occupier != null && (tile.occupier is PlayableCombatant && targetType == TargetType.TargetPlayer || tile.occupier is EnemyCombatant && targetType == TargetType.TargetEnemy))
             {
-                tile.occupier.Select();
                 targets.Add(tile.occupier);  
             }
         }
         return targets;
+    }
+
+    public void DisplayAOE(List<Tile> aoeTiles, TargetType targetType)
+    {
+        ClearAOE();
+        foreach(Tile tile in aoeTiles)
+        {
+            tile.DisplayAOE(); 
+            if(tile.occupier != null && (tile.occupier is PlayableCombatant && targetType == TargetType.TargetPlayer || tile.occupier is EnemyCombatant && targetType == TargetType.TargetEnemy))
+            {
+                tile.occupier.Select();
+            }
+        }
     }
 
     public void HideTiles()
@@ -300,6 +323,10 @@ public class GridManager : MonoBehaviour
     private void ClearPathNodes()
     {
         foreach (Tile tile in playerTileArray)
+        {
+            tile.HidePathNode();
+        }
+        foreach (Tile tile in enemyTileArray)
         {
             tile.HidePathNode();
         }
@@ -374,8 +401,8 @@ public class GridManager : MonoBehaviour
 
         int currentX = start.x;
         int currentY = start.y;
-        if(flip)
-        {
+        // if(flip)
+        // {
             for (int i = 0; i < range; i++)
             {
                 if(currentX - 1 >= 0 && currentY + 1 < yCount)
@@ -396,30 +423,30 @@ public class GridManager : MonoBehaviour
                     diagonal.Add(tileArray[currentX, currentY]);
                 }
             }
-        }
-        else
-        {
-            for (int i = 0; i < range; i++)
-            {
-                if(currentX + 1 < xCount && currentY + 1 < yCount)
-                {
-                    currentX += 1;
-                    currentY += 1;
-                    diagonal.Add(tileArray[currentX, currentY]);
-                }
-            }
-            currentX = start.x;
-            currentY = start.y;
-            for (int i = 0; i < range; i++)
-            {
-                if(currentX - 1 >= 0 && currentY - 1 >= 0)
-                {
-                    currentX -= 1;
-                    currentY -= 1;
-                    diagonal.Add(tileArray[currentX, currentY]);
-                }
-            }
-        }
+        // }
+        // else
+        // {
+        //     for (int i = 0; i < range; i++)
+        //     {
+        //         if(currentX + 1 < xCount && currentY + 1 < yCount)
+        //         {
+        //             currentX += 1;
+        //             currentY += 1;
+        //             diagonal.Add(tileArray[currentX, currentY]);
+        //         }
+        //     }
+        //     currentX = start.x;
+        //     currentY = start.y;
+        //     for (int i = 0; i < range; i++)
+        //     {
+        //         if(currentX - 1 >= 0 && currentY - 1 >= 0)
+        //         {
+        //             currentX -= 1;
+        //             currentY -= 1;
+        //             diagonal.Add(tileArray[currentX, currentY]);
+        //         }
+        //     }
+        // }
         return diagonal;
     }
 
@@ -505,8 +532,7 @@ public class GridManager : MonoBehaviour
                             }
                         }
                     } 
-                    // if(childNode.tile.occupier == null)
-                        openList.Add(childNode);
+                    openList.Add(childNode);
                 }
             }
             loops++;
@@ -514,90 +540,45 @@ public class GridManager : MonoBehaviour
         return path;
     }
 
-    public void DisplayPath(List<Tile> path)
+    public void DisplayPaths(List<List<Tile>> paths, TargetType targetType, bool swap)
     {
         ClearPathNodes();
-        if(path.Count > 1)
+        foreach(List<Tile> path in paths)
         {
-            for(int i = 0; i < path.Count; i++)
+            if(path.Count > 1)
             {
-                if(i == 0)
+                for(int i = 0; i < path.Count; i++)
                 {
-                    path[i].DisplayPathNode(PathType.Start, GetDirection(path[i], path[i + 1]), new Vector2(0,0));
-                }
-                else if(i == path.Count - 1)
-                {
-                    path[i].DisplayPathNode(PathType.End, GetDirection(path[i - 1], path[i]), new Vector2(0, 0));
-                }
-                else 
-                {
-                    Vector2 direction1 = GetDirection(path[i - 1], path[i]);
-                    Vector2 direction2 = GetDirection(path[i], path[i + 1]);
-                    if(direction1 != direction2)
+                    if(i == path.Count - 1)
                     {
-                        path[i].DisplayPathNode(PathType.Turn, direction1, direction2);
+                        path[i].DisplayPathNode(PathType.End, GetDirection(path[i - 1], path[i]), new Vector2(0, 0), targetType);
                     }
-                    else
+                    else if(i == 0)
                     {
-                        path[i].DisplayPathNode(PathType.Straight, direction1, new Vector2(0, 0));
+                        if(swap)
+                        {
+                            path[i].DisplayPathNode(PathType.End, GetDirection(path[i + 1], path[i]), new Vector2(0,0), targetType);
+                        }
+                        else
+                        {
+                            path[i].DisplayPathNode(PathType.Start, GetDirection(path[i], path[i + 1]), new Vector2(0,0), targetType);
+                        }
+                    }
+                    else 
+                    {
+                        Vector2 direction1 = GetDirection(path[i - 1], path[i]);
+                        Vector2 direction2 = GetDirection(path[i], path[i + 1]);
+                        if(direction1 != direction2)
+                        {
+                            path[i].DisplayPathNode(PathType.Turn, direction1, direction2, targetType);
+                        }
+                        else
+                        {
+                            path[i].DisplayPathNode(PathType.Straight, direction1, new Vector2(0, 0), targetType);
+                        }
                     }
                 }
             }
         }
-    }
-
-    public List<Tile> GetAdjacentTiles(Tile tile, TargetType targetType)
-    {
-        List<Tile> adjacentTiles = new List<Tile>();
-
-        Tile[,] tileArray;
-        if(targetType == TargetType.TargetPlayer)
-        {
-            tileArray = playerTileArray;
-        }
-        else
-        {   
-            tileArray = enemyTileArray;
-        }
-
-        // if(getDiagonals)
-        // {
-        //     if(tile.x + 1 < xCount && tile.y + 1 < yCount)
-        //     {
-        //         adjacentTiles.Add(tileArray[tile.x + 1, tile.y + 1]);
-        //     }
-        //     if(tile.x - 1 >= 0 && tile.y - 1 >= 0)
-        //     {
-        //         adjacentTiles.Add(tileArray[tile.x - 1, tile.y - 1]);
-        //     }
-        //     if(tile.x - 1 >= 0 && tile.y + 1 < yCount)
-        //     {
-        //         adjacentTiles.Add(tileArray[tile.x - 1, tile.y + 1]);
-        //     }
-        //     if(tile.x + 1 < xCount && tile.y - 1 >= 0)
-        //     {
-        //         adjacentTiles.Add(tileArray[tile.x + 1, tile.y - 1]);
-        //     }
-        // }
-        // else
-        // {
-            if(tile.x + 1 < xCount)
-            {
-                adjacentTiles.Add(tileArray[tile.x + 1, tile.y]);
-            }
-            if(tile.x - 1 >= 0)
-            {
-                adjacentTiles.Add(tileArray[tile.x - 1, tile.y]);
-            }
-            if(tile.y + 1 < yCount)
-            {
-                adjacentTiles.Add(tileArray[tile.x, tile.y + 1]);
-            }
-            if(tile.y - 1 >= 0)
-            {
-                adjacentTiles.Add(tileArray[tile.x, tile.y - 1]);
-            }
-        // }
-        return adjacentTiles;
     }
 }

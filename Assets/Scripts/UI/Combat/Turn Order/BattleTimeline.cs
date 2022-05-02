@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class BattleTimeline : MonoBehaviour
 {
     [Header("Current Turn")]
+    [SerializeField] private Transform currentLocation;
     [SerializeField] private TurnPanel currentTurnPanel;
     [Header("Preview")]
     [SerializeField] private GameObject panelsParent; 
@@ -51,19 +52,13 @@ public class BattleTimeline : MonoBehaviour
 
     public void ChangeCurrentTurn(TurnSlot newCurrentSlot)
     {
+        if(currentTurnPanel == null)
+        {
+            GameObject turnPanelObject = Instantiate(turnPanelPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            turnPanelObject.transform.SetParent(currentLocation, false);
+            currentTurnPanel = turnPanelObject.GetComponent<TurnPanel>();
+        }
         currentTurnPanel.AssignTurnSlot(newCurrentSlot);
-    }
-
-    public void ToggleNextTurnColor(TurnSlot turnSlot, bool isTargeted)
-    {
-        if(isTargeted)
-        {
-           turnPanels[turnSlot].SetToPreviewColor(); 
-        }
-        else
-        {
-            turnPanels[turnSlot].SetToDefaultColor();
-        }
     }
 
     public void ClearAllTargetingPreviews()

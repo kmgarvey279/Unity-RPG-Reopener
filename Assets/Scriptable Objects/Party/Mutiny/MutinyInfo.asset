@@ -28,26 +28,20 @@ MonoBehaviour:
     currentValue: 50
   attack: 8
   defense: 8
-  magic: 7
+  magicAttack: 0
   magicDefense: 7
   skill: 12
-  agility: 12
-  moveRange: 3
+  agility: 20
   fireResist: 0
   iceResist: 0
   electricResist: 0
   darkResist: 0
   traits: []
-  meleeAttack: {fileID: 11400000, guid: d5d7301e34e951c4fa9b4beeda7e7bcb, type: 2}
-  rangedAttack: {fileID: 11400000, guid: 831011b60e8f04541aacc431bf5aa8ae, type: 2}
   skills:
   - {fileID: 11400000, guid: 48fcfc47a577d7e4a88e44d925b92c5f, type: 2}
   - {fileID: 11400000, guid: dfbe01681ad7be6469edb93ecfc2eeb5, type: 2}
   - {fileID: 11400000, guid: 5e7db78d175245d47baf6b394dbd81a9, type: 2}
-  canEquipMelee: 1
-  meleeWeapon: {fileID: 0}
-  canEquipRanged: 0
-  rangedWeapon: {fileID: 0}
+  weapon: {fileID: 0}
   armor: {fileID: 0}
   accessory: {fileID: 0}
   characterID: 0

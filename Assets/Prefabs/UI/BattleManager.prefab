@@ -1,56 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &375621006
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 375621007}
-  - component: {fileID: 375621008}
-  m_Layer: 0
-  m_Name: Move
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &375621007
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 375621006}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 692242124}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &375621008
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 375621006}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74ab52bd3ac410e438adebcc23b6baea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stateMachine: {fileID: 0}
-  id: 0
-  battleStateType: 2
-  battleManager: {fileID: 0}
-  signalListeners: []
-  gridManager: {fileID: 0}
-  onCameraZoomOut: {fileID: 11400000, guid: 7d39b1d704621c640a8ce91a6ae94a29, type: 2}
-  onCameraZoomIn: {fileID: 11400000, guid: 1b526e957c88b6e40aa2172d13ee6bf3, type: 2}
 --- !u!1 &692242122
 GameObject:
   m_ObjectHideFlags: 0
@@ -80,11 +29,12 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1104867729}
+  - {fileID: 229872934084395507}
   - {fileID: 1522742266}
-  - {fileID: 375621007}
   - {fileID: 1600802481}
   - {fileID: 1360154139}
   - {fileID: 1068160557}
+  - {fileID: 419354875833359385}
   - {fileID: 871918602}
   m_Father: {fileID: 2036527992414714682}
   m_RootOrder: 0
@@ -103,11 +53,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   states:
   - {fileID: 1104867730}
+  - {fileID: 4967431981776623237}
   - {fileID: 1522742267}
-  - {fileID: 375621008}
   - {fileID: 1600802482}
   - {fileID: 1360154140}
   - {fileID: 1068160558}
+  - {fileID: 5331352290605721043}
   - {fileID: 871918601}
   currentState: {fileID: 1104867730}
   isActive: 1
@@ -122,7 +73,7 @@ GameObject:
   - component: {fileID: 871918602}
   - component: {fileID: 871918601}
   m_Layer: 0
-  m_Name: End
+  m_Name: BattleEnd
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -140,7 +91,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 692242124}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &871918601
 MonoBehaviour:
@@ -158,6 +109,15 @@ MonoBehaviour:
   id: 0
   battleStateType: 7
   battleManager: {fileID: 0}
+  gridManager: {fileID: 0}
+  turnData:
+    combatant: {fileID: 0}
+    action: {fileID: 0}
+    actionPoints: 0
+    targets: []
+    targetedTile: {fileID: 0}
+    targetType: 0
+    flip: 0
   signalListeners: []
 --- !u!1 &1068160556
 GameObject:
@@ -170,7 +130,7 @@ GameObject:
   - component: {fileID: 1068160557}
   - component: {fileID: 1068160558}
   m_Layer: 0
-  m_Name: Enemy Turn
+  m_Name: EnemyTurn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -204,11 +164,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateMachine: {fileID: 0}
   id: 0
-  battleStateType: 6
+  battleStateType: 5
   battleManager: {fileID: 0}
-  signalListeners: []
   gridManager: {fileID: 0}
-  onCameraZoomOut: {fileID: 11400000, guid: 7d39b1d704621c640a8ce91a6ae94a29, type: 2}
+  turnData:
+    combatant: {fileID: 0}
+    action: {fileID: 0}
+    actionPoints: 0
+    targets: []
+    targetedTile: {fileID: 0}
+    targetType: 0
+    flip: 0
+  signalListeners: []
+  wait: {fileID: 11400000, guid: 87818ae46e5748c45afe5f916dd34148, type: 2}
 --- !u!1 &1104867728
 GameObject:
   m_ObjectHideFlags: 0
@@ -220,7 +188,7 @@ GameObject:
   - component: {fileID: 1104867729}
   - component: {fileID: 1104867730}
   m_Layer: 0
-  m_Name: Start
+  m_Name: BattleStart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -256,6 +224,15 @@ MonoBehaviour:
   id: 0
   battleStateType: 0
   battleManager: {fileID: 0}
+  gridManager: {fileID: 0}
+  turnData:
+    combatant: {fileID: 0}
+    action: {fileID: 0}
+    actionPoints: 0
+    targets: []
+    targetedTile: {fileID: 0}
+    targetType: 0
+    flip: 0
   signalListeners: []
 --- !u!1 &1360154138
 GameObject:
@@ -267,6 +244,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1360154139}
   - component: {fileID: 1360154140}
+  - component: {fileID: 504466050}
+  - component: {fileID: 504466051}
+  - component: {fileID: 504466052}
+  - component: {fileID: 504466053}
   m_Layer: 0
   m_Name: Execute
   m_TagString: Untagged
@@ -302,11 +283,134 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateMachine: {fileID: 0}
   id: 0
-  battleStateType: 5
+  battleStateType: 4
   battleManager: {fileID: 0}
-  signalListeners: []
   gridManager: {fileID: 0}
-  onCameraZoomIn: {fileID: 0}
+  turnData:
+    combatant: {fileID: 0}
+    action: {fileID: 0}
+    actionPoints: 0
+    targets: []
+    targetedTile: {fileID: 0}
+    targetType: 0
+    flip: 0
+  signalListeners:
+  - {fileID: 504466051}
+  - {fileID: 504466052}
+  - {fileID: 504466050}
+  onCameraZoomIn: {fileID: 11400000, guid: 1b526e957c88b6e40aa2172d13ee6bf3, type: 2}
+--- !u!114 &504466050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1360154138}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 272a739046db15849909a4cabd8041cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  signalSender: {fileID: 11400000, guid: 1a33abae39a8b9c4793ef971f834a175, type: 2}
+  signalEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1360154138}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &504466051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1360154138}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faede1329d31fda408276a04fe601429, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  signalSender: {fileID: 11400000, guid: 5de10394159d98e4587cff57b6041964, type: 2}
+  signalEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1360154140}
+        m_TargetAssemblyTypeName: ExecuteActionState, Assembly-CSharp
+        m_MethodName: OnProjectileEnd
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &504466052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1360154138}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 272a739046db15849909a4cabd8041cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  signalSender: {fileID: 11400000, guid: 28cbdabb858de644f939cf0318a8a708, type: 2}
+  signalEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1360154140}
+        m_TargetAssemblyTypeName: ExecuteActionState, Assembly-CSharp
+        m_MethodName: OnMoveEnd
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &504466053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1360154138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 272a739046db15849909a4cabd8041cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  signalSender: {fileID: 11400000, guid: 1a33abae39a8b9c4793ef971f834a175, type: 2}
+  signalEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1360154140}
+        m_TargetAssemblyTypeName: ExecuteActionState, Assembly-CSharp
+        m_MethodName: OnKnockbackEnd
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1522742265
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,7 +440,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 692242124}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1522742267
 MonoBehaviour:
@@ -352,8 +456,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateMachine: {fileID: 0}
   id: 0
-  battleStateType: 1
+  battleStateType: 2
   battleManager: {fileID: 0}
+  gridManager: {fileID: 0}
+  turnData:
+    combatant: {fileID: 0}
+    action: {fileID: 0}
+    actionPoints: 0
+    targets: []
+    targetedTile: {fileID: 0}
+    targetType: 0
+    flip: 0
   signalListeners: []
   commandMenu: {fileID: 0}
   onCameraZoomIn: {fileID: 11400000, guid: 1b526e957c88b6e40aa2172d13ee6bf3, type: 2}
@@ -367,6 +480,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1600802481}
   - component: {fileID: 1600802482}
+  - component: {fileID: 1184521284}
   m_Layer: 0
   m_Name: Tile Select
   m_TagString: Untagged
@@ -402,11 +516,48 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateMachine: {fileID: 0}
   id: 0
-  battleStateType: 4
+  battleStateType: 3
   battleManager: {fileID: 0}
-  signalListeners: []
   gridManager: {fileID: 0}
-  onCameraZoomOut: {fileID: 0}
+  turnData:
+    combatant: {fileID: 0}
+    action: {fileID: 0}
+    actionPoints: 0
+    targets: []
+    targetedTile: {fileID: 0}
+    targetType: 0
+    flip: 0
+  signalListeners:
+  - {fileID: 1184521284}
+  onCameraZoomOut: {fileID: 11400000, guid: 7d39b1d704621c640a8ce91a6ae94a29, type: 2}
+--- !u!114 &1184521284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1600802480}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 272a739046db15849909a4cabd8041cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  signalSender: {fileID: 11400000, guid: 793683ac7958afe49ad41d0555631cb8, type: 2}
+  signalEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1600802482}
+        m_TargetAssemblyTypeName: TileSelectState, Assembly-CSharp
+        m_MethodName: OnSelectTile
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2036527992414714683
 GameObject:
   m_ObjectHideFlags: 0
@@ -417,6 +568,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2036527992414714682}
   - component: {fileID: 2036527992414714679}
+  - component: {fileID: 919532104}
+  - component: {fileID: 919532107}
   m_Layer: 0
   m_Name: BattleManager
   m_TagString: Untagged
@@ -452,19 +605,190 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridManager: {fileID: 0}
-  gameData: {fileID: 11400000, guid: 97b5f51ad52814e4aa93a00c54b2d5eb, type: 2}
-  partyData: {fileID: 0}
-  enemyPartyData: {fileID: 0}
+  partyData: {fileID: 11400000, guid: 0056b2932c628e7458ae67b746239176, type: 2}
+  enemyPartyData: {fileID: 11400000, guid: ca3cd966c2e391d4a93bb7fba9bd8266, type: 2}
   battlePartyHUD: {fileID: 0}
   playableCharacterSpawner: {fileID: 0}
   enemySpawner: {fileID: 0}
   battleTimeline: {fileID: 0}
   turnForecast: []
+  actionPointDisplay: {fileID: 0}
   stateMachine: {fileID: 692242123}
   turnData:
     combatant: {fileID: 0}
     action: {fileID: 0}
+    actionPoints: 0
     targets: []
     targetedTile: {fileID: 0}
-    startingPosition: {x: 0, y: 0, z: 0}
-    startingDirection: {x: 0, y: 0}
+    targetType: 0
+    flip: 0
+--- !u!114 &919532104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2036527992414714683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 272a739046db15849909a4cabd8041cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  signalSender: {fileID: 11400000, guid: 793683ac7958afe49ad41d0555631cb8, type: 2}
+  signalEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2036527992414714679}
+        m_TargetAssemblyTypeName: BattleManager, Assembly-CSharp
+        m_MethodName: OnTileSelect
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &919532107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2036527992414714683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 272a739046db15849909a4cabd8041cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  signalSender: {fileID: 11400000, guid: 25f9c5d3374f4e8489c63661d314e8a8, type: 2}
+  signalEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2036527992414714679}
+        m_TargetAssemblyTypeName: BattleManager, Assembly-CSharp
+        m_MethodName: OnCombatantKO
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!1 &4929225038856883274
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 419354875833359385}
+  - component: {fileID: 5331352290605721043}
+  m_Layer: 0
+  m_Name: TurnEnd
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &419354875833359385
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4929225038856883274}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 692242124}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5331352290605721043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4929225038856883274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b71245470bc2af41b6cc92578ba3de4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stateMachine: {fileID: 0}
+  id: 0
+  battleStateType: 6
+  battleManager: {fileID: 0}
+  gridManager: {fileID: 0}
+  turnData:
+    combatant: {fileID: 0}
+    action: {fileID: 0}
+    actionPoints: 0
+    targets: []
+    targetedTile: {fileID: 0}
+    targetType: 0
+    flip: 0
+  signalListeners: []
+--- !u!1 &7913752417119186372
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 229872934084395507}
+  - component: {fileID: 4967431981776623237}
+  m_Layer: 0
+  m_Name: TurnStart
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &229872934084395507
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7913752417119186372}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 692242124}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4967431981776623237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7913752417119186372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65b0abc5ce46c1348a46ea3bd3e3b195, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stateMachine: {fileID: 0}
+  id: 0
+  battleStateType: 1
+  battleManager: {fileID: 0}
+  gridManager: {fileID: 0}
+  turnData:
+    combatant: {fileID: 0}
+    action: {fileID: 0}
+    actionPoints: 0
+    targets: []
+    targetedTile: {fileID: 0}
+    targetType: 0
+    flip: 0
+  signalListeners: []

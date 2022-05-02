@@ -12,32 +12,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
   m_Name: Test Enemy AOE
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
   actionName: AOE
-  descripton: Nuke it!
   actionType: 0
-  timeCost: 4
+  icon: {fileID: 0}
+  description: 
   mpCost: 0
-  cooldown: 1
-  power: 1.5
-  accuracy: 99
-  range: 3
-  aoe: 2
-  excludeStartingTile: 0
-  lineAOE: 0
-  stopAtOccupiedTile: 0
+  apCost: 2
+  power: 2
+  hitCount: 1
   offensiveStat: 2
-  defensiveStat: 4
+  defensiveStat: 3
   elementalProperty: 1
-  guaranteedHit: 0
-  distancePenalty: 0
-  useDirection: 0
-  statusEffect: {fileID: 0}
+  statusEffectPower: 0
   statusEffectChance: 0
+  statusEffectSO: {fileID: 0}
   knockback: 0
+  additionalEffects: []
+  aoes:
+  - aoeType: 1
+    fixedStartPosition: {x: 0, y: 0}
+  isFixedAOE: 0
+  canFlip: 0
+  isMelee: 0
+  isFixedTarget: 0
   targetFriendly: 0
-  targetHostile: 1
-  targetSelfOnly: 0
   hasCastAnimation: 1
   castAnimatorTrigger: Stun
   castGraphicPrefab: {fileID: 0}
@@ -47,9 +45,6 @@ MonoBehaviour:
   projectileAnimatorTrigger: 
   projectileGraphicPrefab: {fileID: 0}
   projectileGraphicDelay: 0
-  hasMoveAnimation: 0
-  moveAnimatorTrigger: 
-  moveGraphicPrefab: {fileID: 0}
   effectAnimatorTrigger: Melee
   effectGraphicPrefab: {fileID: 7816962457026261443, guid: 8b57e975f2ff9fe4ca6873371a6bb4e7,
     type: 3}

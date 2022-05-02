@@ -36,7 +36,7 @@ public class StatusEffectSO : ScriptableObject
     public bool cannotRefresh;
     public bool endOnHit;
     [Header("Icon + Animation")]
-    public Image icon;
+    public Sprite icon;
     public string animatorTrigger;
     public GameObject effectObject;
     [Header("Duration")]
@@ -44,7 +44,6 @@ public class StatusEffectSO : ScriptableObject
     public int turnDuration;
     [Header("Effects")]
     //heal/damage over time 
-    public float potency;
     public bool damageOverTime;
     public bool healOverTime;
     //stat changes
@@ -53,5 +52,10 @@ public class StatusEffectSO : ScriptableObject
     public List<ResistanceModifier> resistanceModifiers;
     //other effects
     public List<TriggerableSubEffect> triggerableSubEffects;
+
+    public virtual int GetHealthChange(Combatant combatant, int potency, int remainingTurns)
+    {
+        return 0;
+    }
 }
 

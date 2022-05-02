@@ -16,7 +16,6 @@ public class BattleMenuState : BattleState
     public override void OnEnter()
     {
         base.OnEnter();
-        Debug.Log("Enter Menu State");
         // onCameraZoomIn.Raise(turnData.combatant.gameObject);
         commandMenu.DisplayMenu();
     }

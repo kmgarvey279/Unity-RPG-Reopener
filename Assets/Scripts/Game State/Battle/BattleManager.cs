@@ -13,7 +13,6 @@ public class TurnSlot
     public Combatant combatant;
     [Header("Number of ticks remaining until next turn")]
     private int turnCounter = 100;
-    public int finalTurnCounter;
 
     public TurnSlot(Combatant combatant)
     {
@@ -51,6 +50,7 @@ public class TurnData
     public List<Combatant> targets = new List<Combatant>();
     public Tile targetedTile;
     public TargetType targetType;
+    public bool flip = false;
 
     public TurnData(Combatant combatant)
     {
@@ -69,7 +69,18 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private PartyData partyData;
     [SerializeField] private EnemyPartyData enemyPartyData;
     private List<Combatant> playableCombatants = new List<Combatant>();
+    public List<Combatant> PlayableCombatants
+    {
+        get {return playableCombatants;}
+        private set {playableCombatants = value;}
+    }
+    private List<Combatant> koPlayableCombatants = new List<Combatant>();
     private List<Combatant> enemyCombatants = new List<Combatant>();
+    public List<Combatant> EnemyCombatants
+    {
+        get {return enemyCombatants;}
+        private set {enemyCombatants = value;}
+    }
     [SerializeField] private BattlePartyHUD battlePartyHUD;
     [SerializeField] private PlayableCharacterSpawner playableCharacterSpawner;
     [SerializeField] private EnemySpawner enemySpawner;
@@ -88,7 +99,7 @@ public class BattleManager : MonoBehaviour
     [Header("Current Turn Data")]
     public TurnData turnData;
 
-    public void Start()
+    public void SpawnCombatants()
     {
         int partySize = 0;
         foreach(PartyMember partyMember in partyData.partyMembers)
@@ -119,23 +130,11 @@ public class BattleManager : MonoBehaviour
                 
                 TurnSlot newSlot = new TurnSlot(combatant);
                 TurnForecastAdd(newSlot);
-
-                EnemyCombatant enemyCombatant = (EnemyCombatant)combatant;
-                enemyCombatant.CreateAggroList(playableCombatants);
             }
         }
-        currentTurnSlot = turnForecast[0];
-        battleTimeline.ChangeCurrentTurn(currentTurnSlot);
-        StartCoroutine(StartBattleCo());
     }
 
-    private IEnumerator StartBattleCo()
-    {
-        yield return new WaitForSeconds(0.2f);
-        AdvanceTimeline();
-    }
-
-    private void AdvanceTimeline()
+    public void AdvanceTimeline()
     {
         while(turnForecast[0].GetCounterValue() > 0)
         {
@@ -145,40 +144,17 @@ public class BattleManager : MonoBehaviour
             }
             // battleTimeline.UpdateTurnPanels(turnForecast);
         }
-        StartTurn();
-    }
-
-    public void StartTurn()
-    {   
-        //set combatant turn slot as current turn
         currentTurnSlot = turnForecast[0];
         battleTimeline.ChangeCurrentTurn(currentTurnSlot);
+    
         currentTurnSlot.SetTurnCounterToDefault();
-
-        //update timeline
-        battleTimeline.ToggleNextTurnColor(currentTurnSlot, true);
         UpdateTurnOrder();
 
-        //create temp turn data
         turnData = new TurnData(currentTurnSlot.combatant);
-
-        //update action point display
         UpdateActionPoints(2);
-
-        //get next state
-        if(currentTurnSlot.combatant is PlayableCombatant)
-        {
-            Debug.Log("Player Turn Start");
-            stateMachine.ChangeState((int)BattleStateType.Menu);
-        }
-        else
-        {
-            Debug.Log("Enemy Turn Start");
-            stateMachine.ChangeState((int)BattleStateType.EnemyTurn);
-        }
     }
-
-    private void UpdateActionPoints(int actionPointChange)
+  
+    public void UpdateActionPoints(int actionPointChange)
     {
         turnData.actionPoints += actionPointChange;
         actionPointDisplay.DisplayAP(turnData.actionPoints);
@@ -211,67 +187,22 @@ public class BattleManager : MonoBehaviour
         actionPointDisplay.ShowPreview(action.apCost);
     }
     //set tile and combatants to be targeted in execution phase
-    public void SetTargets(Tile selectedTile, List<Combatant> selectedTargets, TargetType targetType)
+    public void SetTargets(Tile selectedTile, List<Combatant> selectedTargets, TargetType targetType, bool flip)
     {
         turnData.targets = selectedTargets;
         turnData.targetedTile = selectedTile;
         turnData.targetType = targetType;
+        turnData.flip = flip;
     }
     public void UpdateActionCost(int actionCost)
     {
         turnData.actionPoints -= actionCost;
     }
-    //cancel selected action and movement
+    //cancel selected action
     public void CancelAction()
     {
         turnData.action = null;
         actionPointDisplay.HidePreview();
-    }
-    public void EndAction()
-    {
-        UpdateActionPoints(-turnData.action.apCost);
-        if(turnData.actionPoints > 0)
-        {
-            if(currentTurnSlot.combatant is PlayableCombatant)
-            {
-                stateMachine.ChangeState((int)BattleStateType.Menu);
-            }
-            else
-            {
-                stateMachine.ChangeState((int)BattleStateType.EnemyTurn);
-            }
-        }
-        else
-        {
-            StartCoroutine(EndTurnCo());
-        }
-    }
-
-    public IEnumerator EndTurnCo()
-    {   
-        battleTimeline.ToggleNextTurnColor(currentTurnSlot, false);   
-        bool allPartyMembersKO = true;
-        foreach(PlayableCombatant playableCombatant in playableCombatants)
-        {
-            if(playableCombatant.ko == false)
-            {
-                allPartyMembersKO = false;
-            }
-        }
-        yield return new WaitForSeconds(1f);
-        if(enemyCombatants.Count <= 0)
-        {
-            WinBattle();
-        }
-        else if(allPartyMembersKO == true)
-        {
-            LoseBattle();
-        }
-        else
-        {
-            turnData = null;
-            AdvanceTimeline();
-        }
     }
 
     private void WinBattle()
@@ -289,22 +220,9 @@ public class BattleManager : MonoBehaviour
         Debug.Log("You escaped!");
     }
 
-    public void OnPlayableCombatantHeal(Combatant healer, int amount)
+    public void KOCombatant(Combatant combatant)
     {
-        if(enemyCombatants.Count > 0)
-        {
-            foreach(Combatant combatant in enemyCombatants)
-            {
-                EnemyCombatant enemyCombatant = (EnemyCombatant)combatant;
-                enemyCombatant.UpdateAggro(healer, Mathf.RoundToInt(amount / 2f));
-            }
-        }
-    }
-
-    public void OnCombatantKO(GameObject gameObject)
-    {
-        Debug.Log("KO signal recieved!");
-        Combatant combatant = gameObject.GetComponent<Combatant>();
+        StartCoroutine(combatant.KOCo());
         TurnSlot selectedTurnSlot = turnForecast.FirstOrDefault(turnSlot => turnSlot.combatant == combatant);
         TurnForecastRemove(selectedTurnSlot);
         if(combatant is EnemyCombatant)

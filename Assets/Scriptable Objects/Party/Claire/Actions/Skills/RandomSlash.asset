@@ -10,35 +10,35 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
-  m_Name: Null
+  m_Name: RandomSlash
   m_EditorClassIdentifier: 
-  actionName: Null
-  actionType: 4
+  actionName: Omnislash
+  actionType: 0
   icon: {fileID: 0}
-  descripton: Revert any changes made to target since the start of their most recent
-    turn.
-  mpCost: 50
-  timeModifier: 0
-  power: 0
-  range: 5
-  aoe: 0
-  excludeStartingTile: 0
-  lineAOE: 0
-  stopAtOccupiedTile: 0
-  offensiveStat: 10
-  defensiveStat: 10
+  description: 
+  mpCost: 15
+  apCost: 2
+  power: 1
+  hitCount: 3
+  offensiveStat: 0
+  defensiveStat: 1
   elementalProperty: 0
-  guaranteedHit: 1
-  distancePenalty: 0
-  useDirection: 0
-  statusEffectSO: {fileID: 0}
+  statusEffectPower: 0
   statusEffectChance: 0
+  statusEffectSO: {fileID: 0}
   knockback: 0
-  targetFriendly: 1
-  targetHostile: 1
-  targetSelfOnly: 0
+  additionalEffects: []
+  aoes:
+  - aoeType: 6
+    fixedStartPosition: {x: 0, y: 0}
+  isFixedAOE: 1
+  canFlip: 0
+  isMelee: 0
+  isFixedTarget: 0
+  targetFriendly: 0
+  hitRandomTarget: 1
   hasCastAnimation: 1
-  castAnimatorTrigger: Defend
+  castAnimatorTrigger: Stun
   castGraphicPrefab: {fileID: 0}
   castAnimationDuration: 0.4
   castGraphicDelay: 0.15
@@ -46,11 +46,7 @@ MonoBehaviour:
   projectileAnimatorTrigger: 
   projectileGraphicPrefab: {fileID: 0}
   projectileGraphicDelay: 0
-  hasMoveAnimation: 0
-  moveAnimatorTrigger: 
-  moveGraphicPrefab: {fileID: 0}
   effectAnimatorTrigger: Melee
-  effectGraphicPrefab: {fileID: 9080087516260223380, guid: b2ca6791570b1944abf90e8b335cc8c1,
-    type: 3}
+  effectGraphicPrefab: {fileID: 0}
   effectAnimationDuration: 0.4
   effectGraphicDelay: 0.15

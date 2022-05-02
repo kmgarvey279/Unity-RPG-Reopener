@@ -19,21 +19,28 @@ MonoBehaviour:
   mpCost: 15
   apCost: 2
   power: 1
+  hitCount: 1
   offensiveStat: 2
   defensiveStat: 4
   elementalProperty: 4
   statusEffectPower: 0
   statusEffectChance: 0
   statusEffectSO: {fileID: 0}
-  knockback: 0
+  knockback:
+    doKnockback: 0
+    isVertical: 0
+    destination: 0
   additionalEffects: []
   aoes:
   - aoeType: 5
     fixedStartPosition: {x: 1, y: 1}
-  isFixedAOE: 0
+  isFixedAOE: 1
+  canFlip: 1
   isMelee: 0
   isFixedTarget: 0
   targetFriendly: 0
+  hitRandomTarget: 0
+  hasCastAnimation: 0
   castAnimatorTrigger: Defend
   castGraphicPrefab: {fileID: 0}
   castAnimationDuration: 0.4
@@ -47,5 +54,3 @@ MonoBehaviour:
     type: 3}
   effectAnimationDuration: 0.5
   effectGraphicDelay: 0.15
-  tileEffectGraphicPrefab: {fileID: 0}
-  tileEffectAnimationDuration: 0.4

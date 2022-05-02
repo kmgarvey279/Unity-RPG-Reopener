@@ -8,36 +8,45 @@ public class HealthDisplay : MonoBehaviour
 {
     private Combatant combatant;
 
+    [SerializeField] private GameObject display;
     [SerializeField] private AnimatedBar healthBar;
-    [SerializeField] private DamagePopup damagePopup;
+    [SerializeField] private StatusEffectDisplay statusEffectDisplay;
+    [SerializeField] private GameObject damagePopupPrefab;
 
     private void Start()
     {
         combatant = GetComponentInParent<Combatant>();
-        damagePopup = GetComponentInChildren<DamagePopup>();
-
         healthBar.SetInitialValue(combatant.hp.GetValue(), combatant.hp.GetCurrentValue());
     }
 
-    public void DisplayHPBar()
+    public void Display(bool show)
     {
-        healthBar.gameObject.SetActive(true);
+        display.gameObject.SetActive(show);
     }
 
     public void HandleHealthChange(DamagePopupType popupType, int amount)
     {
-        DisplayHPBar();
-        damagePopup.TriggerPopup(popupType, amount);
+        if(!display.gameObject.activeInHierarchy)
+        {
+            Display(true);
+        }
+
+        GameObject damagePopupObject = Instantiate(damagePopupPrefab, transform.position, Quaternion.identity);
+        damagePopupObject.transform.SetParent(gameObject.transform);
+        damagePopupObject.GetComponent<DamagePopup>().TriggerPopup(popupType, amount);
+
         healthBar.UpdateBar(combatant.hp.GetCurrentValue());
-        StartCoroutine(HideHPBar());
     }
 
-    private IEnumerator HideHPBar()
+    public void AddStatusIcon(StatusEffectSO statusEffectSO)
     {
-        yield return new WaitForSeconds(1f);
-        healthBar.gameObject.SetActive(false);
+        statusEffectDisplay.AddStatusIcon(statusEffectSO);
     }
 
+    public void RemoveStatusIcon(StatusEffectSO statusEffectSO)
+    {
+        statusEffectDisplay.RemoveStatusIcon(statusEffectSO);
+    }
 
     // private IEnumerator DisplayDamage(int amount)
     // {
@@ -83,10 +92,4 @@ public class HealthDisplay : MonoBehaviour
     //     // }
     //     // healBar.SetRecovery(0);
     // }
-
-    public void Clear()
-    {
-        damagePopup.ClearPopup();
-        // ToggleBarVisibility(false);
-    }
 }

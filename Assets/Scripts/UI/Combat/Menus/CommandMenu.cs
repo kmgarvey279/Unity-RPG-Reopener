@@ -44,17 +44,12 @@ public class CommandMenu : MonoBehaviour
         {
             submenu.Hide();
         }
-        else
-        {
-            display.SetActive(false);
-            battleManager.stateMachine.ChangeState((int)BattleStateType.Move);
-        }
     }
 
     public void DisplayActions()
     {
         PlayableCombatant playableCombatant = (PlayableCombatant)turnData.combatant;
-        submenu.DisplaySkills(playableCombatant.skills);
+        submenu.DisplaySkills(playableCombatant.skills, battleManager.turnData.actionPoints, playableCombatant.mp.GetCurrentValue());
     }
 
     public void SelectAction(GameObject skillSlotObject)

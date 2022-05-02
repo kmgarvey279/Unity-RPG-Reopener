@@ -10,45 +10,47 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
-  m_Name: Decelerator
+  m_Name: Poison
   m_EditorClassIdentifier: 
   actionName: Poison
-  actionType: 2
+  actionType: 3
   icon: {fileID: 0}
-  descripton: 'Deals moderate ice damage. Delays the target''s next turn and inflicts
-    slow. Does not effect targets already effected by slow.    '
-  mpCost: 15
-  timeModifier: 0
-  power: 0
-  range: 3
-  aoe: 0
-  excludeStartingTile: 0
-  lineAOE: 0
-  stopAtOccupiedTile: 0
-  offensiveStat: 10
-  defensiveStat: 10
+  description: 
+  mpCost: 10
+  apCost: 1
+  power: 1
+  hitCount: 1
+  offensiveStat: 2
+  defensiveStat: 3
   elementalProperty: 0
-  guaranteedHit: 1
-  distancePenalty: 0
-  useDirection: 0
-  statusEffectSO: {fileID: 0}
-  statusEffectChance: 75
-  knockback: 0
+  accuracy: 99
+  guaranteedHit: 0
+  statusEffectChance: 100
+  statusEffectSO: {fileID: 11400000, guid: f2dea2b6a0c30634d932e8a6b1a8660b, type: 2}
+  knockback:
+    doKnockback: 0
+    moveX: 0
+    moveY: 0
+  additionalEffects: []
+  aoes:
+  - aoeType: 0
+    fixedStartPosition: {x: 0, y: 0}
+  isFixedAOE: 0
+  canFlip: 0
+  isMelee: 0
+  isFixedTarget: 1
   targetFriendly: 0
-  targetHostile: 1
-  targetSelfOnly: 0
+  hitRandomTarget: 0
   hasCastAnimation: 1
-  castAnimatorTrigger: Stun
+  castAnimatorTrigger: Defend
   castGraphicPrefab: {fileID: 0}
   castAnimationDuration: 0.4
   castGraphicDelay: 0.15
-  hasProjectileAnimation: 0
+  hasProjectileAnimation: 1
   projectileAnimatorTrigger: 
-  projectileGraphicPrefab: {fileID: 0}
-  projectileGraphicDelay: 0
-  hasMoveAnimation: 0
-  moveAnimatorTrigger: 
-  moveGraphicPrefab: {fileID: 0}
+  projectileGraphicPrefab: {fileID: 9080087516260223380, guid: a9a53ad4435f66448b4a1b4e852a9413,
+    type: 3}
+  projectileGraphicDelay: 0.15
   effectAnimatorTrigger: Melee
   effectGraphicPrefab: {fileID: 7816962457026261443, guid: 9131141102ec4e341a135136152e0dae,
     type: 3}

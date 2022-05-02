@@ -7,10 +7,8 @@ using UnityEngine.EventSystems;
 [System.Serializable]
 public class TileSelectState : BattleState
 {
-    [SerializeField] private GridManager gridManager;
-
     private Tile selectedTile;
-    private List<Combatant> selectedTargets = new List<Combatant>();
+    private List<Combatant> selectedTargets;
     private TargetType targetType;
     private bool flip;
     [Header("Events")]
@@ -19,11 +17,13 @@ public class TileSelectState : BattleState
     public override void OnEnter()
     {
         base.OnEnter();
-
-        onCameraZoomOut.Raise();
+        //set defaults
+        selectedTile = null;
+        selectedTargets = new List<Combatant>();
+        flip = false;
+        // onCameraZoomOut.Raise();
         //display tiles
         targetType = TargetType.TargetEnemy;
-        flip = false;
         if(turnData.action.targetFriendly)
         {
             targetType = TargetType.TargetPlayer;
@@ -31,15 +31,15 @@ public class TileSelectState : BattleState
 
         if(turnData.action.isFixedTarget)
         {
-            gridManager.DisplaySelectableTargets(turnData.combatant.tile.x, targetType, turnData.action.isMelee);
-        }
-        else if(turnData.action.isFixedAOE)
-        {
-            selectedTargets = gridManager.DisplayFixedAOE(turnData.combatant.tile, turnData.action, targetType, flip);
+            gridManager.DisplaySelectableTargets(turnData.combatant.tile, targetType, turnData.action.isMelee);
         }
         else
-        {
-            gridManager.DisplaySelectableTiles(targetType);
+        {   
+            gridManager.DisplaySelectableTiles(turnData.action, targetType, turnData.combatant.tile);
+            if(turnData.action.isFixedAOE)
+            {
+                SpawnAOEs();
+            }
         }
     }
 
@@ -49,7 +49,7 @@ public class TileSelectState : BattleState
         {
             if(selectedTargets.Count > 0 || turnData.action.actionType == ActionType.Move) 
             {
-                battleManager.SetTargets(selectedTile, selectedTargets, targetType);
+                battleManager.SetTargets(selectedTile, selectedTargets, targetType, flip);
                 stateMachine.ChangeState((int)BattleStateType.Execute); 
             }
             else 
@@ -62,13 +62,10 @@ public class TileSelectState : BattleState
             battleManager.CancelAction();
             stateMachine.ChangeState((int)BattleStateType.Menu);
         }
-        else if(Input.GetButtonDown("Switch"))
+        else if(Input.GetButtonDown("Switch") && turnData.action.canFlip)
         {
             flip = !flip;
-            if(turnData.action.aoes.Count > 0)
-            {
-                selectedTargets = gridManager.DisplayAOE(selectedTile, turnData.action, targetType, flip);
-            }
+            SpawnAOEs();
         }
     }
 
@@ -81,7 +78,6 @@ public class TileSelectState : BattleState
     {
         base.OnExit();
         //clear tiles
-        selectedTile = null;
         gridManager.HideTiles();
     }
 
@@ -99,12 +95,52 @@ public class TileSelectState : BattleState
         // } 
         if(turnData.action.aoes.Count > 0)
         {
-            selectedTargets = gridManager.DisplayAOE(selectedTile, turnData.action, targetType, flip);
+            SpawnAOEs();
         }
         if(turnData.action.actionType == ActionType.Move)
         {
             List<Tile> path = gridManager.GetPath(turnData.combatant.tile, selectedTile, TargetType.TargetPlayer);
-            gridManager.DisplayPath(path); 
+            bool swap = false;
+            if(path.Count > 0 && path[path.Count - 1].occupier)
+            {
+                swap = true;
+            }
+            gridManager.DisplayPaths(new List<List<Tile>>(){path}, TargetType.TargetPlayer, swap); 
         } 
     }
+
+    private void SpawnAOEs()
+    {
+        if(selectedTargets.Count > 0)
+        {
+            foreach(Combatant target in selectedTargets)
+            {
+                target.ToggleHPBar(false);
+            }
+        }
+        List<Tile> aoeTiles = gridManager.GetAOETiles(selectedTile, turnData.action, targetType, flip);
+        gridManager.DisplayAOE(aoeTiles, targetType);
+        
+        selectedTargets = gridManager.GetTargetsInAOE(aoeTiles, targetType);
+        foreach(Combatant target in selectedTargets)
+        {
+            target.ToggleHPBar(true);
+        }
+
+        if(turnData.action.knockback.doKnockback)
+        {
+            List<List<Tile>> knockbackPaths = new List<List<Tile>>();
+            foreach(Combatant target in selectedTargets)
+            {
+                Vector2Int knockbackDestination = turnData.action.knockback.GetKnockbackDestination(target.tile);
+                Tile newTile = gridManager.GetTileArray(TargetType.TargetEnemy)[knockbackDestination.x, knockbackDestination.y];
+                if(newTile != target.tile && !newTile.occupier)
+                {
+                    knockbackPaths.Add(gridManager.GetPath(target.tile, newTile, TargetType.TargetEnemy));
+                }
+            }
+            gridManager.DisplayPaths(knockbackPaths, TargetType.TargetEnemy, false);
+        }
+    }
+    
 }

@@ -18,17 +18,18 @@ public enum BattleStatType
     None
 }
 
+[System.Serializable]
 public class StatusEffectInstance
 {
     public StatusEffectSO statusEffectSO;
     public int turnCounter;
-    public int userPower;
+    public int potency;
 
-    public StatusEffectInstance(StatusEffectSO statusEffectSO, int userPower)
+    public StatusEffectInstance(StatusEffectSO statusEffectSO, int potency)
     {
         this.statusEffectSO = statusEffectSO;
         this.turnCounter = statusEffectSO.turnDuration;
-        this.userPower = userPower;
+        this.potency = potency;
     }
 }
 
@@ -45,7 +46,7 @@ public class Combatant : MonoBehaviour
     // [Header("Triggerable Effects")]
     // public List<SubEffect> triggerableSubEffects = new List<TriggerableSubEffect>();
     [Header("Status")]
-    public List<StatusEffectInstance> statusEffects;
+    public List<StatusEffectInstance> statusEffectInstances;
     [Header("Game Object Components")]
     [HideInInspector] public Animator animator;
     [SerializeField] protected GameObject spriteFill;
@@ -53,7 +54,6 @@ public class Combatant : MonoBehaviour
     public GridManager gridManager;
     [Header("Child Scripts")]
     protected HealthDisplay healthDisplay;
-    protected StatusEffectDisplay statusEffectDisplay;
     protected MaskController maskController;
     [Header("Events")]
     [SerializeField] protected SignalSenderGO onTargetSelect;
@@ -77,7 +77,6 @@ public class Combatant : MonoBehaviour
         SetTraitEffects();
         //child components
         healthDisplay = GetComponentInChildren<HealthDisplay>();
-        statusEffectDisplay = GetComponentInChildren<StatusEffectDisplay>();
         maskController = GetComponentInChildren<MaskController>();
         gridMovement = GetComponentInChildren<GridMovement>();
     }
@@ -92,16 +91,16 @@ public class Combatant : MonoBehaviour
 
     public virtual void OnTurnStart()
     {
-        if(statusEffects.Count > 0)
+        if(statusEffectInstances.Count > 0)
         {
-            for(int i = statusEffects.Count - 1; i >= 0; i--)
+            for(int i = statusEffectInstances.Count - 1; i >= 0; i--)
             {
-                if(statusEffects[i].statusEffectSO.hasDuration)
+                if(statusEffectInstances[i].statusEffectSO.hasDuration)
                 {
-                    statusEffects[i].turnCounter--;
-                    if(statusEffects[i].turnCounter <= 0)
+                    statusEffectInstances[i].turnCounter--;
+                    if(statusEffectInstances[i].turnCounter <= 0)
                     {
-                        RemoveStatusEffect(statusEffects[i]);
+                        RemoveStatusEffect(statusEffectInstances[i]);
                     }
                 }
             }
@@ -110,32 +109,19 @@ public class Combatant : MonoBehaviour
 
     public virtual void OnTurnEnd()
     {
-        if(statusEffects.Count > 0)
+        if(statusEffectInstances.Count > 0)
         {
-            int cumHealthEffect = 0;
-            foreach(StatusEffectInstance statusEffect in statusEffects)
+            foreach(StatusEffectInstance statusEffectInstance in statusEffectInstances)
             {
-                float potency = (float)statusEffect.statusEffectSO.potency;
-                float userPower = (float)statusEffect.userPower / (100f + (float)statusEffect.userPower);
-                if(statusEffect.statusEffectSO.healOverTime)
+                int healthChange = statusEffectInstance.statusEffectSO.GetHealthChange(this, statusEffectInstance.potency, statusEffectInstance.turnCounter);
+                if(healthChange > 0)
                 {
-                    float healAmount = Mathf.Clamp(potency * userPower * Random.Range(0.85f, 1f), 1f, 9999f);
-                    cumHealthEffect += Mathf.FloorToInt(healAmount);
-                }    
-                if(statusEffect.statusEffectSO.damageOverTime)
+                    Heal(healthChange);
+                }
+                else if(healthChange < 0)
                 {
-                    float damageAmount = Mathf.Clamp(potency * userPower * Random.Range(0.85f, 1f), 1f, 9999f);
-                    cumHealthEffect -= Mathf.FloorToInt(damageAmount);
-                }   
-            }
-            if(cumHealthEffect > 0)
-            {
-                Heal(cumHealthEffect);
-            }
-            else if(cumHealthEffect < 0)
-            {
-                Damage(Mathf.Abs(cumHealthEffect));
-                KOCheck();
+                    Damage(Mathf.Abs(healthChange));
+                }
             }
         }
     }
@@ -172,11 +158,15 @@ public class Combatant : MonoBehaviour
 
     public virtual void EvadeAttack(Combatant attacker)
     {
-        Vector2 attackDirection = attacker.GetDirection();
-        if(attackDirection.x != 0 || attackDirection.y !=0)
-            SetDirection(new Vector2(-attackDirection.x, -attackDirection.y));
-        animator.SetTrigger("Stun");
+        animator.SetTrigger("Move");
         healthDisplay.HandleHealthChange(DamagePopupType.Miss, 0);
+        StartCoroutine(ReturnToIdleCo());
+    }
+
+    private IEnumerator ReturnToIdleCo()
+    {
+        yield return new WaitForSeconds(0.3f);
+        animator.SetTrigger("Idle");
     }
 
     public void TakeHit(Combatant attacker)
@@ -188,7 +178,7 @@ public class Combatant : MonoBehaviour
         animator.SetTrigger("Stun");
     }
 
-    public virtual void Damage(int damage, Combatant attacker = null, bool isCrit = false)
+    public virtual void Damage(int damage, bool isCrit = false)
     {
         Debug.Log(characterName + " took " + damage + " damage");
         hp.ChangeCurrentValue(-damage);
@@ -208,10 +198,10 @@ public class Combatant : MonoBehaviour
         healthDisplay.HandleHealthChange(DamagePopupType.Heal, amount);
     }
 
-    public void AddStatusEffect(StatusEffectSO statusEffectSO, int userPower)
+    public void AddStatusEffect(StatusEffectSO statusEffectSO, int potency)
     {
         //clear duplicates
-        foreach(StatusEffectInstance thisStatusInstance in statusEffects)
+        foreach(StatusEffectInstance thisStatusInstance in statusEffectInstances)
         {
             if(thisStatusInstance.statusEffectSO == statusEffectSO)
             {
@@ -222,9 +212,9 @@ public class Combatant : MonoBehaviour
                 RemoveStatusEffect(thisStatusInstance);
             }
         }
-        StatusEffectInstance newStatusInstance = new StatusEffectInstance(statusEffectSO, userPower);
+        StatusEffectInstance newStatusInstance = new StatusEffectInstance(statusEffectSO, potency);
         //add status effect to list
-        statusEffects.Add(newStatusInstance);
+        statusEffectInstances.Add(newStatusInstance);
         //apply stat modifiers        
         foreach(BattleStatModifier battleStatModifier in newStatusInstance.statusEffectSO.battleStatModifiers)
         {
@@ -235,7 +225,7 @@ public class Combatant : MonoBehaviour
             resistDict[resistanceModifier.resistanceToModify].AddMultiplier(resistanceModifier.multiplier);  
         }
         //display icon
-        statusEffectDisplay.AddStatusIcon(statusEffectSO);
+        healthDisplay.AddStatusIcon(statusEffectSO);
         //change character sprite (if applicable);
         if(statusEffectSO.animatorTrigger != null)
             animator.SetTrigger(statusEffectSO.animatorTrigger);
@@ -243,7 +233,7 @@ public class Combatant : MonoBehaviour
 
     public void RemoveStatusEffect(StatusEffectInstance statusEffectInstance)
     {
-        if(statusEffects.Contains(statusEffectInstance))
+        if(statusEffectInstances.Contains(statusEffectInstance))
         {
             RemoveStatusEffect(statusEffectInstance);
             foreach(BattleStatModifier battleStatModifier in statusEffectInstance.statusEffectSO.battleStatModifiers)
@@ -254,29 +244,20 @@ public class Combatant : MonoBehaviour
             {
                 resistDict[resistanceModifier.resistanceToModify].RemoveMultiplier(resistanceModifier.multiplier);  
             }
-            statusEffectDisplay.RemoveStatusIcon(statusEffectInstance.statusEffectSO);
+            healthDisplay.RemoveStatusIcon(statusEffectInstance.statusEffectSO);
             if(statusEffectInstance.statusEffectSO.animatorTrigger != null)
                 animator.SetTrigger("Idle");
         }
     }
 
-
-    public bool KOCheck()
-    {
-        Debug.Log("ko check");
-        if(hp.GetCurrentValue() <= 0)
-        {
-            Debug.Log("ko start");
-            OnCombatantKO.Raise(this.gameObject);
-            StartCoroutine(KO());
-            return true;
-        }
-        return false;
-    }
-
-    public virtual IEnumerator KO()
+    public virtual IEnumerator KOCo()
     {
         yield return null;
+    }
+
+    public void ToggleHPBar(bool show)
+    {
+        healthDisplay.Display(show);
     }
 
     public void Select()
@@ -286,7 +267,6 @@ public class Combatant : MonoBehaviour
             selected = true;
             maskController.TriggerSelected();
             onTargetSelect.Raise(this.gameObject);
-            // healthDisplay.ToggleBarVisibility(true);
         }
     }
 
@@ -297,7 +277,6 @@ public class Combatant : MonoBehaviour
             selected = false;
             maskController.EndAnimation();
             onTargetDeselect.Raise(this.gameObject);
-            // healthDisplay.ToggleBarVisibility(false);
         }
     }
 

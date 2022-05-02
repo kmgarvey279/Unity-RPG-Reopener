@@ -69,7 +69,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
         aoeImage.enabled = false;
     }
 
-    public void DisplayPathNode(PathType pathType, Vector2 direction1, Vector2 direction2)
+    public void DisplayPathNode(PathType pathType, Vector2 direction1, Vector2 direction2, TargetType targetType)
     {
         SpriteRenderer image;
             image = straightPathImage;
@@ -86,26 +86,34 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
                 image = endPathImage;
             }
             int z = 0;
-            if(direction1.y < 0)
+            if(direction1.y > 0)
             {
                 z = 0;
             }
             else if(direction1.x < 0)
             {
                 z = 90;
+                if(targetType == TargetType.TargetEnemy)
+                {
+                    z = 270;
+                }
             }
-            else if(direction1.y > 0)
+            else if(direction1.y < 0)
             {
                 z = 180;
             }
             else if(direction1.x > 0)
             {
                 z = 270;
+                if(targetType == TargetType.TargetEnemy)
+                {
+                    z = 90;
+                }
             }
             image.transform.rotation = Quaternion.Euler(0, 0, z);
             if(pathType == PathType.Turn)
             {
-                if(direction1.x > 0 && direction2.y < 0 || direction1.x < 0 && direction2.y > 0 || direction1.y > 0 && direction2.x > 0 || direction1.y < 0 && direction2.x < 0)
+                if(direction1.x > 0 && direction2.y > 0 || direction1.x < 0 && direction2.y < 0 || direction1.y < 0 && direction2.x > 0 || direction1.y > 0 && direction2.x < 0)
                 {
                     image.flipX = true; 
                 } 
@@ -122,12 +130,12 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     {
         if(startPathImage.enabled)
             startPathImage.enabled = false;
-        if(endPathImage.enabled)
-            endPathImage.enabled = false;
         if(straightPathImage.enabled)
             straightPathImage.enabled = false;
         if(turnPathImage.enabled)
             turnPathImage.enabled = false;
+        if(endPathImage.enabled)
+            endPathImage.enabled = false;
     }
 
     public void Select()

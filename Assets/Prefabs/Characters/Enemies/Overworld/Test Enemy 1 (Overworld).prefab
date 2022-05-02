@@ -346,14 +346,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51f22284010913549a8674a3b48abd29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  runtimeData: {fileID: 0}
   lookDirection: {x: 0, y: 0, z: 0}
+  wanderSpeed: 0
+  chaseSpeed: 0
   player: {fileID: 0}
   alertIcon: {fileID: 0}
-  visionRadius: 4
-  visionAngle: 5
   rigidbody: {fileID: 0}
   animator: {fileID: 0}
   aiPath: {fileID: 0}
   setter: {fileID: 0}
   currentState: 0
-  targetsInRange: []

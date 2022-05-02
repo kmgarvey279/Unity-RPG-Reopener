@@ -5,19 +5,21 @@ using StateMachineNamespace;
 
 public enum BattleStateType
 {
-    Start,
+    BattleStart,
+    TurnStart,
     Menu,
-    Move,
     TileSelect,
     Execute,
     EnemyTurn,
-    End
+    TurnEnd,
+    BattleEnd
 }
 
 public class BattleState : StateMachine.State
 {
     public BattleStateType battleStateType;
     [HideInInspector] public BattleManager battleManager;
+    [HideInInspector] public GridManager gridManager;
     [HideInInspector] public TurnData turnData;
     [Header("Unity Events (Listeners)")]
     public List<MonoBehaviour> signalListeners;
@@ -29,6 +31,7 @@ public class BattleState : StateMachine.State
         id = (int)battleStateType; 
         //battle manager
         battleManager = GetComponentInParent<BattleManager>();  
+        gridManager = battleManager.gridManager;
     }
 
     public override void OnEnter()

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 622987f3fd980c04fb94f3589b51ab64, type: 3}
   m_Name: New Enemy Info 1
   m_EditorClassIdentifier: 
-  characterName: Enemy
+  characterName: Test Enemy
   level: 10
   baseHP: 50
   hp:
@@ -28,11 +28,10 @@ MonoBehaviour:
     currentValue: 0
   attack: 7
   defense: 7
-  magic: 5
+  magicAttack: 5
   magicDefense: 5
   skill: 7
-  agility: 7
-  moveRange: 3
+  agility: 10
   fireResist: 5
   iceResist: 5
   electricResist: 5
@@ -41,5 +40,9 @@ MonoBehaviour:
   weightedActions:
   - action: {fileID: 11400000, guid: 70fc9a8249db6c84f9541a7bf04d24b2, type: 2}
     weightType: 4
-    ignoreAggro: 0
-    alwaysTargetHighestAggro: 0
+  - action: {fileID: 11400000, guid: 1979cd716b76c654bbc9aafad84c8cfa, type: 2}
+    weightType: 1
+  - action: {fileID: 11400000, guid: f93cda209ea7b284585f5f0412880a90, type: 2}
+    weightType: 1
+  - action: {fileID: 11400000, guid: 823b4bcd44b18ac4c8b05a0b9d9c80a0, type: 2}
+    weightType: 2

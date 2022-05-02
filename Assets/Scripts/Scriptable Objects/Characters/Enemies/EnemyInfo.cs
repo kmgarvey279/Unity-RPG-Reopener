@@ -28,8 +28,6 @@ public class WeightedAction
     {
         return weightDict[weightType];
     }
-    public bool ignoreAggro;
-    public bool alwaysTargetHighestAggro;
 }
 
 [CreateAssetMenu(fileName = "New Enemy Info", menuName = "Character Info/Enemy")]

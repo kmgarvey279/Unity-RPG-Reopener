@@ -5,7 +5,6 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [Header("Movement")]
-    private Rigidbody2D rigidbody;
     private Vector3 moveDirection;
     private bool isRunning;
     private float walkSpeed = 3f;
@@ -41,7 +40,6 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        rigidbody = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
         moveDirection = new Vector3(0, 0);
     }
@@ -107,14 +105,14 @@ public class Player : MonoBehaviour
             {
                 currentSpeed = walkSpeed;
             }
-            rigidbody.velocity = new Vector3(moveDirection.x * currentSpeed, moveDirection.y * currentSpeed);
+            GetComponent<Rigidbody>().velocity = new Vector3(moveDirection.x * currentSpeed, moveDirection.y * currentSpeed);
 
             //update animation
-            animator.SetFloat("Speed", rigidbody.velocity.sqrMagnitude);
+            animator.SetFloat("Speed", GetComponent<Rigidbody>().velocity.sqrMagnitude);
         }
         else
         {
-            rigidbody.velocity = Vector2.zero;
+            GetComponent<Rigidbody>().velocity = Vector2.zero;
             animator.SetFloat("Speed", 0);
         }
     }

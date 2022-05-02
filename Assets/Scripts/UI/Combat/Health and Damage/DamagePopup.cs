@@ -17,12 +17,14 @@ public class DamagePopup : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private TextMeshProUGUI popupText;
     [Header("Value Displayed")]
-    public Color damageColor;
-    public Color critColor;
-    public Color healColor;
-    public Color missColor;
+    [SerializeField] private Color damageColor;
+    [SerializeField] private Color critColor;
+    [SerializeField] private Color healColor;
+    [SerializeField] private Color missColor;
+    [Header("Duration")]
+    [SerializeField] private float duration;
 
-    private void Start()
+    private void OnEnable()
     {
         animator = GetComponent<Animator>();
     }
@@ -51,10 +53,12 @@ public class DamagePopup : MonoBehaviour
             break;
         }
         animator.SetTrigger("Activate");
+        StartCoroutine(ClearPopupCo());
     }
 
-    public void ClearPopup()
+    private IEnumerator ClearPopupCo()
     {
-        popupText.text = "";
+        yield return new WaitForSeconds(duration);
+        Destroy(this.gameObject);
     }
 }

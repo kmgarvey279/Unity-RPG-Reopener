@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class EnemyCombatant : Combatant
 {
-    [SerializeField] private EnemyBattleAI enemyBattleAI;
+    public List<Action> lastActions = new List<Action>();
+    public bool isBoss = false;
+    public bool optimizeTargetsInAOE = false;
 
     public override void Awake()
     {
         base.Awake();   
-        enemyBattleAI = GetComponentInChildren<EnemyBattleAI>();
         defaultDirection = new Vector2(-1, 0);
         SetDirection(defaultDirection);
     }
@@ -29,56 +30,10 @@ public class EnemyCombatant : Combatant
         battleStatDict.Add(BattleStatType.Evasion, new Stat(Mathf.FloorToInt(characterInfo.statDict[StatType.Agility].GetValue() / 2)));
     }
 
-    public void CreateAggroList(List<Combatant> targets)
-    {
-        foreach(Combatant target in targets)
-        {
-            AddTarget(target);
-        }
-    }
-
-    public void AddTarget(Combatant combatant)
-    {
-        enemyBattleAI.AddTargetToAggroList(combatant);
-    }
-
-    public void RemoveTarget(Combatant combatant)
-    {
-        enemyBattleAI.RemoveTargetFromAggroList(combatant);
-    }
-
-    public void UpdateAggro(Combatant combatant, int aggroChange)
-    {
-        enemyBattleAI.UpdateAggro(combatant, aggroChange);
-    }
-
-    public override void EvadeAttack(Combatant attacker)
-    {
-        base.EvadeAttack(attacker);
-        enemyBattleAI.UpdateAggro(attacker, attacker.level * 10);
-    }
-
-    public override void Damage(int damage, Combatant attacker, bool isCrit)
-    {
-        base.Damage(damage, attacker, isCrit);
-        enemyBattleAI.UpdateAggro(attacker, damage);
-    }
-
-    public override void OnTurnEnd()
-    {
-        enemyBattleAI.TriggerAggroFalloff();
-        base.OnTurnEnd();
-    }
-
-    public PotentialAction GetTurnAction()
-    {
-        return enemyBattleAI.GetTurnAction();
-    }
-
-    public override IEnumerator KO()
+    public override IEnumerator KOCo()
     {
         animator.SetTrigger("KO");
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
         tile.UnassignOccupier();
         Destroy(this.gameObject);
     }

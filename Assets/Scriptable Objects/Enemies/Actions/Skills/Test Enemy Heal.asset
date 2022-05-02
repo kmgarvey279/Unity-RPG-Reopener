@@ -12,31 +12,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
   m_Name: Test Enemy Heal
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
   actionName: Heal
-  descripton: 
   actionType: 1
-  timeCost: 4
+  icon: {fileID: 0}
+  description: 
   mpCost: 0
+  apCost: 2
   power: 1
-  accuracy: 100
-  range: 3
-  aoe: 0
-  excludeStartingTile: 0
-  lineAOE: 0
-  stopAtOccupiedTile: 0
+  hitCount: 1
   offensiveStat: 2
-  defensiveStat: 10
+  defensiveStat: 8
   elementalProperty: 0
-  guaranteedHit: 1
-  distancePenalty: 0
-  useDirection: 0
-  statusEffect: {fileID: 0}
+  statusEffectPower: 0
   statusEffectChance: 0
+  statusEffectSO: {fileID: 0}
   knockback: 0
+  additionalEffects: []
+  aoes:
+  - aoeType: 0
+    fixedStartPosition: {x: 0, y: 0}
+  isFixedAOE: 0
+  canFlip: 0
+  isMelee: 0
+  isFixedTarget: 0
   targetFriendly: 1
-  targetHostile: 0
-  targetSelfOnly: 0
   hasCastAnimation: 1
   castAnimatorTrigger: Stun
   castGraphicPrefab: {fileID: 0}
@@ -46,9 +45,6 @@ MonoBehaviour:
   projectileAnimatorTrigger: 
   projectileGraphicPrefab: {fileID: 0}
   projectileGraphicDelay: 0
-  hasMoveAnimation: 0
-  moveAnimatorTrigger: 
-  moveGraphicPrefab: {fileID: 0}
   effectAnimatorTrigger: Melee
   effectGraphicPrefab: {fileID: 9080087516260223380, guid: b2ca6791570b1944abf90e8b335cc8c1,
     type: 3}

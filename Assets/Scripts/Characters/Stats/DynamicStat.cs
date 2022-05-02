@@ -10,14 +10,7 @@ public class DynamicStat : Stat
     public DynamicStat(int baseValue, int currentValue) : base(baseValue)
     {
         this.baseValue = baseValue;
-        if(currentValue == null)
-        {
-            this.currentValue = baseValue;
-        }
-        else
-        {
-            this.currentValue = currentValue;
-        }
+        this.currentValue = currentValue;
     }
 
     public override void AddModifier(int modifier)

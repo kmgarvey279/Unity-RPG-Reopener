@@ -32,11 +32,14 @@ public class PlayableCombatant : Combatant
         battleStatDict.Add(BattleStatType.MagicAttack, new Stat(characterInfo.statDict[StatType.MagicAttack].GetValue() + characterInfo.statDict[StatType.EquipmentMagicAttack].GetValue()));
         battleStatDict.Add(BattleStatType.MagicDefense, new Stat(characterInfo.statDict[StatType.MagicDefense].GetValue() + characterInfo.statDict[StatType.EquipmentMagicDefense].GetValue()));
 
-        battleStatDict.Add(BattleStatType.Accuracy, new Stat(Mathf.FloorToInt(characterInfo.statDict[StatType.Skill].GetValue() / 2)));
-        battleStatDict.Add(BattleStatType.CritRate, new Stat(Mathf.FloorToInt(characterInfo.statDict[StatType.Skill].GetValue() / 3)));
+        battleStatDict.Add(BattleStatType.Accuracy, new Stat(Mathf.FloorToInt((characterInfo.statDict[StatType.Skill].GetValue() / 2) + (characterInfo.statDict[StatType.Agility].GetValue() / 3))));
+        battleStatDict.Add(BattleStatType.CritRate, new Stat(Mathf.FloorToInt(characterInfo.statDict[StatType.Skill].GetValue() / 4)));
         
         battleStatDict.Add(BattleStatType.Speed, new Stat(characterInfo.statDict[StatType.Agility].GetValue()));
-        battleStatDict.Add(BattleStatType.Evasion, new Stat(Mathf.FloorToInt(characterInfo.statDict[StatType.Agility].GetValue() / 2)));
+        battleStatDict.Add(BattleStatType.Evasion, new Stat(Mathf.FloorToInt((characterInfo.statDict[StatType.Agility].GetValue() / 2) + (characterInfo.statDict[StatType.Skill].GetValue() / 3))));
+
+        Debug.Log(characterName + " Accuracy:" + battleStatDict[BattleStatType.Accuracy].GetValue());
+        Debug.Log(characterName + " Evasion:" + battleStatDict[BattleStatType.Evasion].GetValue());
     }
 
     public override void SetTraitEffects()
@@ -59,17 +62,16 @@ public class PlayableCombatant : Combatant
         battlePartyPanel.UpdateHP(hp.GetCurrentValue());
     }
 
-    public override void Damage(int amount, Combatant attacker = null, bool isCrit = false)
+    public override void Damage(int amount, bool isCrit = false)
     {
-        base.Damage(amount, attacker, isCrit);
+        base.Damage(amount, isCrit);
         battlePartyPanel.UpdateHP(hp.GetCurrentValue());
     }
 
-    public override IEnumerator KO()
+    public override IEnumerator KOCo()
     {
-        base.KO();
         animator.SetTrigger("KO");
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
         ko = true;
     }
 }

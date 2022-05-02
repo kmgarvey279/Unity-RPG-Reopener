@@ -430,6 +430,7 @@ MonoBehaviour:
     modifiers: 
     multipliers: []
     currentValue: 0
+  statusEffectInstances: []
   animator: {fileID: 2119515496622217038}
   spriteFill: {fileID: 6529827472571875514}
   gridManager: {fileID: 0}
@@ -451,7 +452,7 @@ PrefabInstance:
     - target: {fileID: 492312833915190303, guid: fd4af50d8bb62e34c9792e3827f5d6a8,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2691703390083264876, guid: fd4af50d8bb62e34c9792e3827f5d6a8,
         type: 3}
@@ -461,12 +462,17 @@ PrefabInstance:
     - target: {fileID: 3212708749983528951, guid: fd4af50d8bb62e34c9792e3827f5d6a8,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3217034016175127444, guid: fd4af50d8bb62e34c9792e3827f5d6a8,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3770087553393616515, guid: fd4af50d8bb62e34c9792e3827f5d6a8,
+        type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3835408952067281519, guid: fd4af50d8bb62e34c9792e3827f5d6a8,
         type: 3}
@@ -477,7 +483,7 @@ PrefabInstance:
         type: 3}
       propertyPath: damagePopup
       value: 
-      objectReference: {fileID: 8612918479412783894}
+      objectReference: {fileID: 0}
     - target: {fileID: 4928016617794244745, guid: fd4af50d8bb62e34c9792e3827f5d6a8,
         type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -621,22 +627,22 @@ PrefabInstance:
     - target: {fileID: 7591723171102645149, guid: fd4af50d8bb62e34c9792e3827f5d6a8,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8106299818686105607, guid: fd4af50d8bb62e34c9792e3827f5d6a8,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8106299818686105607, guid: fd4af50d8bb62e34c9792e3827f5d6a8,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8106299818686105607, guid: fd4af50d8bb62e34c9792e3827f5d6a8,
         type: 3}
       propertyPath: m_AnchorMin.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8226603827321325068, guid: fd4af50d8bb62e34c9792e3827f5d6a8,
         type: 3}
@@ -648,6 +654,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -0.65852
       objectReference: {fileID: 0}
+    - target: {fileID: 8703566199337823772, guid: fd4af50d8bb62e34c9792e3827f5d6a8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fd4af50d8bb62e34c9792e3827f5d6a8, type: 3}
 --- !u!224 &4783557476374590654 stripped
@@ -656,18 +667,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1402383867595480895}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8612918479412783894 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7273734561724347433, guid: fd4af50d8bb62e34c9792e3827f5d6a8,
-    type: 3}
-  m_PrefabInstance: {fileID: 1402383867595480895}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99b9023a6cca5d54c9540d29d6ec1d17, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &4599151406265607339 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3217034016175127444, guid: fd4af50d8bb62e34c9792e3827f5d6a8,

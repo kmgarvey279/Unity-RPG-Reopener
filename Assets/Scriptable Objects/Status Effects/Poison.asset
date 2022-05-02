@@ -9,21 +9,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 458e207d70dac8147a5a6332498da853, type: 3}
+  m_Script: {fileID: 11500000, guid: 6be137f697e5804428fd4db0b1bdf0ac, type: 3}
   m_Name: Poison
   m_EditorClassIdentifier: 
   effectName: Poison
-  effectInfo: Deals non-elemental damage over time and reduces physical attack power
-    by 25%.
+  effectInfo: 
+  statusType: 0
   isBuff: 0
-  icon: {fileID: 0}
-  animatorTrigger: Stun
-  effectObject: {fileID: 0}
-  turnDuration: 3
-  battleStatMultipliers:
-  - statToMultiply: 0
-    multiplier: -0.25
-  damageEffect: 1
-  healEffect: 0
-  potency: 0.5
+  canRemove: 1
+  cannotRefresh: 0
   endOnHit: 0
+  icon: {fileID: 21300000, guid: 62776a6102330f142856b34b144d9885, type: 3}
+  animatorTrigger: 
+  effectObject: {fileID: 7816962457026261443, guid: 9131141102ec4e341a135136152e0dae,
+    type: 3}
+  hasDuration: 1
+  turnDuration: 3
+  potency: 0
+  damageOverTime: 1
+  healOverTime: 0
+  battleStatModifiers: []
+  resistanceModifiers: []
+  triggerableSubEffects: []
