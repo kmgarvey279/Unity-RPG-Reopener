@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class PartyMember
 {
-    public PlayableCharacterID playableCharacterID;
+    public PlayableCharacterInfo playableCharacterInfo;
     public bool inParty;
 }
 

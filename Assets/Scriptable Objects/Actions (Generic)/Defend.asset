@@ -12,29 +12,48 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
   m_Name: Defend
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
   actionName: 
-  descripton: 
   actionType: 3
-  timeCost: 2
+  icon: {fileID: 0}
+  description: 
   mpCost: 0
-  cooldown: 0
+  costsHP: 0
+  apCost: 2
   power: 0
-  accuracy: 0
-  range: 0
-  aoe: 0
-  offensiveStat: 10
-  defensiveStat: 10
+  hitCount: 0
+  offensiveStat: 8
+  defensiveStat: 8
   elementalProperty: 0
+  accuracy: 0
   guaranteedHit: 1
-  distancePenalty: 0
-  effects:
-  - {fileID: 11400000, guid: de4b3712b4007e94d82af67b1656ef34, type: 2}
-  statusEffect: {fileID: 11400000, guid: e2481586b68e82d4391efa0b8186c9eb, type: 2}
-  targetFriendly: 0
-  targetHostile: 0
+  statusEffectChance: 100
+  statusEffectPower: 0
+  statusEffectSO: {fileID: 11400000, guid: 0482997ed5052974c8f834b23bdb3163, type: 2}
+  knockback:
+    doKnockback: 0
+    moveX: 0
+    moveY: 0
+  additionalEffects: []
+  aoes:
+  - aoeType: 0
+    fixedStartPosition: {x: 0, y: 0}
+  isFixedAOE: 0
+  canFlip: 0
+  isMelee: 0
+  isFixedTarget: 1
+  targetFriendly: 1
   targetSelfOnly: 1
-  fixedTarget: 0
-  useGraphicPrefab: {fileID: 0}
+  hitRandomTarget: 0
+  hasCastAnimation: 0
+  castAnimatorTrigger: 
+  castGraphicPrefab: {fileID: 0}
+  castAnimationDuration: 0.4
+  castGraphicDelay: 0.15
+  hasProjectileAnimation: 0
+  projectileAnimatorTrigger: 
+  projectileGraphicPrefab: {fileID: 0}
+  projectileGraphicDelay: 0.15
+  effectAnimatorTrigger: 
   effectGraphicPrefab: {fileID: 0}
-  animatorTrigger: Defend
+  effectAnimationDuration: 0.4
+  effectGraphicDelay: 0.15

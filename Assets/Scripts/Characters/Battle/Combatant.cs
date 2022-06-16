@@ -5,6 +5,22 @@ using UnityEngine.Events;
 using Pathfinding;
 using UnityEngine.Tilemaps;
 
+public class Armor
+{
+    public DynamicStat durability;
+
+    public Armor(float maxDurability)
+    {
+        durability = new DynamicStat(maxDurability, 0);
+    }
+}
+
+public class CounterAction
+{
+    public Action action;
+    public float chance;
+}
+
 public enum BattleStatType
 {
     Attack,
@@ -18,75 +34,133 @@ public enum BattleStatType
     None
 }
 
-[System.Serializable]
-public class StatusEffectInstance
-{
-    public StatusEffectSO statusEffectSO;
-    public int turnCounter;
-    public int potency;
-
-    public StatusEffectInstance(StatusEffectSO statusEffectSO, int potency)
-    {
-        this.statusEffectSO = statusEffectSO;
-        this.turnCounter = statusEffectSO.turnDuration;
-        this.potency = potency;
-    }
-}
-
 public class Combatant : MonoBehaviour
 {
-    [Header("Character Stats")]
+    [Header("Character Data")]
+    public CombatantType combatantType;
     public CharacterInfo characterInfo;
+    public bool isLoaded = false;
+
+    [Header("Character Stats")]
     public string characterName;
     public int level;
     public DynamicStat hp;
     public DynamicStat mp;
     public Dictionary<BattleStatType, Stat> battleStatDict = new Dictionary<BattleStatType, Stat>();
-    public Dictionary<ElementalProperty, Stat> resistDict;
-    // [Header("Triggerable Effects")]
+    public Dictionary<EventTriggerType, List<ActionEventModifier>> actionEventModifiers = new Dictionary<EventTriggerType, List<ActionEventModifier>>()
+    {
+        {EventTriggerType.OnAct, new List<ActionEventModifier>()},
+        {EventTriggerType.OnTargeted, new List<ActionEventModifier>()},
+        {EventTriggerType.OnPartyTargeted, new List<ActionEventModifier>()}
+    };
+    public Dictionary<ElementalProperty, ElementalResistance> resistDict;
     // public List<SubEffect> triggerableSubEffects = new List<TriggerableSubEffect>();
+    
     [Header("Status")]
     public List<StatusEffectInstance> statusEffectInstances;
-    [Header("Game Object Components")]
+    public Armor armor;
+    
+    [Header("Animations")]
     [HideInInspector] public Animator animator;
+    public string overrideAnimation = "";
+    public bool lockAnimation = false;
     [SerializeField] protected GameObject spriteFill;
+    
     [Header("Parent Scripts")]
     public GridManager gridManager;
+    
     [Header("Child Scripts")]
-    protected HealthDisplay healthDisplay;
+    public HealthDisplay healthDisplay;
     protected MaskController maskController;
+    
     [Header("Events")]
     [SerializeField] protected SignalSenderGO onTargetSelect;
     [SerializeField] protected SignalSenderGO onTargetDeselect;
-    [SerializeField] protected SignalSenderGO OnCombatantKO;
+    
     [Header("Movement and Targeting")]
     public Tile tile;
-    [HideInInspector] public GridMovement gridMovement;
+    public bool moving = false;
+    public float moveSpeedMultiplier = 1f;
+    public Transform moveDestination;
+    // [HideInInspector] public GridMovement gridMovement;
     public Vector2 defaultDirection;
-    private bool selected = false;
+    protected bool selected = false;
+    
+    [Header("Turns")]
+    public TurnCounter turnCounter;
+    
+    [Header("Actions")]
+    public Action attack;
+    public CounterAction counterAction;
 
     public virtual void Awake()
     {
-        characterName = characterInfo.characterName;
-        //stats
-        level = characterInfo.level;
-        hp = new DynamicStat(characterInfo.hp.GetValue(), characterInfo.hp.GetCurrentValue());
-        mp = new DynamicStat(characterInfo.mp.GetValue(), characterInfo.hp.GetCurrentValue());
-        resistDict = characterInfo.resistDict;
-        SetBattleStats();
-        SetTraitEffects();
         //child components
         healthDisplay = GetComponentInChildren<HealthDisplay>();
         maskController = GetComponentInChildren<MaskController>();
-        gridMovement = GetComponentInChildren<GridMovement>();
+        // gridMovement = GetComponentInChildren<GridMovement>();
+        turnCounter = new TurnCounter(this);
+        // armor = new Armor();
     }
 
-    public virtual void SetBattleStats()
+    public virtual void SetCharacterData(CharacterInfo characterInfo)
     {
+        this.characterInfo = characterInfo;
+        //basic info
+        characterName = characterInfo.characterName;
+        level = characterInfo.level;
+        //hp/mp
+        hp = new DynamicStat(characterInfo.hp.GetValue(), characterInfo.hp.GetCurrentValue());
+        mp = new DynamicStat(characterInfo.mp.GetValue(), characterInfo.hp.GetCurrentValue());
+        //stats
+        battleStatDict.Add(BattleStatType.Accuracy, new Stat((characterInfo.statDict[StatType.Skill].GetValue() / 2) + (characterInfo.statDict[StatType.Agility].GetValue() / 3)));
+        battleStatDict.Add(BattleStatType.CritRate, new Stat((characterInfo.statDict[StatType.Skill].GetValue() / 4)));
+        battleStatDict.Add(BattleStatType.Speed, new Stat(characterInfo.statDict[StatType.Agility].GetValue() / 2));
+        battleStatDict.Add(BattleStatType.Evasion, new Stat((characterInfo.statDict[StatType.Agility].GetValue() / 2) + (characterInfo.statDict[StatType.Skill].GetValue() / 3)));
+        //resistances
+        resistDict = characterInfo.resistDict;
+        //actions
+        this.attack = characterInfo.attack;
+        this.counterAction = characterInfo.counterAction;
+        //action event modifiers
+        foreach(ActionEventModifier actionEventModifier in characterInfo.actionEventModifiers)
+        {
+            actionEventModifiers[actionEventModifier.eventTriggerType].Add(actionEventModifier);
+        }
     }
 
-    public virtual void SetTraitEffects()
+    protected void Start()
     {
+        gridManager = GetComponentInParent<GridManager>();
+        healthDisplay = GetComponentInChildren<HealthDisplay>();
+        maskController = GetComponentInChildren<MaskController>();
+        turnCounter = new TurnCounter(this);
+    }
+
+    private void Update()
+    {
+        float moveSpeed = 4f * moveSpeedMultiplier;
+        if(moving)
+        {
+            if(Vector3.Distance(transform.position, moveDestination.transform.position) < 0.0001f)
+            { 
+                moving = false;
+                moveDestination = null;
+                moveSpeedMultiplier = 1f;
+                ReturnToDefaultAnimation();
+                SetDirection(defaultDirection);
+            }
+            else
+            {
+                Vector3 moveDirection = (moveDestination.transform.position - transform.position).normalized;
+                if(!Mathf.Approximately(moveDirection.x, 0.0f) || !Mathf.Approximately(moveDirection.y, 0.0f))
+                {
+                    SetDirection(new Vector2(Mathf.Round(moveDirection.x), Mathf.Round(moveDirection.y)));
+                }
+                float step = moveSpeed * Time.deltaTime; 
+                transform.position = Vector3.MoveTowards(transform.position, moveDestination.transform.position, step);   
+            }
+        }
     }
 
     public virtual void OnTurnStart()
@@ -95,13 +169,10 @@ public class Combatant : MonoBehaviour
         {
             for(int i = statusEffectInstances.Count - 1; i >= 0; i--)
             {
-                if(statusEffectInstances[i].statusEffectSO.hasDuration)
+                statusEffectInstances[i].OnTurnStart(this);
+                if(statusEffectInstances[i].statusEffectSO.hasDuration && statusEffectInstances[i].turnCounter <= 0)
                 {
-                    statusEffectInstances[i].turnCounter--;
-                    if(statusEffectInstances[i].turnCounter <= 0)
-                    {
-                        RemoveStatusEffect(statusEffectInstances[i]);
-                    }
+                    RemoveStatusEffect(statusEffectInstances[i]);
                 }
             }
         }
@@ -113,36 +184,59 @@ public class Combatant : MonoBehaviour
         {
             foreach(StatusEffectInstance statusEffectInstance in statusEffectInstances)
             {
-                int healthChange = statusEffectInstance.statusEffectSO.GetHealthChange(this, statusEffectInstance.potency, statusEffectInstance.turnCounter);
-                if(healthChange > 0)
-                {
-                    Heal(healthChange);
-                }
-                else if(healthChange < 0)
-                {
-                    Damage(Mathf.Abs(healthChange));
-                }
+                // if(StatusEffectInstance is StatusEffectInstanceHealth)
+                // {
+                //     int healthChange = statusEffectInstance.GetHealthChange();
+                //     if(healthChange > 0)
+                //     {
+                //         Heal(healthChange);
+                //     }
+                //     else if(healthChange < 0)
+                //     {
+                //         Damage(Mathf.Abs(healthChange));
+                //     }
+                // }
+                statusEffectInstance.OnTurnEnd(this);
             }
         }
     }
 
-    public void Move(List<Tile> path, MovementType movementType)
+    public void Knockback(Vector2Int newCoordinates)
     {
-        SetTile(tile, path[path.Count - 1]);
-        gridMovement.Move(path, movementType);
+        Tile destinationTile = tile;
+        destinationTile = gridManager.GetTileArray(combatantType)[newCoordinates.x, newCoordinates.y];
+        if(destinationTile && destinationTile != tile && destinationTile.occupiers.Count < 3)
+        {
+            StartCoroutine(ChangeTile(destinationTile, "Stun")); 
+        }
+    }
+
+    public IEnumerator ChangeTile(Tile newTile, string moveAnimation)
+    {
+        Debug.Log("change tile1");
+        Move(newTile.transform, moveAnimation);
+        yield return new WaitUntil(() => !moving);
+        SetTile(tile, newTile);
+
+    }
+
+    public void Move(Transform destination, string moveAnimation, float moveSpeedMultiplier = 1f)
+    {
+        Debug.Log("Move1");
+        if(destination.position != transform.position)
+        {
+            animator.SetTrigger(moveAnimation);
+            moveDestination = destination;
+            this.moveSpeedMultiplier = moveSpeedMultiplier;
+            moving = true;
+        }
     }
 
     public void SetTile(Tile originalTile, Tile newTile)
     {
-        originalTile.UnassignOccupier();
+        originalTile.UnassignOccupier(this);
         newTile.AssignOccupier(this);
         this.tile = newTile;
-    }
-
-    public void FaceTarget(Transform target)
-    {
-        Vector2 direction = (target.position - transform.position).normalized;
-        SetDirection(direction);
     }
 
     public Vector2 GetDirection()
@@ -156,54 +250,55 @@ public class Combatant : MonoBehaviour
         animator.SetFloat("Look Y", newDirection.y);
     }
 
-    public virtual void EvadeAttack(Combatant attacker)
+    public void TriggerActionEffectAnimation(string newAnimatorTrigger)
     {
-        animator.SetTrigger("Move");
-        healthDisplay.HandleHealthChange(DamagePopupType.Miss, 0);
-        StartCoroutine(ReturnToIdleCo());
-    }
-
-    private IEnumerator ReturnToIdleCo()
-    {
-        yield return new WaitForSeconds(0.3f);
-        animator.SetTrigger("Idle");
-    }
-
-    public void TakeHit(Combatant attacker)
-    {
-        Vector2 attackDirection = attacker.GetDirection();
-        if(attackDirection.x != 0 || attackDirection.y !=0)
-            SetDirection(new Vector2(-attackDirection.x, -attackDirection.y));
-        //switch to damage animation
-        animator.SetTrigger("Stun");
-    }
-
-    public virtual void Damage(int damage, bool isCrit = false)
-    {
-        Debug.Log(characterName + " took " + damage + " damage");
-        hp.ChangeCurrentValue(-damage);
-        if(isCrit)
+        if(!lockAnimation && newAnimatorTrigger != "")
         {
-            healthDisplay.HandleHealthChange(DamagePopupType.Crit, damage);
-        }
-        else
-        {
-            healthDisplay.HandleHealthChange(DamagePopupType.Damage, damage);
+            animator.SetTrigger(newAnimatorTrigger);
         }
     }
 
-    public virtual void Heal(int amount)
+    public void ReturnToDefaultAnimation()
+    {
+        if(!lockAnimation)
+        {
+            if(overrideAnimation == "")
+            {
+                animator.SetTrigger("Idle");
+            }
+            else
+            {
+                animator.SetTrigger(overrideAnimation);
+            }
+        }
+    }
+
+    public virtual void Damage(float amount, bool isCrit = false)
+    {
+        hp.ChangeCurrentValue(-amount);
+        healthDisplay.DisplayHealthChange(PopupType.Damage, -amount, isCrit);
+    }
+    public virtual void Heal(float amount, bool isCrit = false)
     {
         hp.ChangeCurrentValue(amount);
-        healthDisplay.HandleHealthChange(DamagePopupType.Heal, amount);
+        healthDisplay.DisplayHealthChange(PopupType.Heal, amount, isCrit);
+    }
+    public virtual void ResolveHealthChange()
+    {
+        healthDisplay.ResolveHealthChange();
     }
 
-    public void AddStatusEffect(StatusEffectSO statusEffectSO, int potency)
+    public void DisplayMessage(PopupType popupType, string message)
+    {
+        healthDisplay.DisplayMessage(popupType, message);
+    }
+
+    public void AddStatusEffect(StatusEffectSO newStatusEffectSO)
     {
         //clear duplicates
         foreach(StatusEffectInstance thisStatusInstance in statusEffectInstances)
         {
-            if(thisStatusInstance.statusEffectSO == statusEffectSO)
+            if(thisStatusInstance.statusEffectSO == newStatusEffectSO)
             {
                 if(thisStatusInstance.statusEffectSO.cannotRefresh)
                 {
@@ -211,39 +306,43 @@ public class Combatant : MonoBehaviour
                 }
                 RemoveStatusEffect(thisStatusInstance);
             }
+            if(thisStatusInstance.statusEffectSO == newStatusEffectSO.effectToCancel)
+            {
+                RemoveStatusEffect(thisStatusInstance);
+                if(newStatusEffectSO.cancelSelf)
+                {
+                    return;
+                }
+            }
         }
-        StatusEffectInstance newStatusInstance = new StatusEffectInstance(statusEffectSO, potency);
-        //add status effect to list
-        statusEffectInstances.Add(newStatusInstance);
-        //apply stat modifiers        
-        foreach(BattleStatModifier battleStatModifier in newStatusInstance.statusEffectSO.battleStatModifiers)
-        {
-            battleStatDict[battleStatModifier.statToModify].AddMultiplier(battleStatModifier.multiplier);  
-        }
-        foreach(ResistanceModifier resistanceModifier in newStatusInstance.statusEffectSO.resistanceModifiers)
-        {
-            resistDict[resistanceModifier.resistanceToModify].AddMultiplier(resistanceModifier.multiplier);  
-        }
-        //display icon
-        healthDisplay.AddStatusIcon(statusEffectSO);
-        //change character sprite (if applicable);
-        if(statusEffectSO.animatorTrigger != null)
-            animator.SetTrigger(statusEffectSO.animatorTrigger);
+        StatusEffectInstance newStatusInstance = newStatusEffectSO.CreateInstance();   
+        statusEffectInstances.Add(newStatusInstance);  
+        
+        newStatusInstance.OnApply(this);
+
+        if(newStatusInstance.statusEffectSO.effectObject != null)
+            StartCoroutine(TriggerStatusAnimationCo(newStatusInstance.statusEffectSO.effectObject));     
+        if(newStatusEffectSO.animatorTrigger != null)
+            animator.SetTrigger(newStatusEffectSO.animatorTrigger);
+        healthDisplay.AddStatusIcon(newStatusEffectSO);
+    }
+
+    protected IEnumerator TriggerStatusAnimationCo(GameObject effectPrefab)
+    {
+        float duration = 0.5f;
+        GameObject effectObject = Instantiate(effectPrefab, transform.position, Quaternion.identity);
+        //destory visual effect
+        yield return new WaitForSeconds(duration);
+        Destroy(effectObject);
     }
 
     public void RemoveStatusEffect(StatusEffectInstance statusEffectInstance)
     {
         if(statusEffectInstances.Contains(statusEffectInstance))
         {
-            RemoveStatusEffect(statusEffectInstance);
-            foreach(BattleStatModifier battleStatModifier in statusEffectInstance.statusEffectSO.battleStatModifiers)
-            {
-                battleStatDict[battleStatModifier.statToModify].RemoveMultiplier(battleStatModifier.multiplier);  
-            }
-            foreach(ResistanceModifier resistanceModifier in statusEffectInstance.statusEffectSO.resistanceModifiers)
-            {
-                resistDict[resistanceModifier.resistanceToModify].RemoveMultiplier(resistanceModifier.multiplier);  
-            }
+            statusEffectInstance.OnRemove(this);
+
+            statusEffectInstances.Remove(statusEffectInstance);
             healthDisplay.RemoveStatusIcon(statusEffectInstance.statusEffectSO);
             if(statusEffectInstance.statusEffectSO.animatorTrigger != null)
                 animator.SetTrigger("Idle");

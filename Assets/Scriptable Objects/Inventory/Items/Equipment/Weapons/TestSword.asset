@@ -17,17 +17,12 @@ MonoBehaviour:
   itemDescription: 'Weapon. '
   icon: {fileID: 21300000, guid: a2c6f6d826b925a47956c0b33a527b42, type: 3}
   itemType: 1
-  equipmentType: 1
-  equipmentMeleeAttack: 10
-  equipmentRangedAttack: 0
-  equipmentMagicAttack: 0
-  equipmentPhysicalDefense: 0
-  equipmentMagicDefense: 0
+  equipmentType: 0
   hpModifier: 0
   mpModifier: 0
-  attackModifier: 0
+  attackModifier: 5
   defenseModifier: 0
-  magicModifier: 0
+  magicAttackModifier: 0
   magicDefenseModifier: 0
   skillModifier: 0
   agilityModifier: 0
@@ -35,8 +30,10 @@ MonoBehaviour:
   iceResistance: 0
   electricResistance: 0
   darkResistance: 0
+  lightResistance: 0
   claireEquip: 1
-  mutinyEquip: 1
+  mutinyEquip: 0
   shadEquip: 0
-  blaineEquip: 1
+  blaineEquip: 0
   lucyEquip: 0
+  oshiEquip: 0

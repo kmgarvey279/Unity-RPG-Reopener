@@ -13,8 +13,7 @@ public class GridMovement : MonoBehaviour
     private Combatant combatant; 
     [SerializeField] private List<Tile> path = new List<Tile>();
     private MovementType movementType;
-    [SerializeField] private SignalSenderGO onMoveComplete;
-    [SerializeField] private SignalSenderGO onKnockbackComplete;
+    public bool moveComplete;
 
     private void Start()
     {
@@ -23,10 +22,11 @@ public class GridMovement : MonoBehaviour
 
     public void Move(List<Tile> path, MovementType movementType)
     {
+        moveComplete = false;
         this.path = path;
         if(path.Count <= 1 )
         {
-            onMoveComplete.Raise(combatant.gameObject);
+            moveComplete = true;
         }
         else
         {
@@ -40,15 +40,8 @@ public class GridMovement : MonoBehaviour
 
     public virtual void EndMove()
     {
-        if(movementType == MovementType.Move)
-        {
-            combatant.animator.SetTrigger("Idle");
-            onMoveComplete.Raise(combatant.gameObject);
-        }
-        else if(movementType == MovementType.Knockback)
-        {
-            onKnockbackComplete.Raise(combatant.gameObject);
-        }
+        combatant.animator.SetTrigger("Idle");
+        moveComplete = true;
         if(combatant is PlayableCombatant)
         {
             combatant.SetDirection(new Vector2(1,0));

@@ -14,31 +14,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterName: Shad
   level: 1
-  baseHP: 80
+  baseHP: 200
   hp:
-    baseValue: 80
-    modifiers: 
+    baseValue: 200
+    additives: []
     multipliers: []
-    currentValue: 80
+    currentValue: 200
   baseMP: 80
   mp:
     baseValue: 80
-    modifiers: 
+    additives: []
     multipliers: []
     currentValue: 80
-  attack: 10
-  defense: 7
-  magicAttack: 0
-  magicDefense: 13
-  skill: 20
-  agility: 12
+  attackStat: 4
+  defenseStat: 4
+  magicAttackStat: 4
+  magicDefenseStat: 4
+  skillStat: 7
+  agilityStat: 4
   fireResist: 0
-  iceResist: 0
-  electricResist: 0
-  darkResist: 0
+  iceResist: 2
+  electricResist: 1
+  darkResist: 1
+  lightResist: 1
   traits: []
+  attack: {fileID: 11400000, guid: 3ea64f3f664001d448226a78e134908a, type: 2}
   skills: []
   weapon: {fileID: 0}
   armor: {fileID: 0}
   accessory: {fileID: 0}
-  characterID: 0
+  characterID: 2

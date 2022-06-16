@@ -5,23 +5,20 @@ using UnityEngine;
 [System.Serializable]
 public class Stat
 {
-    [SerializeField] protected int baseValue;
-    [SerializeField] protected List<int> modifiers = new List<int>();
+    [SerializeField] protected float baseValue;
+    [SerializeField] protected List<float> additives = new List<float>();
     [SerializeField] protected List<float> multipliers = new List<float>();
 
-    public Stat(int baseValue)
+    public Stat(float baseValue)
     {
         this.baseValue = baseValue;
     }
 
-    public int GetValue()
+    public float GetValue()
     {
-        int finalValue = baseValue;
-        modifiers.ForEach(x => finalValue += x);
-        foreach (float multiplier in multipliers)
-        {
-            finalValue = Mathf.RoundToInt((float)finalValue * multiplier);
-        }
+        float finalValue = baseValue;
+        additives.ForEach(x => finalValue += x);
+        multipliers.ForEach(x => finalValue *= x);
         return finalValue;
     }
 
@@ -30,33 +27,29 @@ public class Stat
         baseValue = baseValue + amount;
     }
 
-    public virtual void AddModifier(int modifier)
+    public virtual void AddAdditive(float additive)
     {
-        if(modifier != 0)
-            modifiers.Add(modifier);
+        additives.Add(additive);
     }
 
     public virtual void AddMultiplier(float multiplier)
     {
-        if(multiplier != 0)
-            multipliers.Add(multiplier);
+        multipliers.Add(multiplier);
     }
 
-    public virtual void RemoveModifier(int modifier)
+    public virtual void RemoveAdditive(float additive)
     {
-        if(modifier != 0)
-            modifiers.Remove(modifier);
+        additives.Remove(additive);
     }
 
     public virtual void RemoveMultiplier(float multiplier)
     {
-        if(multiplier != 0)
-            multipliers.Remove(multiplier);
+        multipliers.Remove(multiplier);
     }
 
     public virtual void RemoveAllModifiers()
     {
-        modifiers.Clear();
+        additives.Clear();
         multipliers.Clear();
     }
 }

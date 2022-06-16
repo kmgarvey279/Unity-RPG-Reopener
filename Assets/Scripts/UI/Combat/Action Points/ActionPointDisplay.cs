@@ -20,8 +20,8 @@ public class ActionPointDisplay : MonoBehaviour
         }
         for(int i = 0; i < apCount; i++)
         {
-            GameObject apIcon = Instantiate(iconPrefab, transform.position, Quaternion.identity);
-            apIcon.transform.parent = gameObject.transform;      
+            GameObject apIcon = Instantiate(iconPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            apIcon.transform.SetParent(gameObject.transform, false);    
             icons.Add(apIcon);  
         }
     }

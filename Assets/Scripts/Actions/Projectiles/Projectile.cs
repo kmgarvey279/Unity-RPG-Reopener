@@ -1,15 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using DG.Tweening;
-using System;
+﻿using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
     private bool moving;
     private Vector3 target;
     private float moveSpeed = 5f;
-    [SerializeField] private SignalSender onProjectileEnd;
+    public bool reachedTarget = false;
 
     private void Update()
     {
@@ -17,8 +13,7 @@ public class Projectile : MonoBehaviour
         {
             if(Vector3.Distance(transform.position, target) < 0.0001f)
             {
-                onProjectileEnd.Raise();
-                Destroy(this.gameObject);
+                reachedTarget = true;
             }
             else
             {

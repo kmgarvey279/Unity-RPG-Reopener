@@ -17,39 +17,42 @@ MonoBehaviour:
   icon: {fileID: 0}
   description: 
   mpCost: 10
-  apCost: 1
-  power: 1
+  costsHP: 0
   hitCount: 1
   offensiveStat: 0
   defensiveStat: 1
   elementalProperty: 0
-  statusEffectChance: 0
-  statusEffectSO: {fileID: 0}
-  knockback:
-    doKnockback: 1
-    moveX: -1
-    moveY: 0
-  additionalEffects: []
+  actionEffectTriggers:
+  - actionEffect: {fileID: 11400000, guid: edd980297ec8a574c9fd77338fef839e, type: 2}
+    successRate: 100
+    power: 0
+  - actionEffect: {fileID: 11400000, guid: 3da62d540c90b474db456b4a6bc9d6a9, type: 2}
+    successRate: 100
+    power: 10
+  - actionEffect: {fileID: 11400000, guid: 823c0e15283eb23428938b5581453ec2, type: 2}
+    successRate: 100
+    power: 0
+  accuracy: 95
+  guaranteedHit: 0
+  statusEffectSO: {fileID: 11400000, guid: f2dea2b6a0c30634d932e8a6b1a8660b, type: 2}
   aoes:
   - aoeType: 0
     fixedStartPosition: {x: 0, y: 0}
   isFixedAOE: 0
   canFlip: 0
-  isMelee: 0
+  isMelee: 1
   isFixedTarget: 1
-  targetFriendly: 0
+  targetingType: 1
   hitRandomTarget: 0
   hasCastAnimation: 0
   castAnimatorTrigger: 
   castGraphicPrefab: {fileID: 0}
   castAnimationDuration: 0
   castGraphicDelay: 0
+  executeAnimatorTrigger: 
+  effectGraphicDelay: 0.15
   hasProjectileAnimation: 0
-  projectileAnimatorTrigger: 
   projectileGraphicPrefab: {fileID: 0}
-  projectileGraphicDelay: 0
-  effectAnimatorTrigger: Melee
   effectGraphicPrefab: {fileID: 173376264066434547, guid: c1c96842e9fb8f748bb5fafd959e002b,
     type: 3}
   effectAnimationDuration: 0.4
-  effectGraphicDelay: 0.15

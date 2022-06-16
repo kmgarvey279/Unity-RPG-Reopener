@@ -14,18 +14,17 @@ public class PotentialAction
     public Tile targetedTile;
     public List<Combatant> targets;
     public bool flip;
-    public TargetType targetType;
-    public PotentialAction(Action action, int baseWeight, Tile targetedTile, List<Combatant> targets, bool flip)
+    public CombatantType combatantType;
+    public PotentialAction(Action action, int baseWeight, Tile targetedTile, List<Combatant> targets)
     {
         this.action = action;
         this.baseWeight = baseWeight;
         this.targetedTile = targetedTile;
         this.targets = targets;
-        this.flip = flip;
-        this.targetType = TargetType.TargetPlayer;
-        if(action.targetFriendly)
+        this.combatantType = CombatantType.Player;
+        if(action.targetingType == TargetingType.TargetFriendly)
         {
-            targetType = TargetType.TargetEnemy;
+            combatantType = CombatantType.Enemy;
         }
     }
     public int GetWeight()
@@ -44,7 +43,7 @@ public class EnemyTurnState : BattleState
     {
         base.OnEnter();
         // onCameraZoomOut.Raise();
-        SetActionPhase();
+        StartCoroutine(SetActionCo());
     }
 
     public override void StateUpdate()
@@ -62,12 +61,21 @@ public class EnemyTurnState : BattleState
         base.OnExit();
     }
 
-    private void SetActionPhase()
+    private IEnumerator SetActionCo()
     {
+        EnemyCombatant thisEnemy = (EnemyCombatant)turnData.combatant;
+        if(!turnData.hasMoved)
+        {
+            if(thisEnemy.tile != thisEnemy.preferredTile && thisEnemy.preferredTile.occupiers.Count < 3)
+            {
+                thisEnemy.ChangeTile(thisEnemy.preferredTile, "Move");
+                yield return new WaitUntil(() => !turnData.combatant.moving);
+            }
+        }
         PotentialAction potentialAction = GetAction();
         battleManager.SetAction(potentialAction.action);
-        battleManager.SetTargets(potentialAction.targetedTile, potentialAction.targets, potentialAction.targetType, potentialAction.flip);
-        
+        battleManager.SetTargets(potentialAction.targetedTile, potentialAction.targets);
+    
         stateMachine.ChangeState((int)BattleStateType.Execute); 
     }
 
@@ -79,44 +87,26 @@ public class EnemyTurnState : BattleState
         List<PotentialAction> potentialActions = new List<PotentialAction>();
         foreach(WeightedAction weightedAction in enemyInfo.weightedActions)
         {
-            if(weightedAction.action.apCost > turnData.actionPoints)
+            CombatantType combatantType = CombatantType.Player;
+            if(weightedAction.action.targetingType == TargetingType.TargetFriendly)
             {
-                break;
+                combatantType = CombatantType.Enemy;
             }
+            List<Combatant> targets = battleManager.GetCombatants(combatantType);
 
-            TargetType targetType = TargetType.TargetPlayer;
-            List<Combatant> targets = battleManager.PlayableCombatants;
-            if(weightedAction.action.targetFriendly)
+            List<PotentialAction> tempPotentialActions = new List<PotentialAction>();
+            //simulate aoe on each target, check total number of targets hit 
+            foreach(Combatant target in targets)
             {
-                targetType = TargetType.TargetEnemy;
-                targets = battleManager.EnemyCombatants;
-            }
-
-            if(weightedAction.action.actionType == ActionType.Move)
-            {
-
-            }
-            else
-            {
-                List<PotentialAction> tempPotentialActions = new List<PotentialAction>();
-                //simulate aoe on each target, check total number of targets hit 
-                foreach(Combatant target in targets)
+                //is the selected target valid?
+                if(weightedAction.action.isFixedAOE || ActionCheck(weightedAction.action, target))
                 {
-                    //is the selected target valid?
-                    if(weightedAction.action.isFixedAOE || ActionCheck(weightedAction.action, target))
-                    {
-                        List<Combatant> targetsInAOE = GetTargets(weightedAction.action, target, targetType, false);
-                        tempPotentialActions.Add(new PotentialAction(weightedAction.action, weightedAction.BaseWeight(), target.tile, targetsInAOE, false));
-                        if(weightedAction.action.canFlip)
-                        {
-                            targetsInAOE = GetTargets(weightedAction.action, target, targetType, true);
-                            tempPotentialActions.Add(new PotentialAction(weightedAction.action, weightedAction.BaseWeight(), target.tile, targetsInAOE, true));
-                        }
-                    }
-                    if(weightedAction.action.isFixedAOE)
-                    {
-                        break;
-                    }
+                    List<Combatant> targetsInAOE = GetTargets(weightedAction.action, target, combatantType);
+                    tempPotentialActions.Add(new PotentialAction(weightedAction.action, weightedAction.BaseWeight(), target.tile, targetsInAOE));
+                }
+                if(weightedAction.action.isFixedAOE)
+                {
+                    break;
                 }
                 if(tempPotentialActions.Count > 0)
                 {
@@ -164,14 +154,14 @@ public class EnemyTurnState : BattleState
                 }
             }
         }
-        return new PotentialAction(wait, 0, thisEnemy.tile, new List<Combatant>(), false);
+        return new PotentialAction(wait, 0, thisEnemy.tile, new List<Combatant>());
     }
 
 
-    private List<Combatant> GetTargets(Action action, Combatant target, TargetType targetType, bool flip)
+    private List<Combatant> GetTargets(Action action, Combatant target, CombatantType combatantType)
     {
-        List<Tile> aoeTiles = gridManager.GetAOETiles(target.tile, action, targetType, flip);
-        List<Combatant> targetsInAOE = gridManager.GetTargetsInAOE(aoeTiles, targetType);
+        List<Tile> aoeTiles = gridManager.GetAOETiles(target.tile, action, combatantType);
+        List<Combatant> targetsInAOE = gridManager.GetTargetsInAOE(aoeTiles, combatantType);
         for(int i = targetsInAOE.Count - 1; i >= 0; i--)
         {
             //if target should not be targeted, remove it from aoe list
@@ -187,27 +177,27 @@ public class EnemyTurnState : BattleState
     private bool ActionCheck(Action action, Combatant target)
     {
         bool useAction = false;
-        switch (action.actionType)
-        {
-        case ActionType.Attack:
-            useAction = AttackCheck(action, target);
-            break;
-        case ActionType.Heal:
-            useAction = HealCheck(action, target);
-            break;
-        case ActionType.AddStatusEffect:
-            useAction = AddStatusEffectCheck(action, target);
-            break;
-        case ActionType.RemoveStatusEffects:
-            useAction = RemoveStatusEffectsCheck(action, target);
-            break;
-        case ActionType.Other:
-            useAction = true;
-            break;
-        default:
-            useAction = false;
-            break;
-        }
+        // switch (action.actionType)
+        // {
+        // case ActionType.Attack:
+        //     useAction = AttackCheck(action, target);
+        //     break;
+        // case ActionType.Heal:
+        //     useAction = HealCheck(action, target);
+        //     break;
+        // case ActionType.AddStatusEffect:
+        //     useAction = AddStatusEffectCheck(action, target);
+        //     break;
+        // case ActionType.RemoveStatusEffects:
+        //     useAction = RemoveStatusEffectsCheck(action, target);
+        //     break;
+        // case ActionType.Other:
+        //     useAction = true;
+        //     break;
+        // default:
+        //     useAction = false;
+        //     break;
+        // }
         return useAction;
     }
 
@@ -242,23 +232,6 @@ public class EnemyTurnState : BattleState
         }
     }
 
-    private List<Tile> MoveCheck(int direction)
-    {
-        int newColumn = turnData.combatant.tile.y + direction;
-        List<Tile> unoccupiedTiles = new List<Tile>();
-        Tile[,] tileArray = battleManager.gridManager.GetTileArray(TargetType.TargetEnemy);
-
-        for(int i = 0; i < 2; i++)
-        {
-            Tile tile = tileArray[i, newColumn];
-            if(!tile.occupier)
-            {
-                unoccupiedTiles.Add(tile);
-            }
-        }
-        return unoccupiedTiles;
-    }
-
     private bool AddStatusEffectCheck(Action action, Combatant target)
     {
         foreach(StatusEffectInstance statusEffectInstance in target.statusEffectInstances)
@@ -277,12 +250,10 @@ public class EnemyTurnState : BattleState
         {
             foreach(StatusEffectInstance statusEffectInstance in target.statusEffectInstances)
             {
-                //if ally has a negative status effect...
                 if(target is PlayableCombatant && statusEffectInstance.statusEffectSO.isBuff)
                 {
                     return true;
                 }
-                //if playablable character had a positive status effect
                 else if(target is EnemyCombatant && !statusEffectInstance.statusEffectSO.isBuff)
                 {
                     return true;

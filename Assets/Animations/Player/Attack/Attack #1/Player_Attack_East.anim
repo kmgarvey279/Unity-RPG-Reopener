@@ -90,11 +90,3 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.6666667
-    functionName: ReturnToIdleState
-    data: 
-    objectReferenceParameter: {fileID: 7887917972336964174, guid: 61f78bef9429dc1469d0edf2ca4ed0d5,
-      type: 3}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0

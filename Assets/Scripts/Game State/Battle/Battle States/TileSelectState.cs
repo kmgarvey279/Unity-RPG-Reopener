@@ -9,8 +9,7 @@ public class TileSelectState : BattleState
 {
     private Tile selectedTile;
     private List<Combatant> selectedTargets;
-    private TargetType targetType;
-    private bool flip;
+    private CombatantType combatantType;
     [Header("Events")]
     [SerializeField] private SignalSender onCameraZoomOut;
 
@@ -20,23 +19,22 @@ public class TileSelectState : BattleState
         //set defaults
         selectedTile = null;
         selectedTargets = new List<Combatant>();
-        flip = false;
         // onCameraZoomOut.Raise();
         //display tiles
-        targetType = TargetType.TargetEnemy;
-        if(turnData.action.targetFriendly)
+        combatantType = CombatantType.Enemy;
+        if(turnData.actionEvent.action.targetingType == TargetingType.TargetFriendly)
         {
-            targetType = TargetType.TargetPlayer;
+            combatantType = CombatantType.Player;
         }
 
-        if(turnData.action.isFixedTarget)
+        if(turnData.actionEvent.action.isFixedTarget)
         {
-            gridManager.DisplaySelectableTargets(turnData.combatant.tile, targetType, turnData.action.isMelee);
+            gridManager.DisplaySelectableTargets(turnData.actionEvent.action, combatantType, turnData.combatant.tile);
         }
         else
         {   
-            gridManager.DisplaySelectableTiles(turnData.action, targetType, turnData.combatant.tile);
-            if(turnData.action.isFixedAOE)
+            gridManager.DisplaySelectableTiles(turnData.actionEvent.action, combatantType, turnData.combatant.tile);
+            if(turnData.actionEvent.action.isFixedAOE)
             {
                 SpawnAOEs();
             }
@@ -47,9 +45,9 @@ public class TileSelectState : BattleState
     {
         if(Input.GetButtonDown("Select"))
         {
-            if(selectedTargets.Count > 0 || turnData.action.actionType == ActionType.Move) 
+            if(selectedTargets.Count > 0 || turnData.actionEvent.action.actionType == ActionType.Move) 
             {
-                battleManager.SetTargets(selectedTile, selectedTargets, targetType, flip);
+                battleManager.SetTargets(selectedTile, selectedTargets);
                 stateMachine.ChangeState((int)BattleStateType.Execute); 
             }
             else 
@@ -60,12 +58,11 @@ public class TileSelectState : BattleState
         else if(Input.GetButtonDown("Cancel"))
         {
             battleManager.CancelAction();
+            foreach(Combatant combatant in selectedTargets)
+            {
+                combatant.ToggleHPBar(false);
+            }
             stateMachine.ChangeState((int)BattleStateType.Menu);
-        }
-        else if(Input.GetButtonDown("Switch") && turnData.action.canFlip)
-        {
-            flip = !flip;
-            SpawnAOEs();
         }
     }
 
@@ -93,19 +90,14 @@ public class TileSelectState : BattleState
             //     path = gridManager.GetRow(selectedTile, direction);
             // gridManager.DisplayPath(path);
         // } 
-        if(turnData.action.aoes.Count > 0)
+        if(turnData.actionEvent.action.aoes.Count > 0)
         {
             SpawnAOEs();
         }
-        if(turnData.action.actionType == ActionType.Move)
+        if(turnData.actionEvent.action.actionType == ActionType.Move)
         {
-            List<Tile> path = gridManager.GetPath(turnData.combatant.tile, selectedTile, TargetType.TargetPlayer);
-            bool swap = false;
-            if(path.Count > 0 && path[path.Count - 1].occupier)
-            {
-                swap = true;
-            }
-            gridManager.DisplayPaths(new List<List<Tile>>(){path}, TargetType.TargetPlayer, swap); 
+            List<Tile> path = gridManager.GetPath(turnData.combatant.tile, selectedTile, CombatantType.Player);
+            gridManager.DisplayPaths(new List<List<Tile>>(){path}, CombatantType.Player); 
         } 
     }
 
@@ -118,28 +110,33 @@ public class TileSelectState : BattleState
                 target.ToggleHPBar(false);
             }
         }
-        List<Tile> aoeTiles = gridManager.GetAOETiles(selectedTile, turnData.action, targetType, flip);
-        gridManager.DisplayAOE(aoeTiles, targetType);
+        List<Tile> aoeTiles = gridManager.GetAOETiles(selectedTile, turnData.actionEvent.action, combatantType);
+        gridManager.DisplayAOE(aoeTiles, combatantType);
         
-        selectedTargets = gridManager.GetTargetsInAOE(aoeTiles, targetType);
+        selectedTargets = gridManager.GetTargetsInAOE(aoeTiles, combatantType);
         foreach(Combatant target in selectedTargets)
         {
             target.ToggleHPBar(true);
         }
 
-        if(turnData.action.knockback.doKnockback)
+        foreach(ActionEffectTrigger actionEffectTrigger in turnData.actionEvent.action.actionEffectTriggers)
         {
-            List<List<Tile>> knockbackPaths = new List<List<Tile>>();
-            foreach(Combatant target in selectedTargets)
+            if(actionEffectTrigger.actionEffect is ActionEffectKnockback)
             {
-                Vector2Int knockbackDestination = turnData.action.knockback.GetKnockbackDestination(target.tile);
-                Tile newTile = gridManager.GetTileArray(TargetType.TargetEnemy)[knockbackDestination.x, knockbackDestination.y];
-                if(newTile != target.tile && !newTile.occupier)
+                ActionEffectKnockback knockback = (ActionEffectKnockback)actionEffectTrigger.actionEffect;
+                List<List<Tile>> knockbackPaths = new List<List<Tile>>();
+                foreach(Combatant target in selectedTargets)
                 {
-                    knockbackPaths.Add(gridManager.GetPath(target.tile, newTile, TargetType.TargetEnemy));
+                    Vector2Int knockbackDestination = knockback.GetKnockbackDestination(target.tile);
+                    Tile newTile = gridManager.GetTileArray(CombatantType.Enemy)[knockbackDestination.x, knockbackDestination.y];
+                    if(newTile != target.tile)
+                    {
+                        knockbackPaths.Add(gridManager.GetPath(target.tile, newTile, CombatantType.Enemy));
+                    }
                 }
+                gridManager.DisplayPaths(knockbackPaths, CombatantType.Enemy);
+                break;
             }
-            gridManager.DisplayPaths(knockbackPaths, TargetType.TargetEnemy, false);
         }
     }
     

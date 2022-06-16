@@ -17,7 +17,15 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
 {
     public int x;
     public int y;
-    public Combatant occupier;
+    public List<Combatant> occupiers = new List<Combatant>();
+    [Header("Positions")]
+    public Transform position1A;
+    public Transform position2A;
+    public Transform position2B;
+    public Transform position3A;
+    public Transform position3B;
+    public Transform position3C;
+    public Dictionary<int, List<Transform>> positionDict = new Dictionary<int, List<Transform>>();
     [Header("Display")]
     [SerializeField] private Image tileImage;
     [SerializeField] private Button tileButton;
@@ -37,6 +45,13 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     [SerializeField] private Color selectableColor;
     [SerializeField] private Color unselectableColor;
     public int moveCost;
+
+    private void OnEnable() 
+    {
+        positionDict.Add(1, new List<Transform>(){position1A});
+        positionDict.Add(2, new List<Transform>(){position2A, position2B});
+        positionDict.Add(3, new List<Transform>(){position3A, position3B, position3C});    
+    }
 
     public void Display(bool canSelect)
     {
@@ -69,7 +84,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
         aoeImage.enabled = false;
     }
 
-    public void DisplayPathNode(PathType pathType, Vector2 direction1, Vector2 direction2, TargetType targetType)
+    public void DisplayPathNode(PathType pathType, Vector2 direction1, Vector2 direction2, CombatantType combatantType)
     {
         SpriteRenderer image;
             image = straightPathImage;
@@ -93,7 +108,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
             else if(direction1.x < 0)
             {
                 z = 90;
-                if(targetType == TargetType.TargetEnemy)
+                if(combatantType == CombatantType.Enemy)
                 {
                     z = 270;
                 }
@@ -105,7 +120,7 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
             else if(direction1.x > 0)
             {
                 z = 270;
-                if(targetType == TargetType.TargetEnemy)
+                if(combatantType == CombatantType.Enemy)
                 {
                     z = 90;
                 }
@@ -163,12 +178,26 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
 
     public void AssignOccupier(Combatant occupier)
     {
-        this.occupier = occupier;
+        if(occupiers.Count == 3)
+        {
+            return;
+        }
+        occupiers.Add(occupier);
+        MoveToPositions();
     }
 
-    public void UnassignOccupier()
+    public void UnassignOccupier(Combatant occupier)
     {
-        this.occupier = null;
+        occupiers.Remove(occupier);
+        MoveToPositions();
+    }
+
+    private void MoveToPositions()
+    {
+        for(int i = 0; i < occupiers.Count; i++)
+        {
+            occupiers[i].Move(positionDict[occupiers.Count][i], "Move");
+        }
     }
 
     public void OnClick()

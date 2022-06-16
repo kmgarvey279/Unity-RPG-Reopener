@@ -14,6 +14,7 @@ public class CommandMenu : MonoBehaviour
     [Header("Buttons")]
     [SerializeField] private GameObject actionsButton;
     [Header("Other Actions")]
+    [SerializeField] private Button moveButton;
     [SerializeField] private Action move;
     [SerializeField] private Action item;
     [SerializeField] private Action defend;
@@ -24,6 +25,15 @@ public class CommandMenu : MonoBehaviour
     {
         turnData = battleManager.turnData;
         display.SetActive(true);
+
+        if(turnData.hasMoved)
+        {
+            moveButton.interactable = false;
+        }
+        else
+        {
+            moveButton.interactable = true;
+        }
         
         EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(actionsButton);
@@ -46,10 +56,16 @@ public class CommandMenu : MonoBehaviour
         }
     }
 
+    public void SelectAttack()
+    {
+        battleManager.SetAction(turnData.combatant.attack);
+        battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
+    }
+
     public void DisplayActions()
     {
         PlayableCombatant playableCombatant = (PlayableCombatant)turnData.combatant;
-        submenu.DisplaySkills(playableCombatant.skills, battleManager.turnData.actionPoints, playableCombatant.mp.GetCurrentValue());
+        submenu.DisplaySkills(playableCombatant);
     }
 
     public void SelectAction(GameObject skillSlotObject)
@@ -79,6 +95,6 @@ public class CommandMenu : MonoBehaviour
     {
         Debug.Log("Defend!");
         battleManager.SetAction(defend);
-        battleManager.stateMachine.ChangeState((int)BattleStateType.Execute);
+        battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
     }
 }

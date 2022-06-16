@@ -13,13 +13,21 @@ MonoBehaviour:
   m_Name: Party Data
   m_EditorClassIdentifier: 
   partyMembers:
-  - playableCharacterID: 0
+  - playableCharacterInfo: {fileID: 11400000, guid: c86eb926f7a72e04fa5932e070cac635,
+      type: 2}
     inParty: 1
-  - playableCharacterID: 1
+  - playableCharacterInfo: {fileID: 11400000, guid: 893a9a17872094e48aa397fbdcb1d47f,
+      type: 2}
     inParty: 1
-  - playableCharacterID: 2
+  - playableCharacterInfo: {fileID: 11400000, guid: 6ebb99f11d6bfc442a4519ea2f1091ea,
+      type: 2}
     inParty: 1
-  - playableCharacterID: 3
+  - playableCharacterInfo: {fileID: 11400000, guid: c273eca4d44f9884994e6b65385f14a8,
+      type: 2}
     inParty: 0
-  - playableCharacterID: 4
+  - playableCharacterInfo: {fileID: 11400000, guid: d333dc5ba67eebb46ab356b6d2ca9820,
+      type: 2}
+    inParty: 0
+  - playableCharacterInfo: {fileID: 11400000, guid: 67e67eb5a1684de4da5366a569561507,
+      type: 2}
     inParty: 0

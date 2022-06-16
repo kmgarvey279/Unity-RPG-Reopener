@@ -5,10 +5,10 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.EventSystems;
 
-public enum TargetType
+public enum CombatantType
 {
-    TargetPlayer,
-    TargetEnemy
+    Player,
+    Enemy
 }
 
 public class GridManager : MonoBehaviour
@@ -23,87 +23,67 @@ public class GridManager : MonoBehaviour
     public Tile[,] playerTileArray;
     public List<Tile> enemyTiles = new List<Tile>();
     public Tile[,] enemyTileArray;
+    [Header("Center Positions")]
+    public Dictionary<int, Dictionary<CombatantType, Transform>> centerPositions = new Dictionary<int, Dictionary<CombatantType, Transform>>();
+    [SerializeField] private Transform c0Player;
+    [SerializeField] private Transform c0Enemy;
+    [SerializeField] private Transform c1Player;
+    [SerializeField] private Transform c1Enemy;
+    [SerializeField] private Transform c2Player;
+    [SerializeField] private Transform c2Enemy;
 
     private void Start()
     {
-        playerTileArray = new Tile[xCount, yCount];
-        enemyTileArray = new Tile[xCount, yCount];
         GenerateGrid();
+        centerPositions.Add(0, new Dictionary<CombatantType, Transform>(){{CombatantType.Player, c0Player}, {CombatantType.Enemy, c0Enemy}});
+        centerPositions.Add(1, new Dictionary<CombatantType, Transform>(){{CombatantType.Player, c1Player}, {CombatantType.Enemy, c1Enemy}});
+        centerPositions.Add(2, new Dictionary<CombatantType, Transform>(){{CombatantType.Player, c2Player}, {CombatantType.Enemy, c2Enemy}});    
     }
 
     private void GenerateGrid()
     {
-        int x = 0;
-        int y = 0;
-
+        playerTileArray = new Tile[xCount, yCount];
         foreach(Tile tile in playerTiles)
         {
-            tile.x = x;
-            tile.y = y;
-            playerTileArray[x, y] = tile;
-
-            y++;
-            if(y >= yCount)
-            {
-                y = 0;
-                x++;
-            }
+            playerTileArray[tile.x, tile.y] = tile;
+            Debug.Log("Player Tile: " + tile.x + "/" + tile.y);
         }
-
-        x = 0;
-        y = 0;
+        enemyTileArray = new Tile[xCount, yCount];
         foreach(Tile tile in enemyTiles)
         {
-            tile.x = x;
-            tile.y = y;
-            enemyTileArray[x, y] = tile;
-
-            y++;
-            if(y >= yCount)
-            {
-                y = 0;
-                x++;
-            }
+            enemyTileArray[tile.x, tile.y] = tile;
+            Debug.Log("Enemy Tile: " + tile.x + "/" + tile.y);
         }
     }
 
-    public void DisplaySelectableTargets(Tile start, TargetType targetType, bool isMelee)
+    public void DisplaySelectableTargets(Action action, CombatantType combatantType, Tile start)
     {
-        List<int> meleeColumns = new List<int> {2, 1, 0};
-
-        if(targetType == TargetType.TargetEnemy)
+        if(combatantType == CombatantType.Enemy)
         {
-            foreach (Tile tile in playerTileArray)
-            {
-                tile.Display(false);
-            }
+            // foreach (Tile tile in playerTileArray)
+            // {
+            //     tile.Display(false);
+            // }
 
             Tile tileToSelect = null;
-            int lowestMoveCost = 99;
+            int highestValue = 0;
             foreach(Tile tile in enemyTileArray)
             {   
                 tile.Display(false);
-                if(tile.occupier)
+                if(tile.occupiers.Count > 0)
                 {
-                    List<int> columnsInRange = meleeColumns;
-                    for(int i = columnsInRange.Count - 1; i >= 0; i--)
+                    //check if tile is blocked
+                    if((action.isMelee && tile.x == 0 && enemyTileArray[1, tile.y].occupiers.Count > 0
+                        || action.isMelee && start.x == 0))
                     {
-                        if(i > start.x)
-                        {
-                            columnsInRange.RemoveAt(i);
-                        }
+                        break;
                     }
-
-                    if(!isMelee || columnsInRange.Contains(tile.x))
-                    {   
-                        tile.Display(true);
-
-                        int thisMoveCost = GetMoveCost(tile, enemyTileArray[2,2]);
-                        if(thisMoveCost < lowestMoveCost)
-                        {
-                            tileToSelect = tile;
-                            lowestMoveCost = thisMoveCost;
-                        }
+                    tile.Display(true);
+                    int thisValue = tile.x + tile.y;
+                    if(thisValue >= highestValue)
+                    {
+                        tileToSelect = tile;
+                        highestValue = thisValue;
                     }
                 }
             }
@@ -112,60 +92,56 @@ public class GridManager : MonoBehaviour
                 tileToSelect.Select();
             }
         } 
-        else if(targetType == TargetType.TargetPlayer)
+        else if(combatantType == CombatantType.Player)
         {
-            foreach (Tile tile in enemyTileArray)
-            {
-                tile.Display(false);
-            }
+            // foreach (Tile tile in enemyTileArray)
+            // {
+            //     tile.Display(false);
+            // }
             foreach(Tile tile in playerTileArray)
             {   
-                if(tile.occupier)
+                tile.Display(false);
+                if(tile.occupiers.Count > 0 && tile.occupiers[0] is PlayableCombatant)
                 {
-                    tile.Display(true);
+                    if((action.targetingType == TargetingType.TargetSelf && tile == start) || action.targetingType != TargetingType.TargetSelf)
+                    {
+                        tile.Display(true);
+                    }
                 } 
             }
             start.Select();
         }
     }
 
-    public void DisplaySelectableTiles(Action action, TargetType targetType, Tile start)
+    public void DisplaySelectableTiles(Action action, CombatantType combatantType, Tile start)
     {
-            foreach(Tile tile in enemyTileArray)
-            {
-                tile.Display(false);
-            }
-            foreach(Tile tile in playerTileArray)
-            {
-                tile.Display(false);
-            }
         if(!action.isFixedAOE)
         {
-            if(targetType == TargetType.TargetPlayer)
+            if(combatantType == CombatantType.Player)
             {
                 foreach(Tile tile in playerTileArray)
                 {
-                    if(!(action.actionType == ActionType.Move && tile.occupier && tile.occupier is EnemyCombatant))
+                    if(!(action.actionType == ActionType.Move && tile.occupiers.Count > 0 && tile.occupiers[0] is EnemyCombatant))
                     {
                         tile.Display(true);
                     }
                 }
                 start.Select();
             }
-            else if(targetType == TargetType.TargetEnemy)
+            else if(combatantType == CombatantType.Enemy)
             {
                 Tile tileToSelect = null;
-                int lowestMoveCost = 99;
+                int highestValue = 0;
                 foreach(Tile tile in enemyTileArray)
                 {
                     tile.Display(true);
-                    if(tile.occupier)
+                    if(tile.occupiers.Count > 0)
                     {
-                        int thisMoveCost = GetMoveCost(tile, enemyTileArray[2,0]);
-                        if(thisMoveCost < lowestMoveCost)
+                        int thisValue = tile.x + tile.y;
+                        if(thisValue >= highestValue)
                         {
                             tileToSelect = tile;
-                            lowestMoveCost = thisMoveCost;
+                            highestValue = thisValue;
                         }
                     }
                 }
@@ -177,9 +153,9 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    public Tile[,] GetTileArray(TargetType targetType)
+    public Tile[,] GetTileArray(CombatantType combatantType)
     {
-        if(targetType == TargetType.TargetPlayer)
+        if(combatantType == CombatantType.Player)
         {
             return playerTileArray;
         }
@@ -189,7 +165,7 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    public List<Tile> GetAOETiles(Tile start, Action action, TargetType targetType, bool flip)
+    public List<Tile> GetAOETiles(Tile start, Action action, CombatantType combatantType)
     {
         List<Tile> aoeTiles = new List<Tile>(){};
         foreach(AOE aoe in action.aoes)
@@ -199,44 +175,36 @@ public class GridManager : MonoBehaviour
 
             if(action.isFixedAOE)
             {
-                aoeStart = GetTileArray(targetType)[aoe.fixedStartPosition.x, aoe.fixedStartPosition.y];
+                aoeStart = GetTileArray(combatantType)[aoe.fixedStartPosition.x, aoe.fixedStartPosition.y];
             }
             newTiles.Add(aoeStart);
 
             if(aoe.aoeType == AOEType.Cross)
             {
-                newTiles.AddRange(GetRow(aoeStart, targetType, 1));
-                newTiles.AddRange(GetColumn(aoeStart, targetType, 1));
+                newTiles.AddRange(GetRow(aoeStart, combatantType, 1));
+                newTiles.AddRange(GetColumn(aoeStart, combatantType, 1));
             }
-            else if(aoe.aoeType == AOEType.X)
-            {
-                newTiles.AddRange(GetDiagonal(aoeStart, targetType, 1, true));
-                newTiles.AddRange(GetDiagonal(aoeStart, targetType, 1, false));
-            }
+            // else if(aoe.aoeType == AOEType.X)
+            // {
+            //     newTiles.AddRange(GetDiagonal(aoeStart, combatantType, 1, true));
+            //     newTiles.AddRange(GetDiagonal(aoeStart, combatantType, 1, false));
+            // }
             else if(aoe.aoeType == AOEType.Row)
             {    
-                newTiles.AddRange(GetRow(aoeStart, targetType, 2));
+                newTiles.AddRange(GetRow(aoeStart, combatantType, 2));
             }
             else if(aoe.aoeType == AOEType.Column)
             {
-                newTiles.AddRange(GetColumn(aoeStart, targetType, 2));
-            }
-            else if(aoe.aoeType == AOEType.Diagonal)
-            {
-                newTiles.AddRange(GetDiagonal(aoeStart, targetType, 2, flip));
+                newTiles.AddRange(GetColumn(aoeStart, combatantType, 2));
             }
             else if(aoe.aoeType == AOEType.All)
             {
-                newTiles.AddRange(GetAll(targetType));
+                newTiles.AddRange(GetAll(combatantType));
             }
 
             foreach(Tile tile in newTiles)
             {
                 Tile tileToAdd = tile;
-                if(flip)
-                {
-                    tileToAdd = FlipTile(tileToAdd, targetType);
-                }
                 if(!aoeTiles.Contains(tileToAdd))
                 {
                     aoeTiles.Add(tileToAdd);
@@ -246,42 +214,48 @@ public class GridManager : MonoBehaviour
         return aoeTiles;
     }
 
-    private Tile FlipTile(Tile tile, TargetType targetType)
-    {
-        int xValue = tile.x;
-        if(xValue == 0)
-        {
-            xValue = 2;
-        }
-        else if(xValue == 2)
-        {
-            xValue = 0;
-        }
-        return GetTileArray(targetType)[xValue, tile.y];
-    }
+    // private Tile FlipTile(Tile tile, CombatantType combatantType)
+    // {
+    //     int xValue = tile.x;
+    //     if(xValue == 0)
+    //     {
+    //         xValue = 2;
+    //     }
+    //     else if(xValue == 2)
+    //     {
+    //         xValue = 0;
+    //     }
+    //     return GetTileArray(combatantType)[xValue, tile.y];
+    // }
 
-    public List<Combatant> GetTargetsInAOE(List<Tile> aoeTiles, TargetType targetType)
+    public List<Combatant> GetTargetsInAOE(List<Tile> aoeTiles, CombatantType combatantType)
     {
         List<Combatant> targets = new List<Combatant>();
         foreach(Tile tile in aoeTiles)
         {
-            if(tile.occupier != null && (tile.occupier is PlayableCombatant && targetType == TargetType.TargetPlayer || tile.occupier is EnemyCombatant && targetType == TargetType.TargetEnemy))
+            if(tile.occupiers.Count > 0 && (tile.occupiers[0].combatantType == combatantType))
             {
-                targets.Add(tile.occupier);  
+                foreach(Combatant occupier in tile.occupiers)
+                {
+                    targets.Add(occupier); 
+                } 
             }
         }
         return targets;
     }
 
-    public void DisplayAOE(List<Tile> aoeTiles, TargetType targetType)
+    public void DisplayAOE(List<Tile> aoeTiles, CombatantType combatantType)
     {
         ClearAOE();
         foreach(Tile tile in aoeTiles)
         {
             tile.DisplayAOE(); 
-            if(tile.occupier != null && (tile.occupier is PlayableCombatant && targetType == TargetType.TargetPlayer || tile.occupier is EnemyCombatant && targetType == TargetType.TargetEnemy))
+            if(tile.occupiers.Count > 0 && (tile.occupiers[0].combatantType == combatantType))
             {
-                tile.occupier.Select();
+                foreach(Combatant occupier in tile.occupiers)
+                {
+                    occupier.Select();
+                }
             }
         }
     }
@@ -304,17 +278,23 @@ public class GridManager : MonoBehaviour
     {
         foreach(Tile tile in playerTileArray)
         {
-            if(tile.occupier != null)
+            if(tile.occupiers.Count > 0)
             {
-                tile.occupier.Deselect();
+                foreach(Combatant occupier in tile.occupiers)
+                {
+                    occupier.Deselect();
+                }
             }
             tile.HideAOE();
         }
         foreach(Tile tile in enemyTileArray)
         {
-            if(tile.occupier != null)
+            if(tile.occupiers.Count > 0)
             {
-                tile.occupier.Deselect();
+                foreach(Combatant occupier in tile.occupiers)
+                {
+                    occupier.Deselect();
+                }
             }
             tile.HideAOE();
         }
@@ -342,24 +322,25 @@ public class GridManager : MonoBehaviour
         return new Vector2(tile2.x - tile1.x, tile2.y - tile1.y);
     }
 
-    public List<Tile> GetRow(Tile start, TargetType targetType, int range)
+    public List<Tile> GetRow(Tile start, CombatantType combatantType, int range)
     {
-        Tile[,] tileArray = GetTileArray(targetType);
+        Tile[,] tileArray = GetTileArray(combatantType);
+
         List<Tile> row = new List<Tile>(); 
 
         int currentX = start.x;
-        for (int i = 0; i < range; i++)
+        for(int i = 0; i < range; i++)
         {
-            if (currentX + 1 < xCount)
+            if(currentX + 1 < xCount)
             {
                 currentX += 1;
                 row.Add(tileArray[currentX, start.y]);
             }
         }
         currentX = start.x;
-        for (int i = 0; i < range; i++)
+        for(int i = 0; i < range; i++)
         {
-            if (currentX - 1 >= 0)
+            if(currentX - 1 >= 0)
             {
                 currentX -= 1;
                 row.Add(tileArray[currentX, start.y]);
@@ -368,24 +349,24 @@ public class GridManager : MonoBehaviour
         return row;
     }
 
-    public List<Tile> GetColumn(Tile start, TargetType targetType, int range)
+    public List<Tile> GetColumn(Tile start, CombatantType combatantType, int range)
     {
-        Tile[,] tileArray = GetTileArray(targetType);
+        Tile[,] tileArray = GetTileArray(combatantType);
         List<Tile> column = new List<Tile>();
 
         int currentY = start.y;
-        for (int i = 0; i < range; i++)
+        for(int i = 0; i < range; i++)
         {
-            if (currentY + 1 < yCount)
+            if(currentY + 1 < yCount)
             {
                 currentY += 1;
                 column.Add(tileArray[start.x, currentY]);
             }
         }
         currentY = start.y;
-        for (int i = 0; i < range; i++)
+        for(int i = 0; i < range; i++)
         {
-            if (currentY - 1 >= 0)
+            if(currentY - 1 >= 0)
             {
                 currentY -= 1;
                 column.Add(tileArray[start.x, currentY]);
@@ -394,35 +375,35 @@ public class GridManager : MonoBehaviour
         return column;
     }
 
-    public List<Tile> GetDiagonal(Tile start, TargetType targetType, int range, bool flip)
-    {
-        Tile[,] tileArray = GetTileArray(targetType);
-        List<Tile> diagonal = new List<Tile>();
+    // public List<Tile> GetDiagonal(Tile start, CombatantType combatantType, int range, bool flip)
+    // {
+    //     Tile[,] tileArray = GetTileArray(combatantType);
+    //     List<Tile> diagonal = new List<Tile>();
 
-        int currentX = start.x;
-        int currentY = start.y;
-        // if(flip)
-        // {
-            for (int i = 0; i < range; i++)
-            {
-                if(currentX - 1 >= 0 && currentY + 1 < yCount)
-                {
-                    currentX -= 1;
-                    currentY += 1;
-                    diagonal.Add(tileArray[currentX, currentY]);
-                }
-            }
-            currentX = start.x;
-            currentY = start.y;
-            for (int i = 0; i < range; i++)
-            {
-                if(currentX + 1 < xCount && currentY - 1 >= 0)
-                {
-                    currentX += 1;
-                    currentY -= 1;
-                    diagonal.Add(tileArray[currentX, currentY]);
-                }
-            }
+    //     int currentX = start.x;
+    //     int currentY = start.y;
+    //     if(flip)
+    //     {
+    //         for (int i = 0; i < range; i++)
+    //         {
+    //             if(currentX - 1 >= 0 && currentY + 1 < yCount)
+    //             {
+    //                 currentX -= 1;
+    //                 currentY += 1;
+    //                 diagonal.Add(tileArray[currentX, currentY]);
+    //             }
+    //         }
+        //     currentX = start.x;
+        //     currentY = start.y;
+        //     for (int i = 0; i < range; i++)
+        //     {
+        //         if(currentX + 1 < xCount && currentY - 1 >= 0)
+        //         {
+        //             currentX += 1;
+        //             currentY -= 1;
+        //             diagonal.Add(tileArray[currentX, currentY]);
+        //         }
+        //     }
         // }
         // else
         // {
@@ -439,21 +420,21 @@ public class GridManager : MonoBehaviour
         //     currentY = start.y;
         //     for (int i = 0; i < range; i++)
         //     {
-        //         if(currentX - 1 >= 0 && currentY - 1 >= 0)
-        //         {
-        //             currentX -= 1;
-        //             currentY -= 1;
-        //             diagonal.Add(tileArray[currentX, currentY]);
-        //         }
-        //     }
-        // }
-        return diagonal;
-    }
+    //             if(currentX - 1 >= 0 && currentY - 1 >= 0)
+    //             {
+    //                 currentX -= 1;
+    //                 currentY -= 1;
+    //                 diagonal.Add(tileArray[currentX, currentY]);
+    //             }
+    //         }
+    //     }
+    //     return diagonal;
+    // }
 
-    public List<Tile> GetAll(TargetType targetType)
+    public List<Tile> GetAll(CombatantType combatantType)
     {
         List<Tile> all = new List<Tile>();
-        Tile[,] tileArray = GetTileArray(targetType);
+        Tile[,] tileArray = GetTileArray(combatantType);
         foreach(Tile tile in tileArray)
         {
             all.Add(tile); 
@@ -478,7 +459,7 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    public List<Tile> GetPath(Tile start, Tile end, TargetType targetType)
+    public List<Tile> GetPath(Tile start, Tile end, CombatantType combatantType)
     {
         List<Tile> path = new List<Tile>();
         List<Node> closedList = new List<Node>();
@@ -505,8 +486,8 @@ public class GridManager : MonoBehaviour
                 return path;
             }
             List<Tile> adjacentTiles = new List<Tile>();
-            adjacentTiles.AddRange(GetRow(currentNode.tile, targetType, 1));
-            adjacentTiles.AddRange(GetColumn(currentNode.tile, targetType, 1));
+            adjacentTiles.AddRange(GetRow(currentNode.tile, combatantType, 1));
+            adjacentTiles.AddRange(GetColumn(currentNode.tile, combatantType, 1));
             // int lowestMoveCost = GetMoveCost(adjacentTiles[0], currentTile);   
             if(adjacentTiles.Count > 1)
             {
@@ -540,7 +521,7 @@ public class GridManager : MonoBehaviour
         return path;
     }
 
-    public void DisplayPaths(List<List<Tile>> paths, TargetType targetType, bool swap)
+    public void DisplayPaths(List<List<Tile>> paths, CombatantType combatantType)
     {
         ClearPathNodes();
         foreach(List<Tile> path in paths)
@@ -551,18 +532,18 @@ public class GridManager : MonoBehaviour
                 {
                     if(i == path.Count - 1)
                     {
-                        path[i].DisplayPathNode(PathType.End, GetDirection(path[i - 1], path[i]), new Vector2(0, 0), targetType);
+                        path[i].DisplayPathNode(PathType.End, GetDirection(path[i - 1], path[i]), new Vector2(0, 0), combatantType);
                     }
                     else if(i == 0)
                     {
-                        if(swap)
-                        {
-                            path[i].DisplayPathNode(PathType.End, GetDirection(path[i + 1], path[i]), new Vector2(0,0), targetType);
-                        }
-                        else
-                        {
-                            path[i].DisplayPathNode(PathType.Start, GetDirection(path[i], path[i + 1]), new Vector2(0,0), targetType);
-                        }
+                        // if(swap)
+                        // {
+                        //     path[i].DisplayPathNode(PathType.End, GetDirection(path[i + 1], path[i]), new Vector2(0,0), combatantType);
+                        // }
+                        // else
+                        // {
+                            path[i].DisplayPathNode(PathType.Start, GetDirection(path[i], path[i + 1]), new Vector2(0,0), combatantType);
+                        // }
                     }
                     else 
                     {
@@ -570,11 +551,11 @@ public class GridManager : MonoBehaviour
                         Vector2 direction2 = GetDirection(path[i], path[i + 1]);
                         if(direction1 != direction2)
                         {
-                            path[i].DisplayPathNode(PathType.Turn, direction1, direction2, targetType);
+                            path[i].DisplayPathNode(PathType.Turn, direction1, direction2, combatantType);
                         }
                         else
                         {
-                            path[i].DisplayPathNode(PathType.Straight, direction1, new Vector2(0, 0), targetType);
+                            path[i].DisplayPathNode(PathType.Straight, direction1, new Vector2(0, 0), combatantType);
                         }
                     }
                 }

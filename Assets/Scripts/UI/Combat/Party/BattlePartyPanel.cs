@@ -19,21 +19,27 @@ public class BattlePartyPanel : MonoBehaviour
     public void AssignCombatant(PlayableCombatant playableCombatant)
     {
         //set basic hp bar
-        hpBar.SetInitialValue(playableCombatant.hp.GetValue(), playableCombatant.hp.GetCurrentValue());
+        hpBar.SetInitialValue((int)playableCombatant.hp.GetValue(), (int)playableCombatant.hp.GetCurrentValue());
         hpNum.text = playableCombatant.hp.GetCurrentValue().ToString();
 
         //set basic mp bar
-        mpBar.SetInitialValue(playableCombatant.mp.GetCurrentValue(), playableCombatant.mp.GetCurrentValue());
+        mpBar.SetInitialValue((int)playableCombatant.mp.GetCurrentValue(), (int)playableCombatant.mp.GetCurrentValue());
         mpNum.text = playableCombatant.mp.GetCurrentValue().ToString();
     }
 
-    public void UpdateHP(int newValue)
+    public void UpdateHP(float newValue)
     {
-        hpBar.UpdateBar(newValue);
+        hpBar.DisplayChange(newValue);
     }
 
-    public void UpdateMP(int newValue)
+    public void ResolveHP()
     {
-        mpBar.UpdateBar(newValue);
+        hpBar.ResolveChange();
+    }
+
+    public void UpdateMP(float newValue)
+    {
+        mpBar.DisplayChange(newValue);
+        mpBar.ResolveChange();
     }
 }

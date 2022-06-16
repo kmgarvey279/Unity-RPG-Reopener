@@ -7,12 +7,11 @@ using System.Linq;
 public class ExecuteActionState : BattleState
 {   
     [Header("Events (Signals)")]
-    [SerializeField] private SignalSenderGO onCameraZoomIn;
-    private int hits;
-    private Tile targetedTile;
-    private List<Combatant> targets;
-    private List<Combatant> knockedbackTargets = new List<Combatant>();
-    private List<Combatant> collisions = new List<Combatant>();
+    // [SerializeField] private SignalSenderGO onCameraZoomIn;
+    private ActionEvent actionEventToExecute;
+    private List<ActionEvent> targetQueue = new List<ActionEvent>();
+    // private List<ActionEvent> followupQueue = new List<ActionEvent>();
+    private List<Combatant> counterQueue = new List<Combatant>();
 
     private void Start()
     {
@@ -22,9 +21,18 @@ public class ExecuteActionState : BattleState
     public override void OnEnter()
     {
         base.OnEnter();
-        hits = 0;
+        //clear counter queue if it didn't fully clear last turn
+        if(counterQueue.Count > 0)
+            counterQueue.Clear();
+
+        //copy current action event
+        actionEventToExecute = turnData.actionEvent.Clone();
+
+        //apply costs of action
+        battleManager.ApplyAction();
+        
         // onCameraZoomIn.Raise(turnData.targetedTile.gameObject);
-        ExecuteAction();
+        StartCoroutine(ExecuteAction());
     }
 
     public override void StateUpdate()
@@ -42,158 +50,176 @@ public class ExecuteActionState : BattleState
         base.OnExit();
     }
 
-    public void ExecuteAction()
+    public IEnumerator ExecuteAction()
     {
-        Debug.Log(turnData.combatant.characterName + " used " + turnData.action.actionName);
-        // if(turnData.targetedTile != null && turnData.targetedTile != turnData.combatant.tile)
-        // {
-        //     turnData.combatant.FaceTarget(turnData.targetedTile.transform);
-        // }
-        if(turnData.action.actionType == ActionType.Move)
+        Debug.Log(actionEventToExecute.actor.characterName + " used " + actionEventToExecute.action.actionName);
+        
+        //if action is move
+        if(actionEventToExecute.action.actionType == ActionType.Move)
         {
-            MovePhase();
+            StartCoroutine(MovePhase());
+            yield break;
+        }
+
+        //move into melee range
+        if(actionEventToExecute.action.isMelee)
+        {
+            actionEventToExecute.actor.Move(gridManager.centerPositions[actionEventToExecute.targetedTile.y][actionEventToExecute.actor.combatantType], "Idle", 2f);
+            yield return new WaitUntil(() => !actionEventToExecute.actor.moving);
+        }
+
+        //apply all of the actor's modifiers to action event
+        Combatant actor = actionEventToExecute.actor;
+        foreach(ActionEventModifier eventModifier in actor.actionEventModifiers[EventTriggerType.OnAct])
+        {
+            actionEventToExecute = eventModifier.ApplyModifiers(actionEventToExecute, actor);
+            // if(eventModifier.removeOnApply)
+            // {
+            //     actor.actionEventModifiers[EventTriggerType.OnAct].Remove(eventModifier);
+            // }
+        }
+
+        //if targeting is random, pick a random target from list of potential targets
+        if(actionEventToExecute.action.hitRandomTarget)
+        {
+            List<Combatant> potentialTargets = battleManager.GetCombatants(actionEventToExecute.GetCombatantType());
+            int roll = Mathf.FloorToInt(Random.Range(0, potentialTargets.Count + 1));
+            actionEventToExecute.targetedTile = potentialTargets[roll].tile;
+            actionEventToExecute.targets = new List<Combatant>(){potentialTargets[roll]};
+        }
+
+        //apply event modifiers for all allies (ex: block incoming attack)
+        List<Combatant> allyCombatants = battleManager.GetCombatants(actionEventToExecute.combatantType);
+        //shuffle
+        for(int i = 0; i < allyCombatants.Count; i++) 
+        {
+            Combatant temp = allyCombatants[i];
+            int randomIndex = Random.Range(i, allyCombatants.Count);
+            allyCombatants[i] = allyCombatants[randomIndex];
+            allyCombatants[randomIndex] = temp;
+        }
+        foreach(Combatant ally in allyCombatants)
+        {
+            foreach(ActionEventModifier eventModifier in ally.actionEventModifiers[EventTriggerType.OnPartyTargeted])
+            {
+                actionEventToExecute = eventModifier.ApplyModifiers(actionEventToExecute, ally);
+                // if(eventModifier.removeOnApply)
+                // {
+                //     ally.actionEventModifiers[EventTriggerType.OnAllyTargeted].Remove(eventModifier);
+                // }
+            }
+        }
+
+        foreach(Combatant target in actionEventToExecute.targets)
+        {
+            //split action into multiple subactions, each w/ 1 target & apply target modifiers
+            ActionEvent tempActionEvent = actionEventToExecute.Clone();
+            tempActionEvent.targets = new List<Combatant>(){target};
+            //apply event modifiers for target
+            foreach(ActionEventModifier eventModifier in target.actionEventModifiers[EventTriggerType.OnTargeted])
+            {
+                tempActionEvent = eventModifier.ApplyModifiers(tempActionEvent, target);
+                // if(eventModifier.removeOnApply)
+                // {
+                //     target.actionEventModifiers[EventTriggerType.OnTargeted].Remove(eventModifier);
+                // }
+            }
+            targetQueue.Add(tempActionEvent);
+        }
+        //start action
+        StartCoroutine(CastAnimationPhase());
+    }
+
+    private IEnumerator MovePhase()
+    {
+        Debug.Log("Move Phase");
+        StartCoroutine(actionEventToExecute.actor.ChangeTile(actionEventToExecute.targetedTile, "Move"));
+        yield return new WaitUntil(() => !actionEventToExecute.actor.moving);
+        turnData.hasMoved = true;
+        if(turnData.combatant is PlayableCombatant)
+        {
+
+            stateMachine.ChangeState((int)BattleStateType.Menu);
         }
         else
         {
-            StartCoroutine(CastAnimationPhase());
+            stateMachine.ChangeState((int)BattleStateType.EnemyTurn);
         }
     }
 
     //trigger action animation + visual effect on user
     public IEnumerator CastAnimationPhase()
     {
-        if(turnData.action.hasCastAnimation)
+        if(actionEventToExecute.action.hasCastAnimation)
         {
             Debug.Log("Cast Phase");
             //cast animation
-            if(turnData.action.castAnimatorTrigger != "")
+            if(actionEventToExecute.action.castAnimatorTrigger != "")
             {
-                turnData.combatant.animator.SetTrigger(turnData.action.castAnimatorTrigger);
+                actionEventToExecute.actor.animator.SetTrigger(actionEventToExecute.action.castAnimatorTrigger);
             }
             //spawn casting effect
-            if(turnData.action.castGraphicPrefab != null)
+            if(actionEventToExecute.action.castGraphicPrefab != null)
             {
-                yield return new WaitForSeconds(turnData.action.castGraphicDelay); 
-                Vector3 spawnPosition = turnData.combatant.transform.position;
-                GameObject graphicObject = Instantiate(turnData.action.castGraphicPrefab, spawnPosition, Quaternion.identity);
+                yield return new WaitForSeconds(actionEventToExecute.action.castGraphicDelay); 
+                Vector3 spawnPosition = actionEventToExecute.actor.transform.position;
+                GameObject graphicObject = Instantiate(actionEventToExecute.action.castGraphicPrefab, spawnPosition, Quaternion.identity);
             }
-            yield return new WaitForSeconds(turnData.action.castAnimationDuration);
-            StartActionAnimation();
+            yield return new WaitForSeconds(actionEventToExecute.action.castAnimationDuration);
+            StartCoroutine(ActionAnimationPhase()); 
         }
         else
         {
             yield return null;
-            StartActionAnimation(); 
+            StartCoroutine(ActionAnimationPhase()); 
         }
     }
 
-    private void MovePhase()
+    private IEnumerator ActionAnimationPhase()
     {
-        Debug.Log("Move Phase");
-        List<Tile> path = gridManager.GetPath(turnData.combatant.tile, turnData.targetedTile, TargetType.TargetPlayer);
-        if(turnData.targetedTile.occupier)
+        Debug.Log("starting animation");
+        //user animation
+        if(actionEventToExecute.action.executeAnimatorTrigger != "")
         {
-                List<Tile> reversePath = new List<Tile>();
-                reversePath.AddRange(path);
-                reversePath.Reverse();
-                turnData.targetedTile.occupier.Move(reversePath, MovementType.Move);
+            actionEventToExecute.actor.animator.SetTrigger(actionEventToExecute.action.executeAnimatorTrigger);
         }
-        turnData.combatant.Move(path, MovementType.Move);
-    }
-
-    public void OnMoveEnd(GameObject combatantObject)
-    {
-        if(combatantObject.GetComponent<Combatant>() == turnData.combatant)
-        {
-            StartCoroutine(EndActionPhase());
-        }
-    }
-
-    public void StartActionAnimation()
-    {
-        targetedTile = turnData.targetedTile;
-        targets = turnData.targets;
-        collisions.Clear();
-        if(turnData.action.hitRandomTarget)
-        {
-            int roll = Mathf.FloorToInt(Random.Range(0, turnData.targets.Count + 1));
-            targetedTile = turnData.targets[roll].tile;
-            targets = new List<Combatant>(){turnData.targets[roll]};
-        }
+        yield return new WaitForSeconds(actionEventToExecute.action.effectGraphicDelay);
         StartCoroutine(ProjectileAnimationPhase());         
     }
 
-    public IEnumerator ProjectileAnimationPhase()
+    private IEnumerator ProjectileAnimationPhase()
     {
         Debug.Log("Projectile Phase");
-            if(turnData.action.hasProjectileAnimation && turnData.action.projectileGraphicPrefab != null)
-            {
-                if(turnData.action.projectileAnimatorTrigger != null)
-                {
-                    turnData.combatant.animator.SetTrigger(turnData.action.projectileAnimatorTrigger);
-                }
-                yield return new WaitForSeconds(turnData.action.projectileGraphicDelay);
-                Vector3 startPosition = new Vector3(turnData.combatant.tile.transform.position.x + (turnData.combatant.GetDirection().x * 0.1f), turnData.combatant.transform.position.y + (turnData.combatant.GetDirection().y * 0.1f));
-                GameObject projectileObject = Instantiate(turnData.action.projectileGraphicPrefab, startPosition, Quaternion.identity);
-                projectileObject.GetComponent<Projectile>().Move(targetedTile.transform.position);
-            }
-            else
-            {
-                yield return null; 
-                StartCoroutine(EffectAnimationPhase());
-            }
-    }
-
-    public void OnProjectileEnd()
-    {
+        if(actionEventToExecute.action.hasProjectileAnimation && actionEventToExecute.action.projectileGraphicPrefab != null)
+        {
+            Vector3 startPosition = new Vector3(actionEventToExecute.actor.tile.transform.position.x + (actionEventToExecute.actor.GetDirection().x * 0.1f), actionEventToExecute.actor.transform.position.y + (actionEventToExecute.actor.GetDirection().y * 0.1f));
+            GameObject projectileObject = Instantiate(actionEventToExecute.action.projectileGraphicPrefab, startPosition, Quaternion.identity);
+            Projectile projectile = projectileObject.GetComponent<Projectile>();
+            projectile.Move(actionEventToExecute.targetedTile.transform.position);
+            
+            yield return new WaitUntil(() => projectile.reachedTarget);
+            Destroy(projectileObject);
+        }
+        yield return null;
         StartCoroutine(EffectAnimationPhase());
     }
 
     private IEnumerator EffectAnimationPhase()
     {
         Debug.Log("Effect Phase");
-        //user animation
-        if(turnData.action.effectAnimatorTrigger != "")
-        {
-            turnData.combatant.animator.SetTrigger(turnData.action.effectAnimatorTrigger);
-        }
         //spawn visual effect
-        if(turnData.action.effectGraphicPrefab)
+        if(actionEventToExecute.action.effectGraphicPrefab)
         {
-            yield return new WaitForSeconds(turnData.action.effectGraphicDelay); 
             List<GameObject> effects = new List<GameObject>();
-            Tile[,] tileArray = gridManager.GetTileArray(turnData.targetType);
-            foreach(AOE aoe in turnData.action.aoes)
+            foreach(AOE aoe in actionEventToExecute.action.aoes)
             {
                 //default spawn position (center of battlefield)
-                Vector2 spawnPosition = tileArray[1, 1].transform.position;
-                if(turnData.action.isFixedAOE)
-                {
-                    spawnPosition = tileArray[aoe.fixedStartPosition.x, aoe.fixedStartPosition.y].transform.position;
-                }
-                else
-                {
-                    if(targetedTile && aoe.aoeType != AOEType.All)
-                    {
-                        if(aoe.aoeType == AOEType.Row)
-                        {
-                            spawnPosition = tileArray[1, targetedTile.y].transform.position;
-                        }  
-                        else if(aoe.aoeType == AOEType.Column)
-                        {
-                            spawnPosition = tileArray[targetedTile.x, 1].transform.position;
-                        }   
-                        else
-                        { 
-                            spawnPosition = targetedTile.transform.position;
-                        }
-                    }
-                }
-                GameObject graphicObject = Instantiate(turnData.action.effectGraphicPrefab, spawnPosition, turnData.action.effectGraphicPrefab.transform.rotation);
+                Vector2 spawnPosition = GetEffectSpawnPosition(actionEventToExecute, aoe);
+                GameObject graphicObject = Instantiate(actionEventToExecute.action.effectGraphicPrefab, spawnPosition, actionEventToExecute.action.effectGraphicPrefab.transform.rotation);
                 effects.Add(graphicObject);
             }
-            //destory visual effect
-            yield return new WaitForSeconds(turnData.action.effectAnimationDuration);
+            //destroy visual effect
+            yield return new WaitForSeconds(actionEventToExecute.action.effectAnimationDuration);
             foreach(GameObject effect in effects)
             {
                 Destroy(effect);
@@ -201,211 +227,130 @@ public class ExecuteActionState : BattleState
         }
         else 
         {
-            yield return new WaitForSeconds(turnData.action.effectAnimationDuration);
+            yield return new WaitForSeconds(actionEventToExecute.action.effectAnimationDuration);
         }
-        HitCheckPhase();
+        StartCoroutine(ApplyActionEffects());
     }
 
-    private void HitCheckPhase()
+    private IEnumerator ApplyActionEffects()
     {
-        Debug.Log("Hit check phase");
-        if(targets.Count > 0)
+        foreach(ActionEvent actionEvent in targetQueue)
         {
-            for(int i = targets.Count - 1; i >= 0; i--)
+            actionEvent.TriggerEvent();
+            if(actionEvent.action.actionType == ActionType.Attack && !counterQueue.Contains(actionEvent.targets[0]))
             {
-                Debug.Log("checking target");
-                if(turnData.action.actionType == ActionType.Attack)
-                {
-                    Debug.Log("is attack");
-                    Combatant target = targets[i];
-                    int hitChance = Mathf.Clamp(turnData.action.accuracy + turnData.combatant.battleStatDict[BattleStatType.Accuracy].GetValue() - target.battleStatDict[BattleStatType.Evasion].GetValue(), 1, 99);
-                    Debug.Log(hitChance);
-                    bool didHit = Roll(hitChance);
-                    if(didHit || turnData.action.guaranteedHit)
-                    {
-                        target.TakeHit(turnData.combatant);
-                        Debug.Log(target.characterName + " was hit!");
-                    }
-                    else
-                    {
-                        target.EvadeAttack(turnData.combatant);
-                        targets.Remove(target);
-                        Debug.Log(target.characterName + " dodged the attack!");
-                    }
-                }
+                counterQueue.Add(actionEvent.targets[0]);
             }
         }
-        StartCoroutine(KnockbackPhase());
-    }
+        actionEventToExecute.hitCounter++;
 
-    private IEnumerator KnockbackPhase()
-    {
-        Debug.Log("Knockback Phase");
-        if(turnData.action.knockback.doKnockback)
-        { 
-            //order targets based on knockback direction
-            if(turnData.action.knockback.moveX == -1)
-            {
-                targets = targets.OrderByDescending(target=>target.tile.x).ToList();
-            }
-            else if(turnData.action.knockback.moveX == 1)
-            {
-                targets = targets.OrderByDescending(target=>target.tile.x).ToList();
-            }
-            else if(turnData.action.knockback.moveY == -1)
-            {
-                targets = targets.OrderByDescending(target=>target.tile.y).ToList();
-            }
-            else if(turnData.action.knockback.moveY == 1)
-            {
-                targets = targets.OrderByDescending(target=>target.tile.y).ToList();
-            }
+        yield return new WaitForSeconds(0.5f);
 
-            foreach(Combatant target in targets)
-            {
-                Tile destinationTile = target.tile;
-                Vector2Int newCoordinates = turnData.action.knockback.GetKnockbackDestination(target.tile);
-                destinationTile = gridManager.GetTileArray(turnData.targetType)[newCoordinates.x, newCoordinates.y];
-                if(destinationTile != target.tile)
-                {
-                    if(destinationTile.occupier == null)
-                    {
-                        target.Move(new List<Tile>(){target.tile, destinationTile}, MovementType.Knockback); 
-                    }
-                }
-            }
-            yield return new WaitForSeconds(0.4f);
-            StartCoroutine(HealthEffectPhase());
-        }
-        else 
+        if(actionEventToExecute.hitCounter < actionEventToExecute.action.hitCount)
         {
-            yield return null;
-            StartCoroutine(HealthEffectPhase());
+            Debug.Log("more hits remain");
+            StartCoroutine(ProjectileAnimationPhase());
         }
-    }
-
-    //trigger effects of action (ex: damage, heal, status effect)
-    public IEnumerator HealthEffectPhase()
-    {
-        Debug.Log("Damage/heal phase");
-        if(targets.Count > 0)
-        {
-            foreach(Combatant target in targets)
-            {
-                bool crit = false;
-                if(turnData.action.actionType == ActionType.Heal)
-                {
-                    float offensiveStat = (float)turnData.combatant.battleStatDict[turnData.action.offensiveStat].GetValue();
-                    float healAmount = Mathf.Clamp((float)turnData.action.power * offensiveStat / 10f, 1, 9999);
-                    target.Heal(Mathf.FloorToInt(healAmount));
-                }
-                else if(turnData.action.actionType == ActionType.Attack)
-                {
-                    float offensiveStat = (float)turnData.combatant.battleStatDict[turnData.action.offensiveStat].GetValue();
-                    float damageAmount = Mathf.Clamp((float)(turnData.action.power * offensiveStat / 10f) * Random.Range(0.85f, 1f), 1, 9999); 
-                    if(Roll(turnData.combatant.battleStatDict[BattleStatType.CritRate].GetValue()))
-                    {
-                        damageAmount = damageAmount * 1.25f;
-                        crit = true;
-                    }
-                    // damageAmount = damageAmount - target.battleStatDict[turnData.action.defensiveStat].GetValue();
-                    target.Damage(Mathf.FloorToInt(damageAmount), crit);
-                }
-            }
-            yield return new WaitForSeconds(0.4f);
-            KOCheckPhase();
-        } 
         else
         {
-            yield return null;
-            KOCheckPhase();
+            Debug.Log("all hits complete");
+            StartCoroutine(ResolveDamagePhase());
         }
     }
 
-    private void KOCheckPhase()
+    private IEnumerator ResolveDamagePhase()
     {
-        if(targets.Count > 0)
+        if(actionEventToExecute.action.isMelee)
         {
-            for(int i = targets.Count - 1; i >= 0; i--)
-            {
-                if(targets[i].hp.GetCurrentValue() <= 0)
-                {
-                    battleManager.KOCombatant(targets[i]);
-                    targets.RemoveAt(i);
-                }
-            }
+            actionEventToExecute.actor.Move(actionEventToExecute.actor.tile.transform, "Idle");
         }
-        StartCoroutine(StatusEffectPhase());
-    }
 
-    private IEnumerator StatusEffectPhase()
-    {
-        if(turnData.action.statusEffectSO != null && targets.Count > 0)
+        //complete animations
+        List<Combatant> combatants = battleManager.GetCombatants(CombatantType.Player);
+        combatants.AddRange(battleManager.GetCombatants(CombatantType.Enemy));
+        foreach(Combatant combatant in combatants)
         {
-            foreach(Combatant target in targets)
+            combatant.ReturnToDefaultAnimation(); 
+            combatant.ResolveHealthChange();
+        }
+        yield return new WaitForSeconds(0.5f);
+
+        //check targets for ko
+        bool actorKO = false;
+        for(int i = combatants.Count - 1; i > 0; i--)
+        {
+            Combatant thisCombatant = combatants[i];
+            if(thisCombatant.hp.GetCurrentValue() <= 0)
             {
-                int offensiveStat = turnData.combatant.battleStatDict[turnData.action.offensiveStat].GetValue();
-                if(turnData.action.statusEffectSO.isBuff)
+                battleManager.KOCombatant(thisCombatant);
+                combatants.RemoveAt(i);
+                //remove combatant from counter queue
+                for(int j = counterQueue.Count - 1; i > 0; i--)
                 {
-                    target.AddStatusEffect(turnData.action.statusEffectSO,  offensiveStat);
+                    if(counterQueue[j] == thisCombatant)
+                    {
+                        counterQueue.RemoveAt(j);
+                    }
                 }
-                else if(Roll(turnData.action.statusEffectChance))
+                if(thisCombatant == turnData.combatant)
                 {
-                    target.AddStatusEffect(turnData.action.statusEffectSO, offensiveStat);
+                    actorKO = true;
                 }
             }
-            yield return new WaitForSeconds(0.4f);
         }
-        if(targets.Count < 1)
+        yield return new WaitForSeconds(0.5f);
+
+        //hide hp bars
+        // foreach(Combatant combatant in combatants)
+        // {
+        //     combatant.ToggleHPBar(false);
+        // }
+
+        //move to next phase
+        if(actorKO)
         {
             StartCoroutine(EndActionPhase());
         }
         else
         {
-            hits++;
-            if(hits < turnData.action.hitCount)
+            CounterPhase();
+        }
+    }
+
+    private void CounterPhase()
+    {
+        Debug.Log("Counter phase");
+        for(int x = counterQueue.Count - 1; x >= 0; x--)
+        {
+            CounterAction counterAction = counterQueue[0].counterAction;
+            if(counterAction != null && Roll(counterAction.chance))
             {
-                StartActionAnimation();
-            }
-            else
-            {
-                StartCoroutine(EndActionPhase());
+                //create counter action
+                actionEventToExecute = new ActionEvent(counterAction.action, counterQueue[x]);
+                actionEventToExecute.targets = new List<Combatant>() {turnData.combatant};
+                actionEventToExecute.targetedTile = turnData.combatant.tile;
+                actionEventToExecute.canCounter = false;
+                //remove from queue
+                counterQueue.RemoveAt(x);
+                //execute
+                StartCoroutine(ExecuteAction());
+                return;
             }
         }
+        StartCoroutine(EndActionPhase());
     }
 
     public IEnumerator EndActionPhase()
     {
-        Debug.Log("action complete!");
-        turnData.combatant.animator.SetTrigger("Idle");    
+        Debug.Log("action complete!");  
+
         yield return new WaitForSeconds(0.6f);
-        if(turnData.targets.Count > 0)
-        {
-            foreach(Combatant target in turnData.targets)
-            {
-                target.animator.SetTrigger("Idle");
-                target.ToggleHPBar(false);
-            }
-        }    
-        battleManager.UpdateActionPoints(-turnData.action.apCost);
-        if(turnData.actionPoints > 0)
-        {
-            if(turnData.combatant is PlayableCombatant)
-            {
-                stateMachine.ChangeState((int)BattleStateType.Menu);
-            }
-            else
-            {
-                stateMachine.ChangeState((int)BattleStateType.EnemyTurn);
-            }
-        }
-        else
-        {
-            stateMachine.ChangeState((int)BattleStateType.TurnEnd);
-        }
+        stateMachine.ChangeState((int)BattleStateType.TurnEnd);
     }
 
-    public bool Roll(int chance)
+    /////////////////////////////////////////////////////////
+
+    public bool Roll(float chance)
     {
         int roll = Random.Range(1, 100);
         if(roll <= chance)
@@ -416,5 +361,35 @@ public class ExecuteActionState : BattleState
         {
             return false;
         }
+    }
+        
+
+    public Vector2 GetEffectSpawnPosition(ActionEvent actionEvent, AOE aoe)
+    {
+        Tile[,] tileArray = gridManager.GetTileArray(actionEvent.GetCombatantType());
+        Vector2 spawnPosition = tileArray[1, 1].transform.position;
+        if(actionEvent.action.isFixedAOE)
+        {
+            spawnPosition = tileArray[aoe.fixedStartPosition.x, aoe.fixedStartPosition.y].transform.position;
+        }
+        else
+        {
+            if(actionEvent.targetedTile && aoe.aoeType != AOEType.All)
+            {
+                if(aoe.aoeType == AOEType.Row)
+                {
+                    spawnPosition = tileArray[1, actionEvent.targetedTile.y].transform.position;
+                }  
+                else if(aoe.aoeType == AOEType.Column)
+                {
+                    spawnPosition = tileArray[actionEvent.targetedTile.x, 1].transform.position;
+                }   
+                else
+                { 
+                    spawnPosition = actionEvent.targetedTile.transform.position;
+                }
+            }
+        }
+        return spawnPosition;
     }
 }

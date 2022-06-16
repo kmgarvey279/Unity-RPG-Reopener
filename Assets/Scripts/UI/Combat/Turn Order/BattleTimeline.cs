@@ -11,15 +11,15 @@ public class BattleTimeline : MonoBehaviour
     [Header("Preview")]
     [SerializeField] private GameObject panelsParent; 
     // private List<TurnPanel> turnPanels = new List<TurnPanel>();
-    private Dictionary<TurnSlot, TurnPanel> turnPanels = new Dictionary<TurnSlot, TurnPanel>();
+    private Dictionary<Combatant, TurnPanel> turnPanels = new Dictionary<Combatant, TurnPanel>();
     [Header("Misc")]
     [SerializeField] private GameObject turnPanelPrefab;
 
     [SerializeField] private List<Transform> slotLocations;
 
-    public void UpdateTurnPanels(List<TurnSlot> turnForecast)
+    public void UpdateTurnPanels(List<Combatant> turnForecast)
     {
-        foreach(KeyValuePair<TurnSlot, TurnPanel> entry in turnPanels)
+        foreach(KeyValuePair<Combatant, TurnPanel> entry in turnPanels)
         {
             Vector3 updatedPosition = slotLocations[turnForecast.IndexOf(entry.Key)].position;
             if(entry.Value.transform.position != updatedPosition)
@@ -29,28 +29,33 @@ public class BattleTimeline : MonoBehaviour
         }
     }
 
-    public void CreateTurnPanel(int index, TurnSlot turnSlot)
+    public void CreateTurnPanel(int index, Combatant combatant)
     {
         //create panel
         GameObject turnPanelObject = Instantiate(turnPanelPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         turnPanelObject.transform.SetParent(panelsParent.transform, false);
         TurnPanel turnPanel = turnPanelObject.GetComponent<TurnPanel>();
         //assign value 
-        turnPanel.AssignTurnSlot(turnSlot);
+        turnPanel.AssignCombatant(combatant);
         //set position
         turnPanel.transform.position = slotLocations[index].position;
         //store in list
-        turnPanels.Add(turnSlot, turnPanel);
+        turnPanels.Add(combatant, turnPanel);
     }
 
-    public void DestroyTurnPanel(TurnSlot turnSlot)
+    public void DestroyTurnPanel(Combatant combatant)
     {
-        TurnPanel turnPanel = turnPanels[turnSlot];
-        turnPanels.Remove(turnSlot);
+        TurnPanel turnPanel = turnPanels[combatant];
+        turnPanels.Remove(combatant);
         Destroy(turnPanel.gameObject);
     }
 
-    public void ChangeCurrentTurn(TurnSlot newCurrentSlot)
+    public void ChangePanelName(Combatant combatant, string newString)
+    {
+        turnPanels[combatant].AssignCombatant(combatant);
+    }
+
+    public void ChangeCurrentTurn(Combatant combatant)
     {
         if(currentTurnPanel == null)
         {
@@ -58,12 +63,12 @@ public class BattleTimeline : MonoBehaviour
             turnPanelObject.transform.SetParent(currentLocation, false);
             currentTurnPanel = turnPanelObject.GetComponent<TurnPanel>();
         }
-        currentTurnPanel.AssignTurnSlot(newCurrentSlot);
+        currentTurnPanel.AssignCombatant(combatant);
     }
 
     public void ClearAllTargetingPreviews()
     {
-        foreach(KeyValuePair<TurnSlot, TurnPanel> entry in turnPanels)
+        foreach(KeyValuePair<Combatant, TurnPanel> entry in turnPanels)
         {
            entry.Value.ToggleTargetingPreview(false); 
         }
@@ -72,26 +77,12 @@ public class BattleTimeline : MonoBehaviour
     public void OnTargetSelect(GameObject gameObject)
     {
         Combatant target = gameObject.GetComponent<Combatant>();
-        foreach(KeyValuePair<TurnSlot, TurnPanel> entry in turnPanels)
-        {
-            if(entry.Key.combatant == target)
-            {
-                entry.Value.ToggleTargetingPreview(true);
-                return;
-            }
-        }
+        turnPanels[target].ToggleTargetingPreview(true);
     }
 
     public void OnTargetDeselect(GameObject gameObject)
     {
         Combatant target = gameObject.GetComponent<Combatant>();
-        foreach(KeyValuePair<TurnSlot, TurnPanel> entry in turnPanels)
-        {
-            if(entry.Key.combatant == target)
-            {
-                entry.Value.ToggleTargetingPreview(false);
-                return;
-            }
-        }
+        turnPanels[target].ToggleTargetingPreview(false);
     }
 }

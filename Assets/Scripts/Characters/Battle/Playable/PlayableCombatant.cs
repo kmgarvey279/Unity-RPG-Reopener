@@ -4,17 +4,13 @@ using UnityEngine;
 
 public class PlayableCombatant : Combatant
 {
-    public bool ko = false;
-    private BattlePartyPanel battlePartyPanel;
     [HideInInspector] public List<Action> skills;
+    private BattlePartyPanel battlePartyPanel;
 
     public override void Awake()
     {
         base.Awake();
-        //set actions
-        PlayableCharacterInfo playableCharacterInfo = (PlayableCharacterInfo)characterInfo;
-        skills = playableCharacterInfo.skills;
-        //set default direction
+        combatantType = CombatantType.Player;   
         defaultDirection = new Vector2(1, 0);
         SetDirection(defaultDirection);
     }
@@ -24,54 +20,62 @@ public class PlayableCombatant : Combatant
         this.battlePartyPanel = battlePartyPanel;
     }
 
-    public override void SetBattleStats()
+    public override void SetCharacterData(CharacterInfo characterInfo)
     {
-        battleStatDict.Add(BattleStatType.Attack, new Stat(characterInfo.statDict[StatType.Attack].GetValue() + characterInfo.statDict[StatType.EquipmentAttack].GetValue()));
-        battleStatDict.Add(BattleStatType.Defense, new Stat(characterInfo.statDict[StatType.Defense].GetValue() + characterInfo.statDict[StatType.EquipmentDefense].GetValue()));
+        base.SetCharacterData(characterInfo);
 
-        battleStatDict.Add(BattleStatType.MagicAttack, new Stat(characterInfo.statDict[StatType.MagicAttack].GetValue() + characterInfo.statDict[StatType.EquipmentMagicAttack].GetValue()));
-        battleStatDict.Add(BattleStatType.MagicDefense, new Stat(characterInfo.statDict[StatType.MagicDefense].GetValue() + characterInfo.statDict[StatType.EquipmentMagicDefense].GetValue()));
+        battleStatDict.Add(BattleStatType.Attack, new Stat(characterInfo.statDict[StatType.Attack].GetValue()));
+        battleStatDict.Add(BattleStatType.Defense, new Stat(characterInfo.statDict[StatType.Defense].GetValue()));
 
-        battleStatDict.Add(BattleStatType.Accuracy, new Stat(Mathf.FloorToInt((characterInfo.statDict[StatType.Skill].GetValue() / 2) + (characterInfo.statDict[StatType.Agility].GetValue() / 3))));
-        battleStatDict.Add(BattleStatType.CritRate, new Stat(Mathf.FloorToInt(characterInfo.statDict[StatType.Skill].GetValue() / 4)));
+        battleStatDict.Add(BattleStatType.MagicAttack, new Stat(characterInfo.statDict[StatType.MagicAttack].GetValue()));
+        battleStatDict.Add(BattleStatType.MagicDefense, new Stat(characterInfo.statDict[StatType.MagicDefense].GetValue()));
         
-        battleStatDict.Add(BattleStatType.Speed, new Stat(characterInfo.statDict[StatType.Agility].GetValue()));
-        battleStatDict.Add(BattleStatType.Evasion, new Stat(Mathf.FloorToInt((characterInfo.statDict[StatType.Agility].GetValue() / 2) + (characterInfo.statDict[StatType.Skill].GetValue() / 3))));
+        PlayableCharacterInfo playableCharacterInfo = (PlayableCharacterInfo)characterInfo;
+        skills = playableCharacterInfo.skills;
 
-        Debug.Log(characterName + " Accuracy:" + battleStatDict[BattleStatType.Accuracy].GetValue());
-        Debug.Log(characterName + " Evasion:" + battleStatDict[BattleStatType.Evasion].GetValue());
+        isLoaded = true;
     }
 
-    public override void SetTraitEffects()
-    {
-        // foreach(Trait trait in characterInfo.traits)
-        // {
-        //     if(trait.isUnlocked)
-        //     {
-        //         foreach(TriggerableSubEffect triggerableSubEffect in trait.triggerableSubEffects)
-        //         {
-        //             triggerableSubEffects.Add(triggerableSubEffect);
-        //         }
-        //     }
-        // }
-    }
+    // public override void SetTraitEffects()
+    // {
+    //     // foreach(Trait trait in characterInfo.traits)
+    //     // {
+    //     //     if(trait.isUnlocked)
+    //     //     {
+    //     //         foreach(TriggerableSubEffect triggerableSubEffect in trait.triggerableSubEffects)
+    //     //         {
+    //     //             triggerableSubEffects.Add(triggerableSubEffect);
+    //     //         }
+    //     //     }
+    //     // }
+    // }
 
-    public override void Heal(int amount)
-    {
-        base.Heal(amount);
-        battlePartyPanel.UpdateHP(hp.GetCurrentValue());
-    }
-
-    public override void Damage(int amount, bool isCrit = false)
+    public override void Damage(float amount, bool isCrit = false)
     {
         base.Damage(amount, isCrit);
         battlePartyPanel.UpdateHP(hp.GetCurrentValue());
+    }
+    public override void Heal(float amount, bool isCrit = false)
+    {
+        base.Heal(amount, isCrit);
+        battlePartyPanel.UpdateHP(hp.GetCurrentValue());
+    }
+
+    public override void ResolveHealthChange()
+    {
+        base.ResolveHealthChange();
+        battlePartyPanel.ResolveHP();
+    }
+
+    public void ChangeMana(float amount)
+    {
+        mp.ChangeCurrentValue(amount);
+        battlePartyPanel.UpdateMP(mp.GetCurrentValue());
     }
 
     public override IEnumerator KOCo()
     {
         animator.SetTrigger("KO");
         yield return new WaitForSeconds(0.5f);
-        ko = true;
     }
 }

@@ -7,18 +7,23 @@ public class SliderBar : MonoBehaviour
 {
     [SerializeField] private Slider slider;
 
-    public void SetMaxValue(int maxValue)
+    public void SetMaxValue(float maxValue)
     {
         slider.maxValue = maxValue;
     }
 
-    public void SetCurrentValue(int currentValue)
+    public void SetCurrentValue(float currentValue)
     {
         slider.value = currentValue;      
     }
 
-    public int GetCurrentValue()
+    public float GetCurrentValue()
     {
-        return (int)slider.value;
+        return slider.value;
+    }
+
+    public float GetMaxValue()
+    {
+        return slider.maxValue;
     }
 }

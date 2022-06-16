@@ -29,25 +29,15 @@ public class TurnEndState : BattleState
 
     public IEnumerator EndTurnCo()
     {     
-        yield return new WaitForSeconds(0.4f);
-        
+        yield return new WaitForSeconds(0.5f);
+        //check combatant status after end of turn effects
         battleManager.turnData.combatant.OnTurnEnd();
         if(battleManager.turnData.combatant.hp.GetCurrentValue() <= 0)
         {
             battleManager.KOCombatant(battleManager.turnData.combatant);
         }
-        
-        yield return new WaitForSeconds(0.4f);
-
-        bool allPartyMembersKO = true;
-        foreach(PlayableCombatant playableCombatant in battleManager.PlayableCombatants)
-        {
-            if(playableCombatant.ko == false)
-            {
-                allPartyMembersKO = false;
-            }
-        }
-        if(battleManager.EnemyCombatants.Count <= 0 || allPartyMembersKO == true)
+        yield return new WaitForSeconds(0.5f);         
+        if(battleManager.GetCombatants(CombatantType.Enemy).Count <= 0 || battleManager.GetCombatants(CombatantType.Player).Count <= 0)
         {
             stateMachine.ChangeState((int)BattleStateType.BattleEnd);
         }

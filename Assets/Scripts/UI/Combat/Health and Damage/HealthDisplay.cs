@@ -4,6 +4,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+public enum PopupType
+{
+    Heal, 
+    Damage,
+    Buff,
+    Debuff,
+    Miss
+}
+
 public class HealthDisplay : MonoBehaviour
 {
     private Combatant combatant;
@@ -12,6 +21,7 @@ public class HealthDisplay : MonoBehaviour
     [SerializeField] private AnimatedBar healthBar;
     [SerializeField] private StatusEffectDisplay statusEffectDisplay;
     [SerializeField] private GameObject damagePopupPrefab;
+    [SerializeField] private GameObject popupSpawnPoint;
 
     private void Start()
     {
@@ -24,18 +34,31 @@ public class HealthDisplay : MonoBehaviour
         display.gameObject.SetActive(show);
     }
 
-    public void HandleHealthChange(DamagePopupType popupType, int amount)
+    public void DisplayMessage(PopupType popupType, string message)
     {
-        if(!display.gameObject.activeInHierarchy)
-        {
-            Display(true);
-        }
+        GameObject damagePopupObject = Instantiate(damagePopupPrefab, popupSpawnPoint.transform.position, Quaternion.identity);
+        damagePopupObject.transform.SetParent(popupSpawnPoint.transform);
+        damagePopupObject.GetComponent<DamagePopup>().TriggerMessagePopup(popupType, message);
+    }
 
-        GameObject damagePopupObject = Instantiate(damagePopupPrefab, transform.position, Quaternion.identity);
-        damagePopupObject.transform.SetParent(gameObject.transform);
-        damagePopupObject.GetComponent<DamagePopup>().TriggerPopup(popupType, amount);
+    public void DisplayHealthChange(PopupType popupType, float amount, bool isCrit)
+    {
+        Debug.Log("displaying popup for " + amount);
+        // if(!display.gameObject.activeInHierarchy)
+        // {
+        //     Display(true);
+        // }
 
-        healthBar.UpdateBar(combatant.hp.GetCurrentValue());
+        GameObject damagePopupObject = Instantiate(damagePopupPrefab, popupSpawnPoint.transform.position, Quaternion.identity);
+        damagePopupObject.transform.SetParent(popupSpawnPoint.transform);
+        damagePopupObject.GetComponent<DamagePopup>().TriggerHealthPopup(popupType, Mathf.Abs(amount), isCrit);
+
+        healthBar.DisplayChange(combatant.hp.GetCurrentValue());
+    }
+
+    public void ResolveHealthChange()
+    {
+        healthBar.ResolveChange();
     }
 
     public void AddStatusIcon(StatusEffectSO statusEffectSO)

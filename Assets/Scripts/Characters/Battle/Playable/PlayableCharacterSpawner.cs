@@ -10,6 +10,7 @@ public class PlayableCharacterSpawner : MonoBehaviour
     [SerializeField] private GameObject shad;
     [SerializeField] private GameObject blaine;
     [SerializeField] private GameObject lucy;
+    [SerializeField] private GameObject oshi;
     private Dictionary<PlayableCharacterID, GameObject> playableCharacterPrefabs = new Dictionary<PlayableCharacterID, GameObject>();
 
     [Header("Spawn Positions")]
@@ -22,19 +23,25 @@ public class PlayableCharacterSpawner : MonoBehaviour
         playableCharacterPrefabs.Add(PlayableCharacterID.Shad, shad);  
         playableCharacterPrefabs.Add(PlayableCharacterID.Blaine, blaine);
         playableCharacterPrefabs.Add(PlayableCharacterID.Lucy, lucy);
+        playableCharacterPrefabs.Add(PlayableCharacterID.Oshi, oshi);
     }
 
-    public Combatant SpawnPlayableCharacter(PlayableCharacterID playableCharacterID, int positionNum)
+    public Combatant SpawnPlayableCharacter(PlayableCharacterInfo playableCharacterInfo, int positionNum)
     {
         if(positionNum <= spawnPositions.Count)
         {
             Tile tile = spawnPositions[positionNum - 1];
-            GameObject playableCharacterObject = Instantiate(playableCharacterPrefabs[playableCharacterID], tile.transform.position, Quaternion.identity);
+            GameObject playableCharacterObject = Instantiate(playableCharacterPrefabs[playableCharacterInfo.playableCharacterID], tile.transform.position, Quaternion.identity);
+            //set transform
             playableCharacterObject.transform.parent = gameObject.transform;
-
             Combatant combatant = playableCharacterObject.GetComponent<Combatant>();
+            //set data
+            combatant.SetCharacterData(playableCharacterInfo);
+            //set tile
             tile.AssignOccupier(combatant);
             combatant.tile = tile;
+
+            
             return combatant;
         }
         return null;

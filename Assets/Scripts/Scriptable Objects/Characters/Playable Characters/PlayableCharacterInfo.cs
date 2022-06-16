@@ -8,39 +8,37 @@ public enum PlayableCharacterID
     Mutiny,
     Shad,
     Blaine,
-    Lucy
+    Lucy,
+    Oshi
 }
 
 [CreateAssetMenu(fileName = "New Playable Character Info", menuName = "Character Info/Playable")]
 public class PlayableCharacterInfo : CharacterInfo
 {
-
+    [Header("ID")]
+    public PlayableCharacterID playableCharacterID;
     [Header("Skills")]
     public List<Action> skills;
-
     [Header("Equipment")]
     [SerializeField] private EquipmentObject weapon;
     [SerializeField] private EquipmentObject armor;
     [SerializeField] private EquipmentObject accessory;
-    public Dictionary<EquipmentType, EquipmentObject> equipmentDict = new Dictionary<EquipmentType, EquipmentObject>();
-    
-    [Header("ID")]
-    public PlayableCharacterID characterID;
+    public Dictionary<EquipmentType, EquipmentObject> equipmentDict = new Dictionary<EquipmentType, EquipmentObject>()
+    {
+        {EquipmentType.Weapon, null},
+        {EquipmentType.Armor, null},
+        {EquipmentType.Accessory, null}
+    };    
     
     protected override void OnEnable()
     {
         base.OnEnable();
 
-        statDict.Add(StatType.EquipmentAttack, new Stat(0));
-        statDict.Add(StatType.EquipmentDefense, new Stat(0));
-        statDict.Add(StatType.EquipmentMagicAttack, new Stat(0));
-        statDict.Add(StatType.EquipmentMagicDefense, new Stat(0));
-
-        if(weapon)
+        if(weapon != null)
             ChangeEquipment(weapon);
-        if(armor)
+        if(armor != null)
             ChangeEquipment(armor);
-        if(accessory)
+        if(accessory != null)
             ChangeEquipment(accessory);
     }
 
@@ -51,38 +49,44 @@ public class PlayableCharacterInfo : CharacterInfo
         if(equipmentDict[equipmentType] != null)
         {
             //clear stat modifiers
-            foreach(KeyValuePair<StatType, Stat> stat in statDict)
+            foreach(KeyValuePair<StatType, Stat> statEntry in statDict)
             { 
-                stat.Value.RemoveModifier(equipmentDict[equipmentType].modifierDict[stat.Key]);
+                statEntry.Value.RemoveAdditive(equipmentDict[equipmentType].modifierDict[statEntry.Key]);
             }
             //clear elemental modifiers
-            foreach(KeyValuePair<ElementalProperty, Stat> stat in resistDict)
+            foreach(KeyValuePair<ElementalProperty, ElementalResistance> resistanceEntry in resistDict)
             { 
-                stat.Value.RemoveModifier(equipmentDict[equipmentType].resistDict[stat.Key]);
+                resistanceEntry.Value.resistance += equipmentDict[equipmentType].resistDict[resistanceEntry.Key];
             }
             equipmentDict.Remove(equipmentType);
         }
-        foreach(KeyValuePair<StatType, Stat> stat in statDict)
+        foreach(KeyValuePair<StatType, Stat> statEntry in statDict)
         { 
-            stat.Value.AddModifier(newEquipment.modifierDict[stat.Key]);
+            statEntry.Value.AddAdditive(newEquipment.modifierDict[statEntry.Key]);
         }            
+        foreach(KeyValuePair<ElementalProperty, ElementalResistance> resistanceEntry in resistDict)
+        { 
+            resistanceEntry.Value.resistance += newEquipment.resistDict[resistanceEntry.Key];
+        }
         equipmentDict[equipmentType] = newEquipment;
     }
 
     public override void OnDisable()
     {
         base.OnDisable();
-        foreach(KeyValuePair<EquipmentType, EquipmentObject> entry in equipmentDict)
+        foreach(KeyValuePair<EquipmentType, EquipmentObject> equipmentEntry in equipmentDict)
         {
-            foreach(KeyValuePair<StatType, Stat> stat in statDict)
-            { 
-                stat.Value.RemoveModifier(entry.Value.modifierDict[stat.Key]);
-            }
-            foreach(KeyValuePair<ElementalProperty, Stat> stat in resistDict)
-            { 
-                stat.Value.RemoveModifier(entry.Value.resistDict[stat.Key]);
+            if(equipmentEntry.Value != null)
+            {
+                foreach(KeyValuePair<StatType, Stat> statEntry in statDict)
+                { 
+                    statEntry.Value.RemoveAdditive(equipmentEntry.Value.modifierDict[statEntry.Key]);
+                }
+                foreach(KeyValuePair<ElementalProperty, ElementalResistance> resistanceEntry in resistDict)
+                { 
+                    resistanceEntry.Value.resistance -= equipmentEntry.Value.resistDict[resistanceEntry.Key];
+                }
             }
         }  
-        equipmentDict.Clear(); 
     }
 }

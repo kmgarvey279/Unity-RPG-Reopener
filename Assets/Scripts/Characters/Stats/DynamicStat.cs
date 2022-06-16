@@ -5,38 +5,34 @@ using UnityEngine;
 [System.Serializable]
 public class DynamicStat : Stat
 {
-    public int currentValue;
+    public float currentValue;
 
-    public DynamicStat(int baseValue, int currentValue) : base(baseValue)
+    public DynamicStat(float baseValue, float currentValue) : base(baseValue)
     {
         this.baseValue = baseValue;
         this.currentValue = currentValue;
     }
 
-    public override void AddModifier(int modifier)
+    public override void AddAdditive(float additive)
     {
-        if(modifier != 0)
-            modifiers.Add(modifier);     
-        
+        additives.Add(additive);     
         currentValue = Mathf.Clamp(currentValue, 0, GetValue());
     }
 
-    public override void RemoveModifier(int modifier)
+    public override void RemoveAdditive(float additive)
     {
-        if(modifier != 0)
-            modifiers.Remove(modifier);
-
+        additives.Remove(additive);
         currentValue = Mathf.Clamp(currentValue, 0, GetValue());
     }
 
-    public int GetCurrentValue()
+    public float GetCurrentValue()
     {
         return currentValue;
     }
 
-    public void ChangeCurrentValue(int amount)
+    public void ChangeCurrentValue(float amount)
     {
-        int temp = currentValue + amount;
+        float temp = currentValue + amount;
         currentValue = Mathf.Clamp(temp, 0, GetValue());
     }
 }

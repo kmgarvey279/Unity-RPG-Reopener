@@ -13,6 +13,9 @@ public class BattleSkillSlot : MonoBehaviour, ISelectHandler, IPointerEnterHandl
     [SerializeField] private Image skillIcon;
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI costText;
+    [SerializeField] private TextMeshProUGUI costNum;
+    [SerializeField] private Transform apIcons;
+    [SerializeField] private GameObject apIconPrefab;
     [Header("Events")]
     [SerializeField] private SignalSenderGO onSelectBattleSkill;
     [SerializeField] private SignalSenderGO onConfirmBattleSkill;
@@ -23,7 +26,18 @@ public class BattleSkillSlot : MonoBehaviour, ISelectHandler, IPointerEnterHandl
         this.action = action;
         skillIcon = action.icon;
         nameText.text = action.actionName;
-        costText.text = action.mpCost.ToString("n0");
+        if(action.mpCost > 0)
+        {
+            if(action.costsHP)
+            {
+                costText.text = "HP";
+            }
+            else
+            {
+                costText.text = "MP";
+            }
+            costNum.text = action.mpCost.ToString("n0");
+        }
     }
 
     public void OnSelect(BaseEventData eventData)

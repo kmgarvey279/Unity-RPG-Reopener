@@ -14,34 +14,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterName: Mutiny
   level: 1
-  baseHP: 100
+  baseHP: 200
   hp:
-    baseValue: 100
-    modifiers: 
+    baseValue: 200
+    additives: []
     multipliers: []
-    currentValue: 100
+    currentValue: 200
   baseMP: 50
   mp:
     baseValue: 50
-    modifiers: 
+    additives: []
     multipliers: []
     currentValue: 50
-  attack: 8
-  defense: 8
-  magicAttack: 0
-  magicDefense: 7
-  skill: 12
-  agility: 20
-  fireResist: 0
-  iceResist: 0
-  electricResist: 0
+  attackStat: 4
+  defenseStat: 3
+  magicAttackStat: 3
+  magicDefenseStat: 5
+  skillStat: 6
+  agilityStat: 7
+  fireResist: 1
+  iceResist: 1
+  electricResist: 1
   darkResist: 0
+  lightResist: 2
   traits: []
-  skills:
-  - {fileID: 11400000, guid: 48fcfc47a577d7e4a88e44d925b92c5f, type: 2}
-  - {fileID: 11400000, guid: dfbe01681ad7be6469edb93ecfc2eeb5, type: 2}
-  - {fileID: 11400000, guid: 5e7db78d175245d47baf6b394dbd81a9, type: 2}
+  attack: {fileID: 11400000, guid: d5d7301e34e951c4fa9b4beeda7e7bcb, type: 2}
+  skills: []
   weapon: {fileID: 0}
   armor: {fileID: 0}
   accessory: {fileID: 0}
-  characterID: 0
+  characterID: 1

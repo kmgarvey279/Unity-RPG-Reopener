@@ -32,19 +32,20 @@ public class CommandSubmenu : MonoBehaviour
         display.SetActive(true);
     }
 
-    public void DisplaySkills(List<Action> skills, int currentAP, int currentMP)
+    public void DisplaySkills(PlayableCombatant combatant)
     {
         isDisplayed = true;
-        for (int i = 0; i < skills.Count; i++)
+        for(int i = 0; i < combatant.skills.Count; i++)
         {
             GameObject skillSlotObject = Instantiate(skillSlotPrefab, Vector3.zero, Quaternion.identity);   
             skillSlotObject.transform.SetParent(listParent.transform, false);      
             BattleSkillSlot battleSkillSlot = skillSlotObject.GetComponent<BattleSkillSlot>();
-            battleSkillSlot.AssignSlot(skills[i]); 
+            battleSkillSlot.AssignSlot(combatant.skills[i]); 
             selectableList.Add(skillSlotObject);
-            if(!(skills[i].apCost <= currentAP && skills[i].mpCost <= currentMP))
+            if(combatant.skills[i].mpCost > combatant.mp.GetCurrentValue()
+                || combatant.skills[i].costsHP && combatant.skills[i].mpCost > combatant.hp.GetCurrentValue())
             {
-                battleSkillSlot.GetComponent<Button>().enabled = false;
+                skillSlotObject.GetComponent<Button>().interactable = false;
             }
         } 
         display.SetActive(true);

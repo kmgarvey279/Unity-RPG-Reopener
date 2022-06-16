@@ -14,31 +14,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterName: Blaine
   level: 1
-  baseHP: 150
+  baseHP: 200
   hp:
-    baseValue: 0
+    baseValue: 200
     modifiers: 
     multipliers: []
-    currentValue: 0
+    currentValue: 200
   baseMP: 40
   mp:
-    baseValue: 0
+    baseValue: 40
     modifiers: 
     multipliers: []
-    currentValue: 0
-  attack: 15
-  defense: 15
-  magic: 7
-  magicDefense: 7
-  skill: 7
-  agility: 7
-  moveRange: 3
-  fireResist: 0
+    currentValue: 40
+  attackStat: 15
+  defenseStat: 15
+  magicAttackStat: 7
+  magicDefenseStat: 7
+  skillStat: 8
+  agilityStat: 6
+  fireResist: 1
   iceResist: 0
-  electricResist: 0
-  darkResist: 0
-  meleeAttack: {fileID: 11400000, guid: b1ee06fb7b8e69b4fbfeec0d9507136f, type: 2}
-  rangedAttack: {fileID: 0}
+  electricResist: 2
+  darkResist: 1
+  lightResist: 1
+  traits: []
+  attack: {fileID: 0}
   skills:
   - {fileID: 0}
   - {fileID: 0}

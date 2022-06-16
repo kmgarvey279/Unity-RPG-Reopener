@@ -17,14 +17,11 @@ public class StatsUI : MonoBehaviour
         equipmentComparison.Add(StatType.MagicDefense, 0);
         equipmentComparison.Add(StatType.Skill, 0);
         equipmentComparison.Add(StatType.Agility, 0);
-        equipmentComparison.Add(StatType.EquipmentAttack, 0);
-        equipmentComparison.Add(StatType.EquipmentDefense, 0);
-        equipmentComparison.Add(StatType.EquipmentMagicAttack, 0);
-        equipmentComparison.Add(StatType.EquipmentMagicDefense, 0);
 
         resistanceComparison.Add(ElementalProperty.Fire, 0);
         resistanceComparison.Add(ElementalProperty.Ice, 0);
         resistanceComparison.Add(ElementalProperty.Electric, 0);
         resistanceComparison.Add(ElementalProperty.Dark, 0);
+        resistanceComparison.Add(ElementalProperty.Light, 0);
     }
 }

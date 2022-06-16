@@ -6,58 +6,6 @@ using System.Linq;
 using StateMachineNamespace;
 using BattleCalculationsNamespace;
 
-//stores information related to combatant's place in turn queue
-[System.Serializable]
-public class TurnSlot
-{
-    public Combatant combatant;
-    [Header("Number of ticks remaining until next turn")]
-    private int turnCounter = 100;
-
-    public TurnSlot(Combatant combatant)
-    {
-        this.combatant = combatant;
-    }
-
-    public void SetTurnCounterToDefault()
-    {
-        turnCounter = 100;
-    }
-
-    public int GetCounterValue()
-    {
-        int speedBonus = Mathf.FloorToInt((float)combatant.battleStatDict[BattleStatType.Speed].GetValue() / 2f);
-        return Mathf.Clamp((turnCounter - speedBonus), 0, 100);
-    }
-
-    public void Tick()
-    {
-        if(turnCounter > 0)
-        {
-            turnCounter = turnCounter - 1;
-        }
-    }
-}
-
-//stores information related to the current turn
-[System.Serializable]
-public class TurnData
-{
-    public Combatant combatant;
-    public Action action;
-    public int actionPoints = 0;
-    [Header("Targets")]
-    public List<Combatant> targets = new List<Combatant>();
-    public Tile targetedTile;
-    public TargetType targetType;
-    public bool flip = false;
-
-    public TurnData(Combatant combatant)
-    {
-        this.combatant = combatant;;
-    }
-}
-
 public class BattleManager : MonoBehaviour
 {
     private BattleCalculations battleCalculations;
@@ -68,30 +16,35 @@ public class BattleManager : MonoBehaviour
     [Header("Parties")]
     [SerializeField] private PartyData partyData;
     [SerializeField] private EnemyPartyData enemyPartyData;
-    private List<Combatant> playableCombatants = new List<Combatant>();
-    public List<Combatant> PlayableCombatants
+    private Dictionary<string, int> enemyInstances = new Dictionary<string, int>(); 
+    private List<Combatant> combatants = new List<Combatant>();
+    public List<Combatant> Combatants
     {
-        get {return playableCombatants;}
-        private set {playableCombatants = value;}
+        get {return combatants;}
+        private set {combatants = value;}
     }
-    private List<Combatant> koPlayableCombatants = new List<Combatant>();
-    private List<Combatant> enemyCombatants = new List<Combatant>();
-    public List<Combatant> EnemyCombatants
-    {
-        get {return enemyCombatants;}
-        private set {enemyCombatants = value;}
-    }
+    private List<Combatant> koCombatants = new List<Combatant>();
+    // private List<Combatant> playableCombatants = new List<Combatant>();
+    // public List<Combatant> PlayableCombatants
+    // {
+    //     get {return playableCombatants;}
+    //     private set {playableCombatants = value;}
+    // }
+    // private List<Combatant> koPlayableCombatants = new List<Combatant>();
+    // private List<Combatant> enemyCombatants = new List<Combatant>();
+    // public List<Combatant> EnemyCombatants
+    // {
+    //     get {return enemyCombatants;}
+    //     private set {enemyCombatants = value;}
+    // }
     [SerializeField] private BattlePartyHUD battlePartyHUD;
     [SerializeField] private PlayableCharacterSpawner playableCharacterSpawner;
     [SerializeField] private EnemySpawner enemySpawner;
     
     [Header("Turn Order Display")]
     [SerializeField] private BattleTimeline battleTimeline;
-    private TurnSlot currentTurnSlot;
-    public List<TurnSlot> turnForecast = new List<TurnSlot>();
-
-    [Header("Action Points")]
-    [SerializeField] private ActionPointDisplay actionPointDisplay;
+    // // private TurnSlot currentTurnSlot;
+    // public List<TurnSlot> turnForecast = new List<TurnSlot>();
     
     [Header("States")]
     public StateMachine stateMachine;
@@ -99,7 +52,9 @@ public class BattleManager : MonoBehaviour
     [Header("Current Turn Data")]
     public TurnData turnData;
 
-    public void SpawnCombatants()
+    public bool battleIsLoaded = false;
+
+    public IEnumerator SpawnCombatants()
     {
         int partySize = 0;
         foreach(PartyMember partyMember in partyData.partyMembers)
@@ -107,102 +62,137 @@ public class BattleManager : MonoBehaviour
             if(partySize < 3 && partyMember.inParty)
             {
                 partySize++;
-                Combatant combatant = playableCharacterSpawner.SpawnPlayableCharacter(partyMember.playableCharacterID, partySize);
+                Combatant combatant = playableCharacterSpawner.SpawnPlayableCharacter(partyMember.playableCharacterInfo, partySize);
                 if(combatant != null)
                 {
-                    playableCombatants.Add(combatant);
+                    yield return new WaitUntil(() => combatant.isLoaded);
+                    // playableCombatants.Add(combatant);
+                    AddCombatant(combatant);
                 
                     battlePartyHUD.CreatePartyPanel((PlayableCombatant)combatant);
                 
-                    TurnSlot newSlot = new TurnSlot(combatant);
-                    TurnForecastAdd(newSlot);
+                    // TurnSlot newSlot = new TurnSlot(combatant);
+                    // TurnForecastAdd(newSlot);
                 }
             }
         }
         int enemyPartySize = 0;
+        List<GameObject> enemiesToSpawn = new List<GameObject>();
         foreach(GameObject enemyPrefab in enemyPartyData.enemyPrefabs)
         {
             enemyPartySize++;
             Combatant combatant = enemySpawner.SpawnEnemy(enemyPrefab, enemyPartySize);
             if(combatant != null)
             {
-                enemyCombatants.Add(combatant);
-                
-                TurnSlot newSlot = new TurnSlot(combatant);
-                TurnForecastAdd(newSlot);
+                yield return new WaitUntil(() => combatant.isLoaded);
+                AddCombatant(combatant);
             }
         }
+        battleIsLoaded = true;
     }
 
     public void AdvanceTimeline()
     {
-        while(turnForecast[0].GetCounterValue() > 0)
+        Combatant nextCombatant = combatants[0];
+        while(nextCombatant.turnCounter.GetValue() > 0)
         {
-            foreach(TurnSlot turnSlot in turnForecast)
+            foreach(Combatant combatant in combatants)
             {
-                turnSlot.Tick();
+                combatant.turnCounter.Tick();
             }
-            // battleTimeline.UpdateTurnPanels(turnForecast);
         }
-        currentTurnSlot = turnForecast[0];
-        battleTimeline.ChangeCurrentTurn(currentTurnSlot);
+        // while(turnForecast[0].GetCounterValue() > 0)
+        // {
+        //     foreach(TurnSlot turnSlot in turnForecast)
+        //     {
+        //         turnSlot.Tick();
+        //     }
+        //     // battleTimeline.UpdateTurnPanels(turnForecast);
+        // }
+        // currentTurnSlot = turnForecast[0];
+        battleTimeline.ChangeCurrentTurn(nextCombatant);
     
-        currentTurnSlot.SetTurnCounterToDefault();
+        nextCombatant.turnCounter.Reset();
         UpdateTurnOrder();
+        
 
-        turnData = new TurnData(currentTurnSlot.combatant);
-        UpdateActionPoints(2);
-    }
-  
-    public void UpdateActionPoints(int actionPointChange)
-    {
-        turnData.actionPoints += actionPointChange;
-        actionPointDisplay.DisplayAP(turnData.actionPoints);
+        turnData = new TurnData(nextCombatant);
     }
 
-    public void TurnForecastAdd(TurnSlot turnSlot)
+    public void AddCombatant(Combatant combatant)
     {
-        turnForecast.Add(turnSlot);
-        battleTimeline.CreateTurnPanel(turnForecast.Count - 1, turnSlot);
+        combatants.Add(combatant);
+        combatant.turnCounter.Reset();
+        if(combatant is EnemyCombatant)
+        {
+            if(!enemyInstances.ContainsKey(combatant.characterName))
+            {
+                enemyInstances.Add(combatant.characterName, 1);
+            }
+            else 
+            {
+                enemyInstances[combatant.characterName] += 1;
+            }
+            Debug.Log(combatant.characterName);
+            combatant.characterName = combatant.characterName + " " + (char)(enemyInstances[combatant.characterName] + 64);
+        }
+        battleTimeline.CreateTurnPanel(combatants.Count - 1, combatant);
         UpdateTurnOrder();
     }
 
-    public void TurnForecastRemove(TurnSlot turnSlot)
+    public void RemoveCombatant(Combatant combatant)
     {
-        turnForecast.Remove(turnSlot);
-        battleTimeline.DestroyTurnPanel(turnSlot);
+        combatants.Remove(combatant);
+        battleTimeline.DestroyTurnPanel(combatant);
         UpdateTurnOrder();
+    }
+
+    public List<Combatant> GetCombatants(CombatantType combatantType)
+    {
+        List<Combatant> filteredCombatants = new List<Combatant>();
+        foreach(Combatant combatant in combatants)
+        {
+            if(combatant.combatantType == combatantType)
+            {
+                filteredCombatants.Add(combatant);
+            }
+        }
+        return filteredCombatants;
     }
 
     public void UpdateTurnOrder()
     {
-        turnForecast = turnForecast.OrderBy(o=>o.GetCounterValue()).ToList();
-        battleTimeline.UpdateTurnPanels(turnForecast);
+        // turnForecast = turnForecast.OrderBy(o=>o.GetCounterValue()).ToList();
+        // battleTimeline.UpdateTurnPanels(turnForecast);
+        combatants = combatants.OrderBy(combatant => combatant.turnCounter.GetValue()).ToList();
+        battleTimeline.UpdateTurnPanels(combatants);
     }
     //set action to be executed in execution phase
     public void SetAction(Action action)
     {
-        turnData.action = action;
+        turnData.actionEvent = new ActionEvent(action, turnData.combatant);
         // turnData.combatant.ShowMPPreview(action.mpCost);
-        actionPointDisplay.ShowPreview(action.apCost);
     }
     //set tile and combatants to be targeted in execution phase
-    public void SetTargets(Tile selectedTile, List<Combatant> selectedTargets, TargetType targetType, bool flip)
+    public void SetTargets(Tile selectedTile, List<Combatant> selectedTargets)
     {
-        turnData.targets = selectedTargets;
-        turnData.targetedTile = selectedTile;
-        turnData.targetType = targetType;
-        turnData.flip = flip;
-    }
-    public void UpdateActionCost(int actionCost)
-    {
-        turnData.actionPoints -= actionCost;
+        turnData.actionEvent.targetedTile = selectedTile;
+        turnData.actionEvent.targets = selectedTargets;
     }
     //cancel selected action
     public void CancelAction()
     {
-        turnData.action = null;
-        actionPointDisplay.HidePreview();
+        turnData.actionEvent = null;
+    }
+
+    public void ApplyAction()
+    {
+        if(turnData.combatant is PlayableCombatant)
+        {
+            PlayableCombatant playableCombatant = (PlayableCombatant)turnData.combatant;
+            playableCombatant.ChangeMana(turnData.actionEvent.action.mpCost);
+        }
+        UpdateTurnOrder();
     }
 
     private void WinBattle()
@@ -223,11 +213,12 @@ public class BattleManager : MonoBehaviour
     public void KOCombatant(Combatant combatant)
     {
         StartCoroutine(combatant.KOCo());
-        TurnSlot selectedTurnSlot = turnForecast.FirstOrDefault(turnSlot => turnSlot.combatant == combatant);
-        TurnForecastRemove(selectedTurnSlot);
-        if(combatant is EnemyCombatant)
+        // TurnSlot selectedTurnSlot = turnForecast.FirstOrDefault(turnSlot => turnSlot.combatant == combatant);
+        // TurnForecastRemove(selectedTurnSlot);
+        RemoveCombatant(combatant);
+        if(combatant is PlayableCombatant)
         {
-            enemyCombatants.Remove(combatant);
+            koCombatants.Add(combatant);
         } 
     }
 }

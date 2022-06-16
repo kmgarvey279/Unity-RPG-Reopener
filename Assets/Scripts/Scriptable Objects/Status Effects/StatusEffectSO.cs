@@ -3,24 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[System.Serializable]
-public class BattleStatModifier
-{
-    public BattleStatType statToModify;
-    public float multiplier;
-}
+// [System.Serializable]
+// public class HealthEffect
+// {
+//     public HealthEffectType healthEffectType;
+//     public bool doFixedPercentage;
+//     public float fixedPercentage; 
+//     public float fixedPercentageBoss;
+
+//     public void Trigger(Combatant combatant, float potency)
+//     {
+//         if(healthEffectType == HealthEffectType.DecreaseHP)
+//         {
+//             combatant.Damage(potency);
+//         }
+//         else if(healthEffectType == HealthEffectType.IncreaseHP)
+//         {
+//             combatant.Heal(potency);
+//         }
+//     }
+// }
 
 [System.Serializable]
 public class ResistanceModifier
 {
     public ElementalProperty resistanceToModify;
-    public float multiplier;
-}
-
-public enum StatusType
-{
-    Physical,
-    Mental
+    public int additive = 0;
 }
 
 [System.Serializable]
@@ -28,34 +36,39 @@ public enum StatusType
 public class StatusEffectSO : ScriptableObject
 {
     [Header("Effect info")]
+    public Sprite icon;
     public string effectName;
     public string effectInfo;
-    public StatusType statusType;
     public bool isBuff;
     public bool canRemove;
     public bool cannotRefresh;
-    public bool endOnHit;
-    [Header("Icon + Animation")]
-    public Sprite icon;
+    [Header("Animation")]
     public string animatorTrigger;
     public GameObject effectObject;
     [Header("Duration")]
     public bool hasDuration;
     public int turnDuration;
-    [Header("Effects")]
-    //heal/damage over time 
-    public bool damageOverTime;
-    public bool healOverTime;
+    [Header("Other Effects")]
     //stat changes
     public List<BattleStatModifier> battleStatModifiers;
+    //only applied when taking certain actions
+    public List<ActionModifier> actionModifiers;
     //resistance changes
     public List<ResistanceModifier> resistanceModifiers;
-    //other effects
-    public List<TriggerableSubEffect> triggerableSubEffects;
+    // //other effects
+    // public List<TriggerableSubEffect> triggerableSubEffects;
+    // public HealthEffect healthEffect;
+    public List<SubEffect> onApplyEffects = new List<SubEffect>();
+    public List<SubEffect> onRemoveEffects = new List<SubEffect>();
+    public List<TriggerableSubEffect> onTurnEndEffects = new List<TriggerableSubEffect>();
+    [Header("Interactions w/ other status effects")]
+    public StatusEffectSO effectToCancel;
+    public bool cancelSelf;
 
-    public virtual int GetHealthChange(Combatant combatant, int potency, int remainingTurns)
+
+    public StatusEffectInstance CreateInstance()
     {
-        return 0;
+        return new StatusEffectInstance(this);
     }
 }
 

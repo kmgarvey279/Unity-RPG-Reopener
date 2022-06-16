@@ -14,12 +14,17 @@ public class EnemySpawner : MonoBehaviour
             Tile tile = spawnPositions[positionNum - 1];
             GameObject enemyObject = Instantiate(enemyPrefab, tile.transform.position, Quaternion.identity);
             enemyObject.transform.parent = gameObject.transform;
-
-            Combatant combatant = enemyObject.GetComponent<Combatant>();
-            enemyObject.name = combatant.characterName + positionNum;
-            tile.AssignOccupier(combatant);
-            combatant.tile = tile;
-            return combatant;
+            EnemyCombatant enemyCombatant = enemyObject.GetComponent<EnemyCombatant>();;
+            //assign name + letter
+            enemyObject.name = enemyCombatant.characterName + positionNum;
+            //set data
+            enemyCombatant.SetCharacterData(enemyCombatant.characterInfo);
+            //set tile
+            tile.AssignOccupier(enemyCombatant);
+            enemyCombatant.tile = tile;
+            enemyCombatant.preferredTile = tile;
+            
+            return enemyCombatant;
         }
         return null;
     }

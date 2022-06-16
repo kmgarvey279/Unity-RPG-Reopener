@@ -7,62 +7,88 @@ public class AnimatedBar : MonoBehaviour
     [SerializeField] private SliderBar valueBar;
     [SerializeField] private SliderBar addBar;
     [SerializeField] private SliderBar subtractBar;
-    [SerializeField] private SliderBar reverseBar;
-    private float barTickSpeed = 0.25f;
+    // [SerializeField] private SliderBar reverseBar;
+    private float barTickSpeed = 0.001f;
 
-    public void SetInitialValue(int maxValue, int currentValue)
+    public void SetInitialValue(float maxValue, float currentValue)
     {
-        valueBar.SetMaxValue(maxValue);
-        valueBar.SetCurrentValue(currentValue);
-        addBar.SetMaxValue(maxValue);
-        subtractBar.SetMaxValue(maxValue);
-        subtractBar.SetCurrentValue(currentValue);
-        reverseBar.SetMaxValue(maxValue);
+        valueBar.SetMaxValue((int)maxValue);
+        valueBar.SetCurrentValue((int)currentValue);
+        addBar.SetMaxValue((int)maxValue);
+        subtractBar.SetMaxValue((int)maxValue);
+        subtractBar.SetCurrentValue((int)currentValue);
+        // reverseBar.SetMaxValue((int)maxValue);
     }
 
-    private void Update()
+    // private void Update()
+    // {
+    //     //if value bar is less than add bar, increase until it matches
+    //     if(valueBar.GetCurrentValue() < addBar.GetCurrentValue())
+    //     {
+    //         StartCoroutine(TickUpCo());
+    //     }
+    //     //if subtract bar is greater than value bar, decrease until it matches
+    //     else if(subtractBar.GetCurrentValue() > valueBar.GetCurrentValue())
+    //     {
+    //         StartCoroutine(TickDownCo());
+    //     }
+    // }
+
+    public void DisplayChange(float newValue)
     {
-        //if value bar is less than add bar, increase until it matches
+        //display amount gained
+        if(newValue > valueBar.GetCurrentValue())
+        {
+            addBar.SetCurrentValue(newValue);
+        }
+        //display amount lost
+        else 
+        {
+            valueBar.SetCurrentValue(newValue);
+            addBar.SetCurrentValue(newValue);
+        }
+    }
+
+    public void ResolveChange()
+    {
         if(valueBar.GetCurrentValue() < addBar.GetCurrentValue())
         {
             StartCoroutine(TickUpCo());
         }
-        //if subtract bar is greater than value bar, decrease until it matches
         else if(subtractBar.GetCurrentValue() > valueBar.GetCurrentValue())
         {
             StartCoroutine(TickDownCo());
         }
     }
 
-    public void UpdateBar(int newValue)
-    {
-        //if new value is greater than current value
-        if(newValue > valueBar.GetCurrentValue())
-        {
-            addBar.SetCurrentValue(newValue);
-        }
-        //if new value is less than current value
-        else 
-        {
-            valueBar.SetCurrentValue(newValue);
-        }
-    }
-
     private IEnumerator TickUpCo()
     {
-        yield return new WaitForSeconds(barTickSpeed);
-        int newValue = valueBar.GetCurrentValue() + 1;
-        valueBar.SetCurrentValue(newValue);
-        subtractBar.SetCurrentValue(newValue);
-        if(newValue == addBar.GetCurrentValue())
+        float tick = valueBar.GetMaxValue() / 100f;
+        while(valueBar.GetCurrentValue() < addBar.GetCurrentValue())
         {
-            addBar.SetCurrentValue(0);
+            yield return new WaitForSeconds(barTickSpeed);
+            float newValue = valueBar.GetCurrentValue() + tick;
+            if(newValue > addBar.GetCurrentValue())
+            {
+                newValue = addBar.GetCurrentValue();
+            }
+            valueBar.SetCurrentValue(newValue);
+            subtractBar.SetCurrentValue(newValue);
         }
     }
 
     private IEnumerator TickDownCo()
     {
-        yield return new WaitForSeconds(barTickSpeed);
-        subtractBar.SetCurrentValue(subtractBar.GetCurrentValue() - 1);
+        float tick = valueBar.GetMaxValue() / 100f;
+        while(subtractBar.GetCurrentValue() > valueBar.GetCurrentValue())
+        {
+            yield return new WaitForSeconds(barTickSpeed);
+            float newValue = subtractBar.GetCurrentValue() - tick;
+            if(newValue < valueBar.GetCurrentValue())
+            {
+                newValue = valueBar.GetCurrentValue();
+            }
+            subtractBar.SetCurrentValue(newValue);
+        }
     }
 }

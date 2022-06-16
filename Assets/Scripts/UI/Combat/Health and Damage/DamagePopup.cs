@@ -3,14 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public enum DamagePopupType
-{
-    Damage,    
-    Crit,
-    Heal,
-    Miss
-}
-
 public class DamagePopup : MonoBehaviour
 {
     private Animator animator;
@@ -18,42 +10,44 @@ public class DamagePopup : MonoBehaviour
     [SerializeField] private TextMeshProUGUI popupText;
     [Header("Value Displayed")]
     [SerializeField] private Color damageColor;
-    [SerializeField] private Color critColor;
     [SerializeField] private Color healColor;
+    [SerializeField] private Color buffColor;
+    [SerializeField] private Color debuffColor;
     [SerializeField] private Color missColor;
+    private Dictionary<PopupType, Color> colorDict = new Dictionary<PopupType, Color>();
     [Header("Duration")]
     [SerializeField] private float duration;
 
     private void OnEnable()
     {
         animator = GetComponent<Animator>();
+        colorDict.Add(PopupType.Damage, damageColor);
+        colorDict.Add(PopupType.Heal, healColor);
+        colorDict.Add(PopupType.Buff, buffColor);
+        colorDict.Add(PopupType.Debuff, debuffColor);
+        colorDict.Add(PopupType.Miss, missColor);
     }
 
-    public void TriggerPopup(DamagePopupType popupType, float amount)
+    public void TriggerMessagePopup(PopupType popupType, string message)
     {
-        switch((int)popupType)
-        {
-        case 0:
-            popupText.color = damageColor; 
-            popupText.text = amount.ToString("n0");
-            break;
-        case 1:
-            popupText.color = critColor; 
-            popupText.text = amount.ToString("n0");
-            break;
-        case 2:
-            popupText.color = healColor; 
-            popupText.text = amount.ToString("n0");
-            break;
-        case 3:
-            popupText.color = missColor; 
-            popupText.text = "MISS";
-            break;
-        default:
-            break;
-        }
+        popupText.color = colorDict[popupType]; 
+        popupText.text = "MISS";
         animator.SetTrigger("Activate");
         StartCoroutine(ClearPopupCo());
+    }
+
+    public void TriggerHealthPopup(PopupType popupType, float amount, bool isCrit)
+    {
+        Debug.Log("popup has spawned");
+        popupText.color = colorDict[popupType]; 
+        if(isCrit)
+        {
+            popupText.fontSize = popupText.fontSize + 2;
+            popupText.fontStyle = FontStyles.Bold;
+        }
+        popupText.text = amount.ToString();
+        animator.SetTrigger("Activate");
+        // StartCoroutine(ClearPopupCo());
     }
 
     private IEnumerator ClearPopupCo()

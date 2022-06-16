@@ -7,7 +7,7 @@ using TMPro;
 public class TurnPanel : MonoBehaviour
 {
     [Header("Data")]
-    public TurnSlot turnSlot;
+    public Combatant combatant;
     [Header("Text")]
     [SerializeField] private TextMeshProUGUI nameText;
     [Header("Panel")]
@@ -37,10 +37,10 @@ public class TurnPanel : MonoBehaviour
         }
     }
 
-    public void AssignTurnSlot(TurnSlot newSlot)
+    public void AssignCombatant(Combatant combatant)
     {
-        turnSlot = newSlot;
-        nameText.text = turnSlot.combatant.characterName;
+        this.combatant = combatant;
+        nameText.text = combatant.characterName;
     }
 
     public void ToggleTargetingPreview(bool isTargeted)

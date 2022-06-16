@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbd7c3aa6ce019147804e90e0136ea53, type: 3}
+  m_Name: LucyInfo
+  m_EditorClassIdentifier: 
+  characterName: 
+  level: 0
+  baseHP: 0
+  hp:
+    baseValue: 0
+    modifiers: 
+    multipliers: []
+    currentValue: 0
+  baseMP: 0
+  mp:
+    baseValue: 0
+    modifiers: 
+    multipliers: []
+    currentValue: 0
+  attackStat: 0
+  defenseStat: 0
+  magicAttackStat: 0
+  magicDefenseStat: 0
+  skillStat: 0
+  agilityStat: 0
+  fireResist: 1
+  iceResist: 1
+  electricResist: 0
+  darkResist: 2
+  lightResist: 2
+  traits: []
+  attack: {fileID: 0}
+  skills: []
+  weapon: {fileID: 0}
+  armor: {fileID: 0}
+  accessory: {fileID: 0}
+  characterID: 0
