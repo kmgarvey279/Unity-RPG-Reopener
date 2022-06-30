@@ -11,15 +11,15 @@ public class PotentialAction
     public int baseWeight;
     public int weightModifiers = 0;
     public int cumulativeWeight;
-    public Tile targetedTile;
+    public Combatant primaryTarget;
     public List<Combatant> targets;
     public bool flip;
     public CombatantType combatantType;
-    public PotentialAction(Action action, int baseWeight, Tile targetedTile, List<Combatant> targets)
+    public PotentialAction(Action action, int baseWeight, Combatant primaryTarget, List<Combatant> targets)
     {
         this.action = action;
         this.baseWeight = baseWeight;
-        this.targetedTile = targetedTile;
+        this.primaryTarget = primaryTarget;
         this.targets = targets;
         this.combatantType = CombatantType.Player;
         if(action.targetingType == TargetingType.TargetFriendly)
@@ -74,7 +74,7 @@ public class EnemyTurnState : BattleState
         }
         PotentialAction potentialAction = GetAction();
         battleManager.SetAction(potentialAction.action);
-        battleManager.SetTargets(potentialAction.targetedTile, potentialAction.targets);
+        battleManager.SetTargets(potentialAction.primaryTarget, potentialAction.targets);
     
         stateMachine.ChangeState((int)BattleStateType.Execute); 
     }
@@ -99,14 +99,10 @@ public class EnemyTurnState : BattleState
             foreach(Combatant target in targets)
             {
                 //is the selected target valid?
-                if(weightedAction.action.isFixedAOE || ActionCheck(weightedAction.action, target))
+                if(ActionCheck(weightedAction.action, target))
                 {
                     List<Combatant> targetsInAOE = GetTargets(weightedAction.action, target, combatantType);
-                    tempPotentialActions.Add(new PotentialAction(weightedAction.action, weightedAction.BaseWeight(), target.tile, targetsInAOE));
-                }
-                if(weightedAction.action.isFixedAOE)
-                {
-                    break;
+                    tempPotentialActions.Add(new PotentialAction(weightedAction.action, weightedAction.BaseWeight(), target, targetsInAOE));
                 }
                 if(tempPotentialActions.Count > 0)
                 {
@@ -154,7 +150,7 @@ public class EnemyTurnState : BattleState
                 }
             }
         }
-        return new PotentialAction(wait, 0, thisEnemy.tile, new List<Combatant>());
+        return new PotentialAction(wait, 0, thisEnemy, new List<Combatant>());
     }
 
 
@@ -234,32 +230,32 @@ public class EnemyTurnState : BattleState
 
     private bool AddStatusEffectCheck(Action action, Combatant target)
     {
-        foreach(StatusEffectInstance statusEffectInstance in target.statusEffectInstances)
-        {
-            if(statusEffectInstance.statusEffectSO == action.statusEffectSO)
-            {
-                return false;
-            }
-        }
+        // foreach(StatusEffectInstance statusEffectInstance in target.statusEffectInstances)
+        // {
+        //     if(statusEffectInstance.statusEffectSO == action.statusEffectSO)
+        //     {
+        //         return false;
+        //     }
+        // }
         return true;
     }
 
     private bool RemoveStatusEffectsCheck(Action action, Combatant target)
     {
-        if(target.statusEffectInstances.Count > 0)
-        {
-            foreach(StatusEffectInstance statusEffectInstance in target.statusEffectInstances)
-            {
-                if(target is PlayableCombatant && statusEffectInstance.statusEffectSO.isBuff)
-                {
-                    return true;
-                }
-                else if(target is EnemyCombatant && !statusEffectInstance.statusEffectSO.isBuff)
-                {
-                    return true;
-                }
-            }
-        }
+        // if(target.statusEffectInstances.Count > 0)
+        // {
+        //     foreach(StatusEffectInstance statusEffectInstance in target.statusEffectInstances)
+        //     {
+        //         if(target is PlayableCombatant && statusEffectInstance.statusEffectSO.isBuff)
+        //         {
+        //             return true;
+        //         }
+        //         else if(target is EnemyCombatant && !statusEffectInstance.statusEffectSO.isBuff)
+        //         {
+        //             return true;
+        //         }
+        //     }
+        // }
         return false;
     }
 }

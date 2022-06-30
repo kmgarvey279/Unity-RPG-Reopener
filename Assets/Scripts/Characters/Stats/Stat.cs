@@ -14,6 +14,11 @@ public class Stat
         this.baseValue = baseValue;
     }
 
+    public float GetBaseValue()
+    {
+        return baseValue;
+    }
+
     public float GetValue()
     {
         float finalValue = baseValue;

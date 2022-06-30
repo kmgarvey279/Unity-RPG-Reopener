@@ -87,8 +87,7 @@ public class CommandMenu : MonoBehaviour
 
     public void SelectMove()
     {
-        battleManager.SetAction(move);
-        battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
+        battleManager.stateMachine.ChangeState((int)BattleStateType.PlayerMove);
     }
 
     public void SelectDefend()
@@ -96,5 +95,19 @@ public class CommandMenu : MonoBehaviour
         Debug.Log("Defend!");
         battleManager.SetAction(defend);
         battleManager.stateMachine.ChangeState((int)BattleStateType.TileSelect);
+    }
+
+    public void ChangeFocus()
+    {
+        if(display.activeInHierarchy)
+        {
+            HideMenus();
+            battleManager.ToggleTargetSelect(true);
+        }
+        else
+        {
+            battleManager.ToggleTargetSelect(false); 
+            DisplayMenu();
+        }
     }
 }

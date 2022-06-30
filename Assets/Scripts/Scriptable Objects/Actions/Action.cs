@@ -3,16 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-
-[System.Serializable]
-public enum ActionType
-{
-    Attack, 
-    Support,
-    Move,
-    Other
-}
-
 public enum TargetingType
 {
     TargetFriendly,
@@ -36,19 +26,12 @@ public enum ElementalProperty
 [System.Serializable]
 public enum AOEType
 {
-    Single,
+    None,
+    Tile,
     Cross,
-    X,
     Row,
     Column,
     All
-}
-
-[System.Serializable]
-public class AOE
-{
-    public AOEType aoeType;
-    public Vector2Int fixedStartPosition = new Vector2Int(0,0);
 }
 
 [System.Serializable]
@@ -83,7 +66,6 @@ public class Action : ScriptableObject
 {   
     [Header("Basic Info")]
     public string actionName;
-    public ActionType actionType;
     [Header("Player UI Info")]
     public Image icon;
     [TextArea(5,10)]
@@ -91,30 +73,23 @@ public class Action : ScriptableObject
     [Header("Cost")]
     [Range(0,99)]public int mpCost;
     public bool costsHP;
-    [Header("Properties")]
-    public float power = 10f;
+    [Header("Targeting and Accuracy")]
     public int hitCount = 1;
-    public BattleStatType offensiveStat = BattleStatType.None;
-    public BattleStatType defensiveStat = BattleStatType.None;
-    public ElementalProperty elementalProperty = ElementalProperty.None;
-    [Header("Effects")]
-    public List<ActionEffectTrigger> actionEffectTriggers = new List<ActionEffectTrigger>();
-    [Header("Accuracy and Crit Rate")]
     [Range(1,100)] public float accuracy = 95f;
-    [Range(1,100)] public float critRate = 7f;
     public bool guaranteedHit = false;
-    [Header("Status Effect")]
-    public StatusEffectSO statusEffectSO;
-    [Header("AOE")]
-    public List<AOE> aoes = new List<AOE>();
-    public bool isFixedAOE = false;
-    public bool canFlip = false;
-    //generates a line AOE instead of a circle
-    [Header("Targeting")]
+    public AOEType aoeType;
     public bool isMelee;
-    public bool isFixedTarget;
     public TargetingType targetingType;
     public bool hitRandomTarget;
+    [Header("Effects")]
+    [SerializeField] private List<ActionEffectDamage> damageEffects = new List<ActionEffectDamage>();
+    [SerializeField] private List<ActionEffectHeal> healEffects = new List<ActionEffectHeal>();
+    [SerializeField] private List<ActionEffectRemoveStatus> removeStatusEffects = new List<ActionEffectRemoveStatus>();
+    [SerializeField] private List<ActionEffectAddStatus> addStatusEffects = new List<ActionEffectAddStatus>();
+    [SerializeField] private List<ActionEffectTurnModifier> turnModifierEffects = new List<ActionEffectTurnModifier>();
+    [SerializeField] private List<ActionEffectKnockback> knockbackEffects = new List<ActionEffectKnockback>();
+    [SerializeField] private List<ActionEffectCustom> customEffects = new List<ActionEffectCustom>();
+    [HideInInspector] public List<ActionEffect> actionEffects;
     [Header("Animation (Cast)")]
     public bool hasCastAnimation;
     public string castAnimatorTrigger;
@@ -130,5 +105,38 @@ public class Action : ScriptableObject
     [Header("Animation (Effect)")]
     public GameObject effectGraphicPrefab;
     public float effectAnimationDuration = 0.4f;
+
+    private void OnEnable()
+    {
+        actionEffects = new List<ActionEffect>();
+        foreach(ActionEffectDamage actionEffect in damageEffects)
+        {
+            actionEffects.Add(actionEffect);
+        } 
+        foreach(ActionEffectHeal actionEffect in healEffects)
+        {
+            actionEffects.Add(actionEffect);
+        } 
+        foreach(ActionEffectRemoveStatus actionEffect in removeStatusEffects)
+        {
+            actionEffects.Add(actionEffect);
+        } 
+        foreach(ActionEffectAddStatus actionEffect in addStatusEffects)
+        {
+            actionEffects.Add(actionEffect);
+        } 
+        foreach(ActionEffectTurnModifier actionEffect in turnModifierEffects)
+        {
+            actionEffects.Add(actionEffect);
+        } 
+        foreach(ActionEffectKnockback actionEffect in knockbackEffects)
+        {
+            actionEffects.Add(actionEffect);
+        } 
+        foreach(ActionEffectCustom actionEffect in customEffects)
+        {
+            actionEffects.Add(actionEffect);
+        } 
+    }
 }
 

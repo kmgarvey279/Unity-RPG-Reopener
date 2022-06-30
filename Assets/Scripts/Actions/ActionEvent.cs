@@ -2,33 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// public class ActionSubEvent
-// {
-//     public Action action;
-//     public Combatant actor;
-//     public Combatant target;
-//     public Dictionary<ActionModifierType, List<ActionModifier>> actionModifiers = new Dictionary<ActionModifierType, List<ActionModifier>>()
-//     {
-//         {ActionModifierType.ActionPower, new List<ActionModifier>()},
-//         {ActionModifierType.TargetDefense, new List<ActionModifier>()},
-//         {ActionModifierType.HitRate, new List<ActionModifier>()},
-//         {ActionModifierType.CritRate, new List<ActionModifier>()},
-//         {ActionModifierType.CritPower, new List<ActionModifier>()},
-//         {ActionModifierType.EffectRate, new List<ActionModifier>()},
-//         {ActionModifierType.FinalPower, new List<ActionModifier>()}
-//     };    
-//     public string targetAnimatorTrigger = "";
-// }
-
 public class ActionEvent
 {
     public Action action;
-    public Combatant actor;                                                                                                    
+    public Combatant actor;                                         
+    public Combatant primaryTarget;                                                           
     public List<Combatant> targets = new List<Combatant>();
-    public Tile targetedTile;
     public CombatantType combatantType;
     public int hitCounter = 0;
     public bool canCounter = false;
+    public bool turnModifierApplied = false;
     public Dictionary<ActionModifierType, List<ActionModifier>> actionModifiers = new Dictionary<ActionModifierType, List<ActionModifier>>()
     {
         {ActionModifierType.ActionPowerPhysical, new List<ActionModifier>()},
@@ -56,11 +39,12 @@ public class ActionEvent
         {
             targetAnimatorTrigger = "Stun";
         }
-        foreach(ActionEffectTrigger actionEffectTrigger in action.actionEffectTriggers)
+        foreach(ActionEffect actionEffect in action.actionEffects)
         {
-            if(actionEffectTrigger.actionEffect.actionEffectType == ActionEffectType.Damage)
+            if(actionEffect is ActionEffectDamage)
             {
                 canCounter = true;
+                break;
             }
         }
     }
@@ -76,9 +60,9 @@ public class ActionEvent
             //change target sprite
             target.TriggerActionEffectAnimation(targetAnimatorTrigger);
             //apply effects to target
-            foreach(ActionEffectTrigger effectTrigger in action.actionEffectTriggers)
+            foreach(ActionEffect actionEffect in action.actionEffects)
             {
-                effectTrigger.TriggerActionEffect(this);
+                actionEffect.ApplyEffect(this);
             } 
         }
         //miss
@@ -93,8 +77,8 @@ public class ActionEvent
     public ActionEvent Clone()
     {
         ActionEvent copy = new ActionEvent(action, actor);
+        copy.primaryTarget = primaryTarget;
         copy.targets = targets;
-        copy.targetedTile = targetedTile;
         return copy;
     }
 

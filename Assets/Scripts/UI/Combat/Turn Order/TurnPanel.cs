@@ -15,26 +15,46 @@ public class TurnPanel : MonoBehaviour
     [SerializeField] private Color defaultColor;
     [SerializeField] private Color previewColor;
     [Header("Animations/Movement")]
-    private Animator animator;
+    public Animator animatorMovement;
+    [SerializeField] private Animator animatorColor;
     RectTransform rt;
-    [SerializeField] float moveTime;
-    private float defaultXPos;
+    public Vector3 destination;
+    [Header("Cursor")]
+    [SerializeField] private Image selectCursor;
 
     private void Start()
     {
-        animator = GetComponentInChildren<Animator>();   
         SetToDefaultColor();
     }
 
     public void Move(Vector3 newPosition)
     {
-        Vector3 start = transform.position; 
+        RectTransform rt = GetComponent<RectTransform>();
+        destination = newPosition;
+        Vector3 start = rt.position; 
+        float moveTime = 0.5f;
         float t = 0;
-        while(transform.position != newPosition)
+        Vector3 step = start;
+        while(t < moveTime)
         {
-            t += Time.deltaTime/moveTime;
-            transform.position = Vector3.Lerp(start, newPosition, t); 
+            step = Vector3.Lerp(start, destination, t / moveTime);
+            t += Time.deltaTime;
+            rt.position = step;
         }
+        if(rt.position != destination)
+        {
+            rt.position = destination;
+        }
+    }
+
+    public void Remove(Combatant combatant)
+    {
+
+    }
+
+    public void Insert(Combatant combatant, int newIndex)
+    {
+
     }
 
     public void AssignCombatant(Combatant combatant)
@@ -42,17 +62,24 @@ public class TurnPanel : MonoBehaviour
         this.combatant = combatant;
         nameText.text = combatant.characterName;
     }
+    
+    public void ToggleSelectCursor(bool isSelected)
+    {
+        selectCursor.enabled = isSelected;
+    }
 
     public void ToggleTargetingPreview(bool isTargeted)
     {
-        animator.SetBool("Targeted", isTargeted);
+        // animator.SetBool("Targeted", isTargeted);
         RectTransform rt = display.GetComponent<RectTransform>();
         if(isTargeted)
         {
+            animatorColor.SetTrigger("Targeted");
             rt.anchoredPosition = new Vector2(-10, 0);
         }
         else 
         {
+            animatorColor.SetTrigger("Default");
             rt.anchoredPosition = new Vector2(0, 0);
         }
     }

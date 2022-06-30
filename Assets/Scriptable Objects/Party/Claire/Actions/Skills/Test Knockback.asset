@@ -18,6 +18,7 @@ MonoBehaviour:
   description: 
   mpCost: 10
   costsHP: 0
+  power: 10
   hitCount: 1
   offensiveStat: 0
   defensiveStat: 1
@@ -25,19 +26,15 @@ MonoBehaviour:
   actionEffectTriggers:
   - actionEffect: {fileID: 11400000, guid: edd980297ec8a574c9fd77338fef839e, type: 2}
     successRate: 100
-    power: 0
   - actionEffect: {fileID: 11400000, guid: 3da62d540c90b474db456b4a6bc9d6a9, type: 2}
     successRate: 100
-    power: 10
   - actionEffect: {fileID: 11400000, guid: 823c0e15283eb23428938b5581453ec2, type: 2}
     successRate: 100
-    power: 0
   accuracy: 95
+  critRate: 7
   guaranteedHit: 0
   statusEffectSO: {fileID: 11400000, guid: f2dea2b6a0c30634d932e8a6b1a8660b, type: 2}
-  aoes:
-  - aoeType: 0
-    fixedStartPosition: {x: 0, y: 0}
+  aoes: []
   isFixedAOE: 0
   canFlip: 0
   isMelee: 1

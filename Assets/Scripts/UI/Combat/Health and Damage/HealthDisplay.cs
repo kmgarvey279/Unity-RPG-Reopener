@@ -16,16 +16,19 @@ public enum PopupType
 public class HealthDisplay : MonoBehaviour
 {
     private Combatant combatant;
-
     [SerializeField] private GameObject display;
     [SerializeField] private AnimatedBar healthBar;
     [SerializeField] private StatusEffectDisplay statusEffectDisplay;
     [SerializeField] private GameObject damagePopupPrefab;
     [SerializeField] private GameObject popupSpawnPoint;
 
-    private void Start()
+    private void Awake() 
     {
         combatant = GetComponentInParent<Combatant>();
+    }
+
+    private void Start()
+    {
         healthBar.SetInitialValue(combatant.hp.GetValue(), combatant.hp.GetCurrentValue());
     }
 
@@ -36,6 +39,11 @@ public class HealthDisplay : MonoBehaviour
 
     public void DisplayMessage(PopupType popupType, string message)
     {
+        if(!display.gameObject.activeInHierarchy)
+        {
+            Display(true);
+        }
+
         GameObject damagePopupObject = Instantiate(damagePopupPrefab, popupSpawnPoint.transform.position, Quaternion.identity);
         damagePopupObject.transform.SetParent(popupSpawnPoint.transform);
         damagePopupObject.GetComponent<DamagePopup>().TriggerMessagePopup(popupType, message);
@@ -43,11 +51,10 @@ public class HealthDisplay : MonoBehaviour
 
     public void DisplayHealthChange(PopupType popupType, float amount, bool isCrit)
     {
-        Debug.Log("displaying popup for " + amount);
-        // if(!display.gameObject.activeInHierarchy)
-        // {
-        //     Display(true);
-        // }
+        if(!display.gameObject.activeInHierarchy)
+        {
+            Display(true);
+        }
 
         GameObject damagePopupObject = Instantiate(damagePopupPrefab, popupSpawnPoint.transform.position, Quaternion.identity);
         damagePopupObject.transform.SetParent(popupSpawnPoint.transform);

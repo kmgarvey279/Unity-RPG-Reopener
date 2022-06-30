@@ -7,30 +7,42 @@ using UnityEngine;
 public class TurnCounter
 {
     public Combatant combatant;
+    public float modifier = 0;
     [Header("Number of ticks remaining until next turn")]
-    private int turnCost = 200;
-    private int counter = 0;
+    private float turnCost = 200f;
+    public float counter = 0f;
 
     public TurnCounter(Combatant combatant)
     {
         this.combatant = combatant;
+        ApplyTurnCost();
     }
 
-    public void Reset()
+    public void ApplyTurnCost()
     {
-        counter = turnCost;
+        counter += turnCost - combatant.battleStatDict[BattleStatType.Speed].GetValue();
     }
 
-    public int GetValue()
+    // public float GetDefaultTurnCost()
+    // {
+    //     return turnCost - combatant.battleStatDict[BattleStatType.Speed].GetValue();
+    // }
+
+    public float GetValue()
     {
-        int speedBonus = Mathf.FloorToInt((float)combatant.battleStatDict[BattleStatType.Speed].GetValue());
-        int counterValue = counter - speedBonus;
-        return Mathf.Clamp(counterValue, 0, 999);
+        // float speedBonus = combatant.battleStatDict[BattleStatType.Speed].GetValue();
+        // float counterValue = counter - speedBonus + modifier;
+        return counter;
     }
 
-    public void ChangeValue(int amount)
+
+    public void ChangeModifier(float newModifier)
     {
-        counter += amount;
+        if(modifier + newModifier <= 1 && modifier + newModifier >= -1)
+        {
+            modifier += newModifier;
+            counter = Mathf.Clamp(counter + modifier * combatant.battleStatDict[BattleStatType.Speed].GetBaseValue(), 0, 400);
+        }
     }
 
     public void Tick()

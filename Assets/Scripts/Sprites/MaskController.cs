@@ -11,7 +11,7 @@ public class MaskController : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    public void TriggerSelected()
+    public void TriggerTargeted()
     {
         animator.SetTrigger("Selected");
     }

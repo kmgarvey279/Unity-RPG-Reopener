@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
+    [SerializeField] private Camera mainCamera;
     [Header("Spawn Positions")]
     public List<Tile> spawnPositions = new List<Tile>();
 
@@ -23,6 +24,9 @@ public class EnemySpawner : MonoBehaviour
             tile.AssignOccupier(enemyCombatant);
             enemyCombatant.tile = tile;
             enemyCombatant.preferredTile = tile;
+
+            //set camera for ui display
+            enemyCombatant.targetSelect.canvas.worldCamera = mainCamera;
             
             return enemyCombatant;
         }

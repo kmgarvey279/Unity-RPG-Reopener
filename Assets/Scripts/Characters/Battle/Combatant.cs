@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using UnityEngine.Events;
 using Pathfinding;
 using UnityEngine.Tilemaps;
@@ -72,17 +74,13 @@ public class Combatant : MonoBehaviour
     [Header("Child Scripts")]
     public HealthDisplay healthDisplay;
     protected MaskController maskController;
-    
-    [Header("Events")]
-    [SerializeField] protected SignalSenderGO onTargetSelect;
-    [SerializeField] protected SignalSenderGO onTargetDeselect;
+    public TargetSelect targetSelect;
     
     [Header("Movement and Targeting")]
     public Tile tile;
     public bool moving = false;
     public float moveSpeedMultiplier = 1f;
     public Transform moveDestination;
-    // [HideInInspector] public GridMovement gridMovement;
     public Vector2 defaultDirection;
     protected bool selected = false;
     
@@ -93,13 +91,16 @@ public class Combatant : MonoBehaviour
     public Action attack;
     public CounterAction counterAction;
 
+    [Header("Events")]
+    public SignalSenderGO onTurnCounterChange;
+
     public virtual void Awake()
     {
         //child components
+        gridManager = GetComponentInParent<GridManager>();
         healthDisplay = GetComponentInChildren<HealthDisplay>();
         maskController = GetComponentInChildren<MaskController>();
         // gridMovement = GetComponentInChildren<GridMovement>();
-        turnCounter = new TurnCounter(this);
         // armor = new Armor();
     }
 
@@ -127,15 +128,15 @@ public class Combatant : MonoBehaviour
         {
             actionEventModifiers[actionEventModifier.eventTriggerType].Add(actionEventModifier);
         }
-    }
-
-    protected void Start()
-    {
-        gridManager = GetComponentInParent<GridManager>();
-        healthDisplay = GetComponentInChildren<HealthDisplay>();
-        maskController = GetComponentInChildren<MaskController>();
         turnCounter = new TurnCounter(this);
     }
+
+    // protected void Start()
+    // {
+    //     gridManager = GetComponentInParent<GridManager>();
+    //     healthDisplay = GetComponentInChildren<HealthDisplay>();
+    //     maskController = GetComponentInChildren<MaskController>();
+    // }
 
     private void Update()
     {
@@ -222,7 +223,6 @@ public class Combatant : MonoBehaviour
 
     public void Move(Transform destination, string moveAnimation, float moveSpeedMultiplier = 1f)
     {
-        Debug.Log("Move1");
         if(destination.position != transform.position)
         {
             animator.SetTrigger(moveAnimation);
@@ -293,6 +293,14 @@ public class Combatant : MonoBehaviour
         healthDisplay.DisplayMessage(popupType, message);
     }
 
+    public void ApplyTurnModifier(float newModifier)
+    {
+        Debug.Log(characterName + ": " + turnCounter.GetValue());
+        turnCounter.ChangeModifier(newModifier);
+        Debug.Log(characterName + ": " + turnCounter.GetValue());
+        // onTurnCounterChange.Raise(this.gameObject);
+    }
+
     public void AddStatusEffect(StatusEffectSO newStatusEffectSO)
     {
         //clear duplicates
@@ -338,7 +346,7 @@ public class Combatant : MonoBehaviour
 
     public void RemoveStatusEffect(StatusEffectInstance statusEffectInstance)
     {
-        if(statusEffectInstances.Contains(statusEffectInstance))
+        if(statusEffectInstances.Contains(statusEffectInstance) && statusEffectInstance.statusEffectSO.canRemove)
         {
             statusEffectInstance.OnRemove(this);
 
@@ -359,33 +367,20 @@ public class Combatant : MonoBehaviour
         healthDisplay.Display(show);
     }
 
-    public void Select()
+    public void ChangeSelectState(bool canSelect)
     {
-        if(!selected)
-        {
-            selected = true;
-            maskController.TriggerSelected();
-            onTargetSelect.Raise(this.gameObject);
-        }
+        targetSelect.ToggleButton(canSelect); 
     }
 
-    public void Deselect()
+    public void Target()
     {
-        if(selected)
-        {
-            selected = false;
-            maskController.EndAnimation();
-            onTargetDeselect.Raise(this.gameObject);
-        }
+        maskController.TriggerTargeted();
+        // healthDisplay.Display(true);
     }
 
-    public void GrayOut()
-    {
-        maskController.TriggerUnselectable();
-    }
-
-    public void ClearSpriteMask()
+    public void Detarget()
     {
         maskController.EndAnimation();
+        // healthDisplay.Display(false);
     }
 }

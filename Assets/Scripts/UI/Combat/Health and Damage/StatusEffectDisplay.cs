@@ -13,7 +13,7 @@ public class StatusEffectDisplay : MonoBehaviour
         iconObject.transform.SetParent(this.transform, false);
         iconObject.GetComponent<StatusIcon>().AssignEffect(statusEffectSO);
         //if buff or if list is empty, insert at start of list
-        if(statusEffectSO.isBuff || icons.Count < 1)
+        if(statusEffectSO.statusEffectType == StatusEffectType.Buff || icons.Count < 1)
         {
             icons.Insert(0, iconObject.GetComponent<StatusIcon>());
             iconObject.transform.SetSiblingIndex(0);
@@ -23,7 +23,7 @@ public class StatusEffectDisplay : MonoBehaviour
             //search list to find end of buffs/start of debuffs
             for(int i = 0; i < icons.Count; i++)
             {
-                if(!icons[i].statusEffectSO.isBuff)
+                if(icons[i].statusEffectSO.statusEffectType == StatusEffectType.Debuff)
                 {
                     icons.Insert(i, iconObject.GetComponent<StatusIcon>());
                     iconObject.transform.SetSiblingIndex(i);

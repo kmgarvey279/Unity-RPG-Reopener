@@ -13,48 +13,48 @@ MonoBehaviour:
   m_Name: AOE
   m_EditorClassIdentifier: 
   actionName: AOE
-  actionType: 0
   icon: {fileID: 0}
   description: 
   mpCost: 20
   costsHP: 0
-  apCost: 2
-  power: 14
   hitCount: 1
-  offensiveStat: 2
-  defensiveStat: 3
-  elementalProperty: 1
   accuracy: 95
   guaranteedHit: 0
-  statusEffectChance: 100
-  statusEffectPower: 7
-  statusEffectSO: {fileID: 11400000, guid: a50d596899ec9c24b8e0fda58bbfc2c8, type: 2}
-  knockback:
-    doKnockback: 0
-    moveX: 0
-    moveY: 0
-  additionalEffects: []
-  aoes:
-  - aoeType: 1
-    fixedStartPosition: {x: 0, y: 0}
-  isFixedAOE: 0
-  canFlip: 0
+  aoeType: 2
   isMelee: 0
-  isFixedTarget: 0
-  targetFriendly: 0
-  targetSelfOnly: 0
+  targetingType: 1
   hitRandomTarget: 0
+  damageEffects:
+  - successRate: 100
+    applyToActor: 0
+    power: 25
+    baseCritRate: 5
+    offensiveStat: 2
+    defensiveStat: 3
+    elementalProperty: 1
+  healEffects: []
+  removeStatusEffects: []
+  addStatusEffects: []
+  turnModifierEffects:
+  - successRate: 100
+    applyToActor: 0
+    turnModifierType: 1
+  knockbackEffects: []
+  customEffects: []
+  actionEffects:
+  - successRate: 100
+    applyToActor: 0
+  - successRate: 100
+    applyToActor: 0
   hasCastAnimation: 1
   castAnimatorTrigger: Defend
   castGraphicPrefab: {fileID: 0}
   castAnimationDuration: 0.4
   castGraphicDelay: 0.15
+  executeAnimatorTrigger: 
+  effectGraphicDelay: 0.15
   hasProjectileAnimation: 0
-  projectileAnimatorTrigger: 
   projectileGraphicPrefab: {fileID: 0}
-  projectileGraphicDelay: 0
-  effectAnimatorTrigger: Melee
   effectGraphicPrefab: {fileID: 7816962457026261443, guid: 8b57e975f2ff9fe4ca6873371a6bb4e7,
     type: 3}
   effectAnimationDuration: 0.4
-  effectGraphicDelay: 0.15

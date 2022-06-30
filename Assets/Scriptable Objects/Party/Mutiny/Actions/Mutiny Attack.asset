@@ -19,7 +19,7 @@ MonoBehaviour:
   mpCost: 0
   costsHP: 0
   power: 10
-  hitCount: 2
+  hitCount: 1
   offensiveStat: 0
   defensiveStat: 1
   elementalProperty: 0

@@ -13,46 +13,38 @@ MonoBehaviour:
   m_Name: Poison
   m_EditorClassIdentifier: 
   actionName: Poison
-  actionType: 3
   icon: {fileID: 0}
   description: 
   mpCost: 10
-  apCost: 1
-  power: 1
+  costsHP: 0
+  power: 25
   hitCount: 1
   offensiveStat: 2
   defensiveStat: 3
   elementalProperty: 0
+  actionEffectTriggers:
+  - actionEffect: {fileID: 11400000, guid: 3da62d540c90b474db456b4a6bc9d6a9, type: 2}
+    successRate: 100
+  - actionEffect: {fileID: 11400000, guid: 823c0e15283eb23428938b5581453ec2, type: 2}
+    successRate: 100
   accuracy: 99
-  guaranteedHit: 0
-  statusEffectChance: 100
+  critRate: 7
+  guaranteedHit: 1
   statusEffectSO: {fileID: 11400000, guid: f2dea2b6a0c30634d932e8a6b1a8660b, type: 2}
-  knockback:
-    doKnockback: 0
-    moveX: 0
-    moveY: 0
-  additionalEffects: []
-  aoes:
-  - aoeType: 0
-    fixedStartPosition: {x: 0, y: 0}
-  isFixedAOE: 0
-  canFlip: 0
+  aoeType: 0
   isMelee: 0
-  isFixedTarget: 1
-  targetFriendly: 0
+  targetingType: 1
   hitRandomTarget: 0
   hasCastAnimation: 1
   castAnimatorTrigger: Defend
   castGraphicPrefab: {fileID: 0}
   castAnimationDuration: 0.4
   castGraphicDelay: 0.15
+  executeAnimatorTrigger: 
+  effectGraphicDelay: 0.15
   hasProjectileAnimation: 1
-  projectileAnimatorTrigger: 
   projectileGraphicPrefab: {fileID: 9080087516260223380, guid: a9a53ad4435f66448b4a1b4e852a9413,
     type: 3}
-  projectileGraphicDelay: 0.15
-  effectAnimatorTrigger: Melee
   effectGraphicPrefab: {fileID: 7816962457026261443, guid: 9131141102ec4e341a135136152e0dae,
     type: 3}
   effectAnimationDuration: 0.4
-  effectGraphicDelay: 0.15

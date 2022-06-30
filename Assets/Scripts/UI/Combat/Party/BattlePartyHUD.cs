@@ -9,7 +9,7 @@ public class BattlePartyHUD : MonoBehaviour
 
     public void CreatePartyPanel(PlayableCombatant playableCombatant)
     {
-        GameObject partyPanelObject = Instantiate(partyPanelPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        GameObject partyPanelObject = Instantiate(partyPanelPrefab, transform.position, Quaternion.identity);
         partyPanelObject.transform.SetParent(transform, false);
         BattlePartyPanel partyPanel = partyPanelObject.GetComponent<BattlePartyPanel>();
         partyPanel.AssignCombatant(playableCombatant);

@@ -31,7 +31,7 @@ MonoBehaviour:
   magicAttackStat: 5
   magicDefenseStat: 5
   skillStat: 5
-  agilityStat: 5
+  agilityStat: 7
   fireResist: 1
   iceResist: 1
   electricResist: 1
@@ -39,6 +39,8 @@ MonoBehaviour:
   lightResist: 1
   traits: []
   attack: {fileID: 11400000, guid: 49078961aba57e64590b3560444824a7, type: 2}
+  actionEventModifiers: []
+  playableCharacterID: 0
   skills:
   - {fileID: 11400000, guid: 11f1b375349a2b747a484a855566acab, type: 2}
   - {fileID: 11400000, guid: 675c277a63d62164bac38a220a7998a1, type: 2}
@@ -49,4 +51,3 @@ MonoBehaviour:
   weapon: {fileID: 0}
   armor: {fileID: 0}
   accessory: {fileID: 0}
-  characterID: 0

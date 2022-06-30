@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayableCharacterSpawner : MonoBehaviour
 {
+    [SerializeField] private Camera mainCamera;
     [Header("Party Member Prefabs")]
     [SerializeField] private GameObject claire;
     [SerializeField] private GameObject mutiny;
@@ -40,7 +41,8 @@ public class PlayableCharacterSpawner : MonoBehaviour
             //set tile
             tile.AssignOccupier(combatant);
             combatant.tile = tile;
-
+            //set camera for ui display
+            combatant.targetSelect.canvas.worldCamera = mainCamera;
             
             return combatant;
         }

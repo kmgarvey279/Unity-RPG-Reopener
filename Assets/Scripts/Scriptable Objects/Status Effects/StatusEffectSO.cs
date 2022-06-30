@@ -3,26 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// [System.Serializable]
-// public class HealthEffect
-// {
-//     public HealthEffectType healthEffectType;
-//     public bool doFixedPercentage;
-//     public float fixedPercentage; 
-//     public float fixedPercentageBoss;
-
-//     public void Trigger(Combatant combatant, float potency)
-//     {
-//         if(healthEffectType == HealthEffectType.DecreaseHP)
-//         {
-//             combatant.Damage(potency);
-//         }
-//         else if(healthEffectType == HealthEffectType.IncreaseHP)
-//         {
-//             combatant.Heal(potency);
-//         }
-//     }
-// }
+public enum StatusEffectType
+{
+    Buff, 
+    Debuff
+}
 
 [System.Serializable]
 public class ResistanceModifier
@@ -39,7 +24,7 @@ public class StatusEffectSO : ScriptableObject
     public Sprite icon;
     public string effectName;
     public string effectInfo;
-    public bool isBuff;
+    public StatusEffectType statusEffectType;
     public bool canRemove;
     public bool cannotRefresh;
     [Header("Animation")]

@@ -22,7 +22,11 @@ public class BattleMenuState : BattleState
 
     public override void StateUpdate()
     {
-        if(Input.GetButtonDown("Cancel"))
+        if(Input.GetButtonDown("Switch"))
+        {
+            commandMenu.ChangeFocus();
+        }
+        else if(Input.GetButtonDown("Cancel"))
         {
             commandMenu.ExitCurrentMenu();
         }

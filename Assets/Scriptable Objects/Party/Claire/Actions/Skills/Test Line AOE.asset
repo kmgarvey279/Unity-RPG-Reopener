@@ -17,40 +17,35 @@ MonoBehaviour:
   icon: {fileID: 0}
   description: 
   mpCost: 15
-  apCost: 2
+  costsHP: 0
   power: 1
   hitCount: 1
   offensiveStat: 2
   defensiveStat: 4
   elementalProperty: 4
-  statusEffectPower: 0
-  statusEffectChance: 0
+  actionEffectTriggers: []
+  accuracy: 95
+  critRate: 7
+  guaranteedHit: 0
   statusEffectSO: {fileID: 0}
-  knockback:
-    doKnockback: 0
-    isVertical: 0
-    destination: 0
-  additionalEffects: []
   aoes:
-  - aoeType: 5
-    fixedStartPosition: {x: 1, y: 1}
-  isFixedAOE: 1
-  canFlip: 1
-  isMelee: 0
+  - aoeType: 4
+    fixedStartPosition: {x: 0, y: 0}
+  isFixedAOE: 0
+  canFlip: 0
+  isMelee: 1
   isFixedTarget: 0
-  targetFriendly: 0
+  targetingType: 1
   hitRandomTarget: 0
   hasCastAnimation: 0
   castAnimatorTrigger: Defend
   castGraphicPrefab: {fileID: 0}
   castAnimationDuration: 0.4
   castGraphicDelay: 0.15
+  executeAnimatorTrigger: 
+  effectGraphicDelay: 0.15
   hasProjectileAnimation: 0
-  projectileAnimatorTrigger: 
   projectileGraphicPrefab: {fileID: 0}
-  projectileGraphicDelay: 0.15
-  effectAnimatorTrigger: Melee
   effectGraphicPrefab: {fileID: 6544932892447281848, guid: 4f44e89a09d5e9e40a4bba576c5a553a,
     type: 3}
   effectAnimationDuration: 0.5
-  effectGraphicDelay: 0.15

@@ -205,10 +205,9 @@ MonoBehaviour:
   straightPathImage: {fileID: 7594323923151866325}
   turnPathImage: {fileID: 4080357113720656408}
   onTileSelect: {fileID: 11400000, guid: 793683ac7958afe49ad41d0555631cb8, type: 2}
-  onTileConfirm: {fileID: 11400000, guid: d437005961dbbbf46b9b7ba7fa1cdbfe, type: 2}
   invisibleColor: {r: 0, g: 0, b: 0, a: 0}
-  selectableColor: {r: 0.4155393, g: 0.45461103, b: 0.8207547, a: 0.69411767}
-  unselectableColor: {r: 0.2924528, g: 0.2749792, b: 0.2749792, a: 0.5882353}
+  selectableColor: {r: 1, g: 1, b: 1, a: 0.15686275}
+  unselectableColor: {r: 0, g: 0, b: 0, a: 0.15686275}
   moveCost: 0
 --- !u!60 &1305625966038601599
 PolygonCollider2D:

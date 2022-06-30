@@ -39,7 +39,6 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
     public GameObject[,] tileArray;
     [Header("Events")]
     [SerializeField] private SignalSenderGO onTileSelect;
-    [SerializeField] private SignalSender onTileConfirm;
     [Header("Color/Cost")]
     [SerializeField] private Color invisibleColor;
     [SerializeField] private Color selectableColor;
@@ -53,12 +52,15 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
         positionDict.Add(3, new List<Transform>(){position3A, position3B, position3C});    
     }
 
-    public void Display(bool canSelect)
+    public void Display(bool targetable, bool enableButton)
     {
-        if(canSelect)
+        if(targetable)
         {
             tileImage.color = selectableColor;
-            tileButton.enabled = true;
+            if(enableButton)
+            {
+                tileButton.enabled = true;
+            }
         }
         else
         {
@@ -198,10 +200,5 @@ public class Tile : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnt
         {
             occupiers[i].Move(positionDict[occupiers.Count][i], "Move");
         }
-    }
-
-    public void OnClick()
-    {
-        onTileConfirm.Raise();
     }
 }

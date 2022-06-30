@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Linq;
 using StateMachineNamespace;
 using BattleCalculationsNamespace;
+using UnityEngine.EventSystems;
 
 public class BattleManager : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private PartyData partyData;
     [SerializeField] private EnemyPartyData enemyPartyData;
     private Dictionary<string, int> enemyInstances = new Dictionary<string, int>(); 
-    private List<Combatant> combatants = new List<Combatant>();
+    [SerializeField] private List<Combatant> combatants = new List<Combatant>();
     public List<Combatant> Combatants
     {
         get {return combatants;}
@@ -53,6 +54,14 @@ public class BattleManager : MonoBehaviour
     public TurnData turnData;
 
     public bool battleIsLoaded = false;
+
+    public void Update() 
+    {
+        // if(Input.GetButtonDown("Debug1"))
+        // {
+        //     TimelineTest();
+        // }
+    }
 
     public IEnumerator SpawnCombatants()
     {
@@ -112,7 +121,7 @@ public class BattleManager : MonoBehaviour
         // currentTurnSlot = turnForecast[0];
         battleTimeline.ChangeCurrentTurn(nextCombatant);
     
-        nextCombatant.turnCounter.Reset();
+        nextCombatant.turnCounter.ApplyTurnCost();
         UpdateTurnOrder();
         
 
@@ -122,7 +131,6 @@ public class BattleManager : MonoBehaviour
     public void AddCombatant(Combatant combatant)
     {
         combatants.Add(combatant);
-        combatant.turnCounter.Reset();
         if(combatant is EnemyCombatant)
         {
             if(!enemyInstances.ContainsKey(combatant.characterName))
@@ -160,6 +168,44 @@ public class BattleManager : MonoBehaviour
         return filteredCombatants;
     }
 
+    public void DisplayTimelineChanges(List<Combatant> targets)
+    {
+        combatants = combatants.OrderBy(combatant => combatant.turnCounter.GetValue()).ToList();
+        StartCoroutine(battleTimeline.SwapCombatants(targets, combatants));
+    }
+
+    public void DisplayTimelinePreview(List<Combatant> targets)
+    {
+        List<Combatant> tempList = combatants;
+        tempList = tempList.OrderBy(combatant => combatant.turnCounter.GetValue()).ToList();
+        StartCoroutine(battleTimeline.SwapCombatants(targets, tempList));
+    }
+
+    public void ClearTimelinePreview()
+    {
+        combatants = combatants.OrderBy(combatant => combatant.turnCounter.GetValue()).ToList();
+        battleTimeline.CancelAnimations(combatants);
+    }
+
+    // public void TimelineTest()
+    // {
+    //     Combatant nextCombatant = combatants[0];
+    //     battleTimeline.ChangeCurrentTurn(nextCombatant);
+    //     while(nextCombatant.turnCounter.GetValue() > 0)
+    //     {
+    //         foreach(Combatant combatant in combatants)
+    //         {
+    //             combatant.turnCounter.Tick();
+    //         }
+    //     }
+    
+    //     nextCombatant.turnCounter.Reset();
+    //     combatants = combatants.OrderBy(combatant => combatant.turnCounter.GetValue()).ToList();
+
+    //     combatants.Add(nextCombatant);
+    //     StartCoroutine(battleTimeline.AddCombatants(new List<Combatant>(){nextCombatant}, combatants));
+    // }
+
     public void UpdateTurnOrder()
     {
         // turnForecast = turnForecast.OrderBy(o=>o.GetCounterValue()).ToList();
@@ -174,10 +220,10 @@ public class BattleManager : MonoBehaviour
         // turnData.combatant.ShowMPPreview(action.mpCost);
     }
     //set tile and combatants to be targeted in execution phase
-    public void SetTargets(Tile selectedTile, List<Combatant> selectedTargets)
+    public void SetTargets(Combatant primaryTarget, List<Combatant> targets)
     {
-        turnData.actionEvent.targetedTile = selectedTile;
-        turnData.actionEvent.targets = selectedTargets;
+        turnData.actionEvent.primaryTarget = primaryTarget;
+        turnData.actionEvent.targets = targets;
     }
     //cancel selected action
     public void CancelAction()
@@ -220,5 +266,25 @@ public class BattleManager : MonoBehaviour
         {
             koCombatants.Add(combatant);
         } 
+    }
+
+    public void ToggleTargetSelect(bool display)
+    {
+        foreach(Combatant combatant in combatants)
+        {
+            combatant.ChangeSelectState(display);
+        }
+        // GameObject selectedTarget = combatants[0].targetSelect.gameObject;
+        // if(turnData.combatant != null)
+        // {
+        //     selectedTarget = turnData.combatant.targetSelect.gameObject;
+        // }
+        // EventSystem.current.SetSelectedGameObject(null);
+        // EventSystem.current.SetSelectedGameObject(selectedTarget);
+    }
+
+    public void DisplayTargetPreview(List<Combatant> targets)
+    {
+        battleTimeline.HighlightTargets(targets);
     }
 }

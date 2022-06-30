@@ -6,9 +6,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New SubEffect", menuName = "SubEffect/ModifyTurnCounter")]
 public class SubEffectModifyTurnCounter : SubEffect
 {
-    [SerializeField] private int amount;
+    [SerializeField] private float turnModifier;
     public override void TriggerEffect(Combatant combatant)
     {
-        combatant.turnCounter.ChangeValue(amount);
+        combatant.ApplyTurnModifier(turnModifier);
     }
 }

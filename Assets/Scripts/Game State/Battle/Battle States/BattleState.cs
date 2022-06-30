@@ -12,7 +12,8 @@ public enum BattleStateType
     Execute,
     EnemyTurn,
     TurnEnd,
-    BattleEnd
+    BattleEnd,
+    PlayerMove
 }
 
 public class BattleState : StateMachine.State

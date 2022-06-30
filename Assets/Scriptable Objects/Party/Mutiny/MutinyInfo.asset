@@ -26,12 +26,12 @@ MonoBehaviour:
     additives: []
     multipliers: []
     currentValue: 50
-  attackStat: 4
+  attackStat: 5
   defenseStat: 3
-  magicAttackStat: 3
-  magicDefenseStat: 5
-  skillStat: 6
-  agilityStat: 7
+  magicAttackStat: 4
+  magicDefenseStat: 6
+  skillStat: 5
+  agilityStat: 5
   fireResist: 1
   iceResist: 1
   electricResist: 1
@@ -39,8 +39,9 @@ MonoBehaviour:
   lightResist: 2
   traits: []
   attack: {fileID: 11400000, guid: d5d7301e34e951c4fa9b4beeda7e7bcb, type: 2}
+  actionEventModifiers: []
+  playableCharacterID: 0
   skills: []
   weapon: {fileID: 0}
   armor: {fileID: 0}
   accessory: {fileID: 0}
-  characterID: 1

@@ -27,6 +27,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1104867729}
   - {fileID: 229872934084395507}
@@ -36,6 +37,7 @@ Transform:
   - {fileID: 1068160557}
   - {fileID: 419354875833359385}
   - {fileID: 871918602}
+  - {fileID: 1698161914}
   m_Father: {fileID: 2036527992414714682}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -60,6 +62,7 @@ MonoBehaviour:
   - {fileID: 1068160558}
   - {fileID: 5331352290605721043}
   - {fileID: 871918601}
+  - {fileID: 1698161913}
   currentState: {fileID: 1104867730}
   isActive: 1
 --- !u!1 &871918600
@@ -89,6 +92,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
   m_RootOrder: 7
@@ -112,12 +116,7 @@ MonoBehaviour:
   gridManager: {fileID: 0}
   turnData:
     combatant: {fileID: 0}
-    action: {fileID: 0}
-    actionPoints: 0
-    targets: []
-    targetedTile: {fileID: 0}
-    targetType: 0
-    flip: 0
+    hasMoved: 0
   signalListeners: []
 --- !u!1 &1068160556
 GameObject:
@@ -146,6 +145,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
   m_RootOrder: 5
@@ -169,12 +169,7 @@ MonoBehaviour:
   gridManager: {fileID: 0}
   turnData:
     combatant: {fileID: 0}
-    action: {fileID: 0}
-    actionPoints: 0
-    targets: []
-    targetedTile: {fileID: 0}
-    targetType: 0
-    flip: 0
+    hasMoved: 0
   signalListeners: []
   wait: {fileID: 11400000, guid: 87818ae46e5748c45afe5f916dd34148, type: 2}
 --- !u!1 &1104867728
@@ -204,6 +199,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
   m_RootOrder: 0
@@ -227,12 +223,7 @@ MonoBehaviour:
   gridManager: {fileID: 0}
   turnData:
     combatant: {fileID: 0}
-    action: {fileID: 0}
-    actionPoints: 0
-    targets: []
-    targetedTile: {fileID: 0}
-    targetType: 0
-    flip: 0
+    hasMoved: 0
   signalListeners: []
 --- !u!1 &1360154138
 GameObject:
@@ -265,6 +256,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
   m_RootOrder: 4
@@ -288,17 +280,11 @@ MonoBehaviour:
   gridManager: {fileID: 0}
   turnData:
     combatant: {fileID: 0}
-    action: {fileID: 0}
-    actionPoints: 0
-    targets: []
-    targetedTile: {fileID: 0}
-    targetType: 0
-    flip: 0
+    hasMoved: 0
   signalListeners:
   - {fileID: 504466051}
   - {fileID: 504466052}
   - {fileID: 504466050}
-  onCameraZoomIn: {fileID: 11400000, guid: 1b526e957c88b6e40aa2172d13ee6bf3, type: 2}
 --- !u!114 &504466050
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -438,6 +424,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
   m_RootOrder: 2
@@ -461,12 +448,7 @@ MonoBehaviour:
   gridManager: {fileID: 0}
   turnData:
     combatant: {fileID: 0}
-    action: {fileID: 0}
-    actionPoints: 0
-    targets: []
-    targetedTile: {fileID: 0}
-    targetType: 0
-    flip: 0
+    hasMoved: 0
   signalListeners: []
   commandMenu: {fileID: 0}
   onCameraZoomIn: {fileID: 11400000, guid: 1b526e957c88b6e40aa2172d13ee6bf3, type: 2}
@@ -480,7 +462,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1600802481}
   - component: {fileID: 1600802482}
-  - component: {fileID: 1184521284}
+  - component: {fileID: 400077979}
   m_Layer: 0
   m_Name: Tile Select
   m_TagString: Untagged
@@ -498,6 +480,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
   m_RootOrder: 3
@@ -521,16 +504,12 @@ MonoBehaviour:
   gridManager: {fileID: 0}
   turnData:
     combatant: {fileID: 0}
-    action: {fileID: 0}
-    actionPoints: 0
-    targets: []
-    targetedTile: {fileID: 0}
-    targetType: 0
-    flip: 0
+    hasMoved: 0
   signalListeners:
-  - {fileID: 1184521284}
+  - {fileID: 400077979}
+  battleTimeline: {fileID: 0}
   onCameraZoomOut: {fileID: 11400000, guid: 7d39b1d704621c640a8ce91a6ae94a29, type: 2}
---- !u!114 &1184521284
+--- !u!114 &400077979
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -542,12 +521,95 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 272a739046db15849909a4cabd8041cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  signalSender: {fileID: 11400000, guid: 793683ac7958afe49ad41d0555631cb8, type: 2}
+  signalSender: {fileID: 11400000, guid: 9643ea6fcd7523f49b0b77952933ff6e, type: 2}
   signalEvent:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1600802482}
         m_TargetAssemblyTypeName: TileSelectState, Assembly-CSharp
+        m_MethodName: OnSelectTarget
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!1 &1698161912
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1698161914}
+  - component: {fileID: 1698161913}
+  - component: {fileID: 1698161915}
+  m_Layer: 0
+  m_Name: PlayerMove
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1698161914
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1698161912}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 692242124}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1698161913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1698161912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74ab52bd3ac410e438adebcc23b6baea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stateMachine: {fileID: 0}
+  id: 0
+  battleStateType: 8
+  battleManager: {fileID: 0}
+  gridManager: {fileID: 0}
+  turnData:
+    combatant: {fileID: 0}
+    hasMoved: 0
+  signalListeners:
+  - {fileID: 1698161915}
+--- !u!114 &1698161915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1698161912}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 272a739046db15849909a4cabd8041cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  signalSender: {fileID: 11400000, guid: 793683ac7958afe49ad41d0555631cb8, type: 2}
+  signalEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1698161913}
+        m_TargetAssemblyTypeName: PlayerMoveState, Assembly-CSharp
         m_MethodName: OnSelectTile
         m_Mode: 0
         m_Arguments:
@@ -568,8 +630,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2036527992414714682}
   - component: {fileID: 2036527992414714679}
-  - component: {fileID: 919532104}
-  - component: {fileID: 919532107}
   m_Layer: 0
   m_Name: BattleManager
   m_TagString: Untagged
@@ -587,6 +647,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 692242124}
   m_Father: {fileID: 0}
@@ -607,77 +668,16 @@ MonoBehaviour:
   gridManager: {fileID: 0}
   partyData: {fileID: 11400000, guid: 0056b2932c628e7458ae67b746239176, type: 2}
   enemyPartyData: {fileID: 11400000, guid: ca3cd966c2e391d4a93bb7fba9bd8266, type: 2}
+  combatants: []
   battlePartyHUD: {fileID: 0}
   playableCharacterSpawner: {fileID: 0}
   enemySpawner: {fileID: 0}
   battleTimeline: {fileID: 0}
-  turnForecast: []
-  actionPointDisplay: {fileID: 0}
   stateMachine: {fileID: 692242123}
   turnData:
     combatant: {fileID: 0}
-    action: {fileID: 0}
-    actionPoints: 0
-    targets: []
-    targetedTile: {fileID: 0}
-    targetType: 0
-    flip: 0
---- !u!114 &919532104
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2036527992414714683}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 272a739046db15849909a4cabd8041cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  signalSender: {fileID: 11400000, guid: 793683ac7958afe49ad41d0555631cb8, type: 2}
-  signalEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2036527992414714679}
-        m_TargetAssemblyTypeName: BattleManager, Assembly-CSharp
-        m_MethodName: OnTileSelect
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &919532107
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2036527992414714683}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 272a739046db15849909a4cabd8041cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  signalSender: {fileID: 11400000, guid: 25f9c5d3374f4e8489c63661d314e8a8, type: 2}
-  signalEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2036527992414714679}
-        m_TargetAssemblyTypeName: BattleManager, Assembly-CSharp
-        m_MethodName: OnCombatantKO
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+    hasMoved: 0
+  battleIsLoaded: 0
 --- !u!1 &4929225038856883274
 GameObject:
   m_ObjectHideFlags: 0
@@ -705,6 +705,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
   m_RootOrder: 6
@@ -728,12 +729,7 @@ MonoBehaviour:
   gridManager: {fileID: 0}
   turnData:
     combatant: {fileID: 0}
-    action: {fileID: 0}
-    actionPoints: 0
-    targets: []
-    targetedTile: {fileID: 0}
-    targetType: 0
-    flip: 0
+    hasMoved: 0
   signalListeners: []
 --- !u!1 &7913752417119186372
 GameObject:
@@ -762,6 +758,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
   m_RootOrder: 1
@@ -785,10 +782,5 @@ MonoBehaviour:
   gridManager: {fileID: 0}
   turnData:
     combatant: {fileID: 0}
-    action: {fileID: 0}
-    actionPoints: 0
-    targets: []
-    targetedTile: {fileID: 0}
-    targetType: 0
-    flip: 0
+    hasMoved: 0
   signalListeners: []

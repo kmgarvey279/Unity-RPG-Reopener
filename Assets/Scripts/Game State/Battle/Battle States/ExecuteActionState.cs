@@ -53,18 +53,11 @@ public class ExecuteActionState : BattleState
     public IEnumerator ExecuteAction()
     {
         Debug.Log(actionEventToExecute.actor.characterName + " used " + actionEventToExecute.action.actionName);
-        
-        //if action is move
-        if(actionEventToExecute.action.actionType == ActionType.Move)
-        {
-            StartCoroutine(MovePhase());
-            yield break;
-        }
 
         //move into melee range
         if(actionEventToExecute.action.isMelee)
         {
-            actionEventToExecute.actor.Move(gridManager.centerPositions[actionEventToExecute.targetedTile.y][actionEventToExecute.actor.combatantType], "Idle", 2f);
+            actionEventToExecute.actor.Move(gridManager.centerPositions[actionEventToExecute.primaryTarget.tile.y][actionEventToExecute.actor.combatantType], "Idle", 2f);
             yield return new WaitUntil(() => !actionEventToExecute.actor.moving);
         }
 
@@ -84,7 +77,7 @@ public class ExecuteActionState : BattleState
         {
             List<Combatant> potentialTargets = battleManager.GetCombatants(actionEventToExecute.GetCombatantType());
             int roll = Mathf.FloorToInt(Random.Range(0, potentialTargets.Count + 1));
-            actionEventToExecute.targetedTile = potentialTargets[roll].tile;
+            actionEventToExecute.primaryTarget = potentialTargets[roll];
             actionEventToExecute.targets = new List<Combatant>(){potentialTargets[roll]};
         }
 
@@ -130,22 +123,6 @@ public class ExecuteActionState : BattleState
         StartCoroutine(CastAnimationPhase());
     }
 
-    private IEnumerator MovePhase()
-    {
-        Debug.Log("Move Phase");
-        StartCoroutine(actionEventToExecute.actor.ChangeTile(actionEventToExecute.targetedTile, "Move"));
-        yield return new WaitUntil(() => !actionEventToExecute.actor.moving);
-        turnData.hasMoved = true;
-        if(turnData.combatant is PlayableCombatant)
-        {
-
-            stateMachine.ChangeState((int)BattleStateType.Menu);
-        }
-        else
-        {
-            stateMachine.ChangeState((int)BattleStateType.EnemyTurn);
-        }
-    }
 
     //trigger action animation + visual effect on user
     public IEnumerator CastAnimationPhase()
@@ -195,7 +172,7 @@ public class ExecuteActionState : BattleState
             Vector3 startPosition = new Vector3(actionEventToExecute.actor.tile.transform.position.x + (actionEventToExecute.actor.GetDirection().x * 0.1f), actionEventToExecute.actor.transform.position.y + (actionEventToExecute.actor.GetDirection().y * 0.1f));
             GameObject projectileObject = Instantiate(actionEventToExecute.action.projectileGraphicPrefab, startPosition, Quaternion.identity);
             Projectile projectile = projectileObject.GetComponent<Projectile>();
-            projectile.Move(actionEventToExecute.targetedTile.transform.position);
+            projectile.Move(actionEventToExecute.primaryTarget.tile.transform.position);
             
             yield return new WaitUntil(() => projectile.reachedTarget);
             Destroy(projectileObject);
@@ -210,20 +187,15 @@ public class ExecuteActionState : BattleState
         //spawn visual effect
         if(actionEventToExecute.action.effectGraphicPrefab)
         {
-            List<GameObject> effects = new List<GameObject>();
-            foreach(AOE aoe in actionEventToExecute.action.aoes)
+            Vector2 spawnPosition = turnData.actionEvent.primaryTarget.transform.position; 
+            if(actionEventToExecute.action.aoeType == AOEType.All)
             {
-                //default spawn position (center of battlefield)
-                Vector2 spawnPosition = GetEffectSpawnPosition(actionEventToExecute, aoe);
-                GameObject graphicObject = Instantiate(actionEventToExecute.action.effectGraphicPrefab, spawnPosition, actionEventToExecute.action.effectGraphicPrefab.transform.rotation);
-                effects.Add(graphicObject);
+                spawnPosition = gridManager.GetTileArray(actionEventToExecute.combatantType)[1, 1].transform.position;
             }
+            GameObject graphicObject = Instantiate(actionEventToExecute.action.effectGraphicPrefab, spawnPosition, actionEventToExecute.action.effectGraphicPrefab.transform.rotation);
             //destroy visual effect
             yield return new WaitForSeconds(actionEventToExecute.action.effectAnimationDuration);
-            foreach(GameObject effect in effects)
-            {
-                Destroy(effect);
-            }
+            Destroy(graphicObject);
         }
         else 
         {
@@ -237,10 +209,14 @@ public class ExecuteActionState : BattleState
         foreach(ActionEvent actionEvent in targetQueue)
         {
             actionEvent.TriggerEvent();
-            if(actionEvent.action.actionType == ActionType.Attack && !counterQueue.Contains(actionEvent.targets[0]))
-            {
-                counterQueue.Add(actionEvent.targets[0]);
-            }
+            // foreach(ActionEffectTrigger actionEffectTrigger in actionEvent.action.actionEffectTriggers)
+            // {
+            //     if(actionEffectTrigger.actionEffect is ActionEffectHealth)
+            // {
+            // if(actionEvent.action.actionEffectTriggers == ActionType.Attack && !counterQueue.Contains(actionEvent.targets[0]))
+            // {
+            //     counterQueue.Add(actionEvent.targets[0]);
+            // }
         }
         actionEventToExecute.hitCounter++;
 
@@ -254,11 +230,11 @@ public class ExecuteActionState : BattleState
         else
         {
             Debug.Log("all hits complete");
-            StartCoroutine(ResolveDamagePhase());
+            StartCoroutine(ResolveActionPhase());
         }
     }
 
-    private IEnumerator ResolveDamagePhase()
+    private IEnumerator ResolveActionPhase()
     {
         if(actionEventToExecute.action.isMelee)
         {
@@ -327,8 +303,8 @@ public class ExecuteActionState : BattleState
             {
                 //create counter action
                 actionEventToExecute = new ActionEvent(counterAction.action, counterQueue[x]);
+                actionEventToExecute.primaryTarget = turnData.combatant;
                 actionEventToExecute.targets = new List<Combatant>() {turnData.combatant};
-                actionEventToExecute.targetedTile = turnData.combatant.tile;
                 actionEventToExecute.canCounter = false;
                 //remove from queue
                 counterQueue.RemoveAt(x);
@@ -361,35 +337,5 @@ public class ExecuteActionState : BattleState
         {
             return false;
         }
-    }
-        
-
-    public Vector2 GetEffectSpawnPosition(ActionEvent actionEvent, AOE aoe)
-    {
-        Tile[,] tileArray = gridManager.GetTileArray(actionEvent.GetCombatantType());
-        Vector2 spawnPosition = tileArray[1, 1].transform.position;
-        if(actionEvent.action.isFixedAOE)
-        {
-            spawnPosition = tileArray[aoe.fixedStartPosition.x, aoe.fixedStartPosition.y].transform.position;
-        }
-        else
-        {
-            if(actionEvent.targetedTile && aoe.aoeType != AOEType.All)
-            {
-                if(aoe.aoeType == AOEType.Row)
-                {
-                    spawnPosition = tileArray[1, actionEvent.targetedTile.y].transform.position;
-                }  
-                else if(aoe.aoeType == AOEType.Column)
-                {
-                    spawnPosition = tileArray[actionEvent.targetedTile.x, 1].transform.position;
-                }   
-                else
-                { 
-                    spawnPosition = actionEvent.targetedTile.transform.position;
-                }
-            }
-        }
-        return spawnPosition;
     }
 }

@@ -56,29 +56,81 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    public void DisplaySelectableTargets(Action action, CombatantType combatantType, Tile start)
+    public void DisplaySelectableTargets(Action action, CombatantType combatantType, Combatant actor)
     {
         if(combatantType == CombatantType.Enemy)
         {
-            // foreach (Tile tile in playerTileArray)
-            // {
-            //     tile.Display(false);
-            // }
-
-            Tile tileToSelect = null;
+            Combatant firstSelectedCombatant = null;
             int highestValue = 0;
+            
             foreach(Tile tile in enemyTileArray)
             {   
-                tile.Display(false);
-                if(tile.occupiers.Count > 0)
+                tile.Display(false, false);
+                foreach(Combatant combatant in tile.occupiers)
                 {
                     //check if tile is blocked
-                    if((action.isMelee && tile.x == 0 && enemyTileArray[1, tile.y].occupiers.Count > 0
-                        || action.isMelee && start.x == 0))
+                    if(action.isMelee && tile.x == 0 && enemyTileArray[1, tile.y].occupiers.Count > 0
+                        || action.isMelee && actor.tile.x == 0)
                     {
                         break;
                     }
-                    tile.Display(true);
+                    else
+                    {
+                        combatant.ChangeSelectState(true);
+                        int thisValue = tile.x + tile.y;
+                        if(thisValue >= highestValue)
+                        {
+                            firstSelectedCombatant = tile.occupiers[0];
+                            highestValue = thisValue;
+                        }
+                    }
+                    tile.Display(true, false);
+                }
+            }
+            if(firstSelectedCombatant != null)
+            {
+                EventSystem.current.SetSelectedGameObject(null);
+                EventSystem.current.SetSelectedGameObject(firstSelectedCombatant.targetSelect.gameObject);
+            }
+        } 
+        else if(combatantType == CombatantType.Player)
+        {
+            foreach(Tile tile in playerTileArray)
+            {   
+                // tile.Display(false);
+                foreach(Combatant combatant in tile.occupiers)
+                {
+                    if((action.targetingType == TargetingType.TargetSelf && combatant == actor) || action.targetingType != TargetingType.TargetSelf)
+                    {
+                        // tile.Display(true);
+                        combatant.ChangeSelectState(true);
+                    }
+                } 
+            }
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(actor.targetSelect.gameObject);
+        }
+    }
+
+    public void DisplaySelectableTiles(CombatantType combatantType, Tile start)
+    {
+        if(combatantType == CombatantType.Player)
+        {
+            foreach(Tile tile in playerTileArray)
+            {
+                tile.Display(true, true);
+            }
+            start.Select();
+        }
+        else if(combatantType == CombatantType.Enemy)
+        {
+            Tile tileToSelect = null;
+            int highestValue = 0;
+            foreach(Tile tile in enemyTileArray)
+            {
+                tile.Display(true, true);
+                if(tile.occupiers.Count > 0)
+                {
                     int thisValue = tile.x + tile.y;
                     if(thisValue >= highestValue)
                     {
@@ -90,65 +142,6 @@ public class GridManager : MonoBehaviour
             if(tileToSelect != null)
             {
                 tileToSelect.Select();
-            }
-        } 
-        else if(combatantType == CombatantType.Player)
-        {
-            // foreach (Tile tile in enemyTileArray)
-            // {
-            //     tile.Display(false);
-            // }
-            foreach(Tile tile in playerTileArray)
-            {   
-                tile.Display(false);
-                if(tile.occupiers.Count > 0 && tile.occupiers[0] is PlayableCombatant)
-                {
-                    if((action.targetingType == TargetingType.TargetSelf && tile == start) || action.targetingType != TargetingType.TargetSelf)
-                    {
-                        tile.Display(true);
-                    }
-                } 
-            }
-            start.Select();
-        }
-    }
-
-    public void DisplaySelectableTiles(Action action, CombatantType combatantType, Tile start)
-    {
-        if(!action.isFixedAOE)
-        {
-            if(combatantType == CombatantType.Player)
-            {
-                foreach(Tile tile in playerTileArray)
-                {
-                    if(!(action.actionType == ActionType.Move && tile.occupiers.Count > 0 && tile.occupiers[0] is EnemyCombatant))
-                    {
-                        tile.Display(true);
-                    }
-                }
-                start.Select();
-            }
-            else if(combatantType == CombatantType.Enemy)
-            {
-                Tile tileToSelect = null;
-                int highestValue = 0;
-                foreach(Tile tile in enemyTileArray)
-                {
-                    tile.Display(true);
-                    if(tile.occupiers.Count > 0)
-                    {
-                        int thisValue = tile.x + tile.y;
-                        if(thisValue >= highestValue)
-                        {
-                            tileToSelect = tile;
-                            highestValue = thisValue;
-                        }
-                    }
-                }
-                if(tileToSelect != null)
-                {
-                    tileToSelect.Select();
-                }
             }
         }
     }
@@ -167,66 +160,45 @@ public class GridManager : MonoBehaviour
 
     public List<Tile> GetAOETiles(Tile start, Action action, CombatantType combatantType)
     {
-        List<Tile> aoeTiles = new List<Tile>(){};
-        foreach(AOE aoe in action.aoes)
+        List<Tile> aoeTiles = new List<Tile>();
+        List<Tile> newTiles = new List<Tile>();
+        Tile aoeStart = start;
+
+        if(action.aoeType == AOEType.Tile)
         {
-            List<Tile> newTiles = new List<Tile>();
-            Tile aoeStart = start;
-
-            if(action.isFixedAOE)
-            {
-                aoeStart = GetTileArray(combatantType)[aoe.fixedStartPosition.x, aoe.fixedStartPosition.y];
-            }
             newTiles.Add(aoeStart);
+        }
+        if(action.aoeType == AOEType.Cross)
+        {
+            newTiles.Add(aoeStart);
+            newTiles.AddRange(GetRow(aoeStart, combatantType, 1));
+            newTiles.AddRange(GetColumn(aoeStart, combatantType, 1));
+        }
+        else if(action.aoeType == AOEType.Row)
+        {    
+            newTiles.Add(aoeStart);
+            newTiles.AddRange(GetRow(aoeStart, combatantType, 1));
+        }
+        else if(action.aoeType == AOEType.Column)
+        {
+            newTiles.Add(aoeStart);
+            newTiles.AddRange(GetColumn(aoeStart, combatantType, 1));
+        }
+        else if(action.aoeType == AOEType.All)
+        {
+            newTiles.AddRange(GetAll(combatantType));
+        }
 
-            if(aoe.aoeType == AOEType.Cross)
+        foreach(Tile tile in newTiles)
+        {
+            Tile tileToAdd = tile;
+            if(!aoeTiles.Contains(tileToAdd))
             {
-                newTiles.AddRange(GetRow(aoeStart, combatantType, 1));
-                newTiles.AddRange(GetColumn(aoeStart, combatantType, 1));
-            }
-            // else if(aoe.aoeType == AOEType.X)
-            // {
-            //     newTiles.AddRange(GetDiagonal(aoeStart, combatantType, 1, true));
-            //     newTiles.AddRange(GetDiagonal(aoeStart, combatantType, 1, false));
-            // }
-            else if(aoe.aoeType == AOEType.Row)
-            {    
-                newTiles.AddRange(GetRow(aoeStart, combatantType, 2));
-            }
-            else if(aoe.aoeType == AOEType.Column)
-            {
-                newTiles.AddRange(GetColumn(aoeStart, combatantType, 2));
-            }
-            else if(aoe.aoeType == AOEType.All)
-            {
-                newTiles.AddRange(GetAll(combatantType));
-            }
-
-            foreach(Tile tile in newTiles)
-            {
-                Tile tileToAdd = tile;
-                if(!aoeTiles.Contains(tileToAdd))
-                {
-                    aoeTiles.Add(tileToAdd);
-                }
+                aoeTiles.Add(tileToAdd);
             }
         }
         return aoeTiles;
     }
-
-    // private Tile FlipTile(Tile tile, CombatantType combatantType)
-    // {
-    //     int xValue = tile.x;
-    //     if(xValue == 0)
-    //     {
-    //         xValue = 2;
-    //     }
-    //     else if(xValue == 2)
-    //     {
-    //         xValue = 0;
-    //     }
-    //     return GetTileArray(combatantType)[xValue, tile.y];
-    // }
 
     public List<Combatant> GetTargetsInAOE(List<Tile> aoeTiles, CombatantType combatantType)
     {
@@ -250,13 +222,13 @@ public class GridManager : MonoBehaviour
         foreach(Tile tile in aoeTiles)
         {
             tile.DisplayAOE(); 
-            if(tile.occupiers.Count > 0 && (tile.occupiers[0].combatantType == combatantType))
-            {
-                foreach(Combatant occupier in tile.occupiers)
-                {
-                    occupier.Select();
-                }
-            }
+            // if(tile.occupiers.Count > 0 && (tile.occupiers[0].combatantType == combatantType))
+            // {
+            //     foreach(Combatant occupier in tile.occupiers)
+            //     {
+            //         occupier.Select();
+            //     }
+            // }
         }
     }
 
@@ -278,24 +250,18 @@ public class GridManager : MonoBehaviour
     {
         foreach(Tile tile in playerTileArray)
         {
-            if(tile.occupiers.Count > 0)
-            {
-                foreach(Combatant occupier in tile.occupiers)
-                {
-                    occupier.Deselect();
-                }
-            }
+            // foreach(Combatant occupier in tile.occupiers)
+            // {
+            //     occupier.Deselect();
+            // }
             tile.HideAOE();
         }
         foreach(Tile tile in enemyTileArray)
         {
-            if(tile.occupiers.Count > 0)
-            {
-                foreach(Combatant occupier in tile.occupiers)
-                {
-                    occupier.Deselect();
-                }
-            }
+            // foreach(Combatant occupier in tile.occupiers)
+            // {
+            //     occupier.Deselect();
+            // }
             tile.HideAOE();
         }
     }
