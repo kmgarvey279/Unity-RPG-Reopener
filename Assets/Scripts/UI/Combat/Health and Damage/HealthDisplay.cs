@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 
 public enum PopupType
 {
@@ -16,110 +14,69 @@ public enum PopupType
 public class HealthDisplay : MonoBehaviour
 {
     private Combatant combatant;
-    [SerializeField] private GameObject display;
+    [SerializeField] private Canvas canvas;
+    [SerializeField] private GameObject healthDisplay;
     [SerializeField] private AnimatedBar healthBar;
-    [SerializeField] private StatusEffectDisplay statusEffectDisplay;
+    [SerializeField] private AnimatedBar barrierBar;
     [SerializeField] private GameObject damagePopupPrefab;
-    [SerializeField] private GameObject popupSpawnPoint;
+    [SerializeField] private GameObject critPopupPrefab;
+    [SerializeField] private Transform healthSpawn;
+    [SerializeField] private List<Transform> popupSpawnPoints;
 
     private void Awake() 
     {
         combatant = GetComponentInParent<Combatant>();
     }
 
+    public void SetUICamera(Camera camera)
+    {
+        canvas.worldCamera = camera;
+        canvas.overrideSorting = true;
+    }
+
     private void Start()
     {
-        healthBar.SetInitialValue(combatant.hp.GetValue(), combatant.hp.GetCurrentValue());
+        healthBar.SetInitialValue(combatant.HP.GetValue(), combatant.HP.CurrentValue);
+        barrierBar.SetInitialValue(combatant.Barrier.GetValue(), combatant.Barrier.CurrentValue);
     }
 
     public void Display(bool show)
     {
-        display.gameObject.SetActive(show);
+        healthDisplay.gameObject.SetActive(show);
     }
 
-    public void DisplayMessage(PopupType popupType, string message)
+    public IEnumerator DisplayHealthChange(PopupType popupType, string amount, bool isCrit = false, ElementalResistance resistance = ElementalResistance.Neutral)
     {
-        if(!display.gameObject.activeInHierarchy)
+        GameObject damagePopupObject = null;
+        if(isCrit)
         {
-            Display(true);
+            damagePopupObject = Instantiate(critPopupPrefab, healthSpawn.position, Quaternion.identity);
+        }
+        else
+        {
+            damagePopupObject = Instantiate(damagePopupPrefab, healthSpawn.position, Quaternion.identity);
+        }
+        int roll = Random.Range(0, popupSpawnPoints.Count);
+        damagePopupObject.transform.SetParent(healthSpawn, true);
+        damagePopupObject.transform.position = popupSpawnPoints[roll].position;
+        damagePopupObject.GetComponent<DamagePopup>().TriggerHealthPopup(popupType, amount);
+        yield return null;
+
+        if (!healthDisplay.gameObject.activeInHierarchy)
+        {
+            healthDisplay.gameObject.SetActive(true);
+            yield return new WaitForSeconds(0.2f);
         }
 
-        GameObject damagePopupObject = Instantiate(damagePopupPrefab, popupSpawnPoint.transform.position, Quaternion.identity);
-        damagePopupObject.transform.SetParent(popupSpawnPoint.transform);
-        damagePopupObject.GetComponent<DamagePopup>().TriggerMessagePopup(popupType, message);
+        barrierBar.ResolveChange(combatant.Barrier.CurrentValue);
+        healthBar.DisplayChange(combatant.HP.CurrentValue);
     }
 
-    public void DisplayHealthChange(PopupType popupType, float amount, bool isCrit)
+    public IEnumerator ResolveHealthChange()
     {
-        if(!display.gameObject.activeInHierarchy)
-        {
-            Display(true);
-        }
+        healthBar.ResolveChange(combatant.HP.CurrentValue);
 
-        GameObject damagePopupObject = Instantiate(damagePopupPrefab, popupSpawnPoint.transform.position, Quaternion.identity);
-        damagePopupObject.transform.SetParent(popupSpawnPoint.transform);
-        damagePopupObject.GetComponent<DamagePopup>().TriggerHealthPopup(popupType, Mathf.Abs(amount), isCrit);
-
-        healthBar.DisplayChange(combatant.hp.GetCurrentValue());
+        yield return new WaitForSeconds(2f);
+        healthDisplay.gameObject.SetActive(false);
     }
-
-    public void ResolveHealthChange()
-    {
-        healthBar.ResolveChange();
-    }
-
-    public void AddStatusIcon(StatusEffectSO statusEffectSO)
-    {
-        statusEffectDisplay.AddStatusIcon(statusEffectSO);
-    }
-
-    public void RemoveStatusIcon(StatusEffectSO statusEffectSO)
-    {
-        statusEffectDisplay.RemoveStatusIcon(statusEffectSO);
-    }
-
-    // private IEnumerator DisplayDamage(int amount)
-    // {
-    //     // healthBar.IncreaseBar(amount);
-    //     // int healthBarValue = combatant.hp.GetCurrentValue();
-    //     // int damageBarValue = combatant.hp.GetCurrentValue() + amount;
-    //     // int damageBarValue = healBarValue;
-    //     // healthBar.SetDamage(damageBarValue);
-    //     // healthBar.SetHealth(healthBarValue);
-    //     // if(combatant is PlayableCombatant)
-    //     //     battlePartyPanel.UpdateStatusBar(StatusBarType.HP, recoveryBarValue);
-
-    //     // while(damageBarValue > healthBarValue) 
-    //     // {
-    //     //     yield return new WaitForSeconds(barTickSpeed);
-    //     //     damageBarValue = damageBarValue - 1;
-    //     //     // damageBar.SetCurrentValue(damageBarValue);
-    //     //     healthBar.SetDamage(damageBarValue);
-    //     //     if(combatant is PlayableCombatant)
-    //     //         battlePartyPanel.UpdateStatusBar(StatusBarType.HPDamage, recoveryBarValue);
-    //     // }
-    //     // healBar.SetDamage(0);
-    // }
-
-    // private IEnumerator DisplayHeal(int amount)
-    // {
-    //     // int healthBarValue = combatant.hp.GetCurrentValue() - amount;
-    //     // int recoveryBarValue = combatant.hp.GetCurrentValue();
-    //     // // healBar.SetCurrentValue(healBarValue);
-    //     // healthBar.SetRecovery(recoveryBarValue);
-    //     // if(combatant is PlayableCombatant)
-    //     //     battlePartyPanel.UpdateStatusBar(StatusBarType.HPRecovery, recoveryBarValue);
-    //     //     // onChangeRecovery.Raise(combatant.gameObject, recoveryBarValue);
-
-    //     // while(healthBarValue < recoveryBarValue) 
-    //     // {
-    //     //     yield return new WaitForSeconds(barTickSpeed);
-    //     //     healthBarValue = healthBarValue++;
-    //     //     // healthBar.SetCurrentValue(healthBarValue);
-    //     //     healthBar.SetHealth(healthBarValue);
-    //     //     if(combatant is PlayableCombatant)
-    //     //         battlePartyPanel.UpdateStatusBar(StatusBarType.HP, recoveryBarValue);
-    //     // }
-    //     // healBar.SetRecovery(0);
-    // }
 }

@@ -4,37 +4,33 @@ using UnityEngine;
 
 public class EnemyCombatant : Combatant
 {
-    public Tile preferredTile;
     public List<Action> lastActions = new List<Action>();
-    public bool isBoss = false;
-    public bool optimizeTargetsInAOE = false;
+    public bool IsBoss { get; private set; } = false;
+    [field: SerializeField] public List<WeightedAction> WeightedActions { get; private set; } = new List<WeightedAction>();
 
-    public override void Awake()
+    protected override void Awake()
     {
         base.Awake();
-        combatantType = CombatantType.Enemy;   
-        defaultDirection = new Vector2(-1, 0);
-        SetDirection(defaultDirection);
+        CombatantType = CombatantType.Enemy;   
     }
 
-    public override void SetCharacterData(CharacterInfo characterInfo)
+    public override void SetCharacterData(CharacterInfo characterInfo, PlayableCharacterID linkedCharacterID = PlayableCharacterID.None)
     {
         base.SetCharacterData(characterInfo);
-
-        battleStatDict.Add(BattleStatType.Attack, new Stat(characterInfo.statDict[StatType.Attack].GetValue() + level + 5));
-        battleStatDict.Add(BattleStatType.Defense, new Stat(characterInfo.statDict[StatType.Defense].GetValue() + level + 5));
-
-        battleStatDict.Add(BattleStatType.MagicAttack, new Stat(characterInfo.statDict[StatType.MagicAttack].GetValue() + level + 5));
-        battleStatDict.Add(BattleStatType.MagicDefense, new Stat(characterInfo.statDict[StatType.MagicDefense].GetValue() + level + 5));
-        
-        isLoaded = true;
+        EnemyInfo enemyInfo = (EnemyInfo)characterInfo;
+        WeightedActions = enemyInfo.WeightedActions;
     }
 
-    public override IEnumerator KOCo()
+    public override void OnKO()
     {
-        animator.SetTrigger("KO");
-        yield return new WaitForSeconds(0.5f);
-        tile.UnassignOccupier(this);
-        Destroy(this.gameObject);
+        base.OnKO();
+        Tile.UnassignOccupier();
+        StartCoroutine(DestroyEnemyCo());
+    }
+
+    private IEnumerator DestroyEnemyCo()
+    {
+        yield return wait1;
+        Destroy(gameObject);
     }
 }

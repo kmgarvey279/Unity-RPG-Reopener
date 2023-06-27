@@ -12,40 +12,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
   m_Name: Wait
   m_EditorClassIdentifier: 
-  actionName: 
-  actionType: 5
-  icon: {fileID: 0}
-  description: 
-  mpCost: 0
-  apCost: 1
+  healthEffectType: 3
   power: 0
-  hitCount: 1
-  offensiveStat: 8
-  defensiveStat: 8
-  elementalProperty: 0
-  statusEffectPower: 0
-  statusEffectChance: 0
-  statusEffectSO: {fileID: 0}
-  knockback: 0
-  additionalEffects: []
-  aoes: []
-  isFixedAOE: 0
-  canFlip: 0
-  isMelee: 0
-  isFixedTarget: 0
-  targetFriendly: 1
-  hasCastAnimation: 0
-  castAnimatorTrigger: 
-  castGraphicPrefab: {fileID: 0}
-  castAnimationDuration: 0.4
-  castGraphicDelay: 0.15
-  hasProjectileAnimation: 0
-  projectileAnimatorTrigger: 
-  projectileGraphicPrefab: {fileID: 0}
-  projectileGraphicDelay: 0.15
-  effectAnimatorTrigger: 
-  effectGraphicPrefab: {fileID: 0}
-  effectAnimationDuration: 0.4
-  effectGraphicDelay: 0.15
-  tileEffectGraphicPrefab: {fileID: 0}
-  tileEffectAnimationDuration: 0.4
+  primaryTargetBonus: 0
+  offensiveStat: 0
+  defensiveStat: 2
+  <ActionName>k__BackingField: Unable to act!
+  <Icon>k__BackingField: {fileID: 0}
+  <Description>k__BackingField: 
+  <ActionType>k__BackingField: 4
+  <AttackType>k__BackingField: 3
+  <RecoveryTimeModifier>k__BackingField: 0
+  <ActionCostType>k__BackingField: 0
+  <Cost>k__BackingField: 0
+  <ElementalProperty>k__BackingField: 0
+  <Pierce>k__BackingField: 0
+  Knockback: 0
+  <HasCastTime>k__BackingField: 0
+  <HitCount>k__BackingField: 0
+  <HitRate>k__BackingField: 100
+  <GuaranteedHit>k__BackingField: 0
+  <CritRateMultiplier>k__BackingField: 1
+  <TargetingType>k__BackingField: 2
+  <AOEType>k__BackingField: 0
+  <HitRandomTarget>k__BackingField: 0
+  <ActionModifiers>k__BackingField: []
+  <TriggerableBattleEffects>k__BackingField: []
+  <ExecutePosition>k__BackingField: 0
+  <ActionAnimations>k__BackingField: []

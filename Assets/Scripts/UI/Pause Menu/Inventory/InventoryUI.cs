@@ -6,41 +6,40 @@ using TMPro;
 
 public class InventoryUI : MonoBehaviour
 {
-    public ItemMasterList itemMasterList;
-    public Inventory inventory; 
-    public GameObject slotPrefab;
-    public List<InventorySlot> slots = new List<InventorySlot>();
-    public TextMeshProUGUI itemText;
+    [SerializeField] private Inventory inventory; 
+    [SerializeField] private GameObject slotPrefab;
+    private List<InventorySlot> slots = new List<InventorySlot>();
+    [SerializeField] private TextMeshProUGUI itemText;
 
-    public virtual void Start()
+    public void Start()
     {   
         //for each item in inventory
-        foreach(KeyValuePair<string,int> item in inventory.itemDict)
+        foreach(InventoryItem inventoryItem in inventory.GetAll())
         {
-            CreateSlot(itemMasterList.masterDict[item.Key], item.Value);
+            CreateSlot(inventoryItem.Item, inventoryItem.Count);
         }
         EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(slots[0].gameObject);
-        itemText.text = slots[0].item.itemDescription;
+        itemText.text = slots[0].Item.ItemDescription;
     }
 
-    public void CreateSlot(ItemObject itemObject, int numHeld)
+    public void CreateSlot(Item item, int numHeld)
     {
         //create a new slot gameobject
         GameObject newSlot = Instantiate(slotPrefab, Vector3.zero, Quaternion.identity, transform);
         InventorySlot inventorySlot = newSlot.GetComponent<InventorySlot>();
         slots.Add(inventorySlot);
         //assign the item to it
-        inventorySlot.AssignSlot(itemObject, numHeld);
+        inventorySlot.AssignSlot(item, numHeld);
     }
 
-    public virtual void FilterSlots(int enumIndex)
+    public void FilterSlots(int enumIndex)
     {
         ClearFilter();
         ItemType itemType = (ItemType)enumIndex;
         foreach (InventorySlot slot in slots)
         {
-            if(slot.item.itemType != itemType)
+            if(slot.Item.ItemType != itemType)
             {
                 slot.gameObject.SetActive(false);
             }

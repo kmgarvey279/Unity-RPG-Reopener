@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 544ea9a005b3daa488ed9dee77280a84, type: 3}
+  m_Name: Explosion
+  m_EditorClassIdentifier: 
+  damageEffects:
+  - successRate: 100
+    conditionList: []
+    targetSelf: 0
+    power: 10
+    offensiveStat: 2
+  percentDamageEffects: []
+  healEffects: []
+  percentHealEffects: []
+  removeStatusEffects: []
+  addStatusEffects: []
+  turnModifierEffects: []
+  customEffects: []
+  <ActionAnimations>k__BackingField:
+  - <AnimationSpawnPosition>k__BackingField: 3
+    <AnimatorTrigger>k__BackingField: 
+    <SpawnForEachTarget>k__BackingField: 0
+    <Repeat>k__BackingField: 0
+    <EffectPrefab>k__BackingField: {fileID: 7816962457026261443, guid: 8b57e975f2ff9fe4ca6873371a6bb4e7,
+      type: 3}
+  <BattleEventTrigger>k__BackingField: 8
+  <RemoveOnApply>k__BackingField: 0
+  <BattleEventTargeting>k__BackingField: 2

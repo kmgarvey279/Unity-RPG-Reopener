@@ -5,8 +5,6 @@ using UnityEngine;
 [System.Serializable]
 public class WeightedAction
 {
-    public Action action;
-    [SerializeField] private WeightType weightType;
     [System.Serializable]
     private enum WeightType
     {
@@ -24,9 +22,18 @@ public class WeightedAction
         {WeightType.High, 40},
         {WeightType.VeryHigh, 50}
     };
+
+    [SerializeField] private WeightType weightType;
+    [field: SerializeField] public Action Action { private set; get; }
+    
     public int BaseWeight()
     {
         return weightDict[weightType];
+    }
+
+    public void SetAction(Action action)
+    {
+        Action = action;
     }
 }
 
@@ -34,10 +41,5 @@ public class WeightedAction
 public class EnemyInfo : CharacterInfo
 {
     [Header("Skills")]
-    public List<WeightedAction> weightedActions = new List<WeightedAction>();
-
-    protected override void OnEnable()
-    {
-        base.OnEnable();
-    }
+    [field: SerializeField] public List<WeightedAction> WeightedActions = new List<WeightedAction>();
 }

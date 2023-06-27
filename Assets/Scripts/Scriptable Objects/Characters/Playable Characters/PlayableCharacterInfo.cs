@@ -9,84 +9,68 @@ public enum PlayableCharacterID
     Shad,
     Blaine,
     Lucy,
-    Oshi
+    Oshi,
+    None
 }
 
 [CreateAssetMenu(fileName = "New Playable Character Info", menuName = "Character Info/Playable")]
 public class PlayableCharacterInfo : CharacterInfo
 {
-    [Header("ID")]
-    public PlayableCharacterID playableCharacterID;
-    [Header("Skills")]
-    public List<Action> skills;
-    [Header("Equipment")]
-    [SerializeField] private EquipmentObject weapon;
-    [SerializeField] private EquipmentObject armor;
-    [SerializeField] private EquipmentObject accessory;
-    public Dictionary<EquipmentType, EquipmentObject> equipmentDict = new Dictionary<EquipmentType, EquipmentObject>()
-    {
-        {EquipmentType.Weapon, null},
-        {EquipmentType.Armor, null},
-        {EquipmentType.Accessory, null}
-    };    
-    
+    [field: SerializeField] private EquipmentItem weapon;
+    [field: SerializeField] private EquipmentItem armor;
+    [field: SerializeField] private EquipmentItem accessory;
+    [field: SerializeField] public PlayableCharacterID PlayableCharacterID { get; private set; }
+    public Dictionary<EquipmentType, EquipmentItem> Equipment { get; private set; }
+    [field: SerializeField] public Action Attack { get; private set; }
+    [field: SerializeField] public Action Defend { get; private set; }
+    [field: SerializeField] public List<Action> Skills { get; private set; }
+
     protected override void OnEnable()
     {
         base.OnEnable();
-
-        if(weapon != null)
-            ChangeEquipment(weapon);
-        if(armor != null)
-            ChangeEquipment(armor);
-        if(accessory != null)
-            ChangeEquipment(accessory);
+        Equipment = new Dictionary<EquipmentType, EquipmentItem>();
+        foreach (EquipmentType equipmentType in System.Enum.GetValues(typeof(EquipmentType)))
+        {
+            Equipment.Add(equipmentType, null);
+        }
+        if(weapon)
+            ChangeEquipment(EquipmentType.Weapon, weapon);
+        if(armor)
+            ChangeEquipment(EquipmentType.Armor, armor);
+        if (accessory)
+            ChangeEquipment(EquipmentType.Accessory, accessory);
     }
 
-    public void ChangeEquipment(EquipmentObject newEquipment)
+    public void ChangeEquipment(EquipmentType equipmentType, EquipmentItem newEquipment)
     {
-        EquipmentType equipmentType = newEquipment.equipmentType;
+        //return if equipment is wrong type
+        if(newEquipment.EquipmentType != equipmentType || (newEquipment.CharacterExclusive && !newEquipment.ExclusiveCharacters.Contains(PlayableCharacterID))) 
+        {
+            return;
+        }
         //update stat modifiers
-        if(equipmentDict[equipmentType] != null)
+        if(Equipment[equipmentType] != null)
         {
-            //clear stat modifiers
-            foreach(KeyValuePair<StatType, Stat> statEntry in statDict)
-            { 
-                statEntry.Value.RemoveAdditive(equipmentDict[equipmentType].modifierDict[statEntry.Key]);
-            }
-            //clear elemental modifiers
-            foreach(KeyValuePair<ElementalProperty, ElementalResistance> resistanceEntry in resistDict)
-            { 
-                resistanceEntry.Value.resistance += equipmentDict[equipmentType].resistDict[resistanceEntry.Key];
-            }
-            equipmentDict.Remove(equipmentType);
-        }
-        foreach(KeyValuePair<StatType, Stat> statEntry in statDict)
-        { 
-            statEntry.Value.AddAdditive(newEquipment.modifierDict[statEntry.Key]);
-        }            
-        foreach(KeyValuePair<ElementalProperty, ElementalResistance> resistanceEntry in resistDict)
-        { 
-            resistanceEntry.Value.resistance += newEquipment.resistDict[resistanceEntry.Key];
-        }
-        equipmentDict[equipmentType] = newEquipment;
-    }
-
-    public override void OnDisable()
-    {
-        base.OnDisable();
-        foreach(KeyValuePair<EquipmentType, EquipmentObject> equipmentEntry in equipmentDict)
-        {
-            if(equipmentEntry.Value != null)
+            //clear modifiers from old equipment
+            foreach(KeyValuePair<StatType, int> modifier in Equipment[equipmentType].StatModifiers)
             {
-                foreach(KeyValuePair<StatType, Stat> statEntry in statDict)
-                { 
-                    statEntry.Value.RemoveAdditive(equipmentEntry.Value.modifierDict[statEntry.Key]);
-                }
-                foreach(KeyValuePair<ElementalProperty, ElementalResistance> resistanceEntry in resistDict)
-                { 
-                    resistanceEntry.Value.resistance -= equipmentEntry.Value.resistDict[resistanceEntry.Key];
-                }
+                StatModifiers[modifier.Key].Remove(modifier.Value);
             }
-        }  
+            foreach(KeyValuePair<ElementalProperty, int> modifier in Equipment[equipmentType].ResistanceModifiers)
+            {
+                ResistanceModifiers[modifier.Key].Remove(modifier.Value);
+            }
+        }
+        //add equipment to dictionary
+        Equipment[equipmentType] = newEquipment;
+        //add modifiers from new equipment
+        foreach (KeyValuePair<StatType, int> modifier in Equipment[equipmentType].StatModifiers)
+        {
+            StatModifiers[modifier.Key].Add(modifier.Value);
+        }            
+        foreach(KeyValuePair<ElementalProperty,int> modifier in Equipment[equipmentType].ResistanceModifiers)
+        {
+            ResistanceModifiers[modifier.Key].Add(modifier.Value);
+        }
     }
 }

@@ -4,30 +4,34 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
+    [Header("Dependencies")]
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private BattleManager battleManager;
+    [Header("Prefabs")]
+    [SerializeField] private GameObject enemyPrefab;
     [Header("Spawn Positions")]
-    public List<Tile> spawnPositions = new List<Tile>();
+    [SerializeField] private List<Tile> spawnPositions = new List<Tile>();
 
-    public Combatant SpawnEnemy(GameObject enemyPrefab, int positionNum)
+    public EnemyCombatant SpawnEnemy(EnemyInfo enemyInfo, int positionNum)
     {
-        if(positionNum <= spawnPositions.Count)
+        if(positionNum < spawnPositions.Count)
         {
-            Tile tile = spawnPositions[positionNum - 1];
+            Tile tile = spawnPositions[positionNum];
             GameObject enemyObject = Instantiate(enemyPrefab, tile.transform.position, Quaternion.identity);
-            enemyObject.transform.parent = gameObject.transform;
-            EnemyCombatant enemyCombatant = enemyObject.GetComponent<EnemyCombatant>();;
-            //assign name + letter
-            enemyObject.name = enemyCombatant.characterName + positionNum;
-            //set data
-            enemyCombatant.SetCharacterData(enemyCombatant.characterInfo);
-            //set tile
-            tile.AssignOccupier(enemyCombatant);
-            enemyCombatant.tile = tile;
-            enemyCombatant.preferredTile = tile;
-
-            //set camera for ui display
-            enemyCombatant.targetSelect.canvas.worldCamera = mainCamera;
-            
+            enemyObject.transform.parent = transform;
+            EnemyCombatant enemyCombatant = enemyObject.GetComponent<EnemyCombatant>();
+            if (enemyCombatant)
+            {
+                //set data
+                enemyCombatant.SetCharacterData(enemyInfo);
+                //set tile
+                tile.AssignOccupier(enemyCombatant);
+                enemyCombatant.SetTile(tile);
+                enemyCombatant.SetBattleManager(battleManager);
+                //set camera for ui display
+                enemyCombatant.SetUICamera(mainCamera);
+                return enemyCombatant;
+            }
             return enemyCombatant;
         }
         return null;

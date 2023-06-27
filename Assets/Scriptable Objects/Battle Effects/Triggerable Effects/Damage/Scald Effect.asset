@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3729e2f50bf7e804ba566480488c98c8, type: 3}
+  m_Name: Scald Effect
+  m_EditorClassIdentifier: 
+  battleConditions:
+  - <Conditional>k__BackingField: 0
+    <IsNot>k__BackingField: 0
+    <BattleCondition>k__BackingField: {fileID: 11400000, guid: 7d8b3efe29c2623449d69380ec06390f,
+      type: 2}
+  - <Conditional>k__BackingField: 1
+    <IsNot>k__BackingField: 0
+    <BattleCondition>k__BackingField: {fileID: 11400000, guid: cc2b43a8124234d44960caf51bc0529a,
+      type: 2}
+  - <Conditional>k__BackingField: 2
+    <IsNot>k__BackingField: 0
+    <BattleCondition>k__BackingField: {fileID: 11400000, guid: 9777b40a4ee9d4947988675aab4f894f,
+      type: 2}
+  - <Conditional>k__BackingField: 1
+    <IsNot>k__BackingField: 0
+    <BattleCondition>k__BackingField: {fileID: 11400000, guid: 9e4c5843532b01d48a80dd454995163d,
+      type: 2}
+  triggerRate: 100
+  triggerRateModifiers: []
+  <EffectName>k__BackingField: Scald
+  <DisplayName>k__BackingField: 1
+  <BattleEventType>k__BackingField: 1
+  <TargetSelf>k__BackingField: 1
+  <MultiTargetMultiplier>k__BackingField: 0
+  <Priority>k__BackingField: 0
+  <ActionAnimations>k__BackingField:
+  - <AnimationSpawnPosition>k__BackingField: 4
+    <AnimatorTrigger>k__BackingField: 
+    <SpawnForEachTarget>k__BackingField: 1
+    <Repeat>k__BackingField: 0
+    <EffectPrefab>k__BackingField: {fileID: 9080087516260223380, guid: 19561b8b8ee14da4fa224bfe5c3c8c74,
+      type: 3}
+  <AdditionalEffects>k__BackingField:
+  - {fileID: 11400000, guid: e7b117deb9a1e8f45964b50550e752e4, type: 2}
+  - {fileID: 11400000, guid: 68d12df1d0194a54584a1153e15aaf38, type: 2}
+  isHeal: 0
+  healthEffectType: 0
+  power: 10
+  offensiveStat: 1
+  useCurrentHP: 0

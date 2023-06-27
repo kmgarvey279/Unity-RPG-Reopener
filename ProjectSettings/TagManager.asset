@@ -43,8 +43,14 @@ TagManager:
   - 
   - 
   m_SortingLayers:
-  - name: Ground
+  - name: Environment 1
     uniqueID: 3939006881
+    locked: 0
+  - name: Environment 2
+    uniqueID: 4161908167
+    locked: 0
+  - name: Environment Filter
+    uniqueID: 1744955253
     locked: 0
   - name: Default
     uniqueID: 0
@@ -54,4 +60,7 @@ TagManager:
     locked: 0
   - name: UI
     uniqueID: 1666048073
+    locked: 0
+  - name: UI Filter
+    uniqueID: 2108758031
     locked: 0

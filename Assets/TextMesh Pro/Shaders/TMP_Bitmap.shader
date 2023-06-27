@@ -13,7 +13,7 @@ Properties {
 	_ClipRect("Clip Rect", vector) = (-32767, -32767, 32767, 32767)
 
 	_StencilComp("Stencil Comparison", Float) = 8
-	_Stencil("Stencil ID", Float) = 0
+	_Stencil("Stencil ID", Float) = 5
 	_StencilOp("Stencil Operation", Float) = 0
 	_StencilWriteMask("Stencil Write Mask", Float) = 255
 	_StencilReadMask("Stencil Read Mask", Float) = 255

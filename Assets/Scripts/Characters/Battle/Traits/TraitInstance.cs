@@ -4,24 +4,16 @@ using UnityEngine;
 
 public class TraitInstance
 {
-    public Combatant combatant;
-    public Trait trait;
-    public int useCount;
-    public TraitInstance(Combatant combatant, Trait trait)
+    public Trait Trait { private set; get; }
+    public bool IsDisabled { private set; get; } = false;
+
+    public TraitInstance(Trait trait)
     {
-        this.combatant = combatant;
-        this.trait = trait;
+        Trait = trait;
     }
 
-    public void TriggerEffects()
+    public void ToggleDisabled(bool isDisabled)
     {
-        foreach(TriggerableSubEffect triggerableSubEffect in trait.triggerableSubEffects)
-        {
-            float roll = Random.Range(1, 100);
-            if(roll <= triggerableSubEffect.chance)
-            {
-                triggerableSubEffect.subEffect.TriggerEffect(combatant);
-            }
-        }
+        IsDisabled = isDisabled;
     }
 }

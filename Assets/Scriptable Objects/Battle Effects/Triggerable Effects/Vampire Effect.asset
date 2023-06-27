@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3729e2f50bf7e804ba566480488c98c8, type: 3}
+  m_Name: Vampire Effect
+  m_EditorClassIdentifier: 
+  battleConditions:
+  - <Conditional>k__BackingField: 0
+    <IsNot>k__BackingField: 0
+    <BattleCondition>k__BackingField: {fileID: 11400000, guid: de35d898a6ac5b84bb6b2f8cdf102b02,
+      type: 2}
+  triggerRate: 100
+  triggerRateModifiers: []
+  <EffectName>k__BackingField: Vampire
+  <DisplayName>k__BackingField: 1
+  <BattleEventType>k__BackingField: 0
+  <TriggerFrequency>k__BackingField: 1
+  <TargetSelf>k__BackingField: 1
+  <MultiTargetMultiplier>k__BackingField: 0
+  <Priority>k__BackingField: 1
+  <ActionAnimations>k__BackingField:
+  - <AnimationSpawnPosition>k__BackingField: 3
+    <AnimatorTrigger>k__BackingField: 
+    <SpawnForEachTarget>k__BackingField: 0
+    <Repeat>k__BackingField: 0
+    <EffectPrefab>k__BackingField: {fileID: 9080087516260223380, guid: d54f66c98898c7e42991b859b29c1c77,
+      type: 3}
+  <AdditionalEffects>k__BackingField: []
+  isHeal: 1
+  healthEffectType: 1
+  power: 0.2
+  offensiveStat: 0
+  useCurrentHP: 0

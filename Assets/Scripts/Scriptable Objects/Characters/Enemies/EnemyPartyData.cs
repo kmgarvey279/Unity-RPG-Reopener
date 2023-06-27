@@ -5,5 +5,5 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Enemy Party Data", menuName = "EnemyPartyData")]
 public class EnemyPartyData : ScriptableObject
 {
-    public List<GameObject> enemyPrefabs;
+    [field: SerializeField] public List<EnemyInfo> Enemies { get; private set; } = new List<EnemyInfo>(6);
 }

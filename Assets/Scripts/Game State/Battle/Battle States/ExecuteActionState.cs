@@ -5,13 +5,17 @@ using System.Linq;
 
 [System.Serializable]
 public class ExecuteActionState : BattleState
-{   
-    [Header("Events (Signals)")]
-    // [SerializeField] private SignalSenderGO onCameraZoomIn;
+{
+    [SerializeField] private ActionPopup actionPopup;
+    [SerializeField] private SignalSender onInterventionEnd;
+    [SerializeField] private Inventory inventory;
     private ActionEvent actionEventToExecute;
-    private List<ActionEvent> targetQueue = new List<ActionEvent>();
-    // private List<ActionEvent> followupQueue = new List<ActionEvent>();
-    private List<Combatant> counterQueue = new List<Combatant>();
+    //track events
+    [SerializeField] private BattleEventQueue battleEventQueue;
+    private bool actorDidMove;
+    private WaitForSeconds waitZeroPointTwoFive = new WaitForSeconds(0.25f);
+    private WaitForSeconds waitZeroPointFive = new WaitForSeconds(0.5f);
+    [SerializeField] private StatusEffect castingStatus;
 
     private void Start()
     {
@@ -21,23 +25,29 @@ public class ExecuteActionState : BattleState
     public override void OnEnter()
     {
         base.OnEnter();
-        //clear counter queue if it didn't fully clear last turn
-        if(counterQueue.Count > 0)
-            counterQueue.Clear();
-
         //copy current action event
-        actionEventToExecute = turnData.actionEvent.Clone();
-
-        //apply costs of action
-        battleManager.ApplyAction();
-        
-        // onCameraZoomIn.Raise(turnData.targetedTile.gameObject);
-        StartCoroutine(ExecuteAction());
+        actionEventToExecute = new ActionEvent(battleTimeline.CurrentTurn.Actor, battleTimeline.CurrentTurn.Action, battleTimeline.CurrentTurn.Targets);
+        if(actionEventToExecute.Action.HasCastTime && battleTimeline.CurrentTurn.TurnType != TurnType.Intervention && battleTimeline.CurrentTurn.TurnType != TurnType.Cast)
+        {
+            actionEventToExecute.Actor.AddStatusEffect(castingStatus);
+            StartCoroutine(EndActionPhase());
+        }
+        else
+        {
+            if (battleTimeline.CurrentTurn.TurnType == TurnType.Cast)
+            {
+                battleTimeline.CurrentTurn.Actor.RemoveStatusEffect(castingStatus);
+            }
+            StartCoroutine(PreparationPhase());
+        }
     }
 
     public override void StateUpdate()
     {
-        
+        if (Input.GetButtonDown("Intervention"))
+        {
+            battleTimeline.AddTurn(TurnType.Intervention, battleManager.GetCombatants(CombatantType.Player)[0]);
+        }
     }
 
     public override void StateFixedUpdate()
@@ -50,277 +60,220 @@ public class ExecuteActionState : BattleState
         base.OnExit();
     }
 
-    public IEnumerator ExecuteAction()
+    public IEnumerator PreparationPhase()
     {
-        Debug.Log(actionEventToExecute.actor.characterName + " used " + actionEventToExecute.action.actionName);
+        //display name of action
+        actionPopup.Display(actionEventToExecute.Action.ActionName);
+        //move to execute position
+        actorDidMove = false;
+        if (actionEventToExecute.Action.ExecutePosition == ExecutePosition.TargetRow)
+        {
+            actorDidMove = true;
+            yield return StartCoroutine(actionEventToExecute.Actor.Move(gridManager.CenterTiles[actionEventToExecute.Actor.CombatantType][actionEventToExecute.Targets[0].Tile.Y].transform, "Idle", 3.5f));
+        }
+        else if (actionEventToExecute.Action.ExecutePosition == ExecutePosition.FrontCenter)
+        {
+            actorDidMove = true;
+            yield return StartCoroutine(actionEventToExecute.Actor.Move(gridManager.CenterTiles[actionEventToExecute.Actor.CombatantType][1].transform, "Idle", 3.5f));
+        }
+        
+        //"unpause" time
+        onInterventionEnd.Raise();
 
-        //move into melee range
-        if(actionEventToExecute.action.isMelee)
-        {
-            actionEventToExecute.actor.Move(gridManager.centerPositions[actionEventToExecute.primaryTarget.tile.y][actionEventToExecute.actor.combatantType], "Idle", 2f);
-            yield return new WaitUntil(() => !actionEventToExecute.actor.moving);
-        }
-
-        //apply all of the actor's modifiers to action event
-        Combatant actor = actionEventToExecute.actor;
-        foreach(ActionEventModifier eventModifier in actor.actionEventModifiers[EventTriggerType.OnAct])
-        {
-            actionEventToExecute = eventModifier.ApplyModifiers(actionEventToExecute, actor);
-            // if(eventModifier.removeOnApply)
-            // {
-            //     actor.actionEventModifiers[EventTriggerType.OnAct].Remove(eventModifier);
-            // }
-        }
-
-        //if targeting is random, pick a random target from list of potential targets
-        if(actionEventToExecute.action.hitRandomTarget)
-        {
-            List<Combatant> potentialTargets = battleManager.GetCombatants(actionEventToExecute.GetCombatantType());
-            int roll = Mathf.FloorToInt(Random.Range(0, potentialTargets.Count + 1));
-            actionEventToExecute.primaryTarget = potentialTargets[roll];
-            actionEventToExecute.targets = new List<Combatant>(){potentialTargets[roll]};
-        }
-
-        //apply event modifiers for all allies (ex: block incoming attack)
-        List<Combatant> allyCombatants = battleManager.GetCombatants(actionEventToExecute.combatantType);
-        //shuffle
-        for(int i = 0; i < allyCombatants.Count; i++) 
-        {
-            Combatant temp = allyCombatants[i];
-            int randomIndex = Random.Range(i, allyCombatants.Count);
-            allyCombatants[i] = allyCombatants[randomIndex];
-            allyCombatants[randomIndex] = temp;
-        }
-        foreach(Combatant ally in allyCombatants)
-        {
-            foreach(ActionEventModifier eventModifier in ally.actionEventModifiers[EventTriggerType.OnPartyTargeted])
-            {
-                actionEventToExecute = eventModifier.ApplyModifiers(actionEventToExecute, ally);
-                // if(eventModifier.removeOnApply)
-                // {
-                //     ally.actionEventModifiers[EventTriggerType.OnAllyTargeted].Remove(eventModifier);
-                // }
-            }
-        }
-
-        foreach(Combatant target in actionEventToExecute.targets)
-        {
-            //split action into multiple subactions, each w/ 1 target & apply target modifiers
-            ActionEvent tempActionEvent = actionEventToExecute.Clone();
-            tempActionEvent.targets = new List<Combatant>(){target};
-            //apply event modifiers for target
-            foreach(ActionEventModifier eventModifier in target.actionEventModifiers[EventTriggerType.OnTargeted])
-            {
-                tempActionEvent = eventModifier.ApplyModifiers(tempActionEvent, target);
-                // if(eventModifier.removeOnApply)
-                // {
-                //     target.actionEventModifiers[EventTriggerType.OnTargeted].Remove(eventModifier);
-                // }
-            }
-            targetQueue.Add(tempActionEvent);
-        }
         //start action
-        StartCoroutine(CastAnimationPhase());
+        StartCoroutine(ExecuteActionPhase());
     }
 
-
-    //trigger action animation + visual effect on user
-    public IEnumerator CastAnimationPhase()
+    private IEnumerator ExecuteActionPhase()
     {
-        if(actionEventToExecute.action.hasCastAnimation)
+        List<ActionSubevent> actionSubevents = new List<ActionSubevent>();
+        for (int i = 0; i < actionEventToExecute.Targets.Count; i++)
         {
-            Debug.Log("Cast Phase");
-            //cast animation
-            if(actionEventToExecute.action.castAnimatorTrigger != "")
+            ActionSubevent actionSubevent = new ActionSubevent(actionEventToExecute.Action, actionEventToExecute.Actor, actionEventToExecute.Targets[i], i);
+            actionSubevents.Add(actionSubevent);
+        }
+        int hitCount = actionSubevents[0].Action.HitCount;
+        //execute max number of hits
+        for (int i = 0; i < hitCount; i++)
+        {
+            List<ActionSubevent> actionSubeventsToExecute = actionSubevents;
+
+            //if targeting is random, pick a random target from list of potential targets
+            if (actionEventToExecute.Action.HitRandomTarget)
             {
-                actionEventToExecute.actor.animator.SetTrigger(actionEventToExecute.action.castAnimatorTrigger);
+                int roll = Mathf.FloorToInt(Random.Range(0, actionSubeventsToExecute.Count));
+                actionSubeventsToExecute = new List<ActionSubevent>() { actionSubeventsToExecute[roll] };
             }
-            //spawn casting effect
-            if(actionEventToExecute.action.castGraphicPrefab != null)
+            //otherwise, apply to all targets (if hitcount >= this hit)
+            foreach (ActionAnimationData animationData in actionEventToExecute.Action.ActionAnimations)
             {
-                yield return new WaitForSeconds(actionEventToExecute.action.castGraphicDelay); 
-                Vector3 spawnPosition = actionEventToExecute.actor.transform.position;
-                GameObject graphicObject = Instantiate(actionEventToExecute.action.castGraphicPrefab, spawnPosition, Quaternion.identity);
-            }
-            yield return new WaitForSeconds(actionEventToExecute.action.castAnimationDuration);
-            StartCoroutine(ActionAnimationPhase()); 
-        }
-        else
-        {
-            yield return null;
-            StartCoroutine(ActionAnimationPhase()); 
-        }
-    }
-
-    private IEnumerator ActionAnimationPhase()
-    {
-        Debug.Log("starting animation");
-        //user animation
-        if(actionEventToExecute.action.executeAnimatorTrigger != "")
-        {
-            actionEventToExecute.actor.animator.SetTrigger(actionEventToExecute.action.executeAnimatorTrigger);
-        }
-        yield return new WaitForSeconds(actionEventToExecute.action.effectGraphicDelay);
-        StartCoroutine(ProjectileAnimationPhase());         
-    }
-
-    private IEnumerator ProjectileAnimationPhase()
-    {
-        Debug.Log("Projectile Phase");
-        if(actionEventToExecute.action.hasProjectileAnimation && actionEventToExecute.action.projectileGraphicPrefab != null)
-        {
-            Vector3 startPosition = new Vector3(actionEventToExecute.actor.tile.transform.position.x + (actionEventToExecute.actor.GetDirection().x * 0.1f), actionEventToExecute.actor.transform.position.y + (actionEventToExecute.actor.GetDirection().y * 0.1f));
-            GameObject projectileObject = Instantiate(actionEventToExecute.action.projectileGraphicPrefab, startPosition, Quaternion.identity);
-            Projectile projectile = projectileObject.GetComponent<Projectile>();
-            projectile.Move(actionEventToExecute.primaryTarget.tile.transform.position);
-            
-            yield return new WaitUntil(() => projectile.reachedTarget);
-            Destroy(projectileObject);
-        }
-        yield return null;
-        StartCoroutine(EffectAnimationPhase());
-    }
-
-    private IEnumerator EffectAnimationPhase()
-    {
-        Debug.Log("Effect Phase");
-        //spawn visual effect
-        if(actionEventToExecute.action.effectGraphicPrefab)
-        {
-            Vector2 spawnPosition = turnData.actionEvent.primaryTarget.transform.position; 
-            if(actionEventToExecute.action.aoeType == AOEType.All)
-            {
-                spawnPosition = gridManager.GetTileArray(actionEventToExecute.combatantType)[1, 1].transform.position;
-            }
-            GameObject graphicObject = Instantiate(actionEventToExecute.action.effectGraphicPrefab, spawnPosition, actionEventToExecute.action.effectGraphicPrefab.transform.rotation);
-            //destroy visual effect
-            yield return new WaitForSeconds(actionEventToExecute.action.effectAnimationDuration);
-            Destroy(graphicObject);
-        }
-        else 
-        {
-            yield return new WaitForSeconds(actionEventToExecute.action.effectAnimationDuration);
-        }
-        StartCoroutine(ApplyActionEffects());
-    }
-
-    private IEnumerator ApplyActionEffects()
-    {
-        foreach(ActionEvent actionEvent in targetQueue)
-        {
-            actionEvent.TriggerEvent();
-            // foreach(ActionEffectTrigger actionEffectTrigger in actionEvent.action.actionEffectTriggers)
-            // {
-            //     if(actionEffectTrigger.actionEffect is ActionEffectHealth)
-            // {
-            // if(actionEvent.action.actionEffectTriggers == ActionType.Attack && !counterQueue.Contains(actionEvent.targets[0]))
-            // {
-            //     counterQueue.Add(actionEvent.targets[0]);
-            // }
-        }
-        actionEventToExecute.hitCounter++;
-
-        yield return new WaitForSeconds(0.5f);
-
-        if(actionEventToExecute.hitCounter < actionEventToExecute.action.hitCount)
-        {
-            Debug.Log("more hits remain");
-            StartCoroutine(ProjectileAnimationPhase());
-        }
-        else
-        {
-            Debug.Log("all hits complete");
-            StartCoroutine(ResolveActionPhase());
-        }
-    }
-
-    private IEnumerator ResolveActionPhase()
-    {
-        if(actionEventToExecute.action.isMelee)
-        {
-            actionEventToExecute.actor.Move(actionEventToExecute.actor.tile.transform, "Idle");
-        }
-
-        //complete animations
-        List<Combatant> combatants = battleManager.GetCombatants(CombatantType.Player);
-        combatants.AddRange(battleManager.GetCombatants(CombatantType.Enemy));
-        foreach(Combatant combatant in combatants)
-        {
-            combatant.ReturnToDefaultAnimation(); 
-            combatant.ResolveHealthChange();
-        }
-        yield return new WaitForSeconds(0.5f);
-
-        //check targets for ko
-        bool actorKO = false;
-        for(int i = combatants.Count - 1; i > 0; i--)
-        {
-            Combatant thisCombatant = combatants[i];
-            if(thisCombatant.hp.GetCurrentValue() <= 0)
-            {
-                battleManager.KOCombatant(thisCombatant);
-                combatants.RemoveAt(i);
-                //remove combatant from counter queue
-                for(int j = counterQueue.Count - 1; i > 0; i--)
+                //skip non-repeating animations (ex: spell casts) or skills w/ different multiple hit animations
+                if (animationData.OnlyPlayOnXHit && animationData.XHit != i)
                 {
-                    if(counterQueue[j] == thisCombatant)
+                    continue;
+                }
+
+                //trigger actor sprite animation
+                if (animationData.BattleAnimatorTrigger != BattleAnimatorTrigger.None)
+                {
+                    if (animationData.BattleAnimatorTrigger == BattleAnimatorTrigger.Custom)
                     {
-                        counterQueue.RemoveAt(j);
+                        actionEventToExecute.Actor.TriggerAnimation(animationData.CustomAnimatorTrigger, false);
+                    }
+                    else
+                    {
+                        actionEventToExecute.Actor.TriggerAnimation(animationData.BattleAnimatorTrigger.ToString(), false);
+                    }
+                    yield return waitZeroPointTwoFive;
+                }
+
+                //spawn animation visual effects
+                if (animationData.VFXPrefab != null)
+                {
+                    //spawn multiple animations at each target
+                    if (animationData.SpawnForEachTarget)
+                    {
+                        //foreach (Combatant target in actionEventToExecute.Targets)
+                        foreach (ActionSubevent actionSubevent in actionSubeventsToExecute)
+                        {
+                            Transform vfxSpawnPoint = GetVFXSpawnPoint(animationData, actionEventToExecute.Actor, actionSubevent.Target);
+
+                            GameObject effectObject = Instantiate(animationData.VFXPrefab, vfxSpawnPoint.position, animationData.VFXPrefab.transform.rotation);
+                            VFXParent actionVFX = effectObject.GetComponent<VFXParent>();
+                            if (actionVFX)
+                            {
+                                //flip animation?
+                                bool shouldFlip = false;
+                                if (battleTimeline.CurrentTurn.Actor.CombatantType == CombatantType.Enemy)
+                                {
+                                    shouldFlip = true;
+                                }
+
+                                //bind vfx to spawn point?
+                                if(animationData.BindVFXToSpawnPoint)
+                                {
+                                    //effectObject.transform.parent = vfxSpawnPoint;
+                                }
+
+                                //start animation
+                                actionVFX.TriggerAnimation(shouldFlip);
+
+                                //start movement if projectile
+                                if (animationData.IsProjectile)
+                                {
+                                    Vector2 destination = actionSubevent.Target.CombatantBindPositions[CombatantBindPosition.Center].transform.position;
+                                    StartCoroutine(actionVFX.MoveCo(destination));
+                                }
+                            }
+
+                        }
+                    }
+                    //spawn single animation
+                    else
+                    {
+                        Transform vfxSpawnPoint = GetVFXSpawnPoint(animationData, actionEventToExecute.Actor, actionSubevents[0].Target);
+                        //vfxSpawnPoints.Add(vfxSpawnPoint, actionSubevents[0].Target);
+
+                        GameObject effectObject = Instantiate(animationData.VFXPrefab, vfxSpawnPoint.position, animationData.VFXPrefab.transform.rotation);
+                        VFXParent actionVFX = effectObject.GetComponent<VFXParent>();
+                        if (actionVFX)
+                        {
+                            //flip animation?
+                            bool shouldFlip = false;
+                            if (battleTimeline.CurrentTurn.Actor.CombatantType == CombatantType.Enemy)
+                            {
+                                shouldFlip = true;
+                            }
+
+                            //bind vfx to spawn point?
+                            if (animationData.BindVFXToSpawnPoint)
+                            {
+                                //effectObject.transform.parent = vfxSpawnPoint;
+                            }
+
+                            //start animation
+                            actionVFX.TriggerAnimation(shouldFlip);
+
+                            //start movement if projectile
+                            if (animationData.IsProjectile)
+                            {
+                                Vector2 destination = actionSubevents[0].Target.CombatantBindPositions[CombatantBindPosition.Center].transform.position;
+                                StartCoroutine(actionVFX.MoveCo(destination));
+                            }
+                        }
                     }
                 }
-                if(thisCombatant == turnData.combatant)
-                {
-                    actorKO = true;
-                }
+                //wait for animations to finish
+                yield return new WaitForSeconds(animationData.Duration);
             }
+            //apply action to target(s)
+            foreach (ActionSubevent actionSubevent in actionSubevents)
+            {
+                Debug.Log("Calling on event to execute");
+                actionSubevent.Execute();
+            }
+            yield return waitZeroPointFive;
+            //trigger per hit effects
+            yield return StartCoroutine(TriggerEffects(actionSubevents, TriggerFrequency.PerHit));
         }
-        yield return new WaitForSeconds(0.5f);
-
-        //hide hp bars
-        // foreach(Combatant combatant in combatants)
-        // {
-        //     combatant.ToggleHPBar(false);
-        // }
+        yield return StartCoroutine(TriggerEffects(actionSubevents, TriggerFrequency.PerAction));
 
         //move to next phase
-        if(actorKO)
-        {
-            StartCoroutine(EndActionPhase());
-        }
-        else
-        {
-            CounterPhase();
-        }
+        StartCoroutine(ResolveActionPhase());
     }
-
-    private void CounterPhase()
+    private IEnumerator ResolveActionPhase()
     {
-        Debug.Log("Counter phase");
-        for(int x = counterQueue.Count - 1; x >= 0; x--)
+        actionPopup.Hide();
+
+        //return to original position
+        if (actorDidMove)
         {
-            CounterAction counterAction = counterQueue[0].counterAction;
-            if(counterAction != null && Roll(counterAction.chance))
+            yield return actionEventToExecute.Actor.Move(actionEventToExecute.Actor.Tile.transform, "Idle", 3f); ;
+        }
+        //complete animations
+        for (int i = battleManager.Combatants.Count - 1; i >= 0; i--)
+        {
+            //resolve health change
+            battleManager.Combatants[i].ResolveHealthChange();
+        }
+        yield return waitZeroPointFive;
+
+        for (int i = battleManager.Combatants.Count - 1; i >= 0; i--)
+        {
+            if (battleManager.Combatants[i].HP.CurrentValue <= 0)
             {
-                //create counter action
-                actionEventToExecute = new ActionEvent(counterAction.action, counterQueue[x]);
-                actionEventToExecute.primaryTarget = turnData.combatant;
-                actionEventToExecute.targets = new List<Combatant>() {turnData.combatant};
-                actionEventToExecute.canCounter = false;
-                //remove from queue
-                counterQueue.RemoveAt(x);
-                //execute
-                StartCoroutine(ExecuteAction());
-                return;
+                battleManager.KOCombatant(battleManager.Combatants[i]);
+                if (battleManager.Combatants[i] == battleTimeline.CurrentTurn.Actor)
+                {
+                    battleTimeline.CurrentTurn.SetIsDead(true);
+                }
+            }
+            else
+            {
+                battleManager.Combatants[i].ReturnToDefaultAnimation();
             }
         }
+
+        //check actor status and move to next phase
         StartCoroutine(EndActionPhase());
     }
 
     public IEnumerator EndActionPhase()
     {
-        Debug.Log("action complete!");  
+        Debug.Log("action complete!");
 
-        yield return new WaitForSeconds(0.6f);
+        //apply costs of action
+        battleTimeline.CurrentTurn.Actor.ApplyActionCost(battleTimeline.CurrentTurn.Action.ActionCostType, battleTimeline.CurrentTurn.Action.Cost);
+        //consume item and destroy runtime only scriptable object
+        if (battleTimeline.CurrentTurn.Action is ActionUseItem)
+        {
+            ActionUseItem actionUseItem = (ActionUseItem)battleTimeline.CurrentTurn.Action;
+            Debug.Log(actionUseItem.UsableItem.ItemName);
+            inventory.RemoveItem(actionUseItem.UsableItem);
+            Destroy(actionUseItem);
+        }
+        //change to turn end state
+        yield return waitZeroPointTwoFive;
         stateMachine.ChangeState((int)BattleStateType.TurnEnd);
     }
 
@@ -337,5 +290,58 @@ public class ExecuteActionState : BattleState
         {
             return false;
         }
+    }
+
+    private IEnumerator TriggerEffects(List<ActionSubevent> actionSubevents, TriggerFrequency triggerFrequency)
+    {
+        //effects tied to action
+        foreach (TriggerableBattleEffect thisEffect in actionEventToExecute.Action.TriggerableBattleEffects)
+        {
+            if (thisEffect.TriggerFrequency != triggerFrequency)
+            {
+                break;
+            }
+            Dictionary<Combatant, float> targets = new Dictionary<Combatant, float>();
+            //go through each actor/target subevent
+            foreach (ActionSubevent actionSubevent in actionSubevents)
+            {
+                if (thisEffect.TriggerCheck(actionSubevent))
+                {
+                    targets.Add(actionSubevent.Target, actionSubevent.HealthEffectSum);
+                }
+            }
+            BattleEvent battleEvent = new BattleEvent(actionEventToExecute.Actor, targets, thisEffect);
+            battleEventQueue.AddEvent(battleEvent);
+        }
+        yield return StartCoroutine(battleEventQueue.ExhaustQueueCo());
+
+        //triggerable effects tied to actor
+        yield return StartCoroutine(actionEventToExecute.Actor.TriggerBattleEffectsCo(BattleEventType.Acting, actionSubevents, triggerFrequency));
+        yield return StartCoroutine(battleEventQueue.ExhaustQueueCo());
+
+        //triggerable effects tied to targets
+        foreach (ActionSubevent actionSubevent in actionSubevents)
+        {
+            yield return StartCoroutine(actionSubevent.Target.TriggerBattleEffectsCo(BattleEventType.Targeted, new List<ActionSubevent>() { actionSubevent }, triggerFrequency));
+        }
+        yield return StartCoroutine(battleEventQueue.ExhaustQueueCo());
+    }
+
+    private Transform GetVFXSpawnPoint(ActionAnimationData actionAnimationData, Combatant actor, Combatant target)
+    {
+        Transform spawnPoint = target.CombatantBindPositions[actionAnimationData.CombatantBindPosition].transform;
+        
+        switch (actionAnimationData.VFXSpawnPosition)
+        {
+            case ActionVFXPosition.Actor:
+                spawnPoint = actor.CombatantBindPositions[actionAnimationData.CombatantBindPosition].transform;
+                break;
+            case ActionVFXPosition.TargetedGridCenter:
+                spawnPoint = gridManager.GetTileArray(target.CombatantType)[1, 1].transform;
+                break;
+            default:
+                break;
+        }
+        return spawnPoint;
     }
 }

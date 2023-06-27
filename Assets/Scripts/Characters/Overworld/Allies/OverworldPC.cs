@@ -12,13 +12,11 @@ public class OverworldPC : MonoBehaviour
     public Transform followerAxis;
 
     public Animator animator;
-    public Rigidbody2D rigidbody;
     public bool isRunning;
     public bool isJumping = false;
 
     public void Start()
     {
-        rigidbody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         moveDirection = new Vector3(0, 0);
     }

@@ -7,23 +7,21 @@ using TMPro;
 
 public class InventorySlot : MonoBehaviour, ISelectHandler
 {
-
-    [Header("Item In Slot")]
-    public ItemObject item;
     [Header("UI Display")]
     [SerializeField] private Image slotImage;
     [SerializeField] private TextMeshProUGUI amountText;
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private GameObject submenu;
-
+    [Header("Events")]
     [SerializeField] private SignalSender changeSelectedEquipment;
     [SerializeField] private SignalSender equipItem;
+    public Item Item { get; private set; }
 
-    public void AssignSlot(ItemObject itemObject, int numHeld)
+    public void AssignSlot(Item item, int numHeld)
     {
-        item = itemObject;
-        slotImage.sprite = item.icon;
-        nameText.text = item.name;
+        Item = item;
+        slotImage.sprite = item.ItemIcon;
+        nameText.text = item.ItemName;
         amountText.text = numHeld.ToString("n0");
     }
 

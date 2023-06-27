@@ -12,20 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6be137f697e5804428fd4db0b1bdf0ac, type: 3}
   m_Name: Poison
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: 62776a6102330f142856b34b144d9885, type: 3}
+  icon: {fileID: 21300000, guid: 8a550151663f20f4f92e034f1f5712e6, type: 3}
   effectName: Poison
   effectInfo: Deals damage over time.
-  isBuff: 0
+  statusEffectType: 1
   canRemove: 1
   cannotRefresh: 0
   animatorTrigger: 
-  effectObject: {fileID: 0}
+  colorTint: {r: 0.12305678, g: 0.5754717, b: 0.13212708, a: 0.7294118}
+  effectObject: {fileID: 9080087516260223380, guid: 19561b8b8ee14da4fa224bfe5c3c8c74,
+    type: 3}
   hasDuration: 1
-  turnDuration: 5
-  battleStatModifiers: []
+  turnDuration: 3
+  actionEventModifiers: []
   resistanceModifiers: []
-  onApplyEffects: []
-  onRemoveEffects: []
-  onTurnEndEffects: []
+  triggerableSubEffects:
+  - battleEventTrigger: 2
+    chance: 100
+    subEffect: {fileID: 11400000, guid: 095748296ab47ba4cb4daf0853724aa6, type: 2}
   effectToCancel: {fileID: 0}
   cancelSelf: 0

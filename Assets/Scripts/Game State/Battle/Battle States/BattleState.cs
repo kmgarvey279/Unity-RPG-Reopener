@@ -8,22 +8,23 @@ public enum BattleStateType
     BattleStart,
     TurnStart,
     Menu,
-    TileSelect,
+    TargetSelect,
     Execute,
     EnemyTurn,
     TurnEnd,
     BattleEnd,
-    PlayerMove
+    InterventionStart,
+    ChangeTurn
 }
 
 public class BattleState : StateMachine.State
 {
-    public BattleStateType battleStateType;
-    [HideInInspector] public BattleManager battleManager;
-    [HideInInspector] public GridManager gridManager;
-    [HideInInspector] public TurnData turnData;
+    [SerializeField] protected BattleStateType battleStateType;
+    protected BattleManager battleManager;
+    [SerializeField] protected GridManager gridManager;
+    [SerializeField] protected BattleTimeline battleTimeline;
     [Header("Unity Events (Listeners)")]
-    public List<MonoBehaviour> signalListeners;
+    [SerializeField] protected List<MonoBehaviour> signalListeners = new List<MonoBehaviour>();
 
     public void Awake()
     {
@@ -32,7 +33,6 @@ public class BattleState : StateMachine.State
         id = (int)battleStateType; 
         //battle manager
         battleManager = GetComponentInParent<BattleManager>();  
-        gridManager = battleManager.gridManager;
     }
 
     public override void OnEnter()
@@ -44,7 +44,6 @@ public class BattleState : StateMachine.State
                 script.enabled = true;
             }
         }
-        turnData = battleManager.turnData;  
     }
 
     public override void StateUpdate()

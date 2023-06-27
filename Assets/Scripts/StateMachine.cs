@@ -54,17 +54,22 @@ namespace StateMachineNamespace
 
         public void ChangeState(int nextStateId)
         {
-            foreach(State state in states)
+            foreach (State state in states)
             {
                 if(state.id == nextStateId)  
                 {
                     currentState.OnExit();
-                    currentState = state;
-                    currentState.OnEnter();
+                    StartCoroutine(ChangeStateCo(state));
                     break;
                 }  
             }
-            
+        }
+
+        public IEnumerator ChangeStateCo(State state)
+        {
+            yield return null;
+            currentState = state;
+            currentState.OnEnter();
         }
 
         public void SetActive(bool isActive)

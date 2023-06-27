@@ -11,7 +11,7 @@ public class DialogueState : OverworldState
     public override void OnEnter()
     {
         base.OnEnter();
-        runtimeData.lockInput = true;
+        overworldData.lockInput = true;
     }
 
     public override void StateUpdate()
@@ -30,7 +30,7 @@ public class DialogueState : OverworldState
     public override void OnExit()
     {
         base.OnExit();
-        runtimeData.lockInput = false;
+        overworldData.lockInput = false;
         StartCoroutine(DialogueTriggerCooldown());
     }
 
@@ -41,8 +41,8 @@ public class DialogueState : OverworldState
 
     private IEnumerator DialogueTriggerCooldown()
     {
-        runtimeData.interactTriggerCooldown = true;
+        overworldData.interactTriggerCooldown = true;
         yield return new WaitForSeconds(0.5f);
-        runtimeData.interactTriggerCooldown = false;
+        overworldData.interactTriggerCooldown = false;
     }
 }

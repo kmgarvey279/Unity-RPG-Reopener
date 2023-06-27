@@ -14,7 +14,7 @@ public enum OverworldStateType
 public class OverworldState : StateMachine.State
 {
     [SerializeField] protected OverworldStateType overworldStateType;
-    [SerializeField] protected RuntimeData runtimeData;
+    [SerializeField] protected OverworldData overworldData;
     [Header("Signal Listeners")]
     public List<MonoBehaviour> signalListeners;
 

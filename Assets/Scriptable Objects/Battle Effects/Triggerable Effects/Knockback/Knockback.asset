@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b1c7feb7cea0e2499e52121a09947ed, type: 3}
+  m_Name: Knockback
+  m_EditorClassIdentifier: 
+  battleConditions: []
+  <EffectName>k__BackingField: Knockback
+  <DisplayName>k__BackingField: 0
+  <ActionAnimations>k__BackingField: []
+  <BattleEventType>k__BackingField: 0
+  <RemoveOnApply>k__BackingField: 0
+  <BattleEventTargeting>k__BackingField: 0
+  MultiTargetMultiplier: 0
+  <KnockbackX>k__BackingField: -1
+  <KnockbackY>k__BackingField: 0

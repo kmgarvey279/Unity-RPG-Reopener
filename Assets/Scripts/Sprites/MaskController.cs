@@ -4,25 +4,32 @@ using UnityEngine;
 
 public class MaskController : MonoBehaviour
 {
+    private SpriteRenderer mask; 
     private Animator animator;
+
 
     private void Start()
     {
+        mask = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
     }
 
-    public void TriggerTargeted()
+    public void ApplyTint(Color color, bool isFlashing)
     {
-        animator.SetTrigger("Selected");
+        mask.color = color;
+        if(isFlashing)
+        {
+            animator.SetTrigger("FlashingTint");
+        } 
+        else
+        {
+            animator.SetTrigger("SolidTint");
+        }
+        mask.enabled = true;
     }
 
-    public void TriggerUnselectable()
+    public void RemoveTint()
     {
-        animator.SetTrigger("Unselectable");
-    }
-
-    public void EndAnimation()
-    {
-        animator.SetTrigger("Default");
+        mask.enabled = false;
     }
 }

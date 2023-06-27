@@ -8,27 +8,29 @@ using StateMachineNamespace;
 public class BattleMenuState : BattleState
 {
     [Header("Battle Menu")]
-    [SerializeField] private CommandMenu commandMenu;
+    [SerializeField] private CommandMenuMain commandMenuMain;
+    [SerializeField] private BattleLog battleLog;
+    [SerializeField] private SignalSenderGO onCameraFollow;
 
-    [Header("Events")]
-    public SignalSenderGO onCameraZoomIn;
-    
     public override void OnEnter()
     {
         base.OnEnter();
-        // onCameraZoomIn.Raise(turnData.combatant.gameObject);
-        commandMenu.DisplayMenu();
+
+        //onCameraFollow.Raise(battleManager.TurnData.Combatant.gameObject);
+
+        commandMenuMain.Display();
+        PlayableCombatant playableCombatant = (PlayableCombatant)battleTimeline.CurrentTurn.Actor;
+        playableCombatant.BattlePartyPanel.Highlight(true);
+        battleLog.ToggleDisplay(true);
     }
 
     public override void StateUpdate()
     {
-        if(Input.GetButtonDown("Switch"))
+        if (Input.GetButtonDown("Intervention"))
         {
-            commandMenu.ChangeFocus();
-        }
-        else if(Input.GetButtonDown("Cancel"))
-        {
-            commandMenu.ExitCurrentMenu();
+            battleTimeline.CurrentTurn.PauseTurn();
+            battleTimeline.AddTurn(TurnType.Intervention, battleTimeline.CurrentTurn.Actor);
+            stateMachine.ChangeState((int)BattleStateType.ChangeTurn);
         }
     }
 
@@ -39,6 +41,6 @@ public class BattleMenuState : BattleState
     public override void OnExit()
     {
         base.OnExit();
-        commandMenu.HideMenus();
+        commandMenuMain.HideAll();
     }
 }

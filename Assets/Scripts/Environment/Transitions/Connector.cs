@@ -7,14 +7,14 @@ public class Connector : MonoBehaviour
 {
     public Transform spawnPoint;
     public Entrance entrance;
-    public RuntimeData runtimeData;
+    public OverworldData overworldData;
     [Header("Events")]
     public SignalSender onScreenFadeIn;
     public SignalSender onScreenFadeOut;
 
     public void PlayerEnter(GameObject player)
     {
-        runtimeData.lockInput = true;
+        overworldData.lockInput = true;
         onScreenFadeOut.Raise();
         StartCoroutine(ResolveEnterCo(player));
     }
@@ -27,7 +27,7 @@ public class Connector : MonoBehaviour
 
     private IEnumerator ExitSceneCo(GameObject player)
     {
-        runtimeData.lockInput = true;
+        overworldData.lockInput = true;
         onScreenFadeOut.Raise();
         yield return new WaitForSeconds(1f); 
 

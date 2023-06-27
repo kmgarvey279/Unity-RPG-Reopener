@@ -9,8 +9,7 @@ public class BattleStartState : BattleState
     public override void OnEnter()
     {
         base.OnEnter();
-        Debug.Log("Entering Battle Start");
-        StartCoroutine(StartCo());
+        StartCoroutine(StartBattleCo());
     }
 
     public override void StateUpdate()
@@ -28,12 +27,10 @@ public class BattleStartState : BattleState
         base.OnExit();
     }
 
-    private IEnumerator StartCo()
+    private IEnumerator StartBattleCo()
     {
-        Debug.Log("Entering start coroutine");
-        StartCoroutine(battleManager.SpawnCombatants());
-        yield return new WaitUntil(() => battleManager.battleIsLoaded);
-        stateMachine.ChangeState((int)BattleStateType.TurnStart);
+        yield return StartCoroutine(battleManager.StartBattleCo());
+        stateMachine.ChangeState((int)BattleStateType.ChangeTurn);
     }
 }
 

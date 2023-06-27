@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class PlayableCharacterSpawner : MonoBehaviour
 {
+    [Header("Dependencies")]
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private BattleManager battleManager;
     [Header("Party Member Prefabs")]
     [SerializeField] private GameObject claire;
     [SerializeField] private GameObject mutiny;
@@ -13,9 +15,6 @@ public class PlayableCharacterSpawner : MonoBehaviour
     [SerializeField] private GameObject lucy;
     [SerializeField] private GameObject oshi;
     private Dictionary<PlayableCharacterID, GameObject> playableCharacterPrefabs = new Dictionary<PlayableCharacterID, GameObject>();
-
-    [Header("Spawn Positions")]
-    public List<Tile> spawnPositions = new List<Tile>();
 
     private void Awake()
     {
@@ -27,24 +26,23 @@ public class PlayableCharacterSpawner : MonoBehaviour
         playableCharacterPrefabs.Add(PlayableCharacterID.Oshi, oshi);
     }
 
-    public Combatant SpawnPlayableCharacter(PlayableCharacterInfo playableCharacterInfo, int positionNum)
+    public PlayableCombatant SpawnPlayableCharacter(PlayableCharacterInfo playableCharacterInfo, Tile tile, PlayableCharacterID linkedCharacter)
     {
-        if(positionNum <= spawnPositions.Count)
+        GameObject playableCharacterObject = Instantiate(playableCharacterPrefabs[playableCharacterInfo.PlayableCharacterID], tile.transform.position, Quaternion.identity);
+        //set transform
+        playableCharacterObject.transform.parent = transform;
+        PlayableCombatant playableCombatant = playableCharacterObject.GetComponent<PlayableCombatant>();
+        if(playableCombatant)
         {
-            Tile tile = spawnPositions[positionNum - 1];
-            GameObject playableCharacterObject = Instantiate(playableCharacterPrefabs[playableCharacterInfo.playableCharacterID], tile.transform.position, Quaternion.identity);
-            //set transform
-            playableCharacterObject.transform.parent = gameObject.transform;
-            Combatant combatant = playableCharacterObject.GetComponent<Combatant>();
             //set data
-            combatant.SetCharacterData(playableCharacterInfo);
+            playableCombatant.SetCharacterData(playableCharacterInfo, linkedCharacter);
             //set tile
-            tile.AssignOccupier(combatant);
-            combatant.tile = tile;
+            tile.AssignOccupier(playableCombatant);
+            playableCombatant.SetTile(tile);
             //set camera for ui display
-            combatant.targetSelect.canvas.worldCamera = mainCamera;
-            
-            return combatant;
+            playableCombatant.SetBattleManager(battleManager);
+            playableCombatant.SetUICamera(mainCamera);
+            return playableCombatant;
         }
         return null;
     }

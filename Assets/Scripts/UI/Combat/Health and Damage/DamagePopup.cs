@@ -5,47 +5,47 @@ using TMPro;
 
 public class DamagePopup : MonoBehaviour
 {
-    private Animator animator;
+    [SerializeField] private bool isCrit;
+    [Header("Animation")]
+    private Animator motionAnimator;
     [Header("UI Elements")]
-    [SerializeField] private TextMeshProUGUI popupText;
+    [SerializeField] private OutlinedText damageText;
     [Header("Value Displayed")]
     [SerializeField] private Color damageColor;
     [SerializeField] private Color healColor;
-    // [SerializeField] private Color buffColor;
-    // [SerializeField] private Color debuffColor;
     [SerializeField] private Color missColor;
+    [SerializeField] private Color buffColor;
+    [SerializeField] private Color debuffColor;
     private Dictionary<PopupType, Color> colorDict = new Dictionary<PopupType, Color>();
     [Header("Duration")]
     [SerializeField] private float duration;
 
     private void OnEnable()
     {
-        animator = GetComponent<Animator>();
+        motionAnimator = GetComponent<Animator>();
         colorDict.Add(PopupType.Damage, damageColor);
         colorDict.Add(PopupType.Heal, healColor);
-        // colorDict.Add(PopupType.Buff, buffColor);
-        // colorDict.Add(PopupType.Debuff, debuffColor);
         colorDict.Add(PopupType.Miss, missColor);
+        colorDict.Add(PopupType.Buff, buffColor);
+        colorDict.Add(PopupType.Debuff, debuffColor);
     }
 
-    public void TriggerMessagePopup(PopupType popupType, string message)
+    public void TriggerHealthPopup(PopupType popupType, string text)
     {
-        popupText.color = colorDict[popupType]; 
-        popupText.text = message;
-        animator.SetTrigger("Activate");
-        StartCoroutine(ClearPopupCo());
-    }
-
-    public void TriggerHealthPopup(PopupType popupType, float amount, bool isCrit)
-    {
-        Debug.Log("popup has spawned");
-        popupText.color = colorDict[popupType]; 
-        if(isCrit)
+        //set color
+        if(!isCrit)
         {
-            popupText.fontSize = popupText.fontSize + 0.15f;
+            damageText.SetTextColor(colorDict[popupType]);
         }
-        popupText.text = amount.ToString();
-        animator.SetTrigger("Activate");
+
+        if(popupType == PopupType.Buff || popupType == PopupType.Debuff) 
+        {
+            text = "[" + text + "]"; 
+        }
+        damageText.SetText(text);
+
+        motionAnimator.SetTrigger("Activate");
+
         StartCoroutine(ClearPopupCo());
     }
 

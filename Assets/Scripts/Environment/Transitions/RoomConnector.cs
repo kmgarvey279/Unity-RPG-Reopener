@@ -8,7 +8,7 @@ public class RoomConnector : Connector
 
     public override IEnumerator ResolveEnterCo(GameObject player)
     {
-        runtimeData.lockInput = true;
+        overworldData.lockInput = true;
         onScreenFadeOut.Raise();
         yield return new WaitForSeconds(1f); 
 
@@ -16,6 +16,6 @@ public class RoomConnector : Connector
         onScreenFadeIn.Raise();
         yield return new WaitForSeconds(1f);
 
-        runtimeData.lockInput = false;
+        overworldData.lockInput = false;
     }
 }

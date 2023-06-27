@@ -11,9 +11,9 @@ public class SceneConnector : Connector
 
     public override IEnumerator ResolveEnterCo(GameObject player)
     {
-        runtimeData.lockInput = true;
+        overworldData.lockInput = true;
         onScreenFadeOut.Raise();
-        runtimeData.previousConnectorName = connectorName;
+        overworldData.previousConnectorName = connectorName;
         SceneManager.LoadScene(connectingSceneName);
         yield return new WaitForSeconds(1f); 
         Scene scene = SceneManager.GetSceneByName(connectingSceneName);

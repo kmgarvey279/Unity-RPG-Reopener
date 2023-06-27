@@ -12,27 +12,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
   m_Name: Generic Attack
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
-  actionName: 
-  descripton: 
-  actionType: 0
-  timeCost: 3
-  mpCost: 0
-  cooldown: 0
-  power: 0
-  accuracy: 99
-  range: 99
-  aoe: 0
+  healthEffectType: 0
+  power: 1
+  primaryTargetBonus: 0
   offensiveStat: 0
-  defensiveStat: 3
-  elementalProperty: 0
-  guaranteedHit: 0
-  distancePenalty: 1
-  effects: []
-  statusEffect: {fileID: 0}
-  targetFriendly: 0
-  targetHostile: 1
-  fixedTarget: 1
-  useGraphicPrefab: {fileID: 0}
-  effectGraphicPrefab: {fileID: 0}
-  animatorTrigger: 
+  defensiveStat: 2
+  <ActionName>k__BackingField: 
+  <Icon>k__BackingField: {fileID: 0}
+  <Description>k__BackingField: 
+  <ActionType>k__BackingField: 0
+  <RecoveryTimeModifier>k__BackingField: 0
+  <ActionCostType>k__BackingField: 0
+  <Cost>k__BackingField: 0
+  <AttackType>k__BackingField: 0
+  <ElementalProperty>k__BackingField: 0
+  <IsMelee>k__BackingField: 1
+  <Pierce>k__BackingField: 0
+  Knockback: 0
+  <HasCastTime>k__BackingField: 0
+  <HitCount>k__BackingField: 1
+  <HitRate>k__BackingField: 95
+  <GuaranteedHit>k__BackingField: 0
+  <CritRateMultiplier>k__BackingField: 1
+  <TargetingType>k__BackingField: 0
+  <AOEType>k__BackingField: 0
+  <HitRandomTarget>k__BackingField: 0
+  <ActionModifiers>k__BackingField: []
+  <TriggerableBattleEffects>k__BackingField: []
+  <ExecutePosition>k__BackingField: 0
+  <ActionAnimations>k__BackingField: []

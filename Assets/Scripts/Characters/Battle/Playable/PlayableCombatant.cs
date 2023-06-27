@@ -4,78 +4,69 @@ using UnityEngine;
 
 public class PlayableCombatant : Combatant
 {
-    [HideInInspector] public List<Action> skills;
-    private BattlePartyPanel battlePartyPanel;
+    public Action Attack { get; private set; }
+    public Action Defend { get; private set; }
+    public List<Action> Skills { get; private set; } = new List<Action>();
+    public BattlePartyPanel BattlePartyPanel { get; private set; }
+    public PlayableCharacterID PlayableCharacterID { get; private set; }
+    public PlayableCharacterID LinkedCharacterID { get; private set; }
 
-    public override void Awake()
+    protected override void Awake()
     {
         base.Awake();
-        combatantType = CombatantType.Player;   
-        defaultDirection = new Vector2(1, 0);
-        SetDirection(defaultDirection);
+        CombatantType = CombatantType.Player;  
     }
 
     public void AssignBattlePartyPanel(BattlePartyPanel battlePartyPanel)
     {
-        this.battlePartyPanel = battlePartyPanel;
+        this.BattlePartyPanel = battlePartyPanel;
     }
 
-    public override void SetCharacterData(CharacterInfo characterInfo)
+    public override void SetCharacterData(CharacterInfo characterInfo, PlayableCharacterID linkedCharacterID)
     {
         base.SetCharacterData(characterInfo);
-
-        battleStatDict.Add(BattleStatType.Attack, new Stat(characterInfo.statDict[StatType.Attack].GetValue()));
-        battleStatDict.Add(BattleStatType.Defense, new Stat(characterInfo.statDict[StatType.Defense].GetValue()));
-
-        battleStatDict.Add(BattleStatType.MagicAttack, new Stat(characterInfo.statDict[StatType.MagicAttack].GetValue()));
-        battleStatDict.Add(BattleStatType.MagicDefense, new Stat(characterInfo.statDict[StatType.MagicDefense].GetValue()));
         
         PlayableCharacterInfo playableCharacterInfo = (PlayableCharacterInfo)characterInfo;
-        skills = playableCharacterInfo.skills;
+        Attack = playableCharacterInfo.Attack;
+        Defend = playableCharacterInfo.Defend;
+        PlayableCharacterID = playableCharacterInfo.PlayableCharacterID;
+        LinkedCharacterID = linkedCharacterID;
+        Skills.AddRange(playableCharacterInfo.Skills);
 
-        isLoaded = true;
+        IsLoaded = true;
     }
 
-    // public override void SetTraitEffects()
-    // {
-    //     // foreach(Trait trait in characterInfo.traits)
-    //     // {
-    //     //     if(trait.isUnlocked)
-    //     //     {
-    //     //         foreach(TriggerableSubEffect triggerableSubEffect in trait.triggerableSubEffects)
-    //     //         {
-    //     //             triggerableSubEffects.Add(triggerableSubEffect);
-    //     //         }
-    //     //     }
-    //     // }
-    // }
-
-    public override void Damage(float amount, bool isCrit = false)
+    public override void OnDamaged(int amount, bool isCrit = false, ElementalProperty elementalProperty = ElementalProperty.None)
     {
-        base.Damage(amount, isCrit);
-        battlePartyPanel.UpdateHP(hp.GetCurrentValue());
+        base.OnDamaged(amount, isCrit, elementalProperty);
+        BattlePartyPanel.UpdateHP();
     }
-    public override void Heal(float amount, bool isCrit = false)
+    public override void OnHealed(int amount, bool isCrit = false)
     {
-        base.Heal(amount, isCrit);
-        battlePartyPanel.UpdateHP(hp.GetCurrentValue());
+        base.OnHealed(amount, isCrit);
+        BattlePartyPanel.UpdateHP();
     }
 
     public override void ResolveHealthChange()
     {
         base.ResolveHealthChange();
-        battlePartyPanel.ResolveHP();
+        BattlePartyPanel.ResolveHP();
     }
 
-    public void ChangeMana(float amount)
+    public void ResolveManaChange()
     {
-        mp.ChangeCurrentValue(amount);
-        battlePartyPanel.UpdateMP(mp.GetCurrentValue());
+        BattlePartyPanel.UpdateMP();
+        BattlePartyPanel.ResolveMP();
     }
 
-    public override IEnumerator KOCo()
+    public override void ApplyActionCost(ActionCostType actionCostType, int cost)
     {
-        animator.SetTrigger("KO");
-        yield return new WaitForSeconds(0.5f);
+        base.ApplyActionCost(actionCostType, cost);
+        if (actionCostType == ActionCostType.MP)
+        {
+            MP.ChangeCurrentValue(-cost);
+
+            ResolveManaChange();
+        }
     }
 }

@@ -19,7 +19,7 @@ public class Player : MonoBehaviour
     private Interactable interactable;
 
     [Header("Game state info")]
-    [SerializeField] private RuntimeData runtimeData;
+    [SerializeField] private OverworldData overworldData;
     
     // private class JumpData
     // {
@@ -46,9 +46,9 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if(!runtimeData.lockInput)
+        if(!overworldData.lockInput)
         {
-            if(Input.GetButtonDown("Select") && interactable != null && !runtimeData.interactTriggerCooldown)
+            if(Input.GetButtonDown("Select") && interactable != null && !overworldData.interactTriggerCooldown)
             {
                 if(interactable.faceObject)
                 {
@@ -94,7 +94,7 @@ public class Player : MonoBehaviour
 
     public void FixedUpdate()
     {      
-        if(!runtimeData.lockInput)
+        if(!overworldData.lockInput)
         {
             float currentSpeed = 0;
             if(isRunning)

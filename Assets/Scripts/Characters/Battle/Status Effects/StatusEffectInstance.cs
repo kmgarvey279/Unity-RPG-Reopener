@@ -1,78 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 [System.Serializable]
 public class StatusEffectInstance
 {
-    public StatusEffectSO statusEffectSO;
-    public int turnCounter;
-    // public float potency;
+    public StatusEffect StatusEffect { get; private set; }
+    public int Counter { get; private set; } = 0;
+    public float Potency { get; private set; } = 0;
 
-    public StatusEffectInstance(StatusEffectSO statusEffectSO)
+    public StatusEffectInstance(StatusEffect _statusEffect, float _potency)
     {
-        this.statusEffectSO = statusEffectSO;
-        this.turnCounter = statusEffectSO.turnDuration;
+        StatusEffect = _statusEffect;
+        Counter = _statusEffect.CounterApply;
+        this.Potency = _potency;
     }
 
-    public void OnApply(Combatant combatant)
+    public void Tick()
     {
-        foreach(BattleStatModifier battleStatModifier in statusEffectSO.battleStatModifiers)
-        {
-            combatant.battleStatDict[battleStatModifier.statToModify].AddMultiplier(battleStatModifier.multiplier); 
-        }
-        foreach(ResistanceModifier resistanceModifier in statusEffectSO.resistanceModifiers)
-        {
-            combatant.resistDict[resistanceModifier.resistanceToModify].resistance += resistanceModifier.additive;  
-        }
-        foreach(SubEffect effect in statusEffectSO.onApplyEffects)
-        {
-            effect.TriggerEffect(combatant);
+        if (StatusEffect.StatusCounterType == StatusCounterType.Turns) 
+        { 
+            Counter--;
         }
     }
 
-    public void OnRemove(Combatant combatant)
+    public void ModifyStacks(int amount)
     {
-        foreach(BattleStatModifier battleStatModifier in statusEffectSO.battleStatModifiers)
-        {
-            combatant.battleStatDict[battleStatModifier.statToModify].RemoveMultiplier(battleStatModifier.multiplier);  
-        }
-        foreach(ResistanceModifier resistanceModifier in statusEffectSO.resistanceModifiers)
-        {
-            combatant.resistDict[resistanceModifier.resistanceToModify].resistance -= resistanceModifier.additive;  
-        }
-        foreach(SubEffect effect in statusEffectSO.onRemoveEffects)
-        {
-            effect.TriggerEffect(combatant);
-        }
-    }
-
-    public void OnTurnStart(Combatant combatant)
-    {
-        if(statusEffectSO.hasDuration)
-        {
-            turnCounter -= 1;
-            if(turnCounter < 1)
-            {
-                combatant.RemoveStatusEffect(this);
-            }
-        }
-        // foreach(SubEffect effect in statusEffectSO.onTurnStartEffects)
-        // {
-        //     effect.TriggerEffect(combatant);
-        // }
-    }
-
-    public void OnTurnEnd(Combatant combatant)
-    {   
-        // if(statusEffectSO.healthEffect != null)
-        // {
-        //     statusEffectSO.healthEffect.Trigger(combatant, potency);
-        //     potency = Mathf.FloorToInt((float)potency * statusEffectSO.healthEffect.turnMultiplier);
-        // }
-        foreach(TriggerableSubEffect effect in statusEffectSO.onTurnEndEffects)
-        {
-            effect.TriggerEffect(combatant);
-        }
+        Counter += amount;
     }
 }

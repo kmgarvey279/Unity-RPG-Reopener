@@ -1,21 +1,65 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+
+[System.Serializable]
+public class InventoryItem
+{
+    [field: SerializeField] public Item Item { get; private set; }
+    [field: SerializeField] public int Count { get; private set; }
+    public InventoryItem(Item _item, int _count)
+    {
+        Item = _item;
+        Count = _count;
+    }
+    public void ChangeCount(int difference)
+    {
+        Count += difference;
+    }
+}
 
 [CreateAssetMenu(fileName = "New Inventory", menuName = "Inventory/Inventory")]
 public class Inventory : ScriptableObject
 {
-    public Dictionary<string, int> itemDict = new Dictionary<string, int>();
+    [SerializeField] private List<InventoryItem> keyItems = new List<InventoryItem>();
+    [SerializeField] private List<InventoryItem> useItems = new List<InventoryItem>();
+    [SerializeField] private List<InventoryItem> weaponitems = new List<InventoryItem>();
+    [SerializeField] private List<InventoryItem> accessoryitems = new List<InventoryItem>();
+    public Dictionary<ItemType, List<InventoryItem>> ItemDict { get; private set; } = new Dictionary<ItemType, List<InventoryItem>>();
 
-    // private void OnEnable()
-    // {
-    //     itemDict.Add(0, 1);
-    //     itemDict.Add(1, 2);
-    //     itemDict.Add(2, 1);
-    //     itemDict.Add(3, 1);
-    //     itemDict.Add(4, 1);
-    //     itemDict.Add(5, 1);
-    // }
+    private void OnEnable()
+    {
+        ItemDict.Add(ItemType.Key, keyItems);
+        ItemDict.Add(ItemType.Usable, useItems);
+        ItemDict.Add(ItemType.Weapon, weaponitems);
+        ItemDict.Add(ItemType.Accessory, accessoryitems);
+    }
+
+    public List<InventoryItem> GetAll()
+    {
+        List<InventoryItem> itemsToReturn = ItemDict[ItemType.Key];
+        itemsToReturn.AddRange(ItemDict[ItemType.Usable]);
+        itemsToReturn.AddRange(ItemDict[ItemType.Weapon]);
+        itemsToReturn.AddRange(ItemDict[ItemType.Accessory]);
+        return itemsToReturn;
+    }
+    //public Dictionary<ItemObject, int> itemDict = new Dictionary<ItemObject, int>();
+
+    //private void OnEnable()
+    //{
+    //    foreach (Item item in items)
+    //    {
+    //        if(itemDict.ContainsKey(item))
+    //        {
+    //            itemDict[item]++;
+    //        }
+    //        else
+    //        {
+    //            itemDict.Add(item, 1);
+    //        }
+    //    }
+    //}
 
     // public Dictionary<int, ItemObject> GetFullInventory()
     // {
@@ -70,23 +114,39 @@ public class Inventory : ScriptableObject
     // } 
 
     //add item to inventory (or increase number held)
-    public void AddItem(string itemId)
-    {   
-        if(!itemDict.ContainsKey(itemId))
+    public void AddItem(Item itemToAdd)
+    {
+        InventoryItem match = ItemDict[itemToAdd.ItemType].FirstOrDefault(i => i.Item == itemToAdd);
+        if (match == null)
         {
-            itemDict.Add(itemId, 1);
-            // inventoryUI.CreateSlot(inventory.itemList.Count + 1);
+            ItemDict[itemToAdd.ItemType].Add(new InventoryItem(itemToAdd, 1));
         }
-        else 
+        else
         {
-            itemDict[itemId]++;
+            match.ChangeCount(1);
         }
     }
 
     //remove item from list
-    public void RemoveItem(string itemId)
+    public void RemoveItem(Item itemToRemove)
     {
-        itemDict.Remove(itemId);
+        InventoryItem match = ItemDict[itemToRemove.ItemType].FirstOrDefault(i => i.Item == itemToRemove);
+        if (match == null)
+        {
+            return;
+        }
+        else
+        {
+            if(match.Count == 1)
+            {
+                ItemDict[itemToRemove.ItemType].Remove(match);
+            }
+            else
+            {
+                match.ChangeCount(-1);
+            }
+        }
+        //itemDict.Remove(itemId);
         // inventoryUI.DestroySlot(index);
     }
 

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BattlePartyHUD : MonoBehaviour
-{
+{ 
     [SerializeField] private GameObject partyPanelPrefab;
-    private Dictionary<PlayableCombatant, BattlePartyPanel> panelDict = new Dictionary<PlayableCombatant, BattlePartyPanel>();
+    private List<BattlePartyPanel> panels = new List<BattlePartyPanel>();
 
     public void CreatePartyPanel(PlayableCombatant playableCombatant)
     {
@@ -13,23 +13,9 @@ public class BattlePartyHUD : MonoBehaviour
         partyPanelObject.transform.SetParent(transform, false);
         BattlePartyPanel partyPanel = partyPanelObject.GetComponent<BattlePartyPanel>();
         partyPanel.AssignCombatant(playableCombatant);
-        panelDict[playableCombatant] = partyPanel;
+        panels.Add(partyPanel);
 
         playableCombatant.AssignBattlePartyPanel(partyPanel);
-    }
-
-    public void OnChangeHP(GameObject combatantObject, int newValue)
-    {
-        BattlePartyPanel panel = panelDict[combatantObject.GetComponent<PlayableCombatant>()];
-        if(panel)
-            panel.UpdateHP(newValue);
-    }
-
-    public void onChangeMP(GameObject combatantObject, int newValue)
-    {
-        BattlePartyPanel panel = panelDict[combatantObject.GetComponent<PlayableCombatant>()];
-        if(panel)
-            panel.UpdateMP(newValue);
     }
 }
 

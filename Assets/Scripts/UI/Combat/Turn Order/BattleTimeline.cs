@@ -1,173 +1,420 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class BattleTimeline : MonoBehaviour
 {
-    [Header("Current Turn")]
-    [SerializeField] private Transform currentLocation;
-    [SerializeField] private TurnPanel currentTurnPanel;
-    [Header("Preview")]
-    [SerializeField] private GameObject panelsParent; 
-    // private List<TurnPanel> turnPanels = new List<TurnPanel>();
-    private Dictionary<Combatant, TurnPanel> turnPanels = new Dictionary<Combatant, TurnPanel>();
-    [Header("Misc")]
+    public BattleManager battleManager;
+    public Turn CurrentTurn { get; private set; }
+    [field: SerializeField] public List<Turn> TurnQueue { get; private set; } = new List<Turn>();
+    public bool InterventionInQueue { get; private set; } = false;
+
+    [Header("Panels")]
+    [SerializeField] private GameObject panelsParent;
     [SerializeField] private GameObject turnPanelPrefab;
-    [SerializeField] private List<Transform> slotLocations;
-
-    public IEnumerator RemoveCombatants(List<Combatant> combatantsToRemove, List<Combatant> turnForecast)
-    {
-        foreach(Combatant combatant in combatantsToRemove)
-        {
-            turnPanels[combatant].animatorMovement.SetTrigger("Out");
-        }
-
-        yield return new WaitForSeconds(0.5f);
-
-        foreach(Combatant combatant in combatantsToRemove)
-        {
-            DestroyTurnPanel(combatant);
-        }
-
-        UpdateTurnPanels(turnForecast);
-    }
     
-    public IEnumerator AddCombatants(List<Combatant> combatantsToAdd, List<Combatant> turnForecast)
+    [Header("Slots")]
+    [SerializeField] private GameObject slotLocationsParent;
+    [SerializeField] private GameObject slotLocationPrefab;
+    private List<RectTransform> slotLocations = new List<RectTransform>();
+    private List<Turn> snapshot;
+    private Turn castTemp;
+    private Dictionary<Combatant, List<Turn>> combatantTurns = new Dictionary<Combatant, List<Turn>>();
+
+    private WaitForSeconds wait02 = new WaitForSeconds(0.2f);
+    private float baseCastMultiplier = 0.5f;
+    //private List<TurnPanel> turnPanels = new List<TurnPanel>();    
+
+    public void OnEnable()
     {
-        UpdateTurnPanels(turnForecast);
+        for (int i = 0; i < 50; i++)
+        {
+            GameObject slotLocation = Instantiate(slotLocationPrefab, new Vector3(0, 0), Quaternion.identity);
+            slotLocation.transform.SetParent(slotLocationsParent.transform, false);
+            slotLocations.Add(slotLocation.GetComponent<RectTransform>());
+        }
+    }
+
+    public IEnumerator AdvanceCo()
+    {
+        DisplayTurnOrder();
+
+        while (TurnQueue[0].Counter > 0)
+        {
+            foreach (Turn turn in TurnQueue)
+            {
+                turn.Tick();
+            }
+            yield return null;
+        }
+
+        if(TurnQueue[0].TurnType == TurnType.Standard)
+        {
+            //add a new copy of combatant's turn counter to queue
+            AddTurn(TurnType.Standard, TurnQueue[0].Actor, 3f);
+        }
+        CurrentTurn = TurnQueue[0];
+        CurrentTurn.SetAsCurrentTurn();
         
-        yield return new WaitForSeconds(0.5f);
-        
-        foreach(Combatant combatant in combatantsToAdd)
+        DisplayTurnOrder();
+    }
+
+    public void DisplayTurnOrder()
+    {
+        TurnQueue = TurnQueue.OrderBy(turn => turn.Counter).ToList();
+
+        //go through turn queue in order and check if their panel need to change position
+        for (int i = 0; i < TurnQueue.Count; i++)
         {
-            CreateTurnPanel(turnForecast.IndexOf(combatant), combatant);
-            turnPanels[combatant].animatorMovement.SetTrigger("In");
+            bool wasChanged = TurnQueue[i].WasChanged;
+            if(wasChanged)
+            {
+                TurnQueue[i].RemoveChangedState();
+                if(TurnQueue[i].QueueIndex == i)
+                {
+                    wasChanged = false;
+                }
+            }
+
+            //debug
+            TurnQueue[i].TurnPanel.UpdateCounter(i, TurnQueue[i].QueueIndex, TurnQueue[i].Counter);
+            //
+            //if (TurnQueue[i].QueueIndex != i || TurnQueue[i].QueueIndex == -1)
+            //{
+                //is a preview modifier has been applied
+                if(wasChanged && TurnQueue[i].TempModifier != 0)
+                {
+                    TurnQueue[i].TurnPanel.DisplayTurnPosChange(TurnQueue[i].TempModifier);
+                }
+                //play "swap" animation for actor or targets
+                if (wasChanged)
+                {
+                    TurnQueue[i].TurnPanel.TriggerActorAnimation("Exit");
+
+                }
+                TurnQueue[i].SetQueueIndex(i);
+                Vector2 updatedPosition = slotLocations[i].localPosition;
+                StartCoroutine(MovePanelCo(TurnQueue[i], updatedPosition, wasChanged));
+            //}
         }
     }
-    
-    public IEnumerator SwapCombatants(List<Combatant> combatantsToSwap, List<Combatant> turnForecast)
+
+    public void TakeSnapshot()
     {
-        List<Combatant> removedCombatants = new List<Combatant>();
-        foreach(Combatant combatant in combatantsToSwap)
+        snapshot = TurnQueue;
+    }
+
+    public void LoadSnapshot()
+    {
+        TurnQueue = snapshot;
+        //for (int i = 0; i < TurnQueue.Count; i++)
+        //{
+        //    if (TurnQueue[i].QueueIndex != i)
+        //    {
+        //        TurnQueue[i].SetQueueIndex(i);
+        //    }
+
+        //}
+        //DisplayTurnOrder();
+    }
+
+    private IEnumerator MovePanelCo(Turn turn, Vector2 newPosition, bool wasChanged)
+    {
+        if(turn != null)
         {
-            Vector3 updatedPosition = slotLocations[turnForecast.IndexOf(combatant)].position;
-            if(turnPanels[combatant].transform.position != updatedPosition)
+            yield return wait02;
+
+            float counter = 0f;
+            float duration = 0.2f;
+            RectTransform panelRect = turn.TurnPanel.GetComponent<RectTransform>();
+            //Vector2 start = panelRect.anchoredPosition;
+
+            if (wasChanged)
             {
-                turnPanels[combatant].animatorMovement.SetTrigger("Out");
-                removedCombatants.Add(combatant);
+                yield return wait02;
+                panelRect.anchoredPosition = slotLocations[turn.QueueIndex].localPosition;
+            }
+            else
+            {
+                while (turn != null && counter < duration)
+                {
+                    Vector2 start = panelRect.anchoredPosition;
+                    panelRect.anchoredPosition = Vector3.Lerp(start, slotLocations[turn.QueueIndex].localPosition, (counter / duration));
+                    counter += Time.deltaTime;
+                    yield return null;
+                }
+                panelRect.anchoredPosition = newPosition;
+            }
+
+            if (turn != null)
+            {   
+                if (wasChanged)
+                {
+                    turn.TurnPanel.TriggerActorAnimation("Enter");
+                }
+                if (turn.TurnPanel.IsNew)
+                {
+                    turn.TurnPanel.TriggerActorAnimation("Enter");
+                    turn.TurnPanel.RemoveNewStatus();
+                }
+                yield return null;
             }
         }
-
-        yield return new WaitForSeconds(0.5f);
-
-        UpdateTurnPanels(turnForecast);
-
-        // yield return new WaitForSeconds(0.1f);
-
-        foreach(Combatant combatant in removedCombatants)
-        {            
-            turnPanels[combatant].animatorMovement.SetTrigger("In");
-        }
     }
 
-    //cancel previous animation when toggling through previews
-    public void CancelAnimations(List<Combatant> turnForecast)
+    public void AddCombatant(Combatant combatant)
     {
-        foreach(KeyValuePair<Combatant, TurnPanel> entry in turnPanels)
+        AddTurn(TurnType.Standard, combatant, 1f);
+        AddTurn(TurnType.Standard, combatant, 2f);
+        AddTurn(TurnType.Standard, combatant, 3f);
+    }
+
+    public Turn AddTurn(TurnType turnType, Combatant actor, float turnMultiplier = 1f)
+    {
+        //create new turn
+        Turn newTurn = new Turn(turnType, actor, turnMultiplier);
+        //add to queue
+        TurnQueue.Add(newTurn);
+        if(turnType == TurnType.Intervention)
         {
-            entry.Value.animatorMovement.SetTrigger("Default");
-            Vector3 updatedPosition = slotLocations[turnForecast.IndexOf(entry.Key)].position;
-            if(entry.Value.transform.position != updatedPosition)
+            InterventionInQueue = true;
+        }
+        else
+        {
+            //add to actor's list of turns in queue
+            if (actor != null)
             {
-                entry.Value.transform.position = updatedPosition;
+                if (!combatantTurns.ContainsKey(actor))
+                {
+                    combatantTurns.Add(actor, new List<Turn>());
+                }
+                combatantTurns[actor].Add(newTurn);
             }
         }
+        //create turn panel
+        CreateTurnPanel(TurnQueue.Count - 1, newTurn);
+        DisplayTurnOrder();
+        return newTurn;
     }
 
-    public void UpdateTurnPanels(List<Combatant> turnForecast)
-    {
-        foreach(KeyValuePair<Combatant, TurnPanel> entry in turnPanels)
-        {
-            Vector3 updatedPosition = slotLocations[turnForecast.IndexOf(entry.Key)].position;
-            if(entry.Value.transform.position != updatedPosition)
-            {
-                entry.Value.Move(updatedPosition);
-            }
-        }
-    }
-
-    public void CreateTurnPanel(int index, Combatant combatant)
+    public void CreateTurnPanel(int index, Turn turn)
     {
         //create panel
         GameObject turnPanelObject = Instantiate(turnPanelPrefab, new Vector3(0, 0), Quaternion.identity);
         turnPanelObject.transform.SetParent(panelsParent.transform, false);
         TurnPanel turnPanel = turnPanelObject.GetComponent<TurnPanel>();
-        //assign value 
-        turnPanel.AssignCombatant(combatant);
+        //display actor
+        if(turn.TurnType == TurnType.Intervention)
+        {
+            turnPanel.DisplayAsIntervention();
+        }
+        else
+        {
+            turnPanel.DisplayActor(turn.Actor);
+        }
         //set position
         turnPanel.transform.position = slotLocations[index].position;
-        //store in list
-        turnPanels.Add(combatant, turnPanel);
+        //add to panel dictionary
+        turn.SetTurnPanel(turnPanel);
     }
 
-    public void DestroyTurnPanel(Combatant combatant)
+
+    public void RemoveTurn(Turn turnToRemove, bool isDead)
     {
-        TurnPanel turnPanel = turnPanels[combatant];
-        turnPanels.Remove(combatant);
+        if(turnToRemove.Actor)
+        {
+            combatantTurns[turnToRemove.Actor].Remove(turnToRemove);
+            if(combatantTurns[turnToRemove.Actor].Count == 0)
+            {
+                combatantTurns.Remove(turnToRemove.Actor);
+            }
+        }
+        TurnQueue.Remove(turnToRemove);
+        StartCoroutine(TurnPanelExit(turnToRemove.TurnPanel));
+        if(turnToRemove.TurnType == TurnType.Intervention)
+        {
+            InterventionInQueue = false;
+        }
+        DisplayTurnOrder();
+    }
+
+    public void RemoveCombatant(Combatant combatant, bool isDead)
+    {
+        foreach (Turn turn in combatantTurns[combatant])
+        {
+            RemoveTurn(turn, isDead);
+        }
+        DisplayTurnOrder();
+    }
+
+    public Turn AddCastToQueue(Combatant actor, Action action, List<Combatant> targets)
+    {
+        Turn castTurn = AddTurn(TurnType.Cast, actor, baseCastMultiplier);
+        castTurn.SetAction(action);
+        castTurn.SetTargets(targets);
+
+        return castTurn;
+    }
+
+    public void ResetInterventionPanel()
+    {
+        if (TurnQueue[0].TurnType == TurnType.Intervention)
+        {
+            TurnQueue[0].TurnPanel.DisplayAsIntervention();
+        }
+    }
+
+    //public void AddInterventionToQueue(Combatant actor)
+    //{
+    //    if (!InterventionInQueue)
+    //    {
+    //        InterventionInQueue = true;
+
+    //        Turn interventionTurn = AddTurn(TurnType.Intervention);
+    //        CreateTurnPanel(TurnQueue.Count - 1, interventionTurn);
+    //        if (actor)
+    //            UpdateTurnActor(interventionTurn, actor);
+
+    //        DisplayTurnOrder();
+    //    }
+    //}
+
+    public void DisplayActionPreview(Turn turn, Action action, List<Combatant> targets, bool targetUnknown)
+    {
+        StartCoroutine(turn.TurnPanel.DisplayActionPreviewCo(action, targets, targetUnknown));
+    }
+
+    public void HideCurrentTurnPreview()
+    {
+        CurrentTurn.TurnPanel.HideActionPreview();
+    }
+
+    //called on turn creation + when selecting a character for an intervention
+    public void UpdateTurnActor(Turn turn, Combatant actor)
+    {
+        turn.SetActor(actor);
+        turn.TurnPanel.DisplayActor(actor);
+    }
+
+    //called when selecting an action in the "menu" state (or during enemy turn state)
+    public void UpdateTurnAction(Turn turn, Action action)
+    {
+        turn.SetAction(action);
+    }
+
+    //called when selecting targets in the "target select" state (or during enemy turn state)
+    public void UpdateTurnTargets(Turn turn, List<Combatant> targets)
+    { 
+        turn.SetTargets(targets);
+    }
+
+    public void CancelAction(Turn turn)
+    {
+        turn.SetAction(null);
+        turn.Targets.Clear();
+
+        HideCurrentTurnPreview();
+    }
+
+    public void UpdateCasts()
+    {
+        //get all casts in timeline
+        List<Turn> casts = new List<Turn>();
+        foreach (Turn turn in TurnQueue)
+        {
+            if (turn.TurnType == TurnType.Cast)
+            {
+                casts.Add(turn);
+            }
+        }
+        //update casts
+        for (int i = casts.Count - 1; i >= 0; i--)
+        {
+            List<Combatant> originalTargets = casts[i].Targets;
+            List<Combatant> availableTargets = battleManager.GetCombatants(casts[i].TargetedCombatantType);
+
+            if (availableTargets.Count == 0)
+            {
+                RemoveTurn(casts[i], false);
+                continue;
+            }
+            if (casts[i].Action.AOEType == AOEType.All)
+            {
+                UpdateTurnTargets(casts[i], availableTargets);
+                continue;
+            }
+            //update primary target if no longer avalable 
+            if (!availableTargets.Contains(originalTargets[0]))
+            {
+                if (casts[i].Actor.CombatantType == CombatantType.Enemy)
+                {
+                    //set new target at random
+                    int roll = Mathf.FloorToInt(UnityEngine.Random.Range(0, availableTargets.Count));
+                    UpdateTurnTargets(casts[i], new List<Combatant>() { availableTargets[roll] });
+                    DisplayActionPreview(casts[i], casts[i].Action, casts[i].Targets, false);
+                }
+                else
+                {
+                    //set first available target + trigger target select on cast turn if there is more than one option
+                    UpdateTurnTargets(casts[i], new List<Combatant>() { availableTargets[0] });
+                    bool canPickNewTarget = false;
+                    if(availableTargets.Count > 1)
+                    {
+                        canPickNewTarget = true;
+                        casts[i].SetReselectTargets(true);
+                    }
+                    DisplayActionPreview(casts[i], casts[i].Action, casts[i].Targets, canPickNewTarget);
+                }
+            }
+        }
+        DisplayTurnOrder();
+    }
+
+
+    private IEnumerator TurnPanelExit(TurnPanel turnPanel)
+    {
+        turnPanel.TriggerActorAnimation("Exit");
+        yield return wait02;
         Destroy(turnPanel.gameObject);
     }
 
-    public void ChangeCurrentTurn(Combatant combatant)
+    private IEnumerator TurnPanelKill(TurnPanel turnPanel)
     {
-        if(currentTurnPanel == null)
-        {
-            GameObject turnPanelObject = Instantiate(turnPanelPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-            turnPanelObject.transform.SetParent(currentLocation, false);
-            currentTurnPanel = turnPanelObject.GetComponent<TurnPanel>();
-        }
-        currentTurnPanel.AssignCombatant(combatant);
+        turnPanel.TriggerActorAnimation("Kill");
+        yield return wait02;
+        Destroy(turnPanel.gameObject);
     }
 
-    public void ClearAllTargetingPreviews()
+    public void HighlightTarget(Combatant target, bool shouldHighlight)
     {
-        currentTurnPanel.ToggleTargetingPreview(false);
-        foreach(KeyValuePair<Combatant, TurnPanel> entry in turnPanels)
+        foreach (Turn turn in combatantTurns[target])
         {
-           entry.Value.ToggleTargetingPreview(false); 
+            turn.TurnPanel.Highlight(shouldHighlight);
         }
     }
 
-    public void OnCombatantSelect(GameObject gameObject)
+    public void ApplyTurnModifier(Combatant target, float modifier, bool isTemp, bool ignoreCasts)
     {
-        Combatant target = gameObject.GetComponent<Combatant>();
-        turnPanels[target].ToggleSelectCursor(true);
-        if(currentTurnPanel.combatant == target)
+        foreach (Turn turn in combatantTurns[target])
         {
-            currentTurnPanel.ToggleSelectCursor(true);
+            if (turn.TurnType != TurnType.Intervention && turn != CurrentTurn && !(turn.TurnType == TurnType.Cast && ignoreCasts))
+            {
+                turn.ApplyModifier(modifier, isTemp);
+            }
         }
+        //DisplayTurnOrder();
     }
 
-    public void OnCombatantDeselect(GameObject gameObject)
+    public void RemoveTempTurnModifier(Combatant target)
     {
-        Combatant target = gameObject.GetComponent<Combatant>();
-        turnPanels[target].ToggleSelectCursor(false);
-        if(currentTurnPanel.combatant == target)
+        foreach (Turn turn in combatantTurns[target])
         {
-            currentTurnPanel.ToggleSelectCursor(false);
+            turn.RemoveTempModifier();
+            turn.TurnPanel.ClearTurnPosChange();
         }
-    }
-
-    public void HighlightTargets(List<Combatant> targets)
-    {
-        ClearAllTargetingPreviews();
-        if(targets.Contains(currentTurnPanel.combatant))
-        {
-            currentTurnPanel.ToggleTargetingPreview(true);
-        }
-        foreach(Combatant target in targets)
-        {
-            turnPanels[target].ToggleTargetingPreview(true);
-        }
+        //DisplayTurnOrder();
     }
 }

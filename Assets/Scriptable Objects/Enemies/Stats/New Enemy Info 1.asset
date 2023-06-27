@@ -12,39 +12,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 622987f3fd980c04fb94f3589b51ab64, type: 3}
   m_Name: New Enemy Info 1
   m_EditorClassIdentifier: 
-  characterName: Test Enemy
-  level: 1
   baseHP: 200
-  hp:
-    baseValue: 200
-    additives: []
-    multipliers: []
-    currentValue: 200
-  baseMP: 0
-  mp:
-    baseValue: 0
-    additives: []
-    multipliers: []
-    currentValue: 0
-  attackStat: 4
-  defenseStat: 4
-  magicAttackStat: 4
-  magicDefenseStat: 4
-  skillStat: 4
-  agilityStat: 4
-  fireResist: 1
-  iceResist: 1
-  electricResist: 1
-  darkResist: 1
-  lightResist: 1
-  traits: []
-  attack: {fileID: 0}
-  weightedActions:
-  - action: {fileID: 11400000, guid: 70fc9a8249db6c84f9541a7bf04d24b2, type: 2}
-    weightType: 4
-  - action: {fileID: 11400000, guid: 1979cd716b76c654bbc9aafad84c8cfa, type: 2}
-    weightType: 1
-  - action: {fileID: 11400000, guid: f93cda209ea7b284585f5f0412880a90, type: 2}
-    weightType: 1
-  - action: {fileID: 11400000, guid: 823b4bcd44b18ac4c8b05a0b9d9c80a0, type: 2}
-    weightType: 2
+  hpGrowth: 0
+  baseMP: 50
+  mpGrowth: 0
+  baseAttack: 2
+  attackGrowth: 0
+  baseDefense: 2
+  defenseGrowth: 0
+  baseMAttack: 2
+  mAttackGrowth: 0
+  baseMDefense: 2
+  mDefenseGrowth: 0
+  baseAgility: 2
+  agilityGrowth: 0
+  baseCrit: 0
+  baseEvade: 0
+  fireResistance: 1
+  iceResistance: 0
+  electricResistance: 2
+  darkResistance: 0
+  <TurnIcon>k__BackingField: {fileID: 21300000, guid: 406ecd72d938dc646aa4e173164934ed,
+    type: 3}
+  <CharacterName>k__BackingField: Enemy
+  <Level>k__BackingField: 1
+  <Traits>k__BackingField: []
+  WeightedActions:
+  - weightType: 0
+    <Action>k__BackingField: {fileID: 11400000, guid: 823b4bcd44b18ac4c8b05a0b9d9c80a0,
+      type: 2}
+  - weightType: 0
+    <Action>k__BackingField: {fileID: 11400000, guid: 70fc9a8249db6c84f9541a7bf04d24b2,
+      type: 2}

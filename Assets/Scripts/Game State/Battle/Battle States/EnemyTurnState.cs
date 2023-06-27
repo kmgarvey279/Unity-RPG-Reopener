@@ -1,54 +1,56 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
-using StateMachineNamespace;
 using System.Linq;
 
 public class PotentialAction
 {
-    public Action action;
-    public int baseWeight;
-    public int weightModifiers = 0;
-    public int cumulativeWeight;
-    public Combatant primaryTarget;
-    public List<Combatant> targets;
-    public bool flip;
-    public CombatantType combatantType;
-    public PotentialAction(Action action, int baseWeight, Combatant primaryTarget, List<Combatant> targets)
+    private int baseWeight;
+
+    public Action Action { get;  private set; }
+    public int CumulativeWeight { get; private set; }
+    public List<Combatant> Targets { get; private set; }
+    
+    public PotentialAction(Action _action, int _baseWeight, List<Combatant> _targets)
     {
-        this.action = action;
-        this.baseWeight = baseWeight;
-        this.primaryTarget = primaryTarget;
-        this.targets = targets;
-        this.combatantType = CombatantType.Player;
-        if(action.targetingType == TargetingType.TargetFriendly)
-        {
-            combatantType = CombatantType.Enemy;
-        }
+        this.Action = _action;
+        this.baseWeight = _baseWeight;
+        this.Targets = _targets;
     }
     public int GetWeight()
     {
-        return baseWeight + weightModifiers;
+        int weight = baseWeight;
+        weight = weight * Mathf.Clamp(Targets.Count, 0, 3);
+        return weight;
+    }
+
+    public void SetCumulativeWeight(int weight) 
+    {
+        CumulativeWeight = weight;
     }
 }
 
 [System.Serializable]
 public class EnemyTurnState : BattleState
 {
+    //private bool interventionWindow = true;
     [SerializeField] private Action wait;
-    // [SerializeField] GridManager gridManager;
+    private WaitForSeconds waitForZeroPointFive = new WaitForSeconds(0.5f);
 
     public override void OnEnter()
     {
         base.OnEnter();
         // onCameraZoomOut.Raise();
+        //interventionWindow = true;
         StartCoroutine(SetActionCo());
     }
 
     public override void StateUpdate()
     {
-        
+        if (Input.GetButtonDown("Intervention"))
+        {
+            battleTimeline.AddTurn(TurnType.Intervention, battleManager.GetCombatants(CombatantType.Player)[0]);
+        }
     }
 
     public override void StateFixedUpdate()
@@ -63,60 +65,72 @@ public class EnemyTurnState : BattleState
 
     private IEnumerator SetActionCo()
     {
-        EnemyCombatant thisEnemy = (EnemyCombatant)turnData.combatant;
-        if(!turnData.hasMoved)
-        {
-            if(thisEnemy.tile != thisEnemy.preferredTile && thisEnemy.preferredTile.occupiers.Count < 3)
-            {
-                thisEnemy.ChangeTile(thisEnemy.preferredTile, "Move");
-                yield return new WaitUntil(() => !turnData.combatant.moving);
-            }
-        }
+        yield return waitForZeroPointFive;
+        //interventionWindow = false;
+
+        //get action for this turn
         PotentialAction potentialAction = GetAction();
-        battleManager.SetAction(potentialAction.action);
-        battleManager.SetTargets(potentialAction.primaryTarget, potentialAction.targets);
-    
+        battleTimeline.UpdateTurnAction(battleTimeline.CurrentTurn, potentialAction.Action);
+        battleTimeline.UpdateTurnTargets(battleTimeline.CurrentTurn, potentialAction.Targets);
+        
+        yield return waitForZeroPointFive;
         stateMachine.ChangeState((int)BattleStateType.Execute); 
     }
 
     public PotentialAction GetAction()
     { 
-        EnemyCombatant thisEnemy = (EnemyCombatant)turnData.combatant;
-        EnemyInfo enemyInfo = (EnemyInfo)thisEnemy.characterInfo;
-        //get all enemy actions and use them to create a list of potential actions (with specific targets)
+        EnemyCombatant actor = (EnemyCombatant)battleTimeline.CurrentTurn.Actor;
         List<PotentialAction> potentialActions = new List<PotentialAction>();
-        foreach(WeightedAction weightedAction in enemyInfo.weightedActions)
-        {
-            CombatantType combatantType = CombatantType.Player;
-            if(weightedAction.action.targetingType == TargetingType.TargetFriendly)
-            {
-                combatantType = CombatantType.Enemy;
-            }
-            List<Combatant> targets = battleManager.GetCombatants(combatantType);
 
-            List<PotentialAction> tempPotentialActions = new List<PotentialAction>();
-            //simulate aoe on each target, check total number of targets hit 
+        //get all enemy actions and use them to create a list of potential actions
+        foreach (WeightedAction weightedAction in actor.WeightedActions)
+        {   
+            //if action cannot be used
+            if (!weightedAction.Action.IsUsable(actor))
+            {
+                break;
+            }
+
+            //if target self only
+            if(weightedAction.Action.TargetingType == TargetingType.TargetSelf)
+            {
+                if (ActionCheck(weightedAction.Action, actor))
+                {
+                    potentialActions.Add(new PotentialAction(weightedAction.Action, weightedAction.BaseWeight(), new List<Combatant>() { actor }));
+                }
+                break;
+            }
+
+            List<Combatant> targets = new List<Combatant>();
+            //get list of targets
+            if (weightedAction.Action.TargetingType == TargetingType.TargetFriendly)
+            {
+                targets.AddRange(battleManager.GetCombatants(CombatantType.Enemy));
+            }
+            if (weightedAction.Action.TargetingType == TargetingType.TargetHostile)
+            {
+                targets.AddRange(battleManager.GetCombatants(CombatantType.Player));
+            }
+
+            //check targets
+            bool isApplicable = false;
             foreach(Combatant target in targets)
             {
-                //is the selected target valid?
-                if(ActionCheck(weightedAction.action, target))
+                //is the action applicable for *any* target?
+                if(ActionCheck(weightedAction.Action, target))
                 {
-                    List<Combatant> targetsInAOE = GetTargets(weightedAction.action, target, combatantType);
-                    tempPotentialActions.Add(new PotentialAction(weightedAction.action, weightedAction.BaseWeight(), target, targetsInAOE));
-                }
-                if(tempPotentialActions.Count > 0)
-                {
-                    if(thisEnemy.optimizeTargetsInAOE)
+                    isApplicable = true;
+                    //add target if action is single target
+                    if (weightedAction.Action.AOEType != AOEType.All && isApplicable)
                     {
-                        tempPotentialActions.Sort((a,b)=>a.targets.Count.CompareTo(b.targets.Count));
-                        potentialActions.Add(tempPotentialActions[0]);         
+                        potentialActions.Add(new PotentialAction(weightedAction.Action, weightedAction.BaseWeight(), new List<Combatant>() { target }));
                     }
-                    else
-                    {
-                        int roll = Mathf.FloorToInt(Random.Range(0, tempPotentialActions.Count));
-                        potentialActions.Add(tempPotentialActions[roll]);         
-                    }  
-                } 
+                }
+            }
+            //add all targets if action is multi-target
+            if(weightedAction.Action.AOEType == AOEType.All && isApplicable)
+            {
+                potentialActions.Add(new PotentialAction(weightedAction.Action, weightedAction.BaseWeight(), targets));
             }
         }
         int totalWeight = 0;
@@ -126,99 +140,84 @@ public class EnemyTurnState : BattleState
             {
                 int actionWeight = potentialAction.GetWeight();
                 //if action was used one turn ago...
-                if(thisEnemy.lastActions.Count > 0 && thisEnemy.lastActions[0] == potentialAction.action)
+                if(actor.lastActions.Count > 0 && actor.lastActions[0] == potentialAction.Action)
                 {
-                    actionWeight = Mathf.RoundToInt((float)actionWeight / 4f);
+                    actionWeight = Mathf.RoundToInt((float)actionWeight / 3f);
                 }
                 //if action was used two turns ago...
-                if(thisEnemy.lastActions.Count > 1 && thisEnemy.lastActions[1] == potentialAction.action)
+                if(actor.lastActions.Count > 1 && actor.lastActions[1] == potentialAction.Action)
                 {
-                    actionWeight = Mathf.RoundToInt((float)actionWeight / 2f);
+                    actionWeight = Mathf.RoundToInt((float)actionWeight / 1.5f);
                 }
                 totalWeight += actionWeight;
-                potentialAction.cumulativeWeight = totalWeight;
+                potentialAction.SetCumulativeWeight(totalWeight);
             }
-            potentialActions = potentialActions.OrderBy(potentialAction => potentialAction.cumulativeWeight).ToList();
+            potentialActions = potentialActions.OrderBy(potentialAction => potentialAction.CumulativeWeight).ToList();
             int roll = Random.Range(1, totalWeight);
             for(int i = 0; i < potentialActions.Count; i++)
             {
-                Debug.Log(potentialActions[i].action.actionName + " " + potentialActions[i].cumulativeWeight + " " + roll);
-                if(roll <= potentialActions[i].cumulativeWeight)
+                Debug.Log(potentialActions[i].Action.ActionName + " " + potentialActions[i].CumulativeWeight + " " + roll);
+                if(roll <= potentialActions[i].CumulativeWeight)
                 {
-                    Debug.Log("action: " + potentialActions[i].action.actionName);
+                    Debug.Log("action: " + potentialActions[i].Action.ActionName);
                     return potentialActions[i];
                 }
             }
         }
-        return new PotentialAction(wait, 0, thisEnemy, new List<Combatant>());
-    }
-
-
-    private List<Combatant> GetTargets(Action action, Combatant target, CombatantType combatantType)
-    {
-        List<Tile> aoeTiles = gridManager.GetAOETiles(target.tile, action, combatantType);
-        List<Combatant> targetsInAOE = gridManager.GetTargetsInAOE(aoeTiles, combatantType);
-        for(int i = targetsInAOE.Count - 1; i >= 0; i--)
-        {
-            //if target should not be targeted, remove it from aoe list
-            if(!ActionCheck(action, targetsInAOE[i]))
-            {
-                targetsInAOE.RemoveAt(i);
-            }
-        }
-        return targetsInAOE;
+        return new PotentialAction(wait, 0, new List<Combatant>() { actor });
     }
 
     //checks if action is applicable to current situation
     private bool ActionCheck(Action action, Combatant target)
     {
         bool useAction = false;
-        // switch (action.actionType)
-        // {
-        // case ActionType.Attack:
-        //     useAction = AttackCheck(action, target);
-        //     break;
-        // case ActionType.Heal:
-        //     useAction = HealCheck(action, target);
-        //     break;
-        // case ActionType.AddStatusEffect:
-        //     useAction = AddStatusEffectCheck(action, target);
-        //     break;
-        // case ActionType.RemoveStatusEffects:
-        //     useAction = RemoveStatusEffectsCheck(action, target);
-        //     break;
-        // case ActionType.Other:
-        //     useAction = true;
-        //     break;
-        // default:
-        //     useAction = false;
-        //     break;
-        // }
-        return useAction;
-    }
-
-     private bool AttackCheck(Action action, Combatant target)
-    {
-        List<int> meleeRows = new List<int> {2, 1, 0};
-        List<int> rowsInRange = meleeRows;
-        for(int i = rowsInRange.Count - 1; i >= 0; i--)
+        switch (action.ActionType)
         {
-            if(i > turnData.combatant.tile.x)
-            {
-                rowsInRange.RemoveAt(i);
-            }
+            case ActionType.Attack:
+                useAction = true;
+                break;
+            case ActionType.Heal:
+                useAction = HealCheck(action, target);
+                break;
+            case ActionType.ApplyBuff:
+                useAction = AddStatusEffectCheck(action, target);
+                break;
+            case ActionType.ApplyDebuff:
+                useAction = AddStatusEffectCheck(action, target);
+                break;
+            case ActionType.RemoveBuff:
+                useAction = RemoveStatusEffectsCheck(action, target);
+                break;
+            case ActionType.RemoveDebuff:
+                useAction = RemoveStatusEffectsCheck(action, target);
+                break;
+            case ActionType.Other:
+                useAction = true;
+                break;
+            default:
+                break;
         }
-        if(!action.isMelee || rowsInRange.Contains(target.tile.x))
-        {   
-            return true;
-        }
-        return false;
+        return useAction;
     }
 
     private bool HealCheck(Action action, Combatant target)
     {
-        //only heal if target at less than 75% of max hp
-        if(target.hp.GetCurrentValue() < Mathf.FloorToInt((float)target.hp.GetValue() * 0.75f))
+        bool isBoss = false;
+        if(target is EnemyCombatant)
+        {
+            EnemyCombatant enemyCombatant = (EnemyCombatant)target;
+            if(enemyCombatant.IsBoss)
+            {
+                isBoss = true;
+            }
+        }
+        //only heal if target at less than 75% of max hp (more for bosses)
+        float healThreshold = 0.75f;
+        if(isBoss)
+        {
+            healThreshold = 0.95f;
+        }
+        if (target.HP.CurrentValue < Mathf.FloorToInt((float)target.HP.GetValue() * healThreshold))
         {
             return true;
         }
@@ -230,32 +229,74 @@ public class EnemyTurnState : BattleState
 
     private bool AddStatusEffectCheck(Action action, Combatant target)
     {
-        // foreach(StatusEffectInstance statusEffectInstance in target.statusEffectInstances)
-        // {
-        //     if(statusEffectInstance.statusEffectSO == action.statusEffectSO)
-        //     {
-        //         return false;
-        //     }
-        // }
-        return true;
+        List<StatusEffect> statusEffects = new List<StatusEffect>();
+        foreach (TriggerableBattleEffect triggerableBattleEffect in action.TriggerableBattleEffects)
+        {
+            if (triggerableBattleEffect is TriggerableBattleEffectApplyStatus)
+            {
+                TriggerableBattleEffectApplyStatus triggerableBattleEffectApplyStatus = (TriggerableBattleEffectApplyStatus) triggerableBattleEffect;
+                statusEffects.Add(triggerableBattleEffectApplyStatus.StatusEffect); 
+            }
+        }
+        //for each status effect an action will attempt to inflict...
+        for (int i = statusEffects.Count - 1; i >= 0; i--)
+        {
+            //for each status effect instance in the target's list...
+            foreach (StatusEffectInstance statusEffectInstance in target.StatusEffectInstances)
+            {
+                //if status effect to apply is already active on target 
+                if (statusEffectInstance.StatusEffect == statusEffects[i])
+                {
+                    statusEffects.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+        if(statusEffects.Count > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     private bool RemoveStatusEffectsCheck(Action action, Combatant target)
     {
-        // if(target.statusEffectInstances.Count > 0)
-        // {
-        //     foreach(StatusEffectInstance statusEffectInstance in target.statusEffectInstances)
-        //     {
-        //         if(target is PlayableCombatant && statusEffectInstance.statusEffectSO.isBuff)
-        //         {
-        //             return true;
-        //         }
-        //         else if(target is EnemyCombatant && !statusEffectInstance.statusEffectSO.isBuff)
-        //         {
-        //             return true;
-        //         }
-        //     }
-        // }
+        TriggerableBattleEffectRemoveStatus triggerableBattleEffectRemoveStatus = null;
+        foreach (TriggerableBattleEffect triggerableBattleEffect in action.TriggerableBattleEffects)
+        {
+            if (triggerableBattleEffect is TriggerableBattleEffectRemoveStatus)
+            {
+                triggerableBattleEffectRemoveStatus = (TriggerableBattleEffectRemoveStatus)triggerableBattleEffect;
+                break;
+            }
+        }
+        if(triggerableBattleEffectRemoveStatus != null)
+        {
+            //any removable buffs on playable character?
+            foreach (StatusEffectInstance statusEffectInstance in target.StatusEffectInstances)
+            {
+                if (target is PlayableCombatant 
+                        && statusEffectInstance.StatusEffect.StatusEffectType == StatusEffectType.Buff 
+                        && statusEffectInstance.StatusEffect.CanRemove
+                        && (triggerableBattleEffectRemoveStatus.StatusEffectsToRemove.Contains(statusEffectInstance.StatusEffect)
+                        || triggerableBattleEffectRemoveStatus.RemoveAll))
+                {
+                    return true;
+                }
+                //any removable debuffs on enemy?
+                else if (target is EnemyCombatant 
+                    && statusEffectInstance.StatusEffect.StatusEffectType == StatusEffectType.Debuff
+                    && statusEffectInstance.StatusEffect.CanRemove
+                    && (triggerableBattleEffectRemoveStatus.StatusEffectsToRemove.Contains(statusEffectInstance.StatusEffect)
+                        || triggerableBattleEffectRemoveStatus.RemoveAll))
+                {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 }

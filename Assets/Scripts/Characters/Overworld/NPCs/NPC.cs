@@ -5,7 +5,6 @@ using UnityEngine;
 public class NPC : Interactable
 {
     [Header("GameObject Components")]
-    public Rigidbody2D rigidbody;
     public Animator animator;
     [Header("Dialogue")]
     private string dialogue;

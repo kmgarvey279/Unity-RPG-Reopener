@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7d142100e8bdb24498f979ed4560667, type: 3}
   m_Name: New Enemy Party Data
   m_EditorClassIdentifier: 
-  enemyPrefabs:
-  - {fileID: 193216028098152511, guid: 4e96c45283b05614e8cf967d906da496, type: 3}
-  - {fileID: 193216028098152511, guid: 4e96c45283b05614e8cf967d906da496, type: 3}
-  - {fileID: 193216028098152511, guid: 4e96c45283b05614e8cf967d906da496, type: 3}
-  - {fileID: 193216028098152511, guid: 4e96c45283b05614e8cf967d906da496, type: 3}
+  <Enemies>k__BackingField:
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 387b9d4002489044893783b49fe833a3, type: 2}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 387b9d4002489044893783b49fe833a3, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 387b9d4002489044893783b49fe833a3, type: 2}

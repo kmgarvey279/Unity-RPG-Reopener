@@ -7,15 +7,15 @@ public class FollowTarget : MonoBehaviour
 {
     [SerializeField] private string tagToFollow = "";
     private Transform target;
-    private CinemachineVirtualCamera camera;
+    private CinemachineVirtualCamera vCam;
 
     private void Start()
     {
-        camera = GetComponent<CinemachineVirtualCamera>();
+        vCam = GetComponent<CinemachineVirtualCamera>();
         GameObject targetObject = GameObject.FindWithTag(tagToFollow);
         if(target != null)
         {
-            camera.Follow = target.transform;
+            vCam.Follow = target.transform;
         }
     }
 
@@ -28,7 +28,7 @@ public class FollowTarget : MonoBehaviour
                 target = GameObject.FindWithTag("Player").transform;
                 if(target != null)
                 {
-                    camera.Follow = target;
+                    vCam.Follow = target;
                 }
             }
         }

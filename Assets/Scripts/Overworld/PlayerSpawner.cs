@@ -6,7 +6,7 @@ public class PlayerSpawner : MonoBehaviour
 {
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private Transform spawnPoint;
-    [SerializeField] private RuntimeData runtimeData;
+    [SerializeField] private OverworldData overworldData;
     [SerializeField] private SceneConnector[] sceneConnectors;
 
     private void Start()
@@ -17,17 +17,17 @@ public class PlayerSpawner : MonoBehaviour
 
     public void SpawnPlayer()
     {
-        if(runtimeData.previousConnectorName != "" && sceneConnectors.Length > 0)
+        if(overworldData.previousConnectorName != "" && sceneConnectors.Length > 0)
         {
             for(int i = 0; i< sceneConnectors.Length; i++)
             {
-                if(sceneConnectors[i].connectorName == runtimeData.previousConnectorName)
+                if(sceneConnectors[i].connectorName == overworldData.previousConnectorName)
                 {
                     GameObject playerObject = Instantiate(playerPrefab, sceneConnectors[i].spawnPoint.position, Quaternion.identity);
                     playerObject.transform.parent = gameObject.transform;        
                     Vector2 direction = (sceneConnectors[i].spawnPoint.position - sceneConnectors[i].entrance.transform.position).normalized;
                     playerObject.GetComponent<Player>().SetDirection(direction); 
-                    runtimeData.lockInput = false;       
+                    overworldData.lockInput = false;       
                 }
             }
         }
@@ -43,7 +43,7 @@ public class PlayerSpawner : MonoBehaviour
             playerObject.transform.parent = gameObject.transform;        
             Vector2 direction = (sceneConnectors[0].spawnPoint.position - sceneConnectors[0].entrance.transform.position).normalized;
             playerObject.GetComponent<Player>().SetDirection(direction); 
-            runtimeData.lockInput = false;  
+            overworldData.lockInput = false;  
         }
     }
 }

@@ -12,41 +12,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
   m_Name: Enemy Melee
   m_EditorClassIdentifier: 
-  actionName: Melee Attack
-  actionType: 0
-  icon: {fileID: 0}
-  description: 
-  mpCost: 0
-  apCost: 1
-  power: 2
-  hitCount: 1
+  healthEffectType: 0
+  power: 1
+  primaryTargetBonus: 0
   offensiveStat: 0
-  defensiveStat: 1
-  elementalProperty: 0
-  statusEffectPower: 0
-  statusEffectChance: 0
-  statusEffectSO: {fileID: 0}
-  knockback: 0
-  additionalEffects: []
-  aoes:
-  - aoeType: 0
-    fixedStartPosition: {x: 0, y: 0}
-  isFixedAOE: 0
-  canFlip: 0
-  isMelee: 1
-  isFixedTarget: 0
-  targetFriendly: 0
-  hasCastAnimation: 0
-  castAnimatorTrigger: 
-  castGraphicPrefab: {fileID: 0}
-  castAnimationDuration: 0
-  castGraphicDelay: 0
-  hasProjectileAnimation: 0
-  projectileAnimatorTrigger: 
-  projectileGraphicPrefab: {fileID: 0}
-  projectileGraphicDelay: 0
-  effectAnimatorTrigger: Melee
-  effectGraphicPrefab: {fileID: 173376264066434547, guid: c1c96842e9fb8f748bb5fafd959e002b,
-    type: 3}
-  effectAnimationDuration: 0.4
-  effectGraphicDelay: 0.15
+  defensiveStat: 2
+  <ActionName>k__BackingField: Attack
+  <Icon>k__BackingField: {fileID: 0}
+  <Description>k__BackingField: 
+  <ActionType>k__BackingField: 0
+  <AttackType>k__BackingField: 0
+  <RecoveryTimeModifier>k__BackingField: 0
+  <ActionCostType>k__BackingField: 0
+  <Cost>k__BackingField: 0
+  <ElementalProperty>k__BackingField: 0
+  <Pierce>k__BackingField: 0
+  Knockback: 0
+  <HasCastTime>k__BackingField: 0
+  <HitCount>k__BackingField: 1
+  <HitRate>k__BackingField: 100
+  <GuaranteedHit>k__BackingField: 0
+  <CritRateMultiplier>k__BackingField: 1
+  <TargetingType>k__BackingField: 1
+  <AOEType>k__BackingField: 0
+  <HitRandomTarget>k__BackingField: 0
+  <ActionModifiers>k__BackingField: []
+  <TriggerableBattleEffects>k__BackingField: []
+  <ExecutePosition>k__BackingField: 1
+  <ActionAnimations>k__BackingField:
+  - <AnimationSpawnPosition>k__BackingField: 4
+    <AnimatorTrigger>k__BackingField: Melee
+    <SpawnForEachTarget>k__BackingField: 0
+    <Repeat>k__BackingField: 0
+    <EffectPrefab>k__BackingField: {fileID: 173376264066434547, guid: c1c96842e9fb8f748bb5fafd959e002b,
+      type: 3}
