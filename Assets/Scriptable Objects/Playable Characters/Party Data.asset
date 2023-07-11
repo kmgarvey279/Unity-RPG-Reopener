@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fec686f237d3ed4184fc303f387d407, type: 3}
   m_Name: Party Data
   m_EditorClassIdentifier: 
-  PartyList: 000000000100000003000000
+  PartyList: 00000000
   PlayableCharacterInfoList:
   - {fileID: 11400000, guid: c86eb926f7a72e04fa5932e070cac635, type: 2}
   - {fileID: 11400000, guid: 893a9a17872094e48aa397fbdcb1d47f, type: 2}
@@ -20,7 +20,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c273eca4d44f9884994e6b65385f14a8, type: 2}
   - {fileID: 11400000, guid: d333dc5ba67eebb46ab356b6d2ca9820, type: 2}
   - {fileID: 11400000, guid: 67e67eb5a1684de4da5366a569561507, type: 2}
-  <SpawnPositions>k__BackingField:
-  - {x: 0, y: 0}
-  - {x: 0, y: 1}
-  - {x: 0, y: 2}
+  <PartySlots>k__BackingField: 000000000600000006000000060000000600000006000000

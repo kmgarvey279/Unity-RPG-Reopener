@@ -45,4 +45,6 @@ MonoBehaviour:
     type: 2}
   <Defend>k__BackingField: {fileID: 11400000, guid: 4e9b23d31e4b8b640be03e7be638ee44,
     type: 2}
-  <Skills>k__BackingField: []
+  <Skills>k__BackingField:
+  - {fileID: 11400000, guid: cd33ce4d890bc2b4ba5db48042bf0204, type: 2}
+  - {fileID: 11400000, guid: c59b29d5fd563f14c9ed229b1bc66903, type: 2}

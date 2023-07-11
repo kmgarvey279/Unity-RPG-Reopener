@@ -7,15 +7,14 @@ public class CommandMenuMain : CommandMenu
     [Header("Other Menus")]
     [SerializeField] private CommandMenuListActions skillsMenu;
     [SerializeField] private CommandMenuListItems itemsMenu;
-    [SerializeField] private CommandMenuParty partyMenu;
 
     public void HideAll()
     {
         Hide();
         skillsMenu.HideList();
         itemsMenu.HideList();
-        partyMenu.Hide();
     }
+    //
 
     public void OnClickAttack()
     {
@@ -44,7 +43,7 @@ public class CommandMenuMain : CommandMenu
     {
         Hide();
 
-        partyMenu.Display();
+        onChangeBattleState.Raise((int)BattleStateType.SwapCombatants);
     }
 
     public void OnClickDefend()

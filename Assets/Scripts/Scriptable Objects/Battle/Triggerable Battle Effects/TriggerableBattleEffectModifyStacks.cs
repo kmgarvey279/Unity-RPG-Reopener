@@ -7,9 +7,9 @@ public class TriggerableBattleEffectModifyStacks : TriggerableBattleEffect
 {
     [SerializeField] private StatusEffect statusEffectToModify;
     [SerializeField] private int amount;
-    public override void ApplyEffect(Combatant actor, Combatant target, float potencyOverride = 0)
+    public override void ApplyEffect(Combatant actor, Combatant target, ActionSummary actionSummary)
     {
-        base.ApplyEffect(actor, target, potencyOverride);
+        base.ApplyEffect(actor, target, actionSummary);
 
         if (statusEffectToModify != null && statusEffectToModify.StatusCounterType == StatusCounterType.Stacks)
         {

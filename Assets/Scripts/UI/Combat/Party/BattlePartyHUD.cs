@@ -7,11 +7,12 @@ public class BattlePartyHUD : MonoBehaviour
     [SerializeField] private GameObject partyPanelPrefab;
     private List<BattlePartyPanel> panels = new List<BattlePartyPanel>();
 
-    public void CreatePartyPanel(PlayableCombatant playableCombatant)
+    public void CreatePartyPanel(PlayableCombatant playableCombatant, int panelNum)
     {
         GameObject partyPanelObject = Instantiate(partyPanelPrefab, transform.position, Quaternion.identity);
         partyPanelObject.transform.SetParent(transform, false);
         BattlePartyPanel partyPanel = partyPanelObject.GetComponent<BattlePartyPanel>();
+        partyPanel.SetIndex(panelNum);
         partyPanel.AssignCombatant(playableCombatant);
         panels.Add(partyPanel);
 

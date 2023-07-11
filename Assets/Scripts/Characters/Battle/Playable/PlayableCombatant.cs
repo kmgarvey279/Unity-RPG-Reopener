@@ -33,6 +33,7 @@ public class PlayableCombatant : Combatant
         LinkedCharacterID = linkedCharacterID;
         Skills.AddRange(playableCharacterInfo.Skills);
 
+        CanRevive = true;
         IsLoaded = true;
     }
 
@@ -45,6 +46,45 @@ public class PlayableCombatant : Combatant
     {
         base.OnHealed(amount, isCrit);
         BattlePartyPanel.UpdateHP();
+    }
+
+    public override void OnCastStart()
+    {
+        base.OnCastStart();
+        BattlePartyPanel.LockInterventionTriggerIcon(true);
+    }
+
+    public override void OnCastEnd()
+    {
+        base.OnCastEnd();
+        BattlePartyPanel.LockInterventionTriggerIcon(false);
+    }
+
+    public void OnChangeMana(int change)
+    {
+        MP.ChangeCurrentValue(change);
+
+        ResolveManaChange();
+    }
+
+    public override void OnKO()
+    {
+        base.OnKO();
+        for (int i = StatusEffectInstances.Count - 1; i >= 0; i--)
+        {
+            StatusEffectInstance statusEffectInstance = StatusEffectInstances[i];
+            if (statusEffectInstance.StatusEffect.RemoveOnKO)
+            {
+                RemoveStatusEffectInstance(statusEffectInstance);
+            }
+        }
+        BattlePartyPanel.OnKO();
+    }
+
+    public override void OnRevive(float percentOfHPToRestore)
+    {
+        base.OnRevive(percentOfHPToRestore);
+        BattlePartyPanel.OnRevive();
     }
 
     public override void ResolveHealthChange()
@@ -64,9 +104,7 @@ public class PlayableCombatant : Combatant
         base.ApplyActionCost(actionCostType, cost);
         if (actionCostType == ActionCostType.MP)
         {
-            MP.ChangeCurrentValue(-cost);
-
-            ResolveManaChange();
+            OnChangeMana(-cost);
         }
     }
 }

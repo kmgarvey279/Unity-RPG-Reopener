@@ -5,6 +5,14 @@ using System;
 using System.Linq;
 using StateMachineNamespace;
 
+public enum CombatantType
+{
+    Player,
+    Enemy,
+    None,
+    All
+}
+
 public class BattleManager : MonoBehaviour
 {
     [Header("Scriptable Objects")]
@@ -12,15 +20,23 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private PartyData partyData;
     [SerializeField] private EnemyPartyData enemyPartyData;
 
-    [Header("Combatants and Grid")]
+    [Header("Combatant Prefabs")]
+    [SerializeField] private GameObject claire;
+    [SerializeField] private GameObject mutiny;
+    [SerializeField] private GameObject shad;
+    [SerializeField] private GameObject blaine;
+    [SerializeField] private GameObject lucy;
+    [SerializeField] private GameObject oshi;
+    private Dictionary<PlayableCharacterID, GameObject> playableCombatantPrefabs = new Dictionary<PlayableCharacterID, GameObject>();
+    private Dictionary<PlayableCharacterID, PlayableCombatant> spawnedPlayableCharacters = new Dictionary<PlayableCharacterID, PlayableCombatant>();
+    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private GameObject playerParent;
+    [SerializeField] private GameObject enemyParent;
+
+    [Header("Battlefield")]
+    [SerializeField] private Camera mainCamera;
     [SerializeField] private BattlePartyHUD battlePartyHUD;
     [SerializeField] private GridManager gridManager;
-    private Dictionary<string, int> enemyInstances = new Dictionary<string, int>();
-    [SerializeField] private PlayableCharacterSpawner playableCharacterSpawner;
-    [SerializeField] private EnemySpawner enemySpawner;
-
-    [Header("Intervention Display")]
-    [SerializeField] private InterventionPointsDisplay interventionPointsDisplay;
 
     [Header("Turn Order Display")]
     [SerializeField] private BattleTimeline battleTimeline;
@@ -40,19 +56,24 @@ public class BattleManager : MonoBehaviour
     private WaitForSeconds waitZeroPointTwoFive = new WaitForSeconds(0.25f);
     private WaitForSeconds waitZeroPointFive = new WaitForSeconds(0.5f);
     private WaitForSeconds waitOne = new WaitForSeconds(1f);
-
-    //[field: SerializeField] public List<Turn> TurnQueue { get; private set; } = new List<Turn>();
-    public int InterventionPoints { get; private set; } = 0;
-    public bool InterventionInQueue { get; private set; } = false;
-    public List<Combatant> Combatants { get; private set; } = new List<Combatant>();
-    public List<Combatant> KOPlayableCombatants { get; private set; } = new List<Combatant>();
+    //active combatants
+    [field: SerializeField] public List<Combatant> PlayableCombatants { get; private set; } = new List<Combatant>();
+    [field: SerializeField] public List<Combatant> EnemyCombatants { get; private set; } = new List<Combatant>();
     public bool BattleIsLoaded { get; private set; } = false;
 
     #region Setup
+
+    public void Awake()
+    {
+        playableCombatantPrefabs.Add(PlayableCharacterID.Claire, claire);
+        playableCombatantPrefabs.Add(PlayableCharacterID.Mutiny, mutiny);
+        playableCombatantPrefabs.Add(PlayableCharacterID.Shad, shad);
+        playableCombatantPrefabs.Add(PlayableCharacterID.Blaine, blaine);
+        playableCombatantPrefabs.Add(PlayableCharacterID.Lucy, lucy);
+        playableCombatantPrefabs.Add(PlayableCharacterID.Oshi, oshi);
+    }
     public IEnumerator StartBattleCo()
     {
-        yield return null;
-        UpdateInterventionPoints(55);
         yield return StartCoroutine(SpawnCombatants());
         Debug.Log("Combatants spawned.");
         onScreenFadeIn.Raise();
@@ -61,417 +82,210 @@ public class BattleManager : MonoBehaviour
 
     public IEnumerator SpawnCombatants()
     {
-        List<PlayableCombatant> spawnedPlayableCombatants = new List<PlayableCombatant>();
+        int battleIndex = 0;
         for (int i = 0; i < 3; i++)
         {
-            PlayableCharacterID playableCharacterID = partyData.PartySlots[i];
+            PlayableCharacterID activeCharacterID = partyData.PartySlots[i];
             PlayableCharacterID linkedCharacterID = partyData.PartySlots[i + 3];
-
-            if (playableCharacterID != PlayableCharacterID.None)
+            if (activeCharacterID != PlayableCharacterID.None && !spawnedPlayableCharacters.ContainsKey(activeCharacterID))
             {
-                PlayableCharacterInfo playableCharacterInfo = partyData.GetSlotInfo(i);
-                Vector2Int startPos = partyData.SpawnPositions[spawnedPlayableCombatants.Count];
-                Tile startTile = gridManager.GetTileArray(CombatantType.Player)[startPos.x, startPos.y];
-                PlayableCombatant playableCombatant = playableCharacterSpawner.SpawnPlayableCharacter(playableCharacterInfo, startTile, linkedCharacterID);
-                if (playableCombatant != null)
+                PlayableCharacterInfo activeCharacterInfo = partyData.PlayableCharacterInfoDict[activeCharacterID];
+                Tile tile = gridManager.GetTileArray(CombatantType.Player)[0, i];
+                PlayableCombatant activeCombatant = SpawnPlayableCharacter(activeCharacterInfo, tile, linkedCharacterID);
+                if (activeCombatant != null)
                 {
-                    spawnedPlayableCombatants.Add(playableCombatant);
-                    AddCombatant(playableCombatant);
-                    battlePartyHUD.CreatePartyPanel(playableCombatant);
+                    spawnedPlayableCharacters.Add(activeCharacterID, activeCombatant);
+                    AddCombatant(activeCombatant, battleIndex);
+                    battlePartyHUD.CreatePartyPanel(activeCombatant, battleIndex);
+                    battleIndex++;
+                }
+            }
+            if (linkedCharacterID != PlayableCharacterID.None && !spawnedPlayableCharacters.ContainsKey(linkedCharacterID))
+            {
+                PlayableCharacterInfo linkedCharacterInfo = partyData.PlayableCharacterInfoDict[linkedCharacterID];
+                Tile tile = gridManager.linkTiles[i];
+                PlayableCombatant linkedCombatant = SpawnPlayableCharacter(linkedCharacterInfo, tile, activeCharacterID);
+                if (linkedCombatant != null)
+                {
+                    spawnedPlayableCharacters.Add(linkedCharacterID, linkedCombatant);
+                    linkedCombatant.gameObject.SetActive(false);
                 }
             }
         }
-        for (int i = 0; i < enemyPartyData.Enemies.Count; i++)
+        battleIndex = 0;
+        for (int i = 0; i < 9; i++)
         {
-            if (enemyPartyData.Enemies[i])
+            if (enemyPartyData.Enemies[i] != null)
             {
-                EnemyCombatant enemyCombatant = enemySpawner.SpawnEnemy(enemyPartyData.Enemies[i], i);
-                AddCombatant(enemyCombatant);
+                EnemyCombatant enemyCombatant = SpawnEnemy(enemyPartyData.Enemies[i], i);
+                AddCombatant(enemyCombatant, battleIndex);
+                battleIndex++;
             }
         }
         yield return null;
     }
     #endregion
 
-    #region Turns/Timeline
-
-    //public IEnumerator AdvanceTimelineCo()
-    //{
-    //    //check if all combatants are dead 
-    //    if (battleTimeline.TurnQueue.Count < 0)
-    //    {
-    //        stateMachine.ChangeState((int)BattleStateType.BattleEnd);
-    //        yield break;
-    //    }
-
-    //    yield return StartCoroutine(battleTimeline.AdvanceCo());
-
-    //    //get next turn
-    //    Turn currentTurn = battleTimeline.TurnQueue[0].Turn;
-    //    currentTurn.SetAsCurrentTurn();
-
-    //    //if next turn is an intervention:
-    //    if (CurrentTurn.TurnType == TurnType.Intervention)
-    //    {
-    //        StartIntervention();
-    //    }
-    //    //if next turn was "paused" due to an intervention, use saved turn data
-    //    else if (CurrentTurn.TurnType == TurnType.Paused)
-    //    {
-    //        stateMachine.ChangeState((int)BattleStateType.Menu);
-    //        //ResumeTurn();
-    //    }
-    //    //if next turn is a queued cast:
-    //    else if (CurrentTurn.TurnType == TurnType.Cast)
-    //    {
-    //        StartQueuedCast();
-    //    }
-    //    else
-    //    {
-    //        stateMachine.ChangeState((int)BattleStateType.TurnStart);
-    //    }
-    //}
-
-    //public void SetCurrentTurn(Turn turn)
-    //{
-    //    turn = CurrentTurn;
-    //}
-
-    //private void ResumeTurn()
-    //{
-    //    stateMachine.ChangeState((int)BattleStateType.Menu);
-    //    //UpdateTurnOrder();
-    //}
-
-    //public void UpdateTurnOrder()
-    //{
-    //    TurnQueue = TurnQueue.OrderBy(c => c.Counter).ToList();
-    //    battleTimeline.UpdateTurnPanels(TurnQueue);
-    //}
-    #endregion
-
-    #region Casts
-    //public Turn AddCastToQueue(ActionEvent actionEvent)
-    //{
-    //    Turn castTurn = new Turn(TurnType.Cast, actionEvent.Actor);
-    //    castTurn.SetActionEvent(actionEvent);
-    //    castTurn.ApplyTurnCost(0.4f);
-    //    TurnQueue.Add(castTurn);
-    //    battleTimeline.CreateTurnPanel(TurnQueue.Count - 1, castTurn);
-    //    UpdateTurnOrder();
-    //    return castTurn;
-    //}
-
-    //refresh cast targets when a targets dies or two playable characters swap
-    //public void UpdateCasts()
-    //{
-    //    //get all casts in timeline
-    //    List<Turn> casts = new List<Turn>();
-    //    foreach (Turn turn in TurnQueue)
-    //    {
-    //        if (turn.TurnType == TurnType.Cast)
-    //        {
-    //            casts.Add(turn);
-    //        }
-    //    }
-    //    //update casts
-    //    for (int i = casts.Count - 1; i >= 0; i--)
-    //    {
-    //        Turn castTurn = casts[i];
-
-    //        List<Combatant> originalTargets = casts[i].ActionEvent.Targets;
-    //        List<Combatant> availableTargets = GetCombatants(casts[0].ActionEvent.TargetedCombatantType);
-
-    //        if (availableTargets.Count == 0)
-    //        {
-    //            return;
-    //        }
-
-    //        //update primary target if no longer avalable 
-    //        if (!availableTargets.Contains(originalTargets[0]))
-    //        {
-    //            if (castTurn.Actor.CombatantType == CombatantType.Enemy)
-    //            {
-    //                int roll = Mathf.FloorToInt(UnityEngine.Random.Range(0, availableTargets.Count));
-    //                castTurn.ActionEvent.SetTargets(new List<Combatant>() { availableTargets[roll] });
-    //            }
-    //            else
-    //            {
-    //                castTurn.SetReselectTargets(true);
-    //            }
-    //            battleTimeline.UpdateTargets(castTurn);
-    //        }
-    //    }
-    //}
-
-    //private void StartQueuedCast()
-    //{
-    //    //move on to next turn if the cast can't occur
-    //    if(CurrentTurn.ActionEvent == null)
-    //    {
-    //        Debug.Log("error: no action event assigned to cast");
-    //        battleTimeline.RemoveCurrentTurn();
-    //        StartCoroutine(AdvanceTimelineCo());
-    //        return;
-    //    }
-
-    //    if (CurrentTurn.Actor.CombatantType == CombatantType.Enemy)
-    //    {
-    //        //recheck avalable targets
-    //        if (CurrentTurn.ActionEvent.Action.AOEType == AOEType.All)
-    //        {
-    //            CurrentTurn.ActionEvent.SetTargets(GetCombatants(CurrentTurn.ActionEvent.TargetedCombatantType));
-    //            stateMachine.ChangeState((int)BattleStateType.Execute);
-    //        }
-    //    }
-    //    else
-    //    {
-    //        //select a new target if the orginal target is dead
-    //        if (CurrentTurn.ReselectTargets) 
-    //        {
-    //            CurrentTurn.ActionEvent.ClearTargets();
-    //            stateMachine.ChangeState((int)BattleStateType.TargetSelect);
-    //        }
-    //        //otherwise, recheck targets in aoe range
-    //        else
-    //        {
-    //            CurrentTurn.ActionEvent.SetTargets(gridManager.GetTargets(CurrentTurn.ActionEvent.Targets[0].Tile, CurrentTurn.ActionEvent.Action.AOEType, CurrentTurn.ActionEvent.Action.IsMelee, CurrentTurn.ActionEvent.TargetedCombatantType));
-    //            stateMachine.ChangeState((int)BattleStateType.Execute);
-    //        }
-    //    }
-    //    if(CurrentTurn.ActionEvent.Targets.Count == 0)
-    //    {
-    //        Debug.Log("error: no targets for cast");
-    //        battleTimeline.RemoveCurrentTurn();
-    //        StartCoroutine(AdvanceTimelineCo());
-    //        return;
-    //    }
-    //}
-    #endregion
-
-    #region Intervention
-    //public void AddInterventionToQueue()
-    //{
-    //    if(!InterventionInQueue)
-    //    {
-    //        InterventionInQueue = true;
-    //        Turn interventionTurn = new Turn(TurnType.Intervention);
-    //        TurnQueue.Add(interventionTurn);
-    //        battleTimeline.CreateTurnPanel(TurnQueue.Count - 1, interventionTurn);
-    //        UpdateTurnOrder();
-    //    }
-    //}
-
-    //public void TriggerIntervention()
-    //{
-    //    //store data on current turn
-    //    CurrentTurn.PauseTurn();
-
-    //    battleTimeline.AddInterventionToQueue(CurrentTurn.Actor);
-    //    StartCoroutine(AdvanceTimelineCo());
-    //}
-
-    //private void StartIntervention()
-    //{
-    //    InterventionInQueue = false;
-    //    stateMachine.ChangeState((int)BattleStateType.InterventionStart);
-    //}
-
-    public void UpdateInterventionPoints(int change)
-    {
-        InterventionPoints = Mathf.Clamp(InterventionPoints += change, 0, 100);
-        if(change > 0)
-        {
-            StartCoroutine(interventionPointsDisplay.GainPoints(InterventionPoints));
-        }
-        else
-        {
-            StartCoroutine(interventionPointsDisplay.SpendPoints(InterventionPoints));
-        }
-    }
-#endregion
-
     #region Combatant List
-    public void SwapPlayableCombatants(PlayableCombatant combatantToSwap)
+    public void SwapPlayableCombatants(PlayableCombatant combatantToRemove)
     {
-        PlayableCharacterID oldID = combatantToSwap.PlayableCharacterID;
-        PlayableCharacterID newID = combatantToSwap.LinkedCharacterID;
-
-        if (newID == PlayableCharacterID.None)
+        if (combatantToRemove == null)
         {
+            Debug.Log("combatant to switch not found");
             return;
         }
 
-        Tile tile = combatantToSwap.Tile;
-        BattlePartyPanel panel = combatantToSwap.BattlePartyPanel;
-        RemoveCombatant(combatantToSwap, false);
+        if (combatantToRemove.LinkedCharacterID == PlayableCharacterID.None)
+        {
+            Debug.Log("no linked combatant");
+            return;
+        }
 
-        PlayableCharacterInfo playableCharacterInfo = partyData.PlayableCharacterInfoDict[newID];
-        PlayableCombatant combatantToAdd = playableCharacterSpawner.SpawnPlayableCharacter(playableCharacterInfo, tile, oldID);
+        int index = PlayableCombatants.IndexOf(combatantToRemove);
+        Tile tile = combatantToRemove.Tile;
+        BattlePartyPanel panel = combatantToRemove.BattlePartyPanel;
+
+        battleTimeline.RemoveCombatant(combatantToRemove, false);
+        combatantToRemove.transform.position = gridManager.linkTiles[index].transform.position;
+        combatantToRemove.gameObject.SetActive(false);
+
+        PlayableCombatant combatantToAdd = spawnedPlayableCharacters[combatantToRemove.LinkedCharacterID];
+        tile.AssignOccupier(combatantToAdd);
+        combatantToAdd.transform.position = tile.transform.position;
+        combatantToAdd.gameObject.SetActive(true);
         
-        AddCombatant(combatantToAdd);
+        AddCombatant(combatantToAdd, index);
+        battleTimeline.ChangeCurrentCombatant(combatantToAdd);
         panel.AssignCombatant(combatantToAdd);
         combatantToAdd.AssignBattlePartyPanel(panel);
 
         battleTimeline.UpdateCasts();
     }
 
-    public void AddCombatant(Combatant combatant)
-    {
-        Combatants.Add(combatant);
-
+    public void AddCombatant(Combatant combatant, int listIndex)
+    {        
         if (combatant is EnemyCombatant)
         {
-            if(!enemyInstances.ContainsKey(combatant.CharacterName))
-            {
-                enemyInstances.Add(combatant.CharacterName, 1);
-            }
-            else 
-            {
-                enemyInstances[combatant.CharacterName] += 1;
-            }
-            char letter = (char)(enemyInstances[combatant.CharacterName] + 64);
+            char letter = (char)(listIndex + 65);
             combatant.SetName(combatant.CharacterName, letter.ToString());
+            EnemyCombatants.Add(combatant);
+        }
+        else if (combatant is PlayableCombatant)
+        {
+            PlayableCombatants.Insert(listIndex, combatant);
         }
         battleTimeline.AddCombatant(combatant);
-    }
-
-    public void RemoveCombatant(Combatant combatant, bool isDead)
-    {
-        Combatants.Remove(combatant);
-        battleTimeline.RemoveCombatant(combatant, isDead);
     }
 
     public void KOCombatant(Combatant combatant)
     {
         combatant.OnKO();
-        if (combatant is PlayableCombatant)
-        {
-            KOPlayableCombatants.Add(combatant);
-        }
-        RemoveCombatant(combatant, true);
+
+        battleTimeline.RemoveCombatant(combatant, true);
+        battleTimeline.UpdateCasts();
     }
 
-    public List<Combatant> GetCombatants(CombatantType combatantType)
+    public void ReviveCombatant(Combatant combatant)
+    {
+        battleTimeline.AddCombatant(combatant);
+    }
+
+    public List<Combatant> GetCombatants(CombatantType combatantType, bool getKOed = false)
     {
         List<Combatant> filteredCombatants = new List<Combatant>();
-        foreach (Combatant combatant in Combatants)
+        if (combatantType == CombatantType.Player || combatantType == CombatantType.All)
         {
-            if (combatant.CombatantType == combatantType)
+            foreach (Combatant combatant in PlayableCombatants)
             {
-                filteredCombatants.Add(combatant);
+                if (combatant.IsKOed == getKOed)
+                {
+                    filteredCombatants.Add(combatant);
+                }
+            }
+        }
+        if (combatantType == CombatantType.Enemy || combatantType == CombatantType.All)
+        {
+            foreach (Combatant combatant in EnemyCombatants)
+            {
+                if (combatant.IsKOed == getKOed)
+                {
+                    filteredCombatants.Add(combatant);
+                }
             }
         }
         return filteredCombatants;
     }
     #endregion
 
-    #region Turn Modifiers
+    public PlayableCombatant SpawnPlayableCharacter(PlayableCharacterInfo playableCharacterInfo, Tile tile, PlayableCharacterID linkedCharacter)
+    {
+        GameObject playableCharacterObject = Instantiate(playableCombatantPrefabs[playableCharacterInfo.PlayableCharacterID], tile.transform.position, Quaternion.identity);
+        //set transform
+        playableCharacterObject.transform.parent = playerParent.transform;
+        PlayableCombatant playableCombatant = playableCharacterObject.GetComponent<PlayableCombatant>();
+        if (playableCombatant)
+        {
+            //set data
+            playableCombatant.SetCharacterData(playableCharacterInfo, linkedCharacter);
+            //set tile
+            tile.AssignOccupier(playableCombatant);
+            playableCombatant.SetTile(tile);
+            //set camera for ui display
+            playableCombatant.SetBattleManager(this);
+            playableCombatant.SetUICamera(mainCamera);
+            return playableCombatant;
+        }
+        return null;
+    }
 
-    //public void ApplyTurnModifier(Combatant combatant, float modifier, bool isTemp)
-    //{
-    //    battleTimeline.ApplyTurnModifier(combatant, modifier, isTemp);
-    //}
-    //public void ApplyTempTurnModifier(Combatant combatant, float modifier)
-    //{
-    //    foreach (Turn turn in TurnQueue)
-    //    {
-    //        if (turn.Actor== combatant)
-    //        {
-    //            turn.ApplyModifier(modifier, true);
-    //        }
-    //    }
-    //    DisplayTurnModifier(combatant, modifier, false);
-    //}
+    public EnemyCombatant SpawnEnemy(EnemyInfo enemyInfo, int positionNum)
+    {
+        if (positionNum < 9)
+        {
+            Tile tile = gridManager.enemyTiles[positionNum];
+            GameObject enemyObject = Instantiate(enemyPrefab, tile.transform.position, Quaternion.identity);
+            enemyObject.transform.parent = enemyParent.transform;
+            EnemyCombatant enemyCombatant = enemyObject.GetComponent<EnemyCombatant>();
+            if (enemyCombatant)
+            {
+                //set data
+                enemyCombatant.SetCharacterData(enemyInfo);
+                //set tile
+                tile.AssignOccupier(enemyCombatant);
+                enemyCombatant.SetTile(tile);
+                enemyCombatant.SetBattleManager(this);
+                //set camera for ui display
+                enemyCombatant.SetUICamera(mainCamera);
+                return enemyCombatant;
+            }
+            return null;
+        }
+        return null;
+    }
 
-    //public void RemoveTempTurnModifier(Combatant combatant)
-    //{
-    //    foreach (Turn turn in TurnQueue)
-    //    {
-    //        if (turn.Actor == combatant)
-    //        {
-    //            turn.RemoveTempModifier();
-    //        }
-    //    }
-    //    UpdateTurnOrder();
-    //}
+    public bool InterventionCheck(int index)
+    {
+        if (index < PlayableCombatants.Count)
+        {
+            Combatant actor = PlayableCombatants[index];
+            if (actor.IsKOed || actor.IsCasting)
+            {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
 
-    //public void DisplayTurnModifier(Combatant combatant, float turnModifier, bool publish)
-    //{
-    //    List<Turn> tempQueue = new List<Turn>(TurnQueue);
-    //    for (int i = TurnQueue.Count - 1; i >= 0; i--)
-    //    {
-    //        if (TurnQueue[i].Actor == combatant)
-    //        {
-    //            Turn turnToRemove = TurnQueue[i];
-    //            tempQueue.Remove(turnToRemove);
-    //            //if speed down, lose any "ties"
-    //            if (turnModifier > 0)
-    //            {
-    //                tempQueue.Add(turnToRemove);
-    //            }
-    //            //if speed up buff, win any "ties"
-    //            else
-    //            {
-    //                tempQueue.Insert(0, turnToRemove);
-    //            }
-    //        }
-    //    }
-    //    tempQueue = tempQueue.OrderBy(c => c.Counter).ToList();
-    //    if (publish)
-    //    {
-    //        TurnQueue = tempQueue;
-    //    }
-    //    battleTimeline.UpdateTurnPanels(tempQueue);
-    //}
-    #endregion 
-
-    #region Action Events
-    //set action to be executed in execution phase
-    //public void SetAction(Action action)
-    //{
-    //    CurrentTurn.SetAction(action);
-    //}
-    //cancel selected action
-    //public void CancelAction()
-    //{
-    //    CurrentTurn.CancelActionEvent();
-    //}
-
-    //public void ApplyAction()
-    //{
-    //    //apply hp/mp cost
-    //    CurrentTurn.Actor.ApplyActionCost(CurrentTurn.ActionEvent.Action.ActionCostType, CurrentTurn.ActionEvent.Action.Cost);
-    //    //consume item and destroy runtime only scriptable object
-    //    if (CurrentTurn.ActionEvent.Action is ActionUseItem)
-    //    { 
-    //        ActionUseItem actionUseItem = (ActionUseItem)CurrentTurn.ActionEvent.Action;
-    //        Debug.Log(actionUseItem.UsableItem.ItemName);
-    //        inventory.RemoveItem(actionUseItem.UsableItem);
-    //        Destroy(actionUseItem);
-    //    }
-    //}
-    #endregion
-
-
-    #region Targeting
-
-    //public void DisableTargetSelect()
-    //{
-    //    foreach(Combatant combatant in Combatants)
-    //    {
-    //        combatant.ChangeSelectState(CombatantTargetState.Default);
-    //    }
-    //}
-
-    //public void DisplayTimelineTargetPreview(List<Combatant> targets)
-    //{
-    //    battleTimeline.DisplayTargetPreview(CurrentTurn.ActionEvent.Action, targets);
-    //}
-
-    //public void ClearTimelineTargetPreview()
-    //{
-    //    battleTimeline.ClearTargetPreview();
-    //}
-    #endregion
+    public void LockInterventionTriggerIcons(bool isLocked)
+    {
+        foreach (Combatant combatant in GetCombatants(CombatantType.Player))
+        {
+            PlayableCombatant playableCombatant = (PlayableCombatant)combatant;
+            if(!playableCombatant.IsCasting)
+            {
+                playableCombatant.BattlePartyPanel.LockInterventionTriggerIcon(isLocked);
+            }
+        }
+    }
 }

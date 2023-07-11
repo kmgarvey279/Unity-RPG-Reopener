@@ -777,6 +777,7 @@ MonoBehaviour:
   spriteRenderer: {fileID: 2644537347353974537}
   defaultMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   greyscaleMaterial: {fileID: 2100000, guid: 10d5b82fa9833a24490e5d8dbe93930b, type: 2}
+  idleAnimationOverride: 
   belowBindPosition: {fileID: 7157417481840954073}
   centerBindPosition: {fileID: 8029860897462709826}
   aboveBindPosition: {fileID: 2639043122667008751}
@@ -784,12 +785,10 @@ MonoBehaviour:
   backBindPosition: {fileID: 3789805734044012262}
   critEffectPrefab: {fileID: 7081010431531379922, guid: f5a9629c5406fd6458102ee1bded4dfe,
     type: 3}
-  statusMaskController: {fileID: 0}
   targetableMaskController: {fileID: 4014333195170354864}
   targetedMaskController: {fileID: 8846857770048940550}
   selectedColor: {r: 1, g: 1, b: 1, a: 0.49019608}
   unselectableColor: {r: 0, g: 0, b: 0, a: 0.49019608}
-  gridManager: {fileID: 0}
   healthDisplay: {fileID: 8078932441690987449}
   targetSelect: {fileID: 770905635189059371}
   onAddBattleEvent: {fileID: 11400000, guid: 85024499d02b8244b8e2e3e59e8007ab, type: 2}
@@ -1018,6 +1017,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0.7
       objectReference: {fileID: 0}
+    - target: {fileID: 6290463211936075329, guid: d14f4b7ca64c40244b874cd40d9e589e,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6832227930448929774, guid: d14f4b7ca64c40244b874cd40d9e589e,
         type: 3}
       propertyPath: m_Name
@@ -1085,10 +1089,21 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4348640139246876232, guid: 9421cc2a0c24e084d9fdbe4dcd610dd8,
+        type: 3}
+      propertyPath: battlePopupPrefab
+      value: 
+      objectReference: {fileID: 1010151516208996760, guid: 322b2ed7a6eb9e74d9c4a380c5469199,
+        type: 3}
     - target: {fileID: 4389375148234105278, guid: 9421cc2a0c24e084d9fdbe4dcd610dd8,
         type: 3}
       propertyPath: m_PresetInfoIsWorld
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4389375148234105278, guid: 9421cc2a0c24e084d9fdbe4dcd610dd8,
+        type: 3}
+      propertyPath: m_ReferencePixelsPerUnit
+      value: 64
       objectReference: {fileID: 0}
     - target: {fileID: 4965571107710345967, guid: 9421cc2a0c24e084d9fdbe4dcd610dd8,
         type: 3}

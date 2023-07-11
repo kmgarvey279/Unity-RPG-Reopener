@@ -12,25 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
   m_Name: Etheral Chakram
   m_EditorClassIdentifier: 
-  healthEffectType: 0
-  power: 5
-  primaryTargetBonus: 0
-  offensiveStat: 0
-  defensiveStat: 2
   <ActionName>k__BackingField: Etheral Chakram
   <Icon>k__BackingField: {fileID: 21300000, guid: 4dad2ce714e4f4146bcf170387b5b2be,
     type: 3}
   <Description>k__BackingField: 
   <ActionType>k__BackingField: 0
-  <RecoveryTimeModifier>k__BackingField: 0
+  <ActorTurnModifier>k__BackingField: 0
+  <TargetTurnModifier>k__BackingField: 0
+  <HasCastTime>k__BackingField: 1
   <ActionCostType>k__BackingField: 0
   <Cost>k__BackingField: 0
+  healthEffectType: 0
+  power: 5
+  primaryTargetBonus: 0
+  offensiveStat: 0
+  defensiveStat: 2
   <AttackType>k__BackingField: 0
   <ElementalProperty>k__BackingField: 0
   <IsMelee>k__BackingField: 0
   <Pierce>k__BackingField: 0
-  Knockback: 0
-  <HasCastTime>k__BackingField: 0
   <HitCount>k__BackingField: 1
   <HitRate>k__BackingField: 100
   <GuaranteedHit>k__BackingField: 0
@@ -42,36 +42,42 @@ MonoBehaviour:
   <TriggerableBattleEffects>k__BackingField: []
   <ExecutePosition>k__BackingField: 0
   <ActionAnimations>k__BackingField:
-  - <OnlyPlayOnXHit>k__BackingField: 0
-    <XHit>k__BackingField: 0
-    <VFXSpawnPosition>k__BackingField: 1
-    <CombatantBindPosition>k__BackingField: 0
-    <IsProjectile>k__BackingField: 0
-    <AnimatorTrigger>k__BackingField: Guard
-    <SpawnForEachTarget>k__BackingField: 0
+  - <BattleAnimatorTrigger>k__BackingField: 0
+    <CustomAnimatorTrigger>k__BackingField: 
     <VFXPrefab>k__BackingField: {fileID: 414455474363486802, guid: 3d0faec8913d908478e672473c0b2306,
       type: 3}
+    <VFXSpawnPosition>k__BackingField: 1
+    <CombatantBindPosition>k__BackingField: 0
+    <BindVFXToSpawnPoint>k__BackingField: 0
+    <SpawnForEachTarget>k__BackingField: 0
+    <IsProjectile>k__BackingField: 0
+    <OnlyPlayOnXHit>k__BackingField: 0
+    <XHit>k__BackingField: 0
     <Delay>k__BackingField: 0
     <Duration>k__BackingField: 0.2
-  - <OnlyPlayOnXHit>k__BackingField: 0
-    <XHit>k__BackingField: 0
-    <VFXSpawnPosition>k__BackingField: 1
-    <CombatantBindPosition>k__BackingField: 3
-    <IsProjectile>k__BackingField: 1
-    <AnimatorTrigger>k__BackingField: Melee
-    <SpawnForEachTarget>k__BackingField: 1
+  - <BattleAnimatorTrigger>k__BackingField: 0
+    <CustomAnimatorTrigger>k__BackingField: 
     <VFXPrefab>k__BackingField: {fileID: 2137010271198262266, guid: 1ed22bb3e38bd4e4d908b37c643f0bc9,
       type: 3}
+    <VFXSpawnPosition>k__BackingField: 1
+    <CombatantBindPosition>k__BackingField: 3
+    <BindVFXToSpawnPoint>k__BackingField: 0
+    <SpawnForEachTarget>k__BackingField: 1
+    <IsProjectile>k__BackingField: 1
+    <OnlyPlayOnXHit>k__BackingField: 0
+    <XHit>k__BackingField: 0
     <Delay>k__BackingField: 0
     <Duration>k__BackingField: 0.6
-  - <OnlyPlayOnXHit>k__BackingField: 0
-    <XHit>k__BackingField: 0
-    <VFXSpawnPosition>k__BackingField: 0
-    <CombatantBindPosition>k__BackingField: 1
-    <IsProjectile>k__BackingField: 0
-    <AnimatorTrigger>k__BackingField: 
-    <SpawnForEachTarget>k__BackingField: 1
+  - <BattleAnimatorTrigger>k__BackingField: 0
+    <CustomAnimatorTrigger>k__BackingField: 
     <VFXPrefab>k__BackingField: {fileID: 6448339373710438155, guid: 9b11c2027832c6243962af2a0e71fbe2,
       type: 3}
+    <VFXSpawnPosition>k__BackingField: 0
+    <CombatantBindPosition>k__BackingField: 1
+    <BindVFXToSpawnPoint>k__BackingField: 0
+    <SpawnForEachTarget>k__BackingField: 1
+    <IsProjectile>k__BackingField: 0
+    <OnlyPlayOnXHit>k__BackingField: 0
+    <XHit>k__BackingField: 0
     <Delay>k__BackingField: 0
     <Duration>k__BackingField: 0.4

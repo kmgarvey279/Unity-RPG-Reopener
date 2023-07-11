@@ -18,10 +18,8 @@ public class HealthDisplay : MonoBehaviour
     [SerializeField] private GameObject healthDisplay;
     [SerializeField] private AnimatedBar healthBar;
     [SerializeField] private AnimatedBar barrierBar;
-    [SerializeField] private GameObject damagePopupPrefab;
-    [SerializeField] private GameObject critPopupPrefab;
+    [SerializeField] private GameObject battlePopupPrefab;
     [SerializeField] private Transform healthSpawn;
-    [SerializeField] private List<Transform> popupSpawnPoints;
 
     private void Awake() 
     {
@@ -45,31 +43,24 @@ public class HealthDisplay : MonoBehaviour
         healthDisplay.gameObject.SetActive(show);
     }
 
-    public IEnumerator DisplayHealthChange(PopupType popupType, string amount, bool isCrit = false, ElementalResistance resistance = ElementalResistance.Neutral)
+    public void DisplayPopup(PopupType popupType, CombatantType combatantType, string popupText, bool isCrit = false, ElementalResistance resistance = ElementalResistance.Neutral)
     {
-        GameObject damagePopupObject = null;
-        if(isCrit)
-        {
-            damagePopupObject = Instantiate(critPopupPrefab, healthSpawn.position, Quaternion.identity);
-        }
-        else
-        {
-            damagePopupObject = Instantiate(damagePopupPrefab, healthSpawn.position, Quaternion.identity);
-        }
-        int roll = Random.Range(0, popupSpawnPoints.Count);
-        damagePopupObject.transform.SetParent(healthSpawn, true);
-        damagePopupObject.transform.position = popupSpawnPoints[roll].position;
-        damagePopupObject.GetComponent<DamagePopup>().TriggerHealthPopup(popupType, amount);
-        yield return null;
+        GameObject battlePopupObject = Instantiate(battlePopupPrefab, healthSpawn.position, Quaternion.identity);
+        battlePopupObject.transform.SetParent(healthSpawn, true);
+        battlePopupObject.GetComponent<BattlePopup>().Trigger(popupType, combatantType, popupText, isCrit);
+    }
 
+    public IEnumerator DisplayHealthChange()
+    {
         if (!healthDisplay.gameObject.activeInHierarchy)
         {
             healthDisplay.gameObject.SetActive(true);
             yield return new WaitForSeconds(0.2f);
         }
 
-        barrierBar.ResolveChange(combatant.Barrier.CurrentValue);
+        //barrierBar.ResolveChange(combatant.Barrier.CurrentValue);
         healthBar.DisplayChange(combatant.HP.CurrentValue);
+        yield return null;
     }
 
     public IEnumerator ResolveHealthChange()

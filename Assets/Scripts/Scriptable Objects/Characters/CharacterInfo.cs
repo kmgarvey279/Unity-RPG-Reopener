@@ -9,11 +9,19 @@ public enum StatType
     MAttack,
     Defense,
     MDefense,
+    Healing,
     Agility,
-    Crit,
-    Evade,
     HP,
     MP
+}
+
+public enum SecondaryStatType
+{
+    CritRate,
+    CritPower,
+    EvadeRate,
+    BlockRate,
+    BlockPower
 }
 
 public enum ElementalResistance
@@ -32,7 +40,7 @@ public class CharacterInfo : ScriptableObject
     [SerializeField] private int baseMP;
     [SerializeField] private float mpGrowth;
 
-    [Header("Stats")]
+    [Header("Primary Stats")]
     [SerializeField] private int baseAttack;
     [SerializeField] private float attackGrowth;
     [SerializeField] private int baseDefense;
@@ -41,10 +49,17 @@ public class CharacterInfo : ScriptableObject
     [SerializeField] private float mAttackGrowth;
     [SerializeField] private int baseMDefense;
     [SerializeField] private float mDefenseGrowth;
+    [SerializeField] private int baseHealing;
+    [SerializeField] private float healingGrowth;
     [SerializeField] private int baseAgility;
     [SerializeField] private float agilityGrowth;
-    [SerializeField] private int baseCrit;
-    [SerializeField] private int baseEvade;
+
+    [Header("Secondary Stats")]
+    [SerializeField] private float baseCritRate;
+    [SerializeField] private float baseCritPower;
+    [SerializeField] private float baseEvadeRate;
+    [SerializeField] private float baseBlockRate;
+    [SerializeField] private float baseBlockPower;
 
     [Header("Elemental Resistances")]
     [SerializeField] private ElementalResistance fireResistance;
@@ -60,8 +75,8 @@ public class CharacterInfo : ScriptableObject
     public Dictionary<StatType, int> BaseStats { get; private set; }
     //bonus stats per level
     public Dictionary<StatType, float> StatGrowth { get; private set; }
-    //bonus stats via equipment and traits
     public Dictionary<StatType, List<int>> StatModifiers { get; private set; }
+    public Dictionary<SecondaryStatType, float> SecondaryStats { get; private set; }
     public Dictionary<ElementalProperty, ElementalResistance> Resistances { get; private set; }
     public Dictionary<ElementalProperty, List<int>> ResistanceModifiers { get; private set; }
     [field: SerializeField] public List<Trait> Traits { get; private set; }
@@ -70,17 +85,24 @@ public class CharacterInfo : ScriptableObject
 
     protected virtual void OnEnable()
     {
-        //base stat dict
+        //base stats
         BaseStats = new Dictionary<StatType, int>();
         BaseStats.Add(StatType.Attack, baseAttack);
         BaseStats.Add(StatType.Defense, baseDefense);
         BaseStats.Add(StatType.MAttack, baseMAttack);
         BaseStats.Add(StatType.MDefense, baseMDefense);
         BaseStats.Add(StatType.Agility, baseAgility);
-        BaseStats.Add(StatType.Crit, baseCrit);
-        BaseStats.Add(StatType.Evade, baseEvade);
+        BaseStats.Add(StatType.Healing, baseHealing);
         BaseStats.Add(StatType.HP, baseHP);
         BaseStats.Add(StatType.MP, baseMP);
+
+        //secondary stats (% based, not obtained via leveling)
+        SecondaryStats = new Dictionary<SecondaryStatType, float>();
+        SecondaryStats.Add(SecondaryStatType.CritRate, baseCritRate);
+        SecondaryStats.Add(SecondaryStatType.CritPower, baseCritPower);
+        SecondaryStats.Add(SecondaryStatType.EvadeRate, baseEvadeRate);
+        SecondaryStats.Add(SecondaryStatType.BlockRate, baseBlockRate);
+        SecondaryStats.Add(SecondaryStatType.BlockPower, baseBlockPower);
 
         //stat growth dict
         StatGrowth = new Dictionary<StatType, float>();
@@ -89,8 +111,7 @@ public class CharacterInfo : ScriptableObject
         StatGrowth.Add(StatType.MAttack, mAttackGrowth);
         StatGrowth.Add(StatType.MDefense, mDefenseGrowth);
         StatGrowth.Add(StatType.Agility, agilityGrowth);
-        StatGrowth.Add(StatType.Crit, 0);
-        StatGrowth.Add(StatType.Evade, 0);
+        StatGrowth.Add(StatType.Healing, healingGrowth);
         StatGrowth.Add(StatType.HP, hpGrowth);
         StatGrowth.Add(StatType.MP, mpGrowth);
 
@@ -122,7 +143,7 @@ public class CharacterInfo : ScriptableObject
     public int GetStat(StatType statType)
     {
         int stat = 0;
-        stat += BaseStats[statType] + Mathf.FloorToInt((Level * StatGrowth[statType])) + StatModifiers[statType].Sum();
+        stat += Mathf.FloorToInt(BaseStats[statType] + (Level * StatGrowth[statType]) + StatModifiers[statType].Sum());
         return stat;
     }
 }

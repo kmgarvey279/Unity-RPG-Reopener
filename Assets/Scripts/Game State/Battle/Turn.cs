@@ -21,22 +21,26 @@ public class Turn
     private float DelayTotal = 0;
     [field: SerializeField] public TurnType TurnType { get; private set; }
     [field: SerializeField] public Combatant Actor { get; private set; }
+    [field: SerializeField] public string ActorName { get; private set; } = "";
     [field: SerializeField] public Action Action { get; private set; }
     [field: SerializeField] public List<Combatant> Targets { get; private set; } = new List<Combatant>();
     public CombatantType TargetedCombatantType { get; private set; }
     [field: SerializeField] public int Counter { get; protected set; }
     [field: SerializeField] public TurnPanel TurnPanel { get; protected set; }
     public int TempModifier { get; private set; }
-    public bool IsDead { get; private set; } = false;
     public bool IsTargeted { get; private set; } = false;
     public bool WasChanged { get; private set; } = false;
     public bool ReselectTargets { get; private set; } = false;
-    public int QueueIndex { get; private set; } = -1;
+    [field: SerializeField] public int QueueIndex { get; private set; } = -1;
 
     public Turn(TurnType turnType, Combatant actor, float turnMultiplier)
     {
         TurnType = turnType;
         Actor = actor;
+        if(Actor != null)
+        {
+            ActorName = Actor.CharacterName + " " +  Actor.CharacterLetter;
+        }
         if(turnType is TurnType.Intervention)
         {
             Counter = -8888;
@@ -88,11 +92,6 @@ public class Turn
         Targets.Clear();
     }
 
-    public void SetIsDead(bool isDead)
-    {
-        IsDead = isDead;
-    }
-
     public void SetReselectTargets(bool reselectTargets)
     {
         ReselectTargets = reselectTargets;
@@ -132,14 +131,13 @@ public class Turn
         
         int amountToAdd = Mathf.FloorToInt(modifierToAdd * (defaultTurnCost - GetSpeed()));
         
-        //prevent counter for going negative
+        //prevent counter from going negative
         if(amountToAdd + Counter < 0) 
         {
             amountToAdd = -Counter;
         }
-        
-        int newCounterValue = Counter + amountToAdd;
-        Counter = newCounterValue;
+
+        Counter = Counter + amountToAdd;
 
         if(isTemp)
         {
@@ -148,6 +146,11 @@ public class Turn
         else if (modifierToAdd > 0) 
         {
             DelayTotal += modifierToAdd;
+        }
+        //if it had an effect
+        if (amountToAdd != 0 && isTemp)
+        {
+            TurnPanel.DisplayTurnModifier(amountToAdd);
         }
 
         WasChanged = true;

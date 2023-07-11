@@ -30,6 +30,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9183411637428127400}
   m_Father: {fileID: 0}
@@ -121,19 +122,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 9183411636186826502}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8465858831755466567}
-        m_TargetAssemblyTypeName: PartySlot, Assembly-CSharp
-        m_MethodName: ChangeActiveParty
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &8465858831755466567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,10 +135,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c2bbb042787d3f43b3bf154d920ef15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  partyData: {fileID: 11400000, guid: 0056b2932c628e7458ae67b746239176, type: 2}
-  partyMember:
-    name: 
-    inActiveParty: 0
   nameText: {fileID: 9183411637428127407}
   slotImage: {fileID: 9183411636186826502}
   activePartyColor: {r: 0.8773585, g: 0.32611248, b: 0.8761215, a: 1}
@@ -184,6 +169,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9183411636186826503}
   m_RootOrder: 0

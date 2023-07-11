@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3729e2f50bf7e804ba566480488c98c8, type: 3}
+  m_Name: Opportunist Effect
+  m_EditorClassIdentifier: 
+  triggerConditions:
+  - <Conditional>k__BackingField: 0
+    <IsNot>k__BackingField: 0
+    <BattleCondition>k__BackingField: {fileID: 11400000, guid: 5ff15dab6e26862479881e297acb386f,
+      type: 2}
+  actionModifiers: []
+  triggerRate: 1
+  <EffectName>k__BackingField: Opportunist
+  <DisplayName>k__BackingField: 1
+  <BattleEventType>k__BackingField: 1
+  <TargetSelf>k__BackingField: 0
+  <Priority>k__BackingField: 1
+  <ActionAnimations>k__BackingField:
+  - <BattleAnimatorTrigger>k__BackingField: 2
+    <CustomAnimatorTrigger>k__BackingField: 
+    <VFXPrefab>k__BackingField: {fileID: 0}
+    <VFXSpawnPosition>k__BackingField: 0
+    <CombatantBindPosition>k__BackingField: 0
+    <BindVFXToSpawnPoint>k__BackingField: 0
+    <SpawnForEachTarget>k__BackingField: 0
+    <IsProjectile>k__BackingField: 0
+    <OnlyPlayOnXHit>k__BackingField: 0
+    <XHit>k__BackingField: 0
+    <Delay>k__BackingField: 0
+    <Duration>k__BackingField: 0.4
+  <AdditionalEffects>k__BackingField: []
+  isHeal: 0
+  power: 0.5
+  offensiveStat: 0
+  useDefensiveStat: 1
+  defensiveStat: 2

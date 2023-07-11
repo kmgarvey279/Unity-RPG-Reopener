@@ -11,27 +11,56 @@ public class TurnStartState : BattleState
     //cache wait for seconds
     private WaitForSeconds waitZeroPointTwoFive = new WaitForSeconds(0.25f);
     private WaitForSeconds waitZeroPointFive = new WaitForSeconds(0.5f);
-    private bool queueIntervention = false;
 
     public override void OnEnter()
     {
         Debug.Log("Entering Turn Start State");
         base.OnEnter();
-        queueIntervention = false;
         StartCoroutine(StartTurnCo());
     }
 
     public override void StateUpdate()
     {
-        if (Input.GetButtonDown("Intervention"))
+        if (Input.GetButtonDown("QueueIntervention1"))
         {
-            if (!queueIntervention && battleTimeline.CurrentTurn.TargetedCombatantType == CombatantType.Player)
+            if (battleManager.InterventionCheck(0))
             {
-                queueIntervention = true;
+                if (Input.GetButton("Shift"))
+                {
+                    battleTimeline.RemoveLastIntervention(battleManager.PlayableCombatants[0]);
+                }
+                else
+                {
+                    battleTimeline.AddInterventionToQueue(battleManager.PlayableCombatants[0]);
+                }
             }
-            else
+        }
+        else if (Input.GetButtonDown("QueueIntervention2"))
+        {
+            if (battleManager.InterventionCheck(1))
             {
-                battleTimeline.AddTurn(TurnType.Intervention, battleManager.GetCombatants(CombatantType.Player)[0]);
+                if (Input.GetButton("Shift"))
+                {
+                    battleTimeline.RemoveLastIntervention(battleManager.PlayableCombatants[1]);
+                }
+                else
+                {
+                    battleTimeline.AddInterventionToQueue(battleManager.PlayableCombatants[1]);
+                }
+            }
+        }
+        else if (Input.GetButtonDown("QueueIntervention3"))
+        {
+            if (battleManager.InterventionCheck(2))
+            {
+                if (Input.GetButton("Shift"))
+                {
+                    battleTimeline.RemoveLastIntervention(battleManager.PlayableCombatants[2]);
+                }
+                else
+                {
+                    battleTimeline.AddInterventionToQueue(battleManager.PlayableCombatants[2]);
+                }
             }
         }
     }
@@ -50,20 +79,15 @@ public class TurnStartState : BattleState
     private IEnumerator StartTurnCo()
     {
         yield return waitZeroPointTwoFive;
-
+        //update chain value
+        //battleManager.ChainCheck();
         //add turn start effects to queue
         yield return StartCoroutine(battleTimeline.CurrentTurn.Actor.OnTurnStartCo());
         //execute any turn start effects
         yield return StartCoroutine(battleEventQueue.ExhaustQueueCo());
         yield return waitZeroPointTwoFive;
 
-        if(queueIntervention)
-        {
-            battleTimeline.CurrentTurn.PauseTurn();
-            battleTimeline.AddTurn(TurnType.Intervention, battleTimeline.CurrentTurn.Actor);
-            stateMachine.ChangeState((int)BattleStateType.ChangeTurn);
-        }
-        else if (battleTimeline.CurrentTurn.Actor is PlayableCombatant)
+        if (battleTimeline.CurrentTurn.Actor is PlayableCombatant)
         {
             stateMachine.ChangeState((int)BattleStateType.Menu);
         }

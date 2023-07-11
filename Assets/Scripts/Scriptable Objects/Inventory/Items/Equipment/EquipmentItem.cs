@@ -19,8 +19,13 @@ public class EquipmentItem : Item
     [SerializeField] protected int mAttackModifier = 0;
     [SerializeField] protected int mDefenseModifier = 0;
     [SerializeField] protected int agilityModifier = 0;
-    [SerializeField] protected int critModifier = 0;
-    [SerializeField] protected int evadeModifier = 0;
+    [SerializeField] protected int healingModifier = 0;
+
+    [SerializeField] protected float critRateModifier = 0;
+    [SerializeField] protected float critPowerModifier = 0;
+    [SerializeField] protected float evadeRateModifier = 0;
+    [SerializeField] protected float blockRateModifier = 0;
+    [SerializeField] protected float blockPowerModifier = 0;
     [Header("Elemental Resistances")]
     [SerializeField] protected int fireResistance = 0;
     [SerializeField] protected int iceResistance = 0;
@@ -31,11 +36,12 @@ public class EquipmentItem : Item
     [field: SerializeField] public bool CharacterExclusive { get; private set; }
     [field: SerializeField] public List<PlayableCharacterID> ExclusiveCharacters { get; private set; }
     public Dictionary<StatType, int> StatModifiers { get; protected set; }
+    public Dictionary<SecondaryStatType, float> SecondaryStatModifiers { get; protected set; }
     public Dictionary<ElementalProperty, int> ResistanceModifiers { get; protected set; }
     
     public virtual void OnEnable()
     {
-        //modifiers
+        //stat modifiers
         StatModifiers = new Dictionary<StatType, int>();
         StatModifiers.Add(StatType.HP, hpModifier);
         StatModifiers.Add(StatType.MP, mpModifier);
@@ -44,8 +50,13 @@ public class EquipmentItem : Item
         StatModifiers.Add(StatType.MAttack, mAttackModifier);
         StatModifiers.Add(StatType.MDefense, mDefenseModifier);
         StatModifiers.Add(StatType.Agility, agilityModifier);
-        StatModifiers.Add(StatType.Crit, critModifier);
-        StatModifiers.Add(StatType.Evade, evadeModifier);
+
+        SecondaryStatModifiers = new Dictionary<SecondaryStatType, float>();
+        SecondaryStatModifiers.Add(SecondaryStatType.CritRate, critRateModifier);
+        SecondaryStatModifiers.Add(SecondaryStatType.CritPower, critPowerModifier);
+        SecondaryStatModifiers.Add(SecondaryStatType.EvadeRate, evadeRateModifier);
+        SecondaryStatModifiers.Add(SecondaryStatType.BlockRate, blockRateModifier);
+        SecondaryStatModifiers.Add(SecondaryStatType.BlockPower, blockPowerModifier);
         //elemental resistance
         ResistanceModifiers = new Dictionary<ElementalProperty, int>();
         ResistanceModifiers.Add(ElementalProperty.None, 0);

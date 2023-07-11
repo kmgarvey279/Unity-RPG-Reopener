@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 
 public class BattlePartyPanel : MonoBehaviour
 {
+    private int index;
     [Header("Character Icon")]
     [SerializeField] private Image icon;
     [SerializeField] protected Material defaultMaterial;
@@ -27,10 +28,31 @@ public class BattlePartyPanel : MonoBehaviour
     [Header("MP Bar")]
     [SerializeField] private OutlinedText mpNum;
     [SerializeField] private AnimatedBar mpBar;
+    [Header("Intervention Trigger")]
+    [SerializeField] private GameObject triggerAvailable;
+    [SerializeField] private OutlinedText availableButtonPrompt;
+    [SerializeField] private GameObject triggerUnavailable;
+    [SerializeField] private OutlinedText unavailableButtonPrompt;
+    private string button1 = "1";
+    private string button2 = "2";
+    private string button3 = "3";
+    private List<string> buttons = new List<string>();
+    [Header("Linked Party Member")]
+    [SerializeField] private BattlePartyPanel linkPanel;
 
-    private void Start()
+    private void OnEnable()
     {
+        buttons.Add(button1);
+        buttons.Add(button2);
+        buttons.Add(button3);
         animator = GetComponent<Animator>();
+    }
+
+    public void SetIndex(int _index)
+    {
+        index = _index;
+        availableButtonPrompt.SetText(buttons[index]);
+        unavailableButtonPrompt.SetText(buttons[index]);
     }
 
     public void AssignCombatant(PlayableCombatant _playableCombatant)
@@ -80,12 +102,12 @@ public class BattlePartyPanel : MonoBehaviour
             if (isHighlighted)
             {
                 panel.color = highlightedColor;
-                animator.SetTrigger("Out");
+                //animator.SetTrigger("Out");
             }
             else
             {
                 panel.color = defaultColor;
-                animator.SetTrigger("In");
+                //animator.SetTrigger("In");
             }
             isActive = isHighlighted;
         }
@@ -94,10 +116,17 @@ public class BattlePartyPanel : MonoBehaviour
     public void OnKO()
     {
         icon.material = greyscaleMaterial;
+        triggerUnavailable.SetActive(true);
     }
 
     public void OnRevive()
     {
         icon.material = defaultMaterial;
+        triggerUnavailable.SetActive(false);
+    }
+
+    public void LockInterventionTriggerIcon(bool isLocked)
+    {
+        triggerUnavailable.SetActive(isLocked);
     }
 }

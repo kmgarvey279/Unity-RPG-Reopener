@@ -39,7 +39,7 @@ public class TargetInfo : MonoBehaviour
         Combatant combatant = gameObject.GetComponent<Combatant>();
         if(combatant != null)
         {
-            nameText.text = combatant.CharacterName + " " + combatant.CharacterLetter;
+            nameText.text = combatant.CharacterName;
             statusEffectDisplay.CreateList(combatant);
             traitDisplay.CreateList(combatant);
             if (!display.activeInHierarchy)

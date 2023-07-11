@@ -292,7 +292,7 @@ MonoBehaviour:
   - {fileID: 4089749490608123427}
   - {fileID: 9027676671206540785}
   delay: 0
-  duration: 0.3
+  duration: 0.5
   moveDuration: 0.5
   loop: 0
   canFlip: 0

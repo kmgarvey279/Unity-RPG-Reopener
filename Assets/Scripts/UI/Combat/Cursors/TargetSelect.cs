@@ -8,7 +8,7 @@ public class TargetSelect : MonoBehaviour, ISelectHandler, IDeselectHandler
 {
     [SerializeField] private Canvas canvas;
     private Combatant combatant;
-    [SerializeField] private Image cursor;
+    [SerializeField] private GameObject cursor;
     [SerializeField] private SignalSenderGO onCombatantSelect;
     [SerializeField] private SignalSenderGO onCombatantDeselect;
 
@@ -35,7 +35,7 @@ public class TargetSelect : MonoBehaviour, ISelectHandler, IDeselectHandler
 
     public void Select()
     {
-        cursor.enabled = true;
+        cursor.SetActive(true);
         onCombatantSelect.Raise(combatant.gameObject);
     }
 
@@ -46,7 +46,7 @@ public class TargetSelect : MonoBehaviour, ISelectHandler, IDeselectHandler
 
     public void Deselect()
     {
-        cursor.enabled = false;
+        cursor.SetActive(false);
         onCombatantDeselect.Raise(combatant.gameObject);
     }
 }

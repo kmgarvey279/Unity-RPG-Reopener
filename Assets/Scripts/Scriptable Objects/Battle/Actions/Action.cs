@@ -21,19 +21,13 @@ public enum AttackType
     Other
 }
 
-public enum HealthEffectType
-{
-    Stat,
-    Percentage,
-    Fixed,
-    None
-}
-
 public enum TargetingType
 {
     TargetHostile,
     TargetFriendly,
-    TargetSelf
+    TargetSelf,
+    TargetAllies,
+    TargetKOAllies
 }
 
 public enum ActionCostType
@@ -101,31 +95,27 @@ public class Action : ScriptableObject
     [field: Header("Cost")]
     [field: SerializeField] public ActionCostType ActionCostType { get; protected set; }
     [field: SerializeField] public int Cost { get; protected set; } = 0;
-    [Header("Health Effects")]
-    [SerializeField] private HealthEffectType healthEffectType;
-    [SerializeField] private float power = 1f;
-    [SerializeField] private float primaryTargetBonus = 0;
+    [field: Header("Health Effects")]
+    [field: SerializeField] public float Power { get; protected set; } = 1f;
     //[SerializeField] private float multiHitMultiplier = 0;
-    [SerializeField] private StatType offensiveStat = StatType.Attack;
-    [SerializeField] private StatType defensiveStat = StatType.Defense;
-    private float varianceMin = 0.95f;
-    private float varianceMax = 1.05f;
     [field: Header("Damage Properties")]
     [field: SerializeField] public AttackType AttackType { get; protected set; }
+    [field: SerializeField] public StatType OffensiveStat { get; protected set; } = StatType.Attack;
+    [field: SerializeField] public StatType DefensiveStat { get; protected set; } = StatType.Defense;
     [field: SerializeField] public ElementalProperty ElementalProperty { get; private set; } = ElementalProperty.None;
     [field: SerializeField] public bool IsMelee { get; private set; } = false;
-    [field: SerializeField, Range(0, 1)] public float Pierce { get; private set; } = 0;
+    [field: SerializeField, Range(0, 1f)] public float Pierce { get; private set; } = 0;
     [field: Header("Accuracy/Crit/Hits")]
     [field: SerializeField] public int HitCount { get; protected set; } = 1;
-    [field: SerializeField, Range(1, 100)] public float HitRate { get; protected set; } = 100f;
+    [field: SerializeField, Range(0.25f, 1f)] public float HitRate { get; protected set; } = 1f;
     [field: SerializeField] public bool GuaranteedHit { get; protected set; } = false;
     [field: SerializeField, Range(0.25f, 2f)] public float CritRateMultiplier { get; protected set; } = 1f;
     [field: Header("Targeting")]
     [field: SerializeField] public TargetingType TargetingType { get; protected set; }
     [field: SerializeField] public AOEType AOEType { get; protected set; }
     [field: SerializeField] public bool HitRandomTarget { get; protected set; } = false;
-    [field: SerializeField, Header("Conditional Modifiers")]
-    public List<ActionModifier> ActionModifiers { get; protected set; } = new List<ActionModifier>();
+    [Header("Conditional Modifiers")]
+    [SerializeField] private List<ActionModifier> ActionModifiers = new List<ActionModifier>();
     public Dictionary<ActionModifierType, List<ActionModifier>> ActionModifierDict { get; protected set; }
     [field: SerializeField, Header("Conditional Triggerable Effects")]
     public List<TriggerableBattleEffect> TriggerableBattleEffects { get; protected set; } = new List<TriggerableBattleEffect>();
@@ -136,6 +126,14 @@ public class Action : ScriptableObject
     private void OnEnable()
     {
         ActionModifierDict = new Dictionary<ActionModifierType, List<ActionModifier>>();
+        foreach (ActionModifierType actionModifierType in System.Enum.GetValues(typeof(ActionModifierType)))
+        {
+            ActionModifierDict.Add(actionModifierType, new List<ActionModifier>());
+        }
+        foreach (ActionModifier actionModifier in ActionModifiers)
+        {
+            ActionModifierDict[actionModifier.ActionModifierType].Add(actionModifier);
+        }
     }
 
     public bool IsUsable(Combatant user)
@@ -168,112 +166,6 @@ public class Action : ScriptableObject
         }
 
         return isUsable;
-    }
-
-    public void ApplyEffect(ActionSubevent actionSubevent, bool isCrit, int hitNum)
-    {
-        if (ActionType == ActionType.Attack)
-        {
-            Debug.Log("applying attack to target");
-            actionSubevent.Target.OnAttacked(GetHealthEffect(actionSubevent, isCrit), isCrit, ElementalProperty);
-        }
-        else if (ActionType == ActionType.Heal)
-        {
-            actionSubevent.Target.OnHealed(GetHealthEffect(actionSubevent, isCrit), isCrit);
-        }
-    }
-
-    private int GetHealthEffect(ActionSubevent actionSubevent, bool isCrit)
-    {
-        //get action power
-        float actionPower = power;
-        if (actionSubevent.TargetIndex == 0)
-        {
-            actionPower += primaryTargetBonus;
-        }
-
-        //get relevent stat
-        float stat = 0;
-        if (actionSubevent.Actor.Stats.ContainsKey(offensiveStat))
-        {
-            stat = actionSubevent.Actor.Stats[offensiveStat].GetValue();
-        }
-        actionPower *= stat;
-
-        //check for crit
-        float critMultiplier = 1f;
-        if (isCrit)
-        {
-            critMultiplier = 1.5f;
-        }
-        actionPower *= critMultiplier;
-
-        //outgoing power modifiers
-        ActionModifierType outgoingModifierType = ActionModifierType.Damage;
-        if (ActionType == ActionType.Heal)
-        {
-            outgoingModifierType = ActionModifierType.Healing;
-        }
-        foreach (ActionModifier actionModifier in actionSubevent.Actor.ActionModifiers[BattleEventType.Acting][outgoingModifierType])
-        {
-            actionPower += actionPower * actionModifier.GetModifier(actionSubevent);
-        }
-
-        //defense modifiers
-        if(ActionType == ActionType.Attack)
-        {
-            //get defense
-            float defense = (actionSubevent.Target.Stats[defensiveStat].GetValue() * 3);
-            foreach (ActionModifier actionModifier in actionSubevent.Target.ActionModifiers[BattleEventType.Targeted][ActionModifierType.Defense])
-            {
-                defense += defense * actionModifier.GetModifier(actionSubevent);
-            }
-            foreach (ActionModifier actionModifier in actionSubevent.Actor.ActionModifiers[BattleEventType.Acting][ActionModifierType.Defense])
-            {
-                defense += defense * actionModifier.GetModifier(actionSubevent);
-            }
-
-            //attack - defense
-            defense -= (defense * Pierce);
-            actionPower = actionPower - defense;
-        }
-
-        //elemental multiplier
-        ElementalResistance elementalResistance = actionSubevent.Target.Resistances[ElementalProperty];
-        float resistMultiplier = 1f;
-        if (elementalResistance == ElementalResistance.Weak)
-        {
-            resistMultiplier = 1.5f;
-        }
-        else if (elementalResistance == ElementalResistance.Resist)
-        {
-            resistMultiplier = 0.6f;
-        }
-        else if (elementalResistance == ElementalResistance.Null)
-        {
-            resistMultiplier = 0f;
-        }
-        actionPower *= resistMultiplier;
-
-        //elemental resist modifiers (playable characters only)
-        actionPower -= (actionPower * (actionSubevent.Target.ResistanceModifiers[ElementalProperty] / 100f));
-
-        //incoming power modifiers
-        ActionModifierType incomingModifierType = ActionModifierType.Damage;
-        if (ActionType == ActionType.Heal)
-        {
-            incomingModifierType = ActionModifierType.Healing;
-        }
-        foreach (ActionModifier actionModifier in actionSubevent.Target.ActionModifiers[BattleEventType.Targeted][incomingModifierType])
-        {
-            actionPower += actionPower * actionModifier.GetModifier(actionSubevent);
-        }
-
-        //rng variance
-        actionPower *= Random.Range(varianceMin, varianceMax);
-
-        //final value
-        return Mathf.Clamp(Mathf.FloorToInt(actionPower), 1, 9999);
     }
 }
 

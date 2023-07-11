@@ -7,9 +7,9 @@ public class TriggerableBattleEffectTurnModifier : TriggerableBattleEffect
 {
     [field: SerializeField, Range(-1f, 1f)] public float TurnModifier { get; private set; }
 
-    public override void ApplyEffect(Combatant actor, Combatant target, float potencyOverride = 0)
+    public override void ApplyEffect(Combatant actor, Combatant target, ActionSummary actionSummary)
     {
-        base.ApplyEffect(actor, target, potencyOverride);
+        base.ApplyEffect(actor, target, actionSummary);
         target.ApplyTurnModifier(TurnModifier);
     }
 }

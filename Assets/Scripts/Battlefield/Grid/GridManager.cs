@@ -6,23 +6,18 @@ using UnityEngine.Tilemaps;
 using UnityEngine.EventSystems;
 using UnityEngine.WSA;
 
-public enum CombatantType
-{
-    Player,
-    Enemy
-}
-
 public class GridManager : MonoBehaviour
 {
     [SerializeField] private BattleManager battleManager;    
     [Header("Array of tiles")]
     [SerializeField] private List<Tile> playerTiles = new List<Tile>();
     private Tile[,] playerTileArray;
-    [SerializeField] private List<Tile> enemyTiles = new List<Tile>();
+    public List<Tile> enemyTiles = new List<Tile>();
     private Tile[,] enemyTileArray;
     [Header("Center Positions")]
     [SerializeField] private List<Transform> playerCenterTiles = new List<Transform>();
     [SerializeField] private List<Transform> enemyCenterTiles = new List<Transform>();
+    [field: SerializeField] public List<Tile> linkTiles = new List<Tile>();
     public Dictionary<CombatantType, List<Transform>> CenterTiles { get; private set; } = new Dictionary<CombatantType, List<Transform>>();
 
     private void Awake()
@@ -47,10 +42,11 @@ public class GridManager : MonoBehaviour
     }
 
     public void DisplaySelectableTargets(TargetingType targetingType, Combatant actor, bool isMelee)
-    { 
+    {
+        Debug.Log("displaying selectable targets");
         if (targetingType == TargetingType.TargetSelf)
         {
-            foreach (Combatant combatant in battleManager.Combatants)
+            foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.All))
             {
                 combatant.ChangeSelectState(CombatantTargetState.Untargetable);
             }
@@ -100,17 +96,34 @@ public class GridManager : MonoBehaviour
                 firstSelectedCombatant.Select();
             }
         }
-        else if (targetingType == TargetingType.TargetFriendly)
+        else
         {
-            foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.Enemy))
+            bool targetKO = false;
+            if (targetingType == TargetingType.TargetKOAllies)
+            {
+                targetKO = true;
+            }
+            List<Combatant> targetableCombatants = new List<Combatant>();
+            foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.Enemy, false))
             {
                 combatant.ChangeSelectState(CombatantTargetState.Untargetable);
             }
-            foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.Player))
+            foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.Player, targetKO))
             {
-                combatant.ChangeSelectState(CombatantTargetState.Targetable);
+                if (targetingType == TargetingType.TargetFriendly || combatant != actor)
+                {
+                    targetableCombatants.Add(combatant);
+                    combatant.ChangeSelectState(CombatantTargetState.Targetable);
+                }
             }
-            actor.Select();
+            if (targetingType == TargetingType.TargetFriendly)
+            {
+                actor.Select();
+            } 
+            else if (targetableCombatants.Count > 0)
+            {
+                targetableCombatants[0].Select();
+            }
         }
     }
 

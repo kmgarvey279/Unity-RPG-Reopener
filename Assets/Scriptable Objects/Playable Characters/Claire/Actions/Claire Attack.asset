@@ -17,32 +17,30 @@ MonoBehaviour:
     type: 3}
   <Description>k__BackingField: Attack twice.
   <ActionType>k__BackingField: 0
-  <ActorTurnModifier>k__BackingField: -0.4
-  <TargetTurnModifier>k__BackingField: 0.4
-  <HasCastTime>k__BackingField: 1
+  <ActorTurnModifier>k__BackingField: 0
+  <TargetTurnModifier>k__BackingField: 0
+  <HasCastTime>k__BackingField: 0
   <ActionCostType>k__BackingField: 2
   <Cost>k__BackingField: 20
-  healthEffectType: 0
-  power: 99
-  primaryTargetBonus: 0
-  offensiveStat: 0
-  defensiveStat: 2
+  <Power>k__BackingField: 1
   <AttackType>k__BackingField: 0
+  <OffensiveStat>k__BackingField: 0
+  <DefensiveStat>k__BackingField: 2
   <ElementalProperty>k__BackingField: 0
-  <IsMelee>k__BackingField: 0
+  <IsMelee>k__BackingField: 1
   <Pierce>k__BackingField: 0
-  <HitCount>k__BackingField: 2
-  <HitRate>k__BackingField: 100
+  <HitCount>k__BackingField: 1
+  <HitRate>k__BackingField: 1
   <GuaranteedHit>k__BackingField: 0
   <CritRateMultiplier>k__BackingField: 1
   <TargetingType>k__BackingField: 0
   <AOEType>k__BackingField: 0
   <HitRandomTarget>k__BackingField: 0
-  <ActionModifiers>k__BackingField: []
+  ActionModifiers: []
   <TriggerableBattleEffects>k__BackingField: []
   <ExecutePosition>k__BackingField: 1
   <ActionAnimations>k__BackingField:
-  - <BattleAnimatorTrigger>k__BackingField: 0
+  - <BattleAnimatorTrigger>k__BackingField: 2
     <CustomAnimatorTrigger>k__BackingField: 
     <VFXPrefab>k__BackingField: {fileID: 6448339373710438155, guid: 9b11c2027832c6243962af2a0e71fbe2,
       type: 3}
@@ -55,7 +53,7 @@ MonoBehaviour:
     <XHit>k__BackingField: 0
     <Delay>k__BackingField: 0
     <Duration>k__BackingField: 0.4
-  - <BattleAnimatorTrigger>k__BackingField: 0
+  - <BattleAnimatorTrigger>k__BackingField: 2
     <CustomAnimatorTrigger>k__BackingField: 
     <VFXPrefab>k__BackingField: {fileID: 1093962223099665987, guid: 1dcedd5947098494c8a7258e268fd3bd,
       type: 3}

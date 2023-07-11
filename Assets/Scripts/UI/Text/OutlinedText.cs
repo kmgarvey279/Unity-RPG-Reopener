@@ -31,6 +31,14 @@ public class OutlinedText : MonoBehaviour
         mainText.color = newColor;
     }
 
+    public void SetSecondaryTextColor(Color newColor)
+    {
+        foreach (TextMeshProUGUI tmp in outline)
+        {
+            tmp.color = newColor;
+        }
+    }
+
     public void Clear()
     {
         mainText.text = "";

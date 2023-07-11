@@ -25,12 +25,21 @@ public class EnemyCombatant : Combatant
     {
         base.OnKO();
         Tile.UnassignOccupier();
-        StartCoroutine(DestroyEnemyCo());
+        if (!CanRevive)
+        {
+            StartCoroutine(DestroyEnemyCo());
+        }
+    }
+
+    public override void OnRevive(float percentOfHPToRestore)
+    {
+        base.OnRevive(percentOfHPToRestore);
+        Tile.AssignOccupier(this);
     }
 
     private IEnumerator DestroyEnemyCo()
     {
         yield return wait1;
-        Destroy(gameObject);
+        gameObject.SetActive(false);
     }
 }

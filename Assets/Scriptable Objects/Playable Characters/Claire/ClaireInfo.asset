@@ -12,22 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd7c3aa6ce019147804e90e0136ea53, type: 3}
   m_Name: ClaireInfo
   m_EditorClassIdentifier: 
-  baseHP: 250
-  hpGrowth: 0
-  baseMP: 50
-  mpGrowth: 0
-  baseAttack: 3
-  attackGrowth: 0
-  baseDefense: 3
-  defenseGrowth: 0
-  baseMAttack: 3
-  mAttackGrowth: 0
-  baseMDefense: 3
-  mDefenseGrowth: 0
-  baseAgility: 5
-  agilityGrowth: 0
-  baseCrit: 5
-  baseEvade: 5
+  baseHP: 200
+  hpGrowth: 20
+  baseMP: 60
+  mpGrowth: 2
+  baseAttack: 10
+  attackGrowth: 0.75
+  baseDefense: 7
+  defenseGrowth: 0.75
+  baseMAttack: 6
+  mAttackGrowth: 0.5
+  baseMDefense: 7
+  mDefenseGrowth: 0.75
+  baseHealing: 4
+  healingGrowth: 0.25
+  baseAgility: 12
+  agilityGrowth: 1
+  baseCritRate: 0.05
+  baseCritPower: 1.5
+  baseEvadeRate: 1
+  baseBlockRate: 0.05
+  baseBlockPower: 1.5
   fireResistance: 0
   iceResistance: 0
   electricResistance: 0
@@ -36,7 +41,9 @@ MonoBehaviour:
     type: 3}
   <CharacterName>k__BackingField: Claire
   <Level>k__BackingField: 1
-  <Traits>k__BackingField: []
+  <Traits>k__BackingField:
+  - {fileID: 11400000, guid: d2022c87c5ed6fa479e1c2bddbe0bc6e, type: 2}
+  - {fileID: 11400000, guid: 8943b911fb46ceb468736d780fa07d5a, type: 2}
   weapon: {fileID: 0}
   armor: {fileID: 0}
   accessory: {fileID: 0}

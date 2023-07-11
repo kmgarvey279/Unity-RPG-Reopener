@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   battleManager: {fileID: 2036527992414714679}
+  battleTimeline: {fileID: 0}
   gridManager: {fileID: 0}
   effectPopup: {fileID: 0}
   <Events>k__BackingField: []
@@ -117,6 +118,7 @@ Transform:
   - {fileID: 871918602}
   - {fileID: 1255800024}
   - {fileID: 905993646}
+  - {fileID: 2223181051230426039}
   m_Father: {fileID: 2036527992414714682}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -143,6 +145,7 @@ MonoBehaviour:
   - {fileID: 871918601}
   - {fileID: 1255800025}
   - {fileID: 905993647}
+  - {fileID: 4818587476516272156}
   currentState: {fileID: 1104867730}
   isActive: 1
 --- !u!114 &300877470
@@ -221,6 +224,7 @@ MonoBehaviour:
   id: 0
   battleStateType: 7
   gridManager: {fileID: 0}
+  battleTimeline: {fileID: 0}
   signalListeners: []
 --- !u!1 &905993645
 GameObject:
@@ -270,7 +274,39 @@ MonoBehaviour:
   id: 0
   battleStateType: 9
   gridManager: {fileID: 0}
+  battleTimeline: {fileID: 0}
   signalListeners: []
+--- !u!1 &990743667
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 990743668}
+  m_Layer: 0
+  m_Name: Playable Combatants
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &990743668
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990743667}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1385212921}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1068160556
 GameObject:
   m_ObjectHideFlags: 0
@@ -319,6 +355,7 @@ MonoBehaviour:
   id: 0
   battleStateType: 5
   gridManager: {fileID: 0}
+  battleTimeline: {fileID: 0}
   signalListeners: []
   wait: {fileID: 11400000, guid: 87818ae46e5748c45afe5f916dd34148, type: 2}
 --- !u!1 &1104867728
@@ -369,6 +406,7 @@ MonoBehaviour:
   id: 0
   battleStateType: 0
   gridManager: {fileID: 0}
+  battleTimeline: {fileID: 0}
   signalListeners: []
 --- !u!1 &1255800023
 GameObject:
@@ -419,11 +457,10 @@ MonoBehaviour:
   id: 0
   battleStateType: 8
   gridManager: {fileID: 0}
+  battleTimeline: {fileID: 0}
   signalListeners:
   - {fileID: 1255800026}
   targetInfo: {fileID: 0}
-  battleTimeline: {fileID: 0}
-  interventionPopup: {fileID: 0}
   onInterventionStart: {fileID: 11400000, guid: c421700ae55ccd74a9e346123d336182,
     type: 2}
   onInterventionEnd: {fileID: 11400000, guid: 416636233610cc54aa03b5542d9d20bc, type: 2}
@@ -507,12 +544,16 @@ MonoBehaviour:
   id: 0
   battleStateType: 4
   gridManager: {fileID: 0}
+  battleTimeline: {fileID: 0}
   signalListeners:
   - {fileID: 504466051}
   - {fileID: 504466052}
   - {fileID: 504466050}
   actionPopup: {fileID: 0}
+  onInterventionEnd: {fileID: 11400000, guid: 416636233610cc54aa03b5542d9d20bc, type: 2}
+  inventory: {fileID: 11400000, guid: a51431b0d76038d40940c59dec71a7fb, type: 2}
   battleEventQueue: {fileID: 451647476}
+  castingStatus: {fileID: 11400000, guid: 2aa60d4bb6c5db74abb6cfaad23bc92e, type: 2}
 --- !u!114 &504466050
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -625,6 +666,102 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!1 &1385212920
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1385212921}
+  m_Layer: 0
+  m_Name: Combatants
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1385212921
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1385212920}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 990743668}
+  - {fileID: 1408779867}
+  - {fileID: 1421601337}
+  m_Father: {fileID: 2036527992414714682}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1408779866
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1408779867}
+  m_Layer: 0
+  m_Name: Linked Playable Combants
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1408779867
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1408779866}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1385212921}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1421601336
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1421601337}
+  m_Layer: 0
+  m_Name: Enemy Combatants
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1421601337
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1421601336}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1385212921}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1522742265
 GameObject:
   m_ObjectHideFlags: 0
@@ -673,9 +810,11 @@ MonoBehaviour:
   id: 0
   battleStateType: 2
   gridManager: {fileID: 0}
+  battleTimeline: {fileID: 0}
   signalListeners: []
   commandMenuMain: {fileID: 0}
   battleLog: {fileID: 0}
+  onCameraFollow: {fileID: 11400000, guid: 1b526e957c88b6e40aa2172d13ee6bf3, type: 2}
 --- !u!1 &1600802480
 GameObject:
   m_ObjectHideFlags: 0
@@ -725,14 +864,11 @@ MonoBehaviour:
   id: 0
   battleStateType: 3
   gridManager: {fileID: 0}
+  battleTimeline: {fileID: 0}
   signalListeners:
   - {fileID: 645807481}
   targetInfo: {fileID: 0}
-  battleTimeline: {fileID: 0}
-  battleLog: {fileID: 0}
-  onUpdateBattleLog: {fileID: 0}
-  primaryTarget: {fileID: 0}
-  targets: []
+  onCameraUnfollow: {fileID: 11400000, guid: 316cff9380dbcd94b9e8e92f4ea2ed55, type: 2}
 --- !u!114 &645807481
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -771,7 +907,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2036527992414714682}
   - component: {fileID: 2036527992414714679}
-  - component: {fileID: 363864643}
   m_Layer: 0
   m_Name: BattleManager
   m_TagString: Untagged
@@ -793,6 +928,7 @@ Transform:
   m_Children:
   - {fileID: 692242124}
   - {fileID: 451647474}
+  - {fileID: 1385212921}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -811,46 +947,27 @@ MonoBehaviour:
   inventory: {fileID: 11400000, guid: a51431b0d76038d40940c59dec71a7fb, type: 2}
   partyData: {fileID: 11400000, guid: 0056b2932c628e7458ae67b746239176, type: 2}
   enemyPartyData: {fileID: 11400000, guid: ca3cd966c2e391d4a93bb7fba9bd8266, type: 2}
+  claire: {fileID: 7887917972336964174, guid: 61f78bef9429dc1469d0edf2ca4ed0d5, type: 3}
+  mutiny: {fileID: 7887917972336964174, guid: 61f78bef9429dc1469d0edf2ca4ed0d5, type: 3}
+  shad: {fileID: 7887917972336964174, guid: 61f78bef9429dc1469d0edf2ca4ed0d5, type: 3}
+  blaine: {fileID: 7887917972336964174, guid: 61f78bef9429dc1469d0edf2ca4ed0d5, type: 3}
+  lucy: {fileID: 7887917972336964174, guid: 61f78bef9429dc1469d0edf2ca4ed0d5, type: 3}
+  oshi: {fileID: 7887917972336964174, guid: 61f78bef9429dc1469d0edf2ca4ed0d5, type: 3}
+  enemyPrefab: {fileID: 193216028098152511, guid: 4e96c45283b05614e8cf967d906da496,
+    type: 3}
+  playerParent: {fileID: 990743667}
+  enemyParent: {fileID: 1421601336}
+  mainCamera: {fileID: 0}
   battlePartyHUD: {fileID: 0}
   gridManager: {fileID: 0}
-  playableCharacterSpawner: {fileID: 0}
-  enemySpawner: {fileID: 0}
-  interventionPointsDisplay: {fileID: 0}
   battleTimeline: {fileID: 0}
   battleEventQueue: {fileID: 451647476}
   stateMachine: {fileID: 692242123}
   onScreenFadeIn: {fileID: 11400000, guid: 596713b2036a5774c9548dd438b8c0a7, type: 2}
   onScreenFadeOut: {fileID: 11400000, guid: bae10d15d5deb1f4e8c8344536085e59, type: 2}
   onInterventionEnd: {fileID: 11400000, guid: 416636233610cc54aa03b5542d9d20bc, type: 2}
-  <TurnQueue>k__BackingField: []
---- !u!114 &363864643
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2036527992414714683}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: faede1329d31fda408276a04fe601429, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  signalSender: {fileID: 11400000, guid: d84821d18bc2aae4a819340fdb54c141, type: 2}
-  signalEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2036527992414714679}
-        m_TargetAssemblyTypeName: BattleManager, Assembly-CSharp
-        m_MethodName: UpdateTurnOrder
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  <PlayableCombatants>k__BackingField: []
+  <EnemyCombatants>k__BackingField: []
 --- !u!1 &4929225038856883274
 GameObject:
   m_ObjectHideFlags: 0
@@ -899,8 +1016,60 @@ MonoBehaviour:
   id: 0
   battleStateType: 6
   gridManager: {fileID: 0}
+  battleTimeline: {fileID: 0}
   signalListeners: []
   battleEventQueue: {fileID: 451647476}
+  onInterventionEnd: {fileID: 11400000, guid: 416636233610cc54aa03b5542d9d20bc, type: 2}
+--- !u!1 &5963231172399548223
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2223181051230426039}
+  - component: {fileID: 4818587476516272156}
+  m_Layer: 0
+  m_Name: Swap Combatants
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2223181051230426039
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5963231172399548223}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 692242124}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4818587476516272156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5963231172399548223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f070bb8b7362b44aafbdfa22ce8189b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stateMachine: {fileID: 0}
+  id: 0
+  battleStateType: 10
+  gridManager: {fileID: 0}
+  battleTimeline: {fileID: 0}
+  signalListeners: []
 --- !u!1 &7913752417119186372
 GameObject:
   m_ObjectHideFlags: 0
@@ -949,6 +1118,7 @@ MonoBehaviour:
   id: 0
   battleStateType: 1
   gridManager: {fileID: 0}
+  battleTimeline: {fileID: 0}
   signalListeners: []
   battlePartyHUD: {fileID: 0}
   battleEventQueue: {fileID: 451647476}

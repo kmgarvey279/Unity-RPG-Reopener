@@ -14,7 +14,8 @@ public enum BattleStateType
     TurnEnd,
     BattleEnd,
     InterventionStart,
-    ChangeTurn
+    ChangeTurn,
+    SwapCombatants
 }
 
 public class BattleState : StateMachine.State

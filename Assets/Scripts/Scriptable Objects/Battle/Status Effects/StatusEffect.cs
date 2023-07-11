@@ -10,6 +10,14 @@ public enum StatusCounterType
     None
 }
 
+//also the order of execution for health effects
+public enum HealthEffectType
+{
+    None,
+    Heal,
+    Damage
+}
+
 public enum StatusEffectType
 {
     Buff,
@@ -39,12 +47,16 @@ public class StatusEffect : ScriptableObject
 
     [field: Header("Counter")]
     [field: SerializeField] public StatusCounterType StatusCounterType { private set; get; }
-    [field: SerializeField] public int CounterApply { private set; get; } = 2;
+    [field: SerializeField] public int CounterApply { private set; get; } = 3;
     [field: SerializeField] public int CounterMax { private set; get; } = 5;
     [field: SerializeField] public bool TickAtTurnStart { private set; get; } = false;
     [field: SerializeField] public bool RemoveOnTick { private set; get; } = false;
-
-    [field: Header("Effects")]
+    [field: Header("Health Effect")]
+    [field: SerializeField] public HealthEffectType HealthEffectType { private set; get; }
+    [field: SerializeField] public float Power { private set; get; } = 0f;
+    [field: SerializeField] public StatType OffensiveStat { private set; get; }
+    [field: SerializeField] public StatType DefensiveStat { private set; get; }
+    [field: Header("Other Effects")]
     [field: SerializeField] public List<ActionModifier> ActionModifiers { private set; get; } = new List<ActionModifier>();
     [field: SerializeField] public List<TriggerableBattleEffect> TurnEffects { private set; get; } = new List<TriggerableBattleEffect>();
     [field: SerializeField] public List<TriggerableBattleEffect> TriggerableBattleEffects { private set; get; } = new List<TriggerableBattleEffect>();

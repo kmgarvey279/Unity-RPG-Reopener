@@ -12,37 +12,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
   m_Name: Enemy Ranged
   m_EditorClassIdentifier: 
-  healthEffectType: 0
-  power: 0.8
-  primaryTargetBonus: 0
-  offensiveStat: 1
-  defensiveStat: 3
   <ActionName>k__BackingField: Ranged Attack
   <Icon>k__BackingField: {fileID: 0}
   <Description>k__BackingField: 
   <ActionType>k__BackingField: 0
-  <AttackType>k__BackingField: 1
-  <RecoveryTimeModifier>k__BackingField: 0
+  <ActorTurnModifier>k__BackingField: 0
+  <TargetTurnModifier>k__BackingField: 0
+  <HasCastTime>k__BackingField: 0
   <ActionCostType>k__BackingField: 0
   <Cost>k__BackingField: 0
+  <Power>k__BackingField: 0.8
+  <AttackType>k__BackingField: 1
+  <OffensiveStat>k__BackingField: 0
+  <DefensiveStat>k__BackingField: 2
   <ElementalProperty>k__BackingField: 0
+  <IsMelee>k__BackingField: 0
   <Pierce>k__BackingField: 0
-  Knockback: 0
-  <HasCastTime>k__BackingField: 0
   <HitCount>k__BackingField: 1
-  <HitRate>k__BackingField: 95
+  <HitRate>k__BackingField: 1
   <GuaranteedHit>k__BackingField: 0
   <CritRateMultiplier>k__BackingField: 1
-  <TargetingType>k__BackingField: 1
+  <TargetingType>k__BackingField: 0
   <AOEType>k__BackingField: 0
   <HitRandomTarget>k__BackingField: 0
-  <ActionModifiers>k__BackingField: []
+  ActionModifiers: []
   <TriggerableBattleEffects>k__BackingField: []
   <ExecutePosition>k__BackingField: 0
   <ActionAnimations>k__BackingField:
-  - <AnimationSpawnPosition>k__BackingField: 3
-    <AnimatorTrigger>k__BackingField: Melee
+  - <BattleAnimatorTrigger>k__BackingField: 0
+    <CustomAnimatorTrigger>k__BackingField: 
+    <VFXPrefab>k__BackingField: {fileID: 0}
+    <VFXSpawnPosition>k__BackingField: 0
+    <CombatantBindPosition>k__BackingField: 0
+    <BindVFXToSpawnPoint>k__BackingField: 0
     <SpawnForEachTarget>k__BackingField: 0
-    <Repeat>k__BackingField: 0
-    <EffectPrefab>k__BackingField: {fileID: 9080087516260223380, guid: a9a53ad4435f66448b4a1b4e852a9413,
-      type: 3}
+    <IsProjectile>k__BackingField: 0
+    <OnlyPlayOnXHit>k__BackingField: 0
+    <XHit>k__BackingField: 0
+    <Delay>k__BackingField: 0
+    <Duration>k__BackingField: 0.5

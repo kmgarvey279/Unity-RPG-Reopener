@@ -4,17 +4,21 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Rendering;
 
 public class TurnPanel : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI index;
     [SerializeField] private TextMeshProUGUI counter;
-
+    [SerializeField] private SortingGroup sortingGroup;
     [Header("Actor Panel")]
     public GameObject actorPanel;
     [SerializeField] private Image actorPortrait;
     [SerializeField] private OutlinedText actorLetter;
     [SerializeField] private GameObject actorHighlight;
+    [SerializeField] private GameObject interventionBorder;
+    [SerializeField] private GameObject playerBorderActor;
+    [SerializeField] private GameObject enemyBorderActor;
     [Header("Action/Target Panel")]
     private bool actionPreviewActive = false;
     [SerializeField] private Image actionIcon;
@@ -22,6 +26,8 @@ public class TurnPanel : MonoBehaviour
     [SerializeField] private Image targetPortrait;
     [SerializeField] private OutlinedText targetLetter;
     [SerializeField] private GameObject targetHighlight;
+    [SerializeField] private GameObject playerBorderTarget;
+    [SerializeField] private GameObject enemyBorderTarget;
     [Header("Animations")]
     [SerializeField] private Animator animatorActorMovement;
     [SerializeField] private Animator animatorTargetMovement;
@@ -59,7 +65,7 @@ public class TurnPanel : MonoBehaviour
 
     public void RemoveNewStatus()
     {
-        IsNew= false;
+        IsNew = false;
     }
 
     public void UpdateCounter(int listIndex, int storedIndex, int counterValue)
@@ -89,16 +95,23 @@ public class TurnPanel : MonoBehaviour
         animatorTargetMovement.SetTrigger(animatorTrigger);
     }
 
-    public void DisplayActor(Combatant actor)
+    public void SetActor(Combatant actor, bool isIntervention)
     {
         actorLetter.SetText(actor.CharacterLetter);
         actorPortrait.sprite = actor.TurnIcon;
-    }
 
-    public void DisplayAsIntervention()
-    {
-        actorLetter.SetText("");
-        actorPortrait.sprite = interventionIcon;
+        if (isIntervention)
+        {
+            interventionBorder.SetActive(true);
+        }
+        else if (actor.CombatantType == CombatantType.Player)
+        {
+            playerBorderActor.SetActive(true);
+        }
+        else if (actor.CombatantType == CombatantType.Enemy)
+        {
+            enemyBorderActor.SetActive(true);
+        }
     }
 
     public IEnumerator DisplayActionPreviewCo(Action action, List<Combatant> targets, bool targetUnknown)
@@ -107,6 +120,7 @@ public class TurnPanel : MonoBehaviour
         {
             targetPanel.SetActive(true);
         }
+        //targetHighlight.SetActive(true);
 
         if (actionPreviewActive)
         {
@@ -115,12 +129,14 @@ public class TurnPanel : MonoBehaviour
         }
         else
         {
+            animatorTargetMovement.SetTrigger("Enter");
             actionPreviewActive = true;
-            yield return null;
         }
 
+        //set action icon
         actionIcon.sprite = actionIcons[action.ActionType];
 
+        //set targets icon
         if(action.AOEType == AOEType.All)
         {
             if (targets[0].CombatantType == CombatantType.Player)
@@ -150,18 +166,29 @@ public class TurnPanel : MonoBehaviour
             targetPortrait.sprite = targets[0].TurnIcon;
             targetLetter.SetText(targets[0].CharacterLetter);
         }
+        if (targets[0].CombatantType == CombatantType.Player)
+        {
+            playerBorderTarget.SetActive(true);
+        }
+        else if (targets[0].CombatantType == CombatantType.Enemy)
+        {
+            enemyBorderTarget.SetActive(true);
+        }
+
+        yield return null;
     }
 
     public void HideActionPreview()
     {
         if(actionPreviewActive)
         {
+            //targetHighlight.SetActive(false);
             actionPreviewActive = false;
             animatorTargetMovement.SetTrigger("Exit");
         }
     }
 
-    public void DisplayTurnPosChange(int change)
+    public void DisplayTurnModifier(int change)
     {
         if(change > 0)
         {

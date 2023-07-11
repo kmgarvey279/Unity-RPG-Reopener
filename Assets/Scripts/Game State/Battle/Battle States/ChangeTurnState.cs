@@ -8,12 +8,12 @@ public class ChangeTurnState : BattleState
     {
         Debug.Log("Entering Change Turn State");
         base.OnEnter();
+        battleManager.LockInterventionTriggerIcons(true);
         StartCoroutine(AdvanceTimelineCo());
     }
 
     public override void StateUpdate()
     {
-
     }
 
     public override void StateFixedUpdate()
@@ -24,6 +24,7 @@ public class ChangeTurnState : BattleState
     public override void OnExit()
     {
         base.OnExit();
+        battleManager.LockInterventionTriggerIcons(false);
     }
 
     public IEnumerator AdvanceTimelineCo()
@@ -42,14 +43,10 @@ public class ChangeTurnState : BattleState
         {
             StartIntervention();
         }
-        //if next turn was "paused" due to an intervention, use saved turn data
-        else if (battleTimeline.CurrentTurn.TurnType == TurnType.Paused)
-        {
-            stateMachine.ChangeState((int)BattleStateType.Menu);
-        }
         //if next turn is a queued cast:
         else if (battleTimeline.CurrentTurn.TurnType == TurnType.Cast)
         {
+            battleTimeline.CurrentTurn.Actor.OnCastEnd();
             StartQueuedCast();
         }
         else
@@ -99,12 +96,5 @@ public class ChangeTurnState : BattleState
                 stateMachine.ChangeState((int)BattleStateType.Execute);
             }
         }
-        //if (currentTurn.Targets.Count == 0)
-        //{
-        //    Debug.Log("error: no targets for cast");
-        //    battleTimeline.RemoveTurn(battleTimeline.CurrentTurn, false);
-        //    StartCoroutine(AdvanceTimelineCo());
-        //    return;
-        //}
     }
 }

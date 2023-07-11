@@ -13,8 +13,8 @@ public class PartyData : ScriptableObject
 
     [SerializeField] private List<PlayableCharacterInfo> PlayableCharacterInfoList;
     public Dictionary<PlayableCharacterID, PlayableCharacterInfo> PlayableCharacterInfoDict { get; private set; }
-    public List<PlayableCharacterID> PartySlots { get; private set; }
-    public List<Vector2Int> SpawnPositions { get; private set; } = new List<Vector2Int>();
+    [field: SerializeField] public List<PlayableCharacterID> PartySlots { get; private set; }
+    //public List<Vector2Int> SpawnPositions { get; private set; } = new List<Vector2Int>();
 
     private void OnEnable()
     {
@@ -28,12 +28,6 @@ public class PartyData : ScriptableObject
         PlayableCharacterID.None,
         PlayableCharacterID.None
         };
-        SpawnPositions = new List<Vector2Int>()
-        {
-            new Vector2Int(0,1),
-            new Vector2Int(0,0),
-            new Vector2Int(0,2),
-        };
 
         foreach (PlayableCharacterInfo playableCharacterInfo in PlayableCharacterInfoList)
         {
@@ -41,24 +35,27 @@ public class PartyData : ScriptableObject
         }
         PlayableCharacterInfoDict.Add(PlayableCharacterID.None, null);
 
-        for (int i = 0; i < PartyList.Count; i++)
+        for (int i = 0; i < 6; i++)
         {
-            if(i >= 6)
+            if (i >= PartyList.Count)
             {
-                break;
+                PartySlots[i] = PlayableCharacterID.None;
             }
-            PartySlots[i] = PartyList[i];
+            else
+            {
+                PartySlots[i] = PartyList[i];
+            }
         }
     }
 
-    public PlayableCharacterInfo GetSlotInfo(int slot)
-    {
-        if(PartySlots[slot] == PlayableCharacterID.None)
-        {
-            return null;
-        }
-        return PlayableCharacterInfoDict[PartySlots[slot]];
-    }
+    //public PlayableCharacterInfo GetSlotInfo(int slot)
+    //{
+    //    if(PartySlots[slot] == PlayableCharacterID.None)
+    //    {
+    //        return null;
+    //    }
+    //    return PlayableCharacterInfoDict[PartySlots[slot]];
+    //}
 
     public void SwapPartyMembers(PlayableCharacterID partyMember1, PlayableCharacterID partyMember2)
     {

@@ -12,30 +12,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3729e2f50bf7e804ba566480488c98c8, type: 3}
   m_Name: Vampire Effect
   m_EditorClassIdentifier: 
-  battleConditions:
+  triggerConditions:
   - <Conditional>k__BackingField: 0
     <IsNot>k__BackingField: 0
     <BattleCondition>k__BackingField: {fileID: 11400000, guid: de35d898a6ac5b84bb6b2f8cdf102b02,
       type: 2}
-  triggerRate: 100
-  triggerRateModifiers: []
+  actionModifiers: []
+  triggerRate: 1
   <EffectName>k__BackingField: Vampire
   <DisplayName>k__BackingField: 1
   <BattleEventType>k__BackingField: 0
-  <TriggerFrequency>k__BackingField: 1
   <TargetSelf>k__BackingField: 1
-  <MultiTargetMultiplier>k__BackingField: 0
   <Priority>k__BackingField: 1
   <ActionAnimations>k__BackingField:
-  - <AnimationSpawnPosition>k__BackingField: 3
-    <AnimatorTrigger>k__BackingField: 
-    <SpawnForEachTarget>k__BackingField: 0
-    <Repeat>k__BackingField: 0
-    <EffectPrefab>k__BackingField: {fileID: 9080087516260223380, guid: d54f66c98898c7e42991b859b29c1c77,
+  - <BattleAnimatorTrigger>k__BackingField: 0
+    <CustomAnimatorTrigger>k__BackingField: 
+    <VFXPrefab>k__BackingField: {fileID: 7081010431531379922, guid: f5a9629c5406fd6458102ee1bded4dfe,
       type: 3}
+    <VFXSpawnPosition>k__BackingField: 1
+    <CombatantBindPosition>k__BackingField: 0
+    <BindVFXToSpawnPoint>k__BackingField: 0
+    <SpawnForEachTarget>k__BackingField: 0
+    <IsProjectile>k__BackingField: 0
+    <OnlyPlayOnXHit>k__BackingField: 0
+    <XHit>k__BackingField: 0
+    <Delay>k__BackingField: 0
+    <Duration>k__BackingField: 0.25
   <AdditionalEffects>k__BackingField: []
   isHeal: 1
-  healthEffectType: 1
-  power: 0.2
+  power: 0.1
   offensiveStat: 0
-  useCurrentHP: 0
+  useDefensiveStat: 0
+  defensiveStat: 0

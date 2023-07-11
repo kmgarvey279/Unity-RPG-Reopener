@@ -18,9 +18,47 @@ public class TurnEndState : BattleState
 
     public override void StateUpdate()
     {
-        if (Input.GetButtonDown("Intervention"))
+        if (Input.GetButtonDown("QueueIntervention1"))
         {
-            battleTimeline.AddTurn(TurnType.Intervention, battleManager.GetCombatants(CombatantType.Player)[0]);
+            if (battleManager.InterventionCheck(0))
+            {
+                if (Input.GetButton("Shift"))
+                {
+                    battleTimeline.RemoveLastIntervention(battleManager.PlayableCombatants[0]);
+                }
+                else
+                {
+                    battleTimeline.AddInterventionToQueue(battleManager.PlayableCombatants[0]);
+                }
+            }
+        }
+        else if (Input.GetButtonDown("QueueIntervention2"))
+        {
+            if (battleManager.InterventionCheck(1))
+            {
+                if (Input.GetButton("Shift"))
+                {
+                    battleTimeline.RemoveLastIntervention(battleManager.PlayableCombatants[1]);
+                }
+                else
+                {
+                    battleTimeline.AddInterventionToQueue(battleManager.PlayableCombatants[1]);
+                }
+            }
+        }
+        else if (Input.GetButtonDown("QueueIntervention3"))
+        {
+            if (battleManager.InterventionCheck(2))
+            {
+                if (Input.GetButton("Shift"))
+                {
+                    battleTimeline.RemoveLastIntervention(battleManager.PlayableCombatants[2]);
+                }
+                else
+                {
+                    battleTimeline.AddInterventionToQueue(battleManager.PlayableCombatants[2]);
+                }
+            }
         }
     }
 
@@ -39,9 +77,8 @@ public class TurnEndState : BattleState
     {
         yield return waitZeroPointTwoFive;
 
-        //battleManager.ClearTimelineTargetPreview();
-
-        if (battleTimeline.CurrentTurn.TurnType != TurnType.Intervention && !battleTimeline.CurrentTurn.IsDead)
+        //trigger turn end effects
+        if (battleTimeline.CurrentTurn.TurnType != TurnType.Intervention && !battleTimeline.CurrentTurn.Actor.IsKOed)
         {
             //add turn start effects to queue
             yield return StartCoroutine(battleTimeline.CurrentTurn.Actor.OnTurnEndCo());
@@ -51,29 +88,20 @@ public class TurnEndState : BattleState
             yield return waitZeroPointTwoFive;
 
             //check combatants for ko
-            for (int i = battleManager.Combatants.Count - 1; i >= 0; i--)
+            List<Combatant> allCombatants = battleManager.GetCombatants(CombatantType.All);
+            for (int i = allCombatants.Count - 1; i >= 0; i--)
             {
                 //resolve health change
-                battleManager.Combatants[i].ResolveHealthChange();
-                if (battleManager.Combatants[i].HP.CurrentValue <= 0)
+                allCombatants[i].ResolveHealthChange();
+                if (allCombatants[i].IsKOed)
                 {
-                    battleManager.KOCombatant(battleManager.Combatants[i]);
+                    battleManager.KOCombatant(allCombatants[i]);
                 }
             }
             yield return waitZeroPointTwoFive;
         }
-        //end battle if all of one side is dead
-        if (battleManager.GetCombatants(CombatantType.Enemy).Count <= 0 || battleManager.GetCombatants(CombatantType.Player).Count <= 0)
-        {
-            stateMachine.ChangeState((int)BattleStateType.BattleEnd);
-        }
-        //continue intervention if possible
-        else if (battleTimeline.CurrentTurn.TurnType == TurnType.Intervention && battleManager.InterventionPoints >= 25)
-        {
-            battleTimeline.ResetInterventionPanel();
-            stateMachine.ChangeState((int)BattleStateType.InterventionStart);
-        }
-        else
+
+        if (!battleTimeline.CurrentTurn.Actor.IsKOed)
         {
             //unhighlight party panel
             if (battleTimeline.CurrentTurn.Actor is PlayableCombatant)
@@ -81,10 +109,12 @@ public class TurnEndState : BattleState
                 PlayableCombatant playableCombatant = (PlayableCombatant)battleTimeline.CurrentTurn.Actor;
                 playableCombatant.BattlePartyPanel.Highlight(false);
             }
+
             //destroy previous turn panel
             battleTimeline.RemoveTurn(battleTimeline.CurrentTurn, false);
-            //switch to change turn state
-            stateMachine.ChangeState((int)BattleStateType.ChangeTurn);
         }
+
+        //switch to change turn state
+        stateMachine.ChangeState((int)BattleStateType.ChangeTurn);
     }
 }

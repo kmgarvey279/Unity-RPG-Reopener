@@ -4,21 +4,25 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewTriggerableEffect", menuName = "Triggerable Effects/Apply Status Effect")]
 public class TriggerableBattleEffectApplyStatus : TriggerableBattleEffect
-{
-
-    [SerializeField] private float power = 0f;
-    [SerializeField] private bool useActorStat;
-    [SerializeField] private StatType offensiveStat;
+{ 
     [field: SerializeField] public StatusEffect StatusEffect { get; private set; }
-    public override void ApplyEffect(Combatant actor, Combatant target, float potencyOverride = 0)
-    {
-        base.ApplyEffect(actor, target, potencyOverride);
+    private BattleFormulas battleFormulas;
 
-        float statusPotency = power;
-        if (useActorStat)
+    public override void ApplyEffect(Combatant actor, Combatant target, ActionSummary actionSummary)
+    {
+        base.ApplyEffect(actor, target, actionSummary);
+
+        int statusPotency = 0;
+        if (StatusEffect.HealthEffectType != HealthEffectType.None)
         {
-            statusPotency *= actor.Stats[offensiveStat].GetValue();
+            int actorPower = battleFormulas.GetActorPower(StatusEffect.Power, actor, StatusEffect.OffensiveStat);
+            int targetDefense = 0;
+            if (StatusEffect.HealthEffectType == HealthEffectType.Damage)
+            {
+                targetDefense = battleFormulas.GetTargetDefense(target, StatusEffect.DefensiveStat, 0);
+            }
+            statusPotency = battleFormulas.GetHealthEffect(StatusEffect.HealthEffectType, actorPower, targetDefense);
         }
-        target.AddStatusEffect(StatusEffect, statusPotency);
+        target.AddStatusEffect(StatusEffect, Mathf.Clamp(Mathf.FloorToInt(statusPotency), 1, 9999));
     }
 }

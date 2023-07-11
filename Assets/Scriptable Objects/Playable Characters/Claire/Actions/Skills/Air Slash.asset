@@ -17,7 +17,8 @@ MonoBehaviour:
     type: 3}
   <Description>k__BackingField: 
   <ActionType>k__BackingField: 0
-  <RecoveryTimeModifier>k__BackingField: 0
+  <ActorTurnModifier>k__BackingField: 0
+  <TargetTurnModifier>k__BackingField: 0
   <HasCastTime>k__BackingField: 0
   <ActionCostType>k__BackingField: 0
   <Cost>k__BackingField: 0
@@ -28,7 +29,7 @@ MonoBehaviour:
   defensiveStat: 2
   <AttackType>k__BackingField: 0
   <ElementalProperty>k__BackingField: 0
-  <IsMelee>k__BackingField: 0
+  <IsMelee>k__BackingField: 1
   <Pierce>k__BackingField: 0
   <HitCount>k__BackingField: 1
   <HitRate>k__BackingField: 100
@@ -37,18 +38,21 @@ MonoBehaviour:
   <TargetingType>k__BackingField: 0
   <AOEType>k__BackingField: 1
   <HitRandomTarget>k__BackingField: 0
+  <TargetKO>k__BackingField: 0
   <ActionModifiers>k__BackingField: []
   <TriggerableBattleEffects>k__BackingField: []
   <ExecutePosition>k__BackingField: 1
   <ActionAnimations>k__BackingField:
-  - <OnlyPlayOnXHit>k__BackingField: 0
-    <XHit>k__BackingField: 0
-    <VFXSpawnPosition>k__BackingField: 1
-    <CombatantBindPosition>k__BackingField: 3
-    <IsProjectile>k__BackingField: 0
-    <AnimatorTrigger>k__BackingField: Melee
-    <SpawnForEachTarget>k__BackingField: 0
+  - <BattleAnimatorTrigger>k__BackingField: 0
+    <CustomAnimatorTrigger>k__BackingField: 
     <VFXPrefab>k__BackingField: {fileID: 1073560485729236274, guid: f043dafde7a82e048812d1cd208a5826,
       type: 3}
+    <VFXSpawnPosition>k__BackingField: 1
+    <CombatantBindPosition>k__BackingField: 3
+    <BindVFXToSpawnPoint>k__BackingField: 0
+    <SpawnForEachTarget>k__BackingField: 0
+    <IsProjectile>k__BackingField: 0
+    <OnlyPlayOnXHit>k__BackingField: 0
+    <XHit>k__BackingField: 0
     <Delay>k__BackingField: 0
     <Duration>k__BackingField: 1

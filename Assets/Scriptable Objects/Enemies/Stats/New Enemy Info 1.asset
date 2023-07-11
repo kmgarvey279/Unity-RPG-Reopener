@@ -16,18 +16,23 @@ MonoBehaviour:
   hpGrowth: 0
   baseMP: 50
   mpGrowth: 0
-  baseAttack: 2
+  baseAttack: 10
   attackGrowth: 0
-  baseDefense: 2
+  baseDefense: 10
   defenseGrowth: 0
-  baseMAttack: 2
+  baseMAttack: 10
   mAttackGrowth: 0
-  baseMDefense: 2
+  baseMDefense: 10
   mDefenseGrowth: 0
-  baseAgility: 2
+  baseHealing: 10
+  healingGrowth: 0
+  baseAgility: 10
   agilityGrowth: 0
-  baseCrit: 0
-  baseEvade: 0
+  baseCritRate: 0
+  baseCritPower: 0
+  baseEvadeRate: 0
+  baseBlockRate: 0
+  baseBlockPower: 0
   fireResistance: 1
   iceResistance: 0
   electricResistance: 2
@@ -36,7 +41,8 @@ MonoBehaviour:
     type: 3}
   <CharacterName>k__BackingField: Enemy
   <Level>k__BackingField: 1
-  <Traits>k__BackingField: []
+  <Traits>k__BackingField:
+  - {fileID: 11400000, guid: fea99f6baf91dad40977197dbe1228e2, type: 2}
   WeightedActions:
   - weightType: 0
     <Action>k__BackingField: {fileID: 11400000, guid: 823b4bcd44b18ac4c8b05a0b9d9c80a0,

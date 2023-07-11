@@ -32,8 +32,9 @@ MonoBehaviour:
   iceResistance: 0
   electricResistance: 0
   darkResistance: 0
-  <TurnIcon>k__BackingField: {fileID: 0}
-  <CharacterName>k__BackingField: 
+  <TurnIcon>k__BackingField: {fileID: 21300000, guid: 82fbab012f3520e4aa0acee694f6d48c,
+    type: 3}
+  <CharacterName>k__BackingField: Shad
   <Level>k__BackingField: 1
   <Traits>k__BackingField: []
   weapon: {fileID: 0}

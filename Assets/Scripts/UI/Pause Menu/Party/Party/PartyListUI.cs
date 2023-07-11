@@ -14,7 +14,7 @@ public class PartyListUI : MonoBehaviour
         {
             GameObject newSlot = Instantiate(slotPrefab, transform.position, Quaternion.identity);
             PartySlotPanel partySlotPanel = newSlot.GetComponent<PartySlotPanel>();
-            partySlotPanel.AssignSlot(partyData.GetSlotInfo(i), i);
+            //partySlotPanel.AssignSlot(partyData.GetSlotInfo(i), i);
             partySlotPanel.transform.parent = gameObject.transform; 
             partySlotPanels.Add(partySlotPanel);
         }

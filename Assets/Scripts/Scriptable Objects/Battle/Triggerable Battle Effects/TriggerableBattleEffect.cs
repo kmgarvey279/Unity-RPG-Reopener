@@ -9,35 +9,25 @@ public enum BattleEventType
     Turn
 }
 
-public enum TriggerFrequency
-{
-    PerAction,
-    PerHit,
-    PerTurn
-}
-
 [System.Serializable]
 public class TriggerableBattleEffect : ScriptableObject
 {
     [Header("Conditions")]
-    [SerializeField] private List<BattleConditionContainer> battleConditions = new List<BattleConditionContainer>();
+    [SerializeField] private List<BattleConditionContainer> triggerConditions = new List<BattleConditionContainer>();
+    [SerializeField] private List<ActionModifier> actionModifiers = new List<ActionModifier>();
     [Header("Trigger Rate")]
-    [SerializeField][Range(1,100)] private float triggerRate;
-    [SerializeField] private List<ActionModifier> triggerRateModifiers = new List<ActionModifier>(); 
+    [SerializeField][Range(0.01f,1f)] private float triggerRate;
     [field: SerializeField, Header("Effect Info")] public string EffectName { get; private set; }
     [field: SerializeField] public bool DisplayName { get; private set; }
     //trigger for the actor or target?
     [field: SerializeField] public BattleEventType BattleEventType { get; private set; }
-    [field: SerializeField] public TriggerFrequency TriggerFrequency { get; private set; }
     //does it target self?
     [field: SerializeField] public bool TargetSelf { get; private set; }
-    //does the effect get stronger/weaker if there are multiple targets?
-    [field: SerializeField] public float MultiTargetMultiplier { get; private set; } = 0;
     //where is it inserted into the queue?
     [field: SerializeField] public int Priority { get; private set; } = 1;
     [field: SerializeField, Header("Animations")] public List<ActionAnimationData> ActionAnimations { get; private set; } = new List<ActionAnimationData>();
     [field: SerializeField, Header("Additional Effects")] public List<TriggerableBattleEffect> AdditionalEffects { get; private set; }
-    public virtual void ApplyEffect(Combatant actor, Combatant target, float power = 0)
+    public virtual void ApplyEffect(Combatant actor, Combatant target, ActionSummary actionSummary = null)
     {
         if (target == null)
         {
@@ -45,48 +35,27 @@ public class TriggerableBattleEffect : ScriptableObject
             return;
         }
         Debug.Log("Applying " + EffectName + " Effect");
+        foreach (TriggerableBattleEffect additionalEffect in AdditionalEffects)
+        {
+            additionalEffect.ApplyEffect(actor, target, actionSummary);
+        }
     }
 
-    public bool TriggerCheck(ActionSubevent actionSubevent = null)
+    //% chance of triggering
+    public bool TriggerCheck()
     {
-        bool conditionsSatisfied = ConditionCheck(actionSubevent);
-        if(conditionsSatisfied)
-        {
-            float finalTriggerRate = triggerRate;
-            //modifiers tied to effect
-            foreach (ActionModifier actionModifier in triggerRateModifiers)
-            {
-                if (actionModifier.ActionModifierType == ActionModifierType.EffectTriggerRate)
-                {
-                    finalTriggerRate += finalTriggerRate * actionModifier.GetModifier(actionSubevent);
-                }
-            }
-            //modifiers tied to actor
-            foreach (ActionModifier actionModifier in actionSubevent.Actor.ActionModifiers[BattleEventType.Acting][ActionModifierType.EffectTriggerRate])
-            {
-                finalTriggerRate += finalTriggerRate * actionModifier.GetModifier(actionSubevent);
-            }
-            //modifiers tied to target
-            foreach (ActionModifier actionModifier in actionSubevent.Target.ActionModifiers[BattleEventType.Targeted][ActionModifierType.EffectTriggerRate])
-            {
-                finalTriggerRate += finalTriggerRate * actionModifier.GetModifier(actionSubevent);
-            }
-            return Roll(finalTriggerRate);
-        }
-        else
-        {
-            return false;
-        }
+        return Roll(triggerRate);
     }
 
-    private bool ConditionCheck(ActionSubevent actionSubevent)
+    //binary value: can it trigger or not
+    public bool ConditionCheck(Combatant actor, Combatant target, ActionSummary actionSummary = null)
     {
         bool conditionsSatisfied = true;
-        foreach (BattleConditionContainer battleConditionContainer in battleConditions)
+        foreach (BattleConditionContainer battleConditionContainer in triggerConditions)
         {
             if (battleConditionContainer.Conditional == Conditional.If)
             {
-                conditionsSatisfied = battleConditionContainer.BattleCondition.CheckCondition(actionSubevent);
+                conditionsSatisfied = battleConditionContainer.BattleCondition.CheckCondition(actor, target, actionSummary);
                 if(battleConditionContainer.IsNot)
                 {
                     conditionsSatisfied = !conditionsSatisfied; 
@@ -100,7 +69,7 @@ public class TriggerableBattleEffect : ScriptableObject
                 }
                 else
                 {
-                    conditionsSatisfied = battleConditionContainer.BattleCondition.CheckCondition(actionSubevent);
+                    conditionsSatisfied = battleConditionContainer.BattleCondition.CheckCondition(actor, target, actionSummary);
                     if (battleConditionContainer.IsNot)
                     {
                         conditionsSatisfied = !conditionsSatisfied;
@@ -115,7 +84,7 @@ public class TriggerableBattleEffect : ScriptableObject
                 }
                 else
                 {
-                    conditionsSatisfied = battleConditionContainer.BattleCondition.CheckCondition(actionSubevent);
+                    conditionsSatisfied = battleConditionContainer.BattleCondition.CheckCondition(actor, target, actionSummary);
                     if (battleConditionContainer.IsNot)
                     {
                         conditionsSatisfied = !conditionsSatisfied;
@@ -128,7 +97,7 @@ public class TriggerableBattleEffect : ScriptableObject
 
     public bool Roll(float chance)
     {
-        int roll = Random.Range(1, 100);
+        float roll = Random.Range(0.01f, 1f);
         if (roll <= chance)
         {
             return true;

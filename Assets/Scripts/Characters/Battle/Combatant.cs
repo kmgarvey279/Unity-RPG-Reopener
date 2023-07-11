@@ -49,7 +49,9 @@ public class Combatant : MonoBehaviour
     protected WaitForSeconds wait05 = new WaitForSeconds(0.5f);
     protected WaitForSeconds wait1 = new WaitForSeconds(1f);
 
-    public bool IsKO { get; protected set; } = false;
+    public bool IsCasting { get; protected set; } = false;
+    public bool IsKOed { get; protected set; } = false;
+    public bool CanRevive { get; protected set; } = false;
     public bool IsLoaded { get; protected set; } = false;
     public CombatantType CombatantType { get; protected set; }
     public string CharacterName { get; protected set; }
@@ -59,6 +61,7 @@ public class Combatant : MonoBehaviour
     public DynamicStat Barrier { get; protected set; }
     public DynamicStat MP { get; protected set; }
     public Dictionary<StatType, Stat> Stats { get; protected set; } = new Dictionary<StatType, Stat>();
+    public Dictionary<SecondaryStatType, float> SecondaryStats { get; protected set; } = new Dictionary<SecondaryStatType, float>();
     public Dictionary<ElementalProperty, ElementalResistance> Resistances { get; protected set; } = new Dictionary<ElementalProperty, ElementalResistance>();
     public Dictionary<ElementalProperty, int> ResistanceModifiers { get; protected set; } = new Dictionary<ElementalProperty, int>();
     public List<TraitInstance> TraitInstances { get; protected set; } = new List<TraitInstance>();
@@ -98,6 +101,10 @@ protected virtual void Awake()
         foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
         {
             Stats.Add(statType, new Stat(characterInfo.GetStat(statType)));
+        }
+        foreach (SecondaryStatType secondaryStatType in System.Enum.GetValues(typeof(SecondaryStatType)))
+        {
+            SecondaryStats.Add(secondaryStatType, characterInfo.SecondaryStats[secondaryStatType]);
         }
 
         //resistances
@@ -185,21 +192,18 @@ protected virtual void Awake()
     {
         for (int i = StatusEffectInstances.Count - 1; i >= 0; i--)
         {
-            if(StatusEffectInstances[i].StatusEffect.TickAtTurnStart)
+            if (StatusEffectInstances[i].StatusEffect.TickAtTurnStart)
             {
-                foreach (TriggerableBattleEffect triggerableBattleEffect in StatusEffectInstances[i].StatusEffect.TurnEffects)
+                //trigger health effects
+                if (StatusEffectInstances[i].StatusEffect.HealthEffectType != HealthEffectType.None)
                 {
-                    BattleEvent battleEvent = new BattleEvent(this, new Dictionary<Combatant, float>() { { this, StatusEffectInstances[i].Potency } }, triggerableBattleEffect);
-                    onAddBattleEvent.Raise(battleEvent);
+                    yield return StartCoroutine(TriggerStatusHealthEffectCo(StatusEffectInstances[i]));
                 }
-
-                if (StatusEffectInstances[i].StatusEffect.TickAtTurnStart)
+                //tick
+                StatusEffectInstances[i].Tick();
+                if (StatusEffectInstances[i].StatusEffect.RemoveOnTick || StatusEffectInstances[i].Counter <= 0)
                 {
-                    StatusEffectInstances[i].Tick();
-                    if (StatusEffectInstances[i].Counter <= 0 || StatusEffectInstances[i].StatusEffect.RemoveOnTick)
-                    {
-                        RemoveStatusEffectInstance(StatusEffectInstances[i]);
-                    }
+                    RemoveStatusEffectInstance(StatusEffectInstances[i]);
                 }
             }
         }
@@ -212,19 +216,16 @@ protected virtual void Awake()
         {
             if (!StatusEffectInstances[i].StatusEffect.TickAtTurnStart)
             {
-                foreach (TriggerableBattleEffect triggerableBattleEffect in StatusEffectInstances[i].StatusEffect.TurnEffects)
+                //trigger health effects
+                if (StatusEffectInstances[i].StatusEffect.HealthEffectType != HealthEffectType.None)
                 {
-                    BattleEvent battleEvent = new BattleEvent(this, new Dictionary<Combatant, float>() { { this, StatusEffectInstances[i].Potency } }, triggerableBattleEffect);
-                    onAddBattleEvent.Raise(battleEvent);
+                    yield return StartCoroutine(TriggerStatusHealthEffectCo(StatusEffectInstances[i]));
                 }
-
-                if (!StatusEffectInstances[i].StatusEffect.TickAtTurnStart)
+                //tick
+                StatusEffectInstances[i].Tick();
+                if (StatusEffectInstances[i].Counter <= 0)
                 {
-                    StatusEffectInstances[i].Tick();
-                    if (StatusEffectInstances[i].Counter <= 0 || StatusEffectInstances[i].StatusEffect.RemoveOnTick)
-                    {
-                        RemoveStatusEffectInstance(StatusEffectInstances[i]);
-                    }
+                    RemoveStatusEffectInstance(StatusEffectInstances[i]);
                 }
             }
         }
@@ -242,18 +243,17 @@ protected virtual void Awake()
     //    return false;
     //}
 
-    public void OnAttacked(int amount, bool isCrit, ElementalProperty elementalProperty)
+    public void OnAttacked(int amount, bool isCrit, bool wasBlocked, ElementalProperty elementalProperty)
     {
-        Debug.Log("target was attacked");
         TriggerAnimation("Stun", false);
         if (isCrit)
         {
-            StartCoroutine(OnCritCo());
+            StartCoroutine(OnCritDamageCo());
         }
         OnDamaged(amount, isCrit, elementalProperty);
     }
 
-    protected IEnumerator OnCritCo()
+    protected IEnumerator OnCritDamageCo()
     {
         GameObject effectObject = Instantiate(critEffectPrefab, CombatantBindPositions[CombatantBindPosition.Center].position, critEffectPrefab.transform.rotation);
         effectObject.transform.parent = CombatantBindPositions[CombatantBindPosition.Center];
@@ -264,81 +264,85 @@ protected virtual void Awake()
         Destroy(effectObject);
     }
 
-
     public virtual void OnDamaged(int amount, bool isCrit, ElementalProperty elementalProperty)
     {
-        Debug.Log("applying damage to target");
         HP.ChangeCurrentValue(-amount);
-        StartCoroutine(healthDisplay.DisplayHealthChange(PopupType.Damage, amount.ToString(), isCrit, Resistances[elementalProperty]));
+
+        if (HP.CurrentValue <= 0)
+        {
+            IsKOed = true;
+        }
+
+        StartCoroutine(healthDisplay.DisplayHealthChange());
+        healthDisplay.DisplayPopup(PopupType.Damage, CombatantType, amount.ToString(), isCrit, Resistances[elementalProperty]);
     }
 
     public virtual void OnHealed(int amount, bool isCrit = false)
     {
         HP.ChangeCurrentValue(amount);
-        StartCoroutine(healthDisplay.DisplayHealthChange(PopupType.Heal, amount.ToString(), isCrit));
+
+        StartCoroutine(healthDisplay.DisplayHealthChange());
+        healthDisplay.DisplayPopup(PopupType.Heal, CombatantType, amount.ToString(), isCrit);
     }
 
-    public void Evade()
+    public void OnEvade()
     { 
         TriggerAnimation("Move", false);
-        StartCoroutine(healthDisplay.DisplayHealthChange(PopupType.Miss, "MISS"));
+
+        healthDisplay.DisplayPopup(PopupType.Miss, CombatantType, "MISS");
     }
 
     public virtual void OnKO()
     {
         animator.SetTrigger("Die");
-        IsKO = true;
-        for (int i = StatusEffectInstances.Count - 1; i >= 0; i--)
-        {
-            StatusEffectInstance statusEffectInstance = StatusEffectInstances[i];
-            if (statusEffectInstance.StatusEffect.RemoveOnKO)
-            {
-                RemoveStatusEffectInstance(statusEffectInstance);
-            }
-        }
     }
 
-    public IEnumerator TriggerBattleEffectsCo(BattleEventType battleEventType, List<ActionSubevent> actionSubevents, TriggerFrequency triggerFrequency)
+    public virtual void OnRevive(float percentOfHPToRestore)
     {
-        List<BattleEvent> battleEvents = new List<BattleEvent>();
-
-        //check triggerable effects
-        foreach (TriggerableBattleEffect triggerableBattleEffect in TriggerableBattleEffects[battleEventType])
-        {
-            if(triggerableBattleEffect.TriggerFrequency != triggerFrequency)
-            {
-                break;
-            }
-            Dictionary<Combatant, float> targets = new Dictionary<Combatant, float>();
-            //go through each actor/target subevent
-            foreach (ActionSubevent actionSubevent in actionSubevents)
-            {
-                if (triggerableBattleEffect.TriggerCheck(actionSubevent))
-                {
-                    //if the combatant is acting:
-                    if (battleEventType == BattleEventType.Acting)
-                    {
-                        targets.Add(actionSubevent.Target, actionSubevent.HealthEffectSum);
-                    }
-                    //if the combatant is being targeted:
-                    else
-                    {
-                        targets.Add(actionSubevent.Actor, actionSubevent.HealthEffectSum);
-                    }
-                }
-            }
-            if(targets.Count > 0) 
-            {
-                BattleEvent battleEvent = new BattleEvent(this, targets, triggerableBattleEffect);
-                battleEvents.Add(battleEvent);
-            }
-        }
-        foreach (BattleEvent battleEvent in battleEvents)
-        {
-            onAddBattleEvent.Raise(battleEvent);
-        }
-        yield return null;
+        IsKOed = false;
+        //get new health value
+        int newHP = Mathf.FloorToInt(HP.GetValue() * percentOfHPToRestore);
+        OnHealed(newHP);
+        //trigger animation
+        animator.SetTrigger("Revive");
+        //do battle manager stuff
+        battleManager.ReviveCombatant(this);
     }
+
+    public virtual void OnCastStart()
+    {
+        IsCasting = true;
+    }
+
+    public virtual void OnCastEnd() 
+    {
+        IsCasting = false;
+    }
+
+    //public IEnumerator TriggerBattleEffectsCo(BattleEventType battleEventType, List<ActionSubevent> actionSubevents)
+    //{
+    //    List<BattleEvent> battleEvents = new List<BattleEvent>();
+
+    //    //check triggerable effects
+    //    foreach (TriggerableBattleEffect triggerableBattleEffect in TriggerableBattleEffects[battleEventType])
+    //    {
+
+    //        //go through each actor/target subevent
+    //        foreach (ActionSubevent actionSubevent in actionSubevents)
+    //        {
+    //        }
+    //        if (targets.Count > 0) 
+    //        {
+    //            BattleEvent battleEvent = new BattleEvent(this, targets, triggerableBattleEffect);
+    //            battleEvents.Add(battleEvent);
+    //        }
+    //    }
+    //    foreach (BattleEvent battleEvent in battleEvents)
+    //    {
+    //        onAddBattleEvent.Raise(battleEvent);
+    //    }
+    //    yield return null;
+    //}
     #endregion
 
     #region Movement and Grid
@@ -430,7 +434,25 @@ protected virtual void Awake()
         Destroy(effectObject);
     }
 
-    public void AddStatusEffect(StatusEffect newStatusEffect, float potency = 0)
+    protected IEnumerator TriggerStatusHealthEffectCo(StatusEffectInstance statusEffectInstance)
+    {
+        if (statusEffectInstance.StatusEffect.TriggerVFX != null)
+        {
+            yield return TriggerStatusAnimationCo(statusEffectInstance.StatusEffect.TriggerVFX);
+        }
+        
+        if (statusEffectInstance.StatusEffect.HealthEffectType == HealthEffectType.Damage)
+        {
+            OnDamaged(statusEffectInstance.Potency, false, ElementalProperty.None);
+        }
+        else if (statusEffectInstance.StatusEffect.HealthEffectType == HealthEffectType.Heal)
+        {
+            OnHealed(statusEffectInstance.Potency, false);
+        }
+        yield return null;
+    }
+
+    public void AddStatusEffect(StatusEffect newStatusEffect, int potency = 0)
     {
         Debug.Log("Applying status: " + newStatusEffect.EffectName);
         //create new instance
@@ -475,7 +497,7 @@ protected virtual void Awake()
         {
             popupType = PopupType.Debuff;
         }
-        StartCoroutine(healthDisplay.DisplayHealthChange(popupType, newStatusInstance.StatusEffect.EffectName));
+        StartCoroutine(healthDisplay.DisplayHealthChange());
 
         //spawn persistent animation effect
         if (newStatusInstance.StatusEffect.PersistentVFX != null)
