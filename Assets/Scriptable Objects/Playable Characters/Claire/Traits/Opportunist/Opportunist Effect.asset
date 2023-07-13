@@ -17,6 +17,10 @@ MonoBehaviour:
     <IsNot>k__BackingField: 0
     <BattleCondition>k__BackingField: {fileID: 11400000, guid: 5ff15dab6e26862479881e297acb386f,
       type: 2}
+  - <Conditional>k__BackingField: 1
+    <IsNot>k__BackingField: 0
+    <BattleCondition>k__BackingField: {fileID: 11400000, guid: 3dfa802850a95994ba8d0bf08f9a7666,
+      type: 2}
   actionModifiers: []
   triggerRate: 1
   <EffectName>k__BackingField: Opportunist

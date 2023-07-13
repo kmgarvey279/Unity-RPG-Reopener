@@ -10,9 +10,6 @@ public class TriggerableBattleEffectRevive : TriggerableBattleEffect
     public override void ApplyEffect(Combatant actor, Combatant target, ActionSummary actionSummary)
     {
         base.ApplyEffect(actor, target, actionSummary);
-        if(target.CanRevive)
-        {
-            target.OnRevive(percentOfHPToRestore);
-        }
+        target.OnRevive(percentOfHPToRestore);
     }
 }

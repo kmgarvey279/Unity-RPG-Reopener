@@ -78,7 +78,7 @@ public class TurnEndState : BattleState
         yield return waitZeroPointTwoFive;
 
         //trigger turn end effects
-        if (battleTimeline.CurrentTurn.TurnType != TurnType.Intervention && !battleTimeline.CurrentTurn.Actor.IsKOed)
+        if (battleTimeline.CurrentTurn.TurnType != TurnType.Intervention && battleTimeline.CurrentTurn.Actor.CombatantState != CombatantState.KO)
         {
             //add turn start effects to queue
             yield return StartCoroutine(battleTimeline.CurrentTurn.Actor.OnTurnEndCo());
@@ -93,7 +93,7 @@ public class TurnEndState : BattleState
             {
                 //resolve health change
                 allCombatants[i].ResolveHealthChange();
-                if (allCombatants[i].IsKOed)
+                if (allCombatants[i].CombatantState == CombatantState.KO)
                 {
                     battleManager.KOCombatant(allCombatants[i]);
                 }
@@ -101,7 +101,7 @@ public class TurnEndState : BattleState
             yield return waitZeroPointTwoFive;
         }
 
-        if (!battleTimeline.CurrentTurn.Actor.IsKOed)
+        if (battleTimeline.CurrentTurn.Actor.CombatantState != CombatantState.KO)
         {
             //unhighlight party panel
             if (battleTimeline.CurrentTurn.Actor is PlayableCombatant)

@@ -22,9 +22,9 @@ public class PlayableCombatant : Combatant
         this.BattlePartyPanel = battlePartyPanel;
     }
 
-    public override void SetCharacterData(CharacterInfo characterInfo, PlayableCharacterID linkedCharacterID)
+    public override IEnumerator SetCharacterData(CharacterInfo characterInfo, PlayableCharacterID linkedCharacterID)
     {
-        base.SetCharacterData(characterInfo);
+        yield return StartCoroutine(base.SetCharacterData(characterInfo));
         
         PlayableCharacterInfo playableCharacterInfo = (PlayableCharacterInfo)characterInfo;
         Attack = playableCharacterInfo.Attack;
@@ -32,9 +32,8 @@ public class PlayableCombatant : Combatant
         PlayableCharacterID = playableCharacterInfo.PlayableCharacterID;
         LinkedCharacterID = linkedCharacterID;
         Skills.AddRange(playableCharacterInfo.Skills);
-
-        CanRevive = true;
-        IsLoaded = true;
+        
+        yield return null;
     }
 
     public override void OnDamaged(int amount, bool isCrit = false, ElementalProperty elementalProperty = ElementalProperty.None)
@@ -60,9 +59,23 @@ public class PlayableCombatant : Combatant
         BattlePartyPanel.LockInterventionTriggerIcon(false);
     }
 
+    //public override void SetCombatantState(CombatantState newState)
+    //{
+    //    base.SetCombatantState(newState);
+    //    if (newState == CombatantState.Default)
+    //    {
+    //        BattlePartyPanel.LockInterventionTriggerIcon(false);
+    //    }
+    //    else
+    //    {
+    //        BattlePartyPanel.LockInterventionTriggerIcon(true);
+    //    }
+    //}
+
     public void OnChangeMana(int change)
     {
-        MP.ChangeCurrentValue(change);
+        int newValue = MP.Value + change;
+        MP.UpdateValue(newValue);
 
         ResolveManaChange();
     }

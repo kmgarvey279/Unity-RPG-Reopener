@@ -7,19 +7,17 @@ public class ActionEvent
 {
     [field: SerializeField] public Action Action { get; private set; }
     [field: SerializeField] public Combatant Actor { get; private set; }
-    //public List<Combatant> Targets { get; private set; } = new List<Combatant>();
     [field: SerializeField] public List<ActionSubevent> ActionSubevents { get; private set; } = new List<ActionSubevent>();
-    //public CombatantType TargetedCombatantType { get; private set; }
+    private float chainMultiplier = 1f;
 
-    public ActionEvent(Combatant actor, Action action, List<Combatant> targets)
+    public ActionEvent(Combatant _actor, Action _action, List<Combatant> _targets, float _chainMultiplier)
     {
-        Actor = actor;
-        Action = action;
-        //Targets = targets;
-        //SetCombatantType();
-        foreach (Combatant target in targets)
+        Actor = _actor;
+        Action = _action;
+        chainMultiplier = _chainMultiplier;
+        foreach (Combatant target in _targets)
         {
-            ActionSubevent actionSubevent = new ActionSubevent(Action, Actor, target);
+            ActionSubevent actionSubevent = new ActionSubevent(Action, Actor, target, chainMultiplier);
             ActionSubevents.Add(actionSubevent);
         }
     }

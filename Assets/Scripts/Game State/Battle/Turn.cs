@@ -102,7 +102,7 @@ public class Turn
     {
         if(Actor)
         {
-            return Actor.Stats[StatType.Agility].GetValue();
+            return Actor.Stats[StatType.Agility].CurrentValue;
         }
         else
         {

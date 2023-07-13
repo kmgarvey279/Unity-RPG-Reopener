@@ -46,7 +46,7 @@ public class ChangeTurnState : BattleState
         //if next turn is a queued cast:
         else if (battleTimeline.CurrentTurn.TurnType == TurnType.Cast)
         {
-            battleTimeline.CurrentTurn.Actor.OnCastEnd();
+            battleTimeline.CurrentTurn.Actor.OnCastStart();
             StartQueuedCast();
         }
         else

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dca9a37707acea4c9e3071e5e0f0e8e, type: 3}
+  m_Name: Apply Defending
+  m_EditorClassIdentifier: 
+  battleConditions: []
+  triggerRate: 100
+  triggerRateModifiers: []
+  <EffectName>k__BackingField: 
+  <DisplayName>k__BackingField: 0
+  <BattleEventType>k__BackingField: 0
+  <TriggerFrequency>k__BackingField: 0
+  <TargetSelf>k__BackingField: 1
+  <MultiTargetMultiplier>k__BackingField: 0
+  <Priority>k__BackingField: 1
+  <ActionAnimations>k__BackingField: []
+  <AdditionalEffects>k__BackingField: []
+  power: 0
+  useActorStat: 0
+  offensiveStat: 0
+  <StatusEffectSO>k__BackingField: {fileID: 11400000, guid: 0482997ed5052974c8f834b23bdb3163,
+    type: 2}

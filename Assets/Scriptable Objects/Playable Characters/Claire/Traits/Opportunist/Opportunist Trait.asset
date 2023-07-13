@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Opportunist Trait
   m_EditorClassIdentifier: 
   <TraitName>k__BackingField: Opportunist
-  <TraitInfo>k__BackingField: When evading one or more hits of an attack, automatically
-    retaliate with counterattack (0.5 power).
+  <TraitInfo>k__BackingField: When evading one or more hits of a melee attack, automatically
+    retaliate with counterattack (x0.5 power).
   <Icon>k__BackingField: {fileID: 0}
   <StatModifiers>k__BackingField: []
   <ActionModifiers>k__BackingField: []

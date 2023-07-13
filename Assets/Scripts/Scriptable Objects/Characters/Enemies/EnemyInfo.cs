@@ -42,4 +42,13 @@ public class EnemyInfo : CharacterInfo
 {
     [Header("Skills")]
     [field: SerializeField] public List<WeightedAction> WeightedActions = new List<WeightedAction>();
+
+    private float baseBlockPower = 0.2f;
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+
+        SecondaryStats[SecondaryStatType.BlockPower].UpdateBaseValue(baseBlockPower);
+    }
 }

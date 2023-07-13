@@ -27,10 +27,10 @@ public class TriggerableBattleEffectHealthPercentage : TriggerableBattleEffect
                 Mathf.Round(percentageTemp /= bossDivider);
             }
         }
-        float healthTotalToUse = target.HP.GetValue();
+        float healthTotalToUse = target.HP.MaxValue;
         if (useCurrentHP)
         {
-            healthTotalToUse = target.HP.CurrentValue;
+            healthTotalToUse = target.HP.Value;
         }
         healthEffect = healthTotalToUse * percentageTemp;
 

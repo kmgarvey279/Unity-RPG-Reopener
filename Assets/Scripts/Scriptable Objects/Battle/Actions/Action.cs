@@ -152,14 +152,14 @@ public class Action : ScriptableObject
             if (ActionCostType == ActionCostType.HP)
             {
                 //attacks that use HP cannot be used if they'd kill the user
-                userResource = user.HP.CurrentValue - 1;
+                userResource = user.HP.Value - 1;
             }
             else if (ActionCostType == ActionCostType.MP)
             {
-                userResource = user.MP.CurrentValue;
+                userResource = user.MP.Value;
             }
             //check cost
-            if (userResource < Cost) 
+            if (userResource <= Cost) 
             {
                 isUsable = false;
             }

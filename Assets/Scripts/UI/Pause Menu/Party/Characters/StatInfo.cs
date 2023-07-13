@@ -17,7 +17,7 @@ public class StatInfo : MonoBehaviour
     private void Start()
     {
         characterInfoUI = GetComponentInParent<CharacterInfoUI>();
-        stat = characterInfoUI.playableCharacterInfo.GetStat(statType);
+        stat = characterInfoUI.playableCharacterInfo.Stats[statType].CurrentValue;
         valueText.text = stat.ToString("n0");
     }
 

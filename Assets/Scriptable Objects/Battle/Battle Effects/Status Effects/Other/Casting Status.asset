@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6be137f697e5804428fd4db0b1bdf0ac, type: 3}
+  m_Name: Casting Status
+  m_EditorClassIdentifier: 
+  <DisplayOnTargetInfo>k__BackingField: 0
+  <Icon>k__BackingField: {fileID: 0}
+  <EffectName>k__BackingField: 
+  <EffectInfo>k__BackingField: 
+  <StatusEffectType>k__BackingField: 2
+  <CanRemove>k__BackingField: 0
+  <RemoveOnKO>k__BackingField: 1
+  <AnimatorOverride>k__BackingField: 5
+  <CustomAnimatorOverride>k__BackingField: 
+  TargetSpeedChange: 0
+  <TriggerVFX>k__BackingField: {fileID: 0}
+  <PersistentVFX>k__BackingField: {fileID: 7191147466110007656, guid: 751271fc49f26904cbd28527039aa3d2,
+    type: 3}
+  <StatusCounterType>k__BackingField: 2
+  <CounterApply>k__BackingField: 1
+  <CounterMax>k__BackingField: 1
+  <TickAtTurnStart>k__BackingField: 0
+  <RemoveOnTick>k__BackingField: 0
+  <ActionModifiers>k__BackingField: []
+  <TurnEffects>k__BackingField: []
+  <TriggerableBattleEffects>k__BackingField: []
+  <EffectsToRemove>k__BackingField: []

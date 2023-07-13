@@ -7,7 +7,8 @@ public enum ActionSummaryValue
     DidHit,
     DidMiss,
     DidCrit,
-    DidBlock
+    DidBlock,
+    DidHitWeakness
 }
 
 public class ActionSummary
@@ -42,13 +43,15 @@ public class ActionSubevent
     [field: SerializeField] public ActionSummary ActionSummary { get; private set; }
     [field: SerializeField] public Combatant Actor { get; private set; }
     [field: SerializeField] public Combatant Target { get; private set; }
+    private float chainMultiplier = 1f;
     private BattleFormulas battleFormulas = new BattleFormulas();
 
-    public ActionSubevent(Action _action, Combatant _actor, Combatant _target)
+    public ActionSubevent(Action _action, Combatant _actor, Combatant _target, float _chainMultiplier)
     {
         ActionSummary = new ActionSummary(_action);
         Actor = _actor;
         Target = _target;
+        chainMultiplier = _chainMultiplier;
         //TargetIndex = _targetIndex;
     }
 
@@ -147,15 +150,6 @@ public class ActionSubevent
         int attackPower = battleFormulas.GetActorPower(ActionSummary.Action.Power, Actor, ActionSummary.Action.OffensiveStat);
         Debug.Log("Base attack power: " + attackPower);
 
-        //crit
-        float critMultiplier = 1f;
-        if (didCrit)
-        {
-            critMultiplier = ApplyActionModifiers(Actor.SecondaryStats[SecondaryStatType.CritPower], ActionModifierType.CritPower);
-        }
-        attackPower = Mathf.FloorToInt(attackPower * critMultiplier);
-        Debug.Log("crit is " + didCrit.ToString() + "action power: " + attackPower);
-
         //defense modifiers
         int defensivePower = 0;
         if (ActionSummary.Action.ActionType == ActionType.Attack)
@@ -166,15 +160,47 @@ public class ActionSubevent
 
         int finalActionPower = battleFormulas.GetHealthEffect(healthEffectType, attackPower, defensivePower);
 
-        //final modifiers
+        //crit
+        float critMultiplier = 1f;
+        if (didCrit)
+        {
+            critMultiplier = ApplyActionModifiers(Actor.SecondaryStats[SecondaryStatType.CritPower].CurrentValue, ActionModifierType.CritPower);
+        }
+        finalActionPower = Mathf.FloorToInt(finalActionPower * critMultiplier);
+
+        //elemental multiplier
+        ElementalResistance elementalResistance = Target.Resistances[ActionSummary.Action.ElementalProperty];
+        float resistMultiplier = 1f;
+        if (elementalResistance == ElementalResistance.Weak)
+        {
+            resistMultiplier = 1.5f;
+        }
+        else if (elementalResistance == ElementalResistance.Resist)
+        {
+            resistMultiplier = 0.6f;
+        }
+        else if (elementalResistance == ElementalResistance.Null)
+        {
+            resistMultiplier = 0f;
+        }
+        finalActionPower = Mathf.FloorToInt(finalActionPower * resistMultiplier);
+
+        //elemental resist modifiers(playable characters only)
+        //actionPower -= (actionPower * (actionSubevent.Target.ResistanceModifiers[ElementalProperty] / 100f));
+
+        //misc. modifiers
         ActionModifierType actionModifierType = ActionModifierType.Damage;
         if (ActionSummary.Action.ActionType == ActionType.Heal)
         {
             actionModifierType = ActionModifierType.Healing;
         }
-        finalActionPower = Mathf.FloorToInt(ApplyActionModifiers(attackPower, actionModifierType));
-        Debug.Log("action power after modifiers is " + attackPower);
+        finalActionPower = Mathf.FloorToInt(ApplyActionModifiers(finalActionPower, actionModifierType));
+        
+        //chain multiplier
+        finalActionPower = Mathf.FloorToInt(finalActionPower * chainMultiplier);
+        Debug.Log("action power after modifiers is " + finalActionPower);
 
+        //block flat damage reduction
         if (ActionSummary.Action.ActionType == ActionType.Attack)
         {
             if (wasBlocked)
@@ -186,30 +212,11 @@ public class ActionSubevent
             }
         }
 
-        //elemental multiplier
-        //ElementalResistance elementalResistance = Target.Resistances[ElementalProperty];
-        //float resistMultiplier = 1f;
-        //if (elementalResistance == ElementalResistance.Weak)
-        //{
-        //    resistMultiplier = 1.5f;
-        //}
-        //else if (elementalResistance == ElementalResistance.Resist)
-        //{
-        //    resistMultiplier = 0.6f;
-        //}
-        //else if (elementalResistance == ElementalResistance.Null)
-        //{
-        //    resistMultiplier = 0f;
-        //}
-        //actionPower *= resistMultiplier;
-
-        //elemental resist modifiers (playable characters only)
-        //actionPower -= (actionPower * (actionSubevent.Target.ResistanceModifiers[ElementalProperty] / 100f));
-
         //final value
         finalActionPower = Mathf.Clamp(finalActionPower, 1, 9999);
-        Debug.Log("final action power: " + finalActionPower);
         ActionSummary.UpdateCumHealthEffect(finalActionPower);
+
+        Debug.Log("final action power: " + finalActionPower);
         return finalActionPower;
     }
 
@@ -217,15 +224,15 @@ public class ActionSubevent
     {
         foreach (ActionModifier actionModifier in ActionSummary.Action.ActionModifierDict[actionModifierType])
         {
-            baseValue += baseValue * actionModifier.GetModifier(Actor, Target, ActionSummary);
+            baseValue = actionModifier.ApplyModifier(baseValue, Actor, Target, ActionSummary);
         }
         foreach (ActionModifier actionModifier in Actor.ActionModifiers[BattleEventType.Acting][actionModifierType])
         {
-            baseValue += baseValue * actionModifier.GetModifier(Actor, Target, ActionSummary);
+            baseValue = actionModifier.ApplyModifier(baseValue, Actor, Target, ActionSummary);
         }
         foreach (ActionModifier actionModifier in Target.ActionModifiers[BattleEventType.Targeted][actionModifierType])
         {
-            baseValue += baseValue * actionModifier.GetModifier(Target, Actor, ActionSummary);
+            baseValue = actionModifier.ApplyModifier(baseValue, Target, Actor, ActionSummary);
         }
         return baseValue;
     }

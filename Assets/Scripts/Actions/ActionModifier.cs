@@ -19,12 +19,12 @@ public enum ActionModifierType
 [System.Serializable]
 public class ActionModifier
 {
-    [SerializeField] private float multiplier;
+    [SerializeField] private ModifierCollection modifierCollection;
     [SerializeField] private List<BattleConditionContainer> conditionList = new List<BattleConditionContainer>();
     [field: SerializeField] public BattleEventType BattleEventType { get; private set; }
     [field: SerializeField] public ActionModifierType ActionModifierType { get; private set; }
 
-    public float GetModifier(Combatant actor, Combatant target, ActionSummary actionSummary)
+    public float ApplyModifier(float baseValue, Combatant actor, Combatant target, ActionSummary actionSummary)
     {
         foreach (BattleConditionContainer conditionContainer in conditionList)
         {
@@ -33,6 +33,6 @@ public class ActionModifier
                 return 0;
             }
         }
-        return multiplier;
+        return modifierCollection.GetModifiedValue(baseValue);
     }
 }

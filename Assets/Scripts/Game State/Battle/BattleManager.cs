@@ -197,7 +197,7 @@ public class BattleManager : MonoBehaviour
         {
             foreach (Combatant combatant in PlayableCombatants)
             {
-                if (combatant.IsKOed == getKOed)
+                if (!getKOed || getKOed && combatant.CombatantState == CombatantState.KO)
                 {
                     filteredCombatants.Add(combatant);
                 }
@@ -207,7 +207,7 @@ public class BattleManager : MonoBehaviour
         {
             foreach (Combatant combatant in EnemyCombatants)
             {
-                if (combatant.IsKOed == getKOed)
+                if (!getKOed || getKOed && combatant.CombatantState == CombatantState.KO)
                 {
                     filteredCombatants.Add(combatant);
                 }
@@ -268,7 +268,7 @@ public class BattleManager : MonoBehaviour
         if (index < PlayableCombatants.Count)
         {
             Combatant actor = PlayableCombatants[index];
-            if (actor.IsKOed || actor.IsCasting)
+            if (actor.CombatantState == CombatantState.Default)
             {
                 return false;
             }
@@ -282,7 +282,7 @@ public class BattleManager : MonoBehaviour
         foreach (Combatant combatant in GetCombatants(CombatantType.Player))
         {
             PlayableCombatant playableCombatant = (PlayableCombatant)combatant;
-            if(!playableCombatant.IsCasting)
+            if(playableCombatant.CombatantState != CombatantState.Default)
             {
                 playableCombatant.BattlePartyPanel.LockInterventionTriggerIcon(isLocked);
             }

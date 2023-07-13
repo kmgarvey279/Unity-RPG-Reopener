@@ -26,7 +26,7 @@ public class ExecuteActionState : BattleState
     {
         base.OnEnter();
         //copy current action event
-        actionEventToExecute = new ActionEvent(battleTimeline.CurrentTurn.Actor, battleTimeline.CurrentTurn.Action, battleTimeline.CurrentTurn.Targets);
+        actionEventToExecute = new ActionEvent(battleTimeline.CurrentTurn.Actor, battleTimeline.CurrentTurn.Action, battleTimeline.CurrentTurn.Targets, battleTimeline.ChainMultiplier);
         if (actionEventToExecute.Action.HasCastTime && battleTimeline.CurrentTurn.TurnType != TurnType.Intervention && battleTimeline.CurrentTurn.TurnType != TurnType.Cast)
         {
             actionEventToExecute.Actor.AddStatusEffect(castingStatus);
@@ -287,7 +287,7 @@ public class ExecuteActionState : BattleState
 
         for (int i = allCombatants.Count - 1; i >= 0; i--)
         {
-            if (allCombatants[i].IsKOed)
+            if (allCombatants[i].CombatantState == CombatantState.KO)
             {
                 battleManager.KOCombatant(allCombatants[i]);
             }

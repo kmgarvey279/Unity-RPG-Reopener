@@ -34,8 +34,8 @@ public class HealthDisplay : MonoBehaviour
 
     private void Start()
     {
-        healthBar.SetInitialValue(combatant.HP.GetValue(), combatant.HP.CurrentValue);
-        barrierBar.SetInitialValue(combatant.Barrier.GetValue(), combatant.Barrier.CurrentValue);
+        healthBar.SetInitialValue(combatant.HP.MaxValue, combatant.HP.Value);
+        barrierBar.SetInitialValue(combatant.Barrier.MaxValue, combatant.Barrier.Value);
     }
 
     public void Display(bool show)
@@ -59,13 +59,13 @@ public class HealthDisplay : MonoBehaviour
         }
 
         //barrierBar.ResolveChange(combatant.Barrier.CurrentValue);
-        healthBar.DisplayChange(combatant.HP.CurrentValue);
+        healthBar.DisplayChange(combatant.HP.Value);
         yield return null;
     }
 
     public IEnumerator ResolveHealthChange()
     {
-        healthBar.ResolveChange(combatant.HP.CurrentValue);
+        healthBar.ResolveChange(combatant.HP.Value);
 
         yield return new WaitForSeconds(2f);
         healthDisplay.gameObject.SetActive(false);

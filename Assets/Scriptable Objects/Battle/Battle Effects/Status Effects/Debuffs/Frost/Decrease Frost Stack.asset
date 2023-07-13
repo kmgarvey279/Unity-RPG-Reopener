@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb175d32d741bb8458127df7645db9ce, type: 3}
+  m_Name: Decrease Frost Stack
+  m_EditorClassIdentifier: 
+  battleConditions:
+  - <Conditional>k__BackingField: 0
+    <IsNot>k__BackingField: 0
+    <BattleCondition>k__BackingField: {fileID: 11400000, guid: 80404cf801d90074fb699a612c772299,
+      type: 2}
+  triggerRate: 100
+  triggerRateModifiers: []
+  <EffectName>k__BackingField: 
+  <DisplayName>k__BackingField: 0
+  <BattleEventType>k__BackingField: 1
+  <TriggerFrequency>k__BackingField: 1
+  <TargetSelf>k__BackingField: 1
+  <MultiTargetMultiplier>k__BackingField: 0
+  <Priority>k__BackingField: 1
+  <ActionAnimations>k__BackingField:
+  - <AnimationSpawnPosition>k__BackingField: 4
+    <AnimatorTrigger>k__BackingField: 
+    <SpawnForEachTarget>k__BackingField: 0
+    <Repeat>k__BackingField: 0
+    <EffectPrefab>k__BackingField: {fileID: 9080087516260223380, guid: 19561b8b8ee14da4fa224bfe5c3c8c74,
+      type: 3}
+  <AdditionalEffects>k__BackingField: []
+  statusEffectToModify: {fileID: 11400000, guid: be66718aeb0de0341bf86236bf942f93,
+    type: 2}
+  amount: -1

@@ -63,36 +63,36 @@ public class BattlePartyPanel : MonoBehaviour
         //set up icon
         icon.sprite = playableCombatant.TurnIcon;
         //set hp bar
-        hpBar.SetInitialValue(playableCombatant.HP.GetValue(), playableCombatant.HP.CurrentValue);
-        hpNum.SetText(playableCombatant.HP.CurrentValue.ToString());
+        hpBar.SetInitialValue(playableCombatant.HP.MaxValue, playableCombatant.HP.Value);
+        hpNum.SetText(playableCombatant.HP.Value.ToString());
         //set barrier 
-        barrierBar.SetInitialValue(playableCombatant.Barrier.GetValue(), 0);
+        barrierBar.SetInitialValue(playableCombatant.Barrier.MaxValue, 0);
         //set mp bar
-        mpBar.SetInitialValue(playableCombatant.MP.GetValue(), playableCombatant.MP.CurrentValue);
-        mpNum.SetText(playableCombatant.MP.CurrentValue.ToString());
+        mpBar.SetInitialValue(playableCombatant.MP.MaxValue, playableCombatant.MP.Value);
+        mpNum.SetText(playableCombatant.MP.Value.ToString());
     }
 
     public void UpdateHP()
     {
-        hpNum.SetText(playableCombatant.HP.CurrentValue.ToString());
-        hpBar.DisplayChange(playableCombatant.HP.CurrentValue);
-        barrierBar.DisplayChange(playableCombatant.Barrier.CurrentValue);
+        hpNum.SetText(playableCombatant.HP.Value.ToString());
+        hpBar.DisplayChange(playableCombatant.HP.Value);
+        barrierBar.DisplayChange(playableCombatant.Barrier.Value);
     }
 
     public void ResolveHP()
     {
-        hpBar.ResolveChange(playableCombatant.HP.CurrentValue);
-        barrierBar.ResolveChange(playableCombatant.Barrier.CurrentValue);
+        hpBar.ResolveChange(playableCombatant.HP.Value);
+        barrierBar.ResolveChange(playableCombatant.Barrier.Value);
     }
 
     public void UpdateMP()
     {
-        mpBar.DisplayChange(playableCombatant.MP.CurrentValue);
+        mpBar.DisplayChange(playableCombatant.MP.Value);
     }
 
     public void ResolveMP()
     {
-        mpBar.ResolveChange(playableCombatant.MP.CurrentValue);
+        mpBar.ResolveChange(playableCombatant.MP.Value);
     }
 
     public void Highlight(bool isHighlighted)

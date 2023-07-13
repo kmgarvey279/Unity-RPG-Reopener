@@ -37,8 +37,8 @@ public class CommandMenuListActions : CommandMenuList
         {
             Combatant actor = battleTimeline.CurrentTurn.Actor;
 
-            if (slotAction.Action.ActionCostType == ActionCostType.HP && slotAction.Action.Cost > actor.HP.CurrentValue
-                || slotAction.Action.ActionCostType == ActionCostType.MP && slotAction.Action.Cost > actor.MP.CurrentValue)
+            if (slotAction.Action.ActionCostType == ActionCostType.HP && slotAction.Action.Cost > actor.HP.Value
+                || slotAction.Action.ActionCostType == ActionCostType.MP && slotAction.Action.Cost > actor.MP.Value)
             {
                 //GetComponent<Button>().interactable = false;
                 Debug.Log("Can't use that skill!");

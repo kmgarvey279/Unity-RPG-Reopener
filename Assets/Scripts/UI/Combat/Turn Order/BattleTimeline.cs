@@ -23,10 +23,10 @@ public class BattleTimeline : MonoBehaviour
     private List<RectTransform> slotLocations = new List<RectTransform>();
 
     [Header("Chains")]
-    private float ChainBonus = 1f;
-    public CombatantType chainType { get; private set; } = CombatantType.None;
-    public Combatant lastChainActor { get; private set; }
     [SerializeField] private ChainBonusDisplay chainBonusDisplay;
+    public float ChainMultiplier { get; private set; } = 1f;
+    public CombatantType ChainType { get; private set; } = CombatantType.None;
+    private List<Combatant> CurrentChain = new List<Combatant>();
     [Header("Intervention")]
     [SerializeField] private InterventionPoints interventionPoints;
     //misc.
@@ -70,21 +70,7 @@ public class BattleTimeline : MonoBehaviour
         CurrentTurn = TurnQueue[0];
         CurrentTurn.SetAsCurrentTurn();
 
-        //check chains
-        if (CurrentTurn.TurnType != TurnType.Intervention)
-        {
-            //increase bonus
-            if (CurrentTurn.Actor.CombatantType == chainType && CurrentTurn.Actor != lastChainActor)
-            {
-                UpdateChainBonus(ChainBonus += 0.1f, CurrentTurn.Actor.CombatantType);
-            }
-            //reset bonus
-            else
-            {
-                UpdateChainBonus(1f, CurrentTurn.Actor.CombatantType);
-            }
-        }
-        lastChainActor = CurrentTurn.Actor;
+        UpdateChain();
 
         DisplayTurnOrder();
     }
@@ -300,11 +286,38 @@ public class BattleTimeline : MonoBehaviour
 
     #region Chains
 
-    public void UpdateChainBonus(float newValue, CombatantType combatantType)
+    public void UpdateChain()
     {
-        ChainBonus = newValue;
-        chainType = combatantType;
-        chainBonusDisplay.UpdateDisplay(newValue, combatantType);
+        bool isNewChain = false;
+        if (CurrentTurn.Actor.CombatantType != ChainType)
+        {
+            ChainMultiplier = 1f;
+            ChainType = CurrentTurn.Actor.CombatantType;
+            CurrentChain.Clear();
+        }
+        else
+        {
+            if (CurrentTurn.Actor.ChainBreakCheck(CurrentChain))
+            {
+                ChainMultiplier = 1f;
+                CurrentChain.Clear();
+            }
+        }
+        UpdateChainMultiplier(CurrentTurn.Actor.GetNewChainMultiplier(ChainMultiplier, CurrentChain));
+        CurrentChain.Add(CurrentTurn.Actor);
+    }
+
+    public void StartChain(CombatantType combatantType)
+    {
+        ChainType = combatantType;
+        ChainMultiplier = 1f;
+        CurrentChain.Clear();
+    }
+
+    public void UpdateChainMultiplier(float newValue)
+    {
+        ChainMultiplier = newValue;
+        chainBonusDisplay.UpdateDisplay(newValue, ChainType);
     }
 
     #endregion
@@ -315,7 +328,7 @@ public class BattleTimeline : MonoBehaviour
     {
         if (interventionPoints.Value >= 25)
         {
-            if (actor != null && !actor.IsKOed)
+            if (actor != null && actor.CombatantState == CombatantState.Default)
             {
                 AddTurn(TurnType.Intervention, actor);
                 UpdateInterventionPoints(-25);
@@ -482,14 +495,14 @@ public class BattleTimeline : MonoBehaviour
         }
     }
 
-    public void ApplyTurnModifier(Combatant target, float modifier, bool isTemp, bool ignoreCasts, int actionIndex)
+    public void ApplyTurnModifier(Combatant target, float modifier, bool isTemp, bool ignoreCasts, int timelineOccurrence)
     {
         foreach (Turn turn in combatantTurns[target])
         {
             if (turn.TurnType != TurnType.Intervention 
                 && turn != CurrentTurn 
                 && !(turn.TurnType == TurnType.Cast && ignoreCasts)
-                && TurnQueue.IndexOf(turn) > actionIndex)
+                && TurnQueue.IndexOf(turn) > timelineOccurrence)
             {
                 turn.ApplyModifier(modifier, isTemp);
             }

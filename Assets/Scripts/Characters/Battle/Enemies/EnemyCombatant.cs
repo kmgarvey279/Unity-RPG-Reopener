@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,21 +15,21 @@ public class EnemyCombatant : Combatant
         CombatantType = CombatantType.Enemy;   
     }
 
-    public override void SetCharacterData(CharacterInfo characterInfo, PlayableCharacterID linkedCharacterID = PlayableCharacterID.None)
+    public override IEnumerator SetCharacterData(CharacterInfo characterInfo, PlayableCharacterID linkedCharacterID = PlayableCharacterID.None)
     {
-        base.SetCharacterData(characterInfo);
+        yield return StartCoroutine(base.SetCharacterData(characterInfo));
+        
         EnemyInfo enemyInfo = (EnemyInfo)characterInfo;
         WeightedActions = enemyInfo.WeightedActions;
+
+        yield return null;
     }
 
     public override void OnKO()
     {
         base.OnKO();
         Tile.UnassignOccupier();
-        if (!CanRevive)
-        {
-            StartCoroutine(DestroyEnemyCo());
-        }
+        StartCoroutine(DestroyEnemyCo());
     }
 
     public override void OnRevive(float percentOfHPToRestore)

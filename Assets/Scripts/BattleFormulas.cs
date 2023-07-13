@@ -15,14 +15,14 @@ public class BattleFormulas
     public float GetHitRate(Action action, Combatant target)
     {
         float hitRate = 0;
-        hitRate = action.HitRate - target.SecondaryStats[SecondaryStatType.EvadeRate];
+        hitRate = action.HitRate - target.SecondaryStats[SecondaryStatType.EvadeRate].CurrentValue;
         return Mathf.Clamp(hitRate, 0.05f, 1f);
     }
 
     public float GetCritRate(Action action, Combatant actor)
     {
         float critRate = 0;
-        critRate = actor.SecondaryStats[SecondaryStatType.CritRate] * action.CritRateMultiplier;
+        critRate = actor.SecondaryStats[SecondaryStatType.CritRate].CurrentValue * action.CritRateMultiplier;
         return Mathf.Clamp(critRate, 0, 1f);
     }
 
@@ -39,7 +39,7 @@ public class BattleFormulas
         //get actor stat
         if (actor.Stats.ContainsKey(offensiveStat))
         {
-            stat = actor.Stats[offensiveStat].GetValue();
+            stat = actor.Stats[offensiveStat].CurrentValue;
         }
         float actorPower = actionPower * stat * multiplierConst;
         return Mathf.FloorToInt(actorPower);
@@ -47,14 +47,14 @@ public class BattleFormulas
 
     public int GetTargetDefense(Combatant target, StatType defensiveStat, float pierce)
     {
-        float defensivePower = target.Stats[defensiveStat].GetValue() * defenseMultiplierConst;
+        float defensivePower = target.Stats[defensiveStat].CurrentValue * defenseMultiplierConst;
         defensivePower -= defensivePower * pierce;
         return Mathf.FloorToInt(defensivePower);
     }
 
     public int GetTargetBlock(Combatant target, StatType defensiveStat, float pierce)
     {
-        float blockPower = target.Stats[defensiveStat].GetValue() * defenseMultiplierConst * target.SecondaryStats[SecondaryStatType.BlockPower];
+        float blockPower = target.Stats[defensiveStat].CurrentValue * defenseMultiplierConst * target.SecondaryStats[SecondaryStatType.BlockPower].CurrentValue;
         blockPower -= blockPower * pierce;
         return Mathf.FloorToInt(blockPower);
     }

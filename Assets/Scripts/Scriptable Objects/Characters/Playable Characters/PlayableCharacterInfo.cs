@@ -25,9 +25,20 @@ public class PlayableCharacterInfo : CharacterInfo
     [field: SerializeField] public Action Defend { get; private set; }
     [field: SerializeField] public List<Action> Skills { get; private set; }
 
+    private float baseCritRate = 0.07f;
+    private float baseCritPower = 0.5f;
+    private float baseEvadeRate = 0.07f;
+    private float baseBlockPower = 0.2f;
+
     protected override void OnEnable()
     {
         base.OnEnable();
+
+        SecondaryStats[SecondaryStatType.CritRate].UpdateBaseValue(baseCritRate);
+        SecondaryStats[SecondaryStatType.CritPower].UpdateBaseValue(baseCritPower);
+        SecondaryStats[SecondaryStatType.EvadeRate].UpdateBaseValue(baseEvadeRate);
+        SecondaryStats[SecondaryStatType.BlockPower].UpdateBaseValue(baseBlockPower);
+
         Equipment = new Dictionary<EquipmentType, EquipmentItem>();
         foreach (EquipmentType equipmentType in System.Enum.GetValues(typeof(EquipmentType)))
         {
@@ -52,11 +63,15 @@ public class PlayableCharacterInfo : CharacterInfo
         if(Equipment[equipmentType] != null)
         {
             //clear modifiers from old equipment
-            foreach(KeyValuePair<StatType, int> modifier in Equipment[equipmentType].StatModifiers)
+            foreach(StatModifier statModifier in Equipment[equipmentType].StatModifiers)
             {
-                StatModifiers[modifier.Key].Remove(modifier.Value);
+                Stats[statModifier.StatType].RemoveModifier(statModifier.Modifier, statModifier.ModifierType);
             }
-            foreach(KeyValuePair<ElementalProperty, int> modifier in Equipment[equipmentType].ResistanceModifiers)
+            foreach (SecondaryStatModifier secondaryStatModifier in Equipment[equipmentType].SecondaryStatModifiers)
+            {
+                SecondaryStats[secondaryStatModifier.SecondaryStatType].RemoveModifier(secondaryStatModifier.Modifier, secondaryStatModifier.ModifierType);
+            }
+            foreach (KeyValuePair<ElementalProperty, int> modifier in Equipment[equipmentType].ResistanceModifiers)
             {
                 ResistanceModifiers[modifier.Key].Remove(modifier.Value);
             }
@@ -64,11 +79,15 @@ public class PlayableCharacterInfo : CharacterInfo
         //add equipment to dictionary
         Equipment[equipmentType] = newEquipment;
         //add modifiers from new equipment
-        foreach (KeyValuePair<StatType, int> modifier in Equipment[equipmentType].StatModifiers)
+        foreach (StatModifier statModifier in Equipment[equipmentType].StatModifiers)
         {
-            StatModifiers[modifier.Key].Add(modifier.Value);
-        }            
-        foreach(KeyValuePair<ElementalProperty,int> modifier in Equipment[equipmentType].ResistanceModifiers)
+            Stats[statModifier.StatType].AddModifier(statModifier.Modifier, statModifier.ModifierType);
+        }
+        foreach (SecondaryStatModifier secondaryStatModifier in Equipment[equipmentType].SecondaryStatModifiers)
+        {
+            SecondaryStats[secondaryStatModifier.SecondaryStatType].AddModifier(secondaryStatModifier.Modifier, secondaryStatModifier.ModifierType);
+        }
+        foreach (KeyValuePair<ElementalProperty,int> modifier in Equipment[equipmentType].ResistanceModifiers)
         {
             ResistanceModifiers[modifier.Key].Add(modifier.Value);
         }

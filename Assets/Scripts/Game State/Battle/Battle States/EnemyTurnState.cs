@@ -255,7 +255,7 @@ public class EnemyTurnState : BattleState
         {
             healThreshold = 0.95f;
         }
-        if (target.HP.CurrentValue < Mathf.FloorToInt((float)target.HP.GetValue() * healThreshold))
+        if (target.HP.Value < Mathf.FloorToInt((float)target.HP.MaxValue * healThreshold))
         {
             return true;
         }

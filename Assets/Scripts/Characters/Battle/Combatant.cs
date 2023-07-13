@@ -3,13 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using static UnityEngine.ParticleSystem;
+
+public enum CombatantState
+{
+    Default, 
+    Casting, 
+    Defending,
+    KO, 
+    Frozen
+}
 
 public enum CombatantTargetState
 {
     Default,
     Targetable,
     Untargetable
+}
+
+//always default to false
+public enum CombatantBool
+{
+    CanLinkWithSelfInChain,
+    CannotContributeToChain,
+    CannotBenefitFromChain,
+    CannotHit,
+    CannotTakeDamage,
+    CannotBeHealed,
+    CannotKill,
+    CannotDamage,
+    CannotUseMelee,
+    CannotUseMagic
 }
 
 public class Combatant : MonoBehaviour
@@ -37,7 +60,7 @@ public class Combatant : MonoBehaviour
 
     [Header("External References")]
     protected BattleManager battleManager;
-    protected GridManager gridManager;
+    protected BattleTimeline battleTimeline;
 
     [Header("Child Scripts")]
     [SerializeField] protected HealthDisplay healthDisplay;
@@ -46,24 +69,24 @@ public class Combatant : MonoBehaviour
     [Header("Signals")]
     [SerializeField] protected SignalSenderBattleEvent onAddBattleEvent;
 
+
     protected WaitForSeconds wait05 = new WaitForSeconds(0.5f);
     protected WaitForSeconds wait1 = new WaitForSeconds(1f);
 
-    public bool IsCasting { get; protected set; } = false;
-    public bool IsKOed { get; protected set; } = false;
-    public bool CanRevive { get; protected set; } = false;
+    public CombatantState CombatantState { get; private set; } = CombatantState.Default;
     public bool IsLoaded { get; protected set; } = false;
     public CombatantType CombatantType { get; protected set; }
     public string CharacterName { get; protected set; }
     public string CharacterLetter { get; protected set; } = "";
     public Sprite TurnIcon { get; private set; }
-    public DynamicStat HP { get; protected set; }
-    public DynamicStat Barrier { get; protected set; }
-    public DynamicStat MP { get; protected set; }
+    public ClampInt HP { get; protected set; }
+    public ClampInt Barrier { get; protected set; }
+    public ClampInt MP { get; protected set; }
     public Dictionary<StatType, Stat> Stats { get; protected set; } = new Dictionary<StatType, Stat>();
-    public Dictionary<SecondaryStatType, float> SecondaryStats { get; protected set; } = new Dictionary<SecondaryStatType, float>();
+    public Dictionary<SecondaryStatType, SecondaryStat> SecondaryStats { get; protected set; } = new Dictionary<SecondaryStatType, SecondaryStat>();
     public Dictionary<ElementalProperty, ElementalResistance> Resistances { get; protected set; } = new Dictionary<ElementalProperty, ElementalResistance>();
-    public Dictionary<ElementalProperty, int> ResistanceModifiers { get; protected set; } = new Dictionary<ElementalProperty, int>();
+    public Dictionary<ElementalProperty, float> ResistanceModifiers { get; protected set; } = new Dictionary<ElementalProperty, float>();
+    public Dictionary<CombatantBool, int> CombatantBools;
     public List<TraitInstance> TraitInstances { get; protected set; } = new List<TraitInstance>();
     public Dictionary<BattleEventType, Dictionary<ActionModifierType, List<ActionModifier>>> ActionModifiers { get; protected set; } = new Dictionary<BattleEventType, Dictionary<ActionModifierType, List<ActionModifier>>>();
     public Dictionary<BattleEventType, List<TriggerableBattleEffect>> TriggerableBattleEffects { get; protected set; } = new Dictionary<BattleEventType, List<TriggerableBattleEffect>>();
@@ -72,7 +95,7 @@ public class Combatant : MonoBehaviour
     public Dictionary<CombatantBindPosition, Transform> CombatantBindPositions { get; protected set; }
 
     #region Setup
-protected virtual void Awake()
+    protected virtual void Awake()
     {
         //child components
         healthDisplay = GetComponentInChildren<HealthDisplay>();
@@ -84,34 +107,38 @@ protected virtual void Awake()
         CombatantBindPositions.Add(CombatantBindPosition.Back, backBindPosition);
     }
 
-    public virtual void SetCharacterData(CharacterInfo characterInfo, PlayableCharacterID playableCharacterID = PlayableCharacterID.None)
+    public virtual IEnumerator SetCharacterData(CharacterInfo characterInfo, PlayableCharacterID playableCharacterID = PlayableCharacterID.None)
     {
-        gridManager = GetComponentInParent<GridManager>();
-        //combatant info
-        //CharacterInfo = characterInfo;
         SetName(characterInfo.CharacterName);
         TurnIcon = characterInfo.TurnIcon;
         
         //hp/mp
-        HP = new DynamicStat(characterInfo.GetStat(StatType.HP), characterInfo.GetStat(StatType.HP));
-        Barrier = new DynamicStat(characterInfo.GetStat(StatType.HP), 0);
-        MP = new DynamicStat(characterInfo.GetStat(StatType.MP), characterInfo.GetStat(StatType.MP));
+        HP = new ClampInt(characterInfo.HP.CurrentValue, 0, characterInfo.HP.CurrentValue);
+        Barrier = new ClampInt(0, 0, characterInfo.HP.CurrentValue);
+        MP = new ClampInt(characterInfo.MP.CurrentValue, 0, characterInfo.MP.CurrentValue);
 
         //stats
-        foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
+        foreach (KeyValuePair<StatType, Stat> statEntry in characterInfo.Stats)
         {
-            Stats.Add(statType, new Stat(characterInfo.GetStat(statType)));
+            Stats.Add(statEntry.Key, new Stat(statEntry.Value.CurrentValue));
         }
-        foreach (SecondaryStatType secondaryStatType in System.Enum.GetValues(typeof(SecondaryStatType)))
+        foreach (KeyValuePair<SecondaryStatType, SecondaryStat> statEntry in characterInfo.SecondaryStats)
         {
-            SecondaryStats.Add(secondaryStatType, characterInfo.SecondaryStats[secondaryStatType]);
+            SecondaryStats.Add(statEntry.Key, new SecondaryStat(statEntry.Value.CurrentValue));
         }
 
         //resistances
         Resistances = characterInfo.Resistances;
-        foreach (KeyValuePair<ElementalProperty, List<int>> modifier in characterInfo.ResistanceModifiers)
+        foreach (KeyValuePair<ElementalProperty, List<float>> modifier in characterInfo.ResistanceModifiers)
         {
             ResistanceModifiers.Add(modifier.Key, (modifier.Value).Sum());
+        }
+
+        //bools, 0 == false, > 0 == true 
+        CombatantBools = new Dictionary<CombatantBool, int>();
+        foreach (CombatantBool combatantBool in System.Enum.GetValues(typeof(CombatantBool)))
+        {
+            CombatantBools.Add(combatantBool, 0);
         }
 
         //triggerable effects
@@ -155,6 +182,7 @@ protected virtual void Awake()
                 ActionModifiers[actionModifier.BattleEventType][actionModifier.ActionModifierType].Add(actionModifier);
             }
         }
+        yield return null;
     }
 
     public void SetName(string name, string letter = "")
@@ -266,11 +294,12 @@ protected virtual void Awake()
 
     public virtual void OnDamaged(int amount, bool isCrit, ElementalProperty elementalProperty)
     {
-        HP.ChangeCurrentValue(-amount);
+        int newHealthValue = HP.Value - amount;
+        HP.UpdateValue(newHealthValue);
 
-        if (HP.CurrentValue <= 0)
+        if (HP.Value <= 0)
         {
-            IsKOed = true;
+            CombatantState = CombatantState.KO;
         }
 
         StartCoroutine(healthDisplay.DisplayHealthChange());
@@ -279,7 +308,8 @@ protected virtual void Awake()
 
     public virtual void OnHealed(int amount, bool isCrit = false)
     {
-        HP.ChangeCurrentValue(amount);
+        int newHealthValue = HP.Value + amount;
+        HP.UpdateValue(newHealthValue);
 
         StartCoroutine(healthDisplay.DisplayHealthChange());
         healthDisplay.DisplayPopup(PopupType.Heal, CombatantType, amount.ToString(), isCrit);
@@ -292,6 +322,16 @@ protected virtual void Awake()
         healthDisplay.DisplayPopup(PopupType.Miss, CombatantType, "MISS");
     }
 
+    public virtual void OnCastStart()
+    {
+        CombatantState = CombatantState.Casting;
+    }
+
+    public virtual void OnCastEnd()
+    {
+        CombatantState = CombatantState.Default;
+    }
+
     public virtual void OnKO()
     {
         animator.SetTrigger("Die");
@@ -299,50 +339,51 @@ protected virtual void Awake()
 
     public virtual void OnRevive(float percentOfHPToRestore)
     {
-        IsKOed = false;
+        CombatantState = CombatantState.Default;
         //get new health value
-        int newHP = Mathf.FloorToInt(HP.GetValue() * percentOfHPToRestore);
+        int newHP = Mathf.FloorToInt(HP.MaxValue * percentOfHPToRestore);
         OnHealed(newHP);
         //trigger animation
         animator.SetTrigger("Revive");
         //do battle manager stuff
         battleManager.ReviveCombatant(this);
     }
+    #endregion
+    
+    #region Combatant State / Bools
 
-    public virtual void OnCastStart()
-    {
-        IsCasting = true;
-    }
-
-    public virtual void OnCastEnd() 
-    {
-        IsCasting = false;
-    }
-
-    //public IEnumerator TriggerBattleEffectsCo(BattleEventType battleEventType, List<ActionSubevent> actionSubevents)
+    //public virtual void SetCombatantState(CombatantState newState)
     //{
-    //    List<BattleEvent> battleEvents = new List<BattleEvent>();
-
-    //    //check triggerable effects
-    //    foreach (TriggerableBattleEffect triggerableBattleEffect in TriggerableBattleEffects[battleEventType])
+    //    if (CombatantState != newState)
     //    {
-
-    //        //go through each actor/target subevent
-    //        foreach (ActionSubevent actionSubevent in actionSubevents)
-    //        {
-    //        }
-    //        if (targets.Count > 0) 
-    //        {
-    //            BattleEvent battleEvent = new BattleEvent(this, targets, triggerableBattleEffect);
-    //            battleEvents.Add(battleEvent);
-    //        }
+    //        CombatantState = newState;
     //    }
-    //    foreach (BattleEvent battleEvent in battleEvents)
-    //    {
-    //        onAddBattleEvent.Raise(battleEvent);
-    //    }
-    //    yield return null;
     //}
+
+    public bool CheckBool(CombatantBool combatantBool)
+    {
+        if (CombatantBools[combatantBool] == 0)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public void ModifyCombatantBool(CombatantBool combatantBool, bool isTrue)
+    {
+        if (isTrue)
+        {
+            CombatantBools[combatantBool] += 1;
+        }
+        else
+        {
+            CombatantBools[combatantBool] -= 1;
+            if (CombatantBools[combatantBool] < 0)
+            {
+                CombatantBools[combatantBool] = 0;
+            }
+        }
+    }
     #endregion
 
     #region Movement and Grid
@@ -420,7 +461,44 @@ protected virtual void Awake()
     //add value
     public void ApplyTurnModifier(float newModifier)
     {
-        //    battleManager.ApplyTurnModifier(this, newModifier, false);
+        battleTimeline.ApplyTurnModifier(this, newModifier, false, false, 0);
+    }
+    #endregion
+
+    #region Chain Multiplier
+    //add value
+    public float GetNewChainMultiplier(float originalMultiplier, List<Combatant> currentChain)
+    {
+        float newChainMultiplier = originalMultiplier;
+        //if new chain
+        if (currentChain.Count == 0)
+        {
+            newChainMultiplier += SecondaryStats[SecondaryStatType.ChainStartBonus].CurrentValue;
+        }
+        else
+        {
+            newChainMultiplier += (0.15f + SecondaryStats[SecondaryStatType.ChainContributionBonus].CurrentValue);
+        }
+        return newChainMultiplier;
+    }
+
+    public bool ChainBreakCheck(List<Combatant>currentChain)
+    {
+        if (this.CombatantType == CombatantType.Player)
+        {
+            if (CheckBool(CombatantBool.CanLinkWithSelfInChain))
+            {
+                if (currentChain.Count > 1 && currentChain[currentChain.Count - 1] == this && currentChain[currentChain.Count - 2] == this)
+                {
+                    return true;
+                }
+            }
+            else if (currentChain.Count >= 1 && currentChain[currentChain.Count - 1] == this)
+            {
+                return true;
+            }
+        }
+        return false;
     }
     #endregion
 

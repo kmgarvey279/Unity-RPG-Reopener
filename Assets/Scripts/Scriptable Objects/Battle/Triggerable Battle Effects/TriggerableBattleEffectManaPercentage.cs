@@ -17,10 +17,10 @@ public class TriggerableBattleEffectManaPercentage : TriggerableBattleEffect
         PlayableCombatant playableCombatant = target as PlayableCombatant;
         float manaEffect = 0;
 
-        float manaTotalToUse = playableCombatant.MP.GetValue();
+        float manaTotalToUse = playableCombatant.MP.MaxValue;
         if (useCurrentMP)
         {
-            manaTotalToUse = playableCombatant.MP.CurrentValue;
+            manaTotalToUse = playableCombatant.MP.Value;
         }
         manaEffect = manaTotalToUse * manaPercentage;
 
