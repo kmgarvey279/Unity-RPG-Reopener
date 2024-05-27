@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ef4468d3e80b1d4e9b7b1be0e961f2d, type: 3}
+  m_Name: TerminalVelocityTrigger
+  m_EditorClassIdentifier: 
+  <BattleEventType>k__BackingField: 0
+  <TriggerableEffectType>k__BackingField: 0
+  triggerConditions:
+  - <Conditional>k__BackingField: 0
+    <BattleConditionCombatant>k__BackingField: 1
+    isNot: 0
+    battleCondition: {fileID: 11400000, guid: 3a0681275c5bdcd48b85d9f45ea0b597, type: 2}
+    value: 0
+  triggerRate: 1
+  onlyTriggerOnHit: 0
+  <UseTargetOverride>k__BackingField: 1
+  <TargetOverride>k__BackingField: 2
+  <PickRandomTarget>k__BackingField: 0
+  <EventName>k__BackingField: Terminal Velocity
+  <TriggerableEffectContainers>k__BackingField:
+  - <TriggerableEffect>k__BackingField: {fileID: 11400000, guid: 655820f6b6141a946b5840a098cc88ae,
+      type: 2}
+    <Value>k__BackingField: -0.3
+    useValueOverride: 0
+    valueOverrideMultiplier: 0
+  <ActionAnimations>k__BackingField: []

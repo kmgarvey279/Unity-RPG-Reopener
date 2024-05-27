@@ -8,60 +8,36 @@ using UnityEngine.Rendering;
 
 public class TurnPanel : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI index;
+    [field: SerializeField] public Combatant Actor { get; private set; }
+
+    //debug
     [SerializeField] private TextMeshProUGUI counter;
-    [SerializeField] private SortingGroup sortingGroup;
-    [Header("Actor Panel")]
-    public GameObject actorPanel;
+    [Header("Panel")]
     [SerializeField] private Image actorPortrait;
     [SerializeField] private OutlinedText actorLetter;
     [SerializeField] private GameObject actorHighlight;
-    [SerializeField] private GameObject interventionBorder;
-    [SerializeField] private GameObject playerBorderActor;
-    [SerializeField] private GameObject enemyBorderActor;
-    [Header("Action/Target Panel")]
-    private bool actionPreviewActive = false;
-    [SerializeField] private Image actionIcon;
-    [SerializeField] private GameObject targetPanel;
-    [SerializeField] private Image targetPortrait;
-    [SerializeField] private OutlinedText targetLetter;
-    [SerializeField] private GameObject targetHighlight;
-    [SerializeField] private GameObject playerBorderTarget;
-    [SerializeField] private GameObject enemyBorderTarget;
+    [Header("Border")]
+    [SerializeField] private Image border;
+    [SerializeField] private Color playerColor;
+    [SerializeField] private Color enemyColor;
+    [SerializeField] private Color interventionColor;
+    [field: Header("Cursor")]
+    [SerializeField] private GameObject selectedCursor;
     [Header("Animations")]
     [SerializeField] private Animator animatorActorMovement;
-    [SerializeField] private Animator animatorTargetMovement;
-    [Header("Misc. Images")]
+    [Header("Misc.")]
     [SerializeField] private GameObject turnPosUp; 
     [SerializeField] private GameObject turnPosDown;
-    [SerializeField] private Sprite interventionIcon;
-    [SerializeField] private Sprite playerIcon;
-    [SerializeField] private Sprite playerPartyIcon;
-    [SerializeField] private Sprite enemyIcon;
-    [SerializeField] private Sprite attackIcon;
-    [SerializeField] private Sprite healIcon;
-    [SerializeField] private Sprite buffIcon;
-    [SerializeField] private Sprite debuffIcon;
-    [SerializeField] private Sprite otherIcon;
+    [SerializeField] private GameObject koFilter;
+    [SerializeField] private GameObject stunFilter;
+
     private Dictionary<ActionType, Sprite> actionIcons = new Dictionary<ActionType, Sprite>();
     private WaitForSeconds wait02= new WaitForSeconds(0.2f);
+    private WaitForSeconds wait04 = new WaitForSeconds(0.4f);
+    private bool isSelected;
 
     //public Turn Turn { get; private set; }
     public bool IsNew { get; private set; } = true;
-
-    private void OnEnable()
-    {
-        actionIcons = new Dictionary<ActionType, Sprite>()
-        {
-            { ActionType.Attack, attackIcon},
-            { ActionType.Heal, healIcon},
-            { ActionType.ApplyBuff, buffIcon},
-            { ActionType.RemoveDebuff, buffIcon},
-            { ActionType.ApplyDebuff, debuffIcon},
-            { ActionType.RemoveBuff, debuffIcon},
-            { ActionType.Other, otherIcon}
-        };
-    }
 
     public void RemoveNewStatus()
     {
@@ -70,122 +46,38 @@ public class TurnPanel : MonoBehaviour
 
     public void UpdateCounter(int listIndex, int storedIndex, int counterValue)
     {
-        index.text = listIndex.ToString() + "/" + storedIndex.ToString();
+        //index.text = listIndex.ToString() + "/" + storedIndex.ToString();
         counter.text = counterValue.ToString();
     }
 
     public void TriggerActorAnimation(string animatorTrigger)
     {
         animatorActorMovement.SetTrigger(animatorTrigger);
-        if(actionPreviewActive) 
-        {
-            if (animatorTrigger == "Exit" || animatorTrigger == "Enter")
-            {
-                TriggerTargetAnimation(animatorTrigger);
-            }
-            else if (animatorTrigger == "Kill")
-            {
-                TriggerTargetAnimation("Exit");
-            }
-        }
-    }
-
-    public void TriggerTargetAnimation(string animatorTrigger)
-    {
-        animatorTargetMovement.SetTrigger(animatorTrigger);
     }
 
     public void SetActor(Combatant actor, bool isIntervention)
     {
+        Actor = actor;
         actorLetter.SetText(actor.CharacterLetter);
         actorPortrait.sprite = actor.TurnIcon;
 
         if (isIntervention)
         {
-            interventionBorder.SetActive(true);
+            border.color = interventionColor;
         }
         else if (actor.CombatantType == CombatantType.Player)
         {
-            playerBorderActor.SetActive(true);
+            border.color = playerColor;
         }
         else if (actor.CombatantType == CombatantType.Enemy)
         {
-            enemyBorderActor.SetActive(true);
+            border.color = enemyColor;
         }
     }
 
-    public IEnumerator DisplayActionPreviewCo(Action action, List<Combatant> targets, bool targetUnknown)
+    public void SetAsCurrentTurn()
     {
-        if (!targetPanel.activeInHierarchy)
-        {
-            targetPanel.SetActive(true);
-        }
-        //targetHighlight.SetActive(true);
-
-        if (actionPreviewActive)
-        {
-            animatorTargetMovement.SetTrigger("Swap");
-            yield return wait02;
-        }
-        else
-        {
-            animatorTargetMovement.SetTrigger("Enter");
-            actionPreviewActive = true;
-        }
-
-        //set action icon
-        actionIcon.sprite = actionIcons[action.ActionType];
-
-        //set targets icon
-        if(action.AOEType == AOEType.All)
-        {
-            if (targets[0].CombatantType == CombatantType.Player)
-            {
-                targetPortrait.sprite = playerPartyIcon;
-            }
-            else
-            {
-                targetPortrait.sprite = enemyIcon;
-            }
-            targetLetter.SetText("all");
-        }
-        else if (targetUnknown)
-        {
-            if (targets[0].CombatantType == CombatantType.Player)
-            {
-                targetPortrait.sprite = playerIcon;
-            }
-            else
-            {
-                targetPortrait.sprite = enemyIcon;
-            }
-            targetLetter.SetText("?");
-        }
-        else
-        {
-            targetPortrait.sprite = targets[0].TurnIcon;
-            targetLetter.SetText(targets[0].CharacterLetter);
-        }
-        if (targets[0].CombatantType == CombatantType.Player)
-        {
-            playerBorderTarget.SetActive(true);
-        }
-        else if (targets[0].CombatantType == CombatantType.Enemy)
-        {
-            enemyBorderTarget.SetActive(true);
-        }
-
-        yield return null;
-    }
-
-    public void HideActionPreview()
-    {
-        if(actionPreviewActive)
-        {
-            //targetHighlight.SetActive(false);
-            actionPreviewActive = false;
-            animatorTargetMovement.SetTrigger("Exit");
-        }
+        //currentTurnBorder.SetActive(true);
     }
 
     public void DisplayTurnModifier(int change)
@@ -212,8 +104,52 @@ public class TurnPanel : MonoBehaviour
     }
 
 
-    public void Highlight(bool isTargeted)
+    public void Highlight()
     {
-        actorHighlight.SetActive(isTargeted);
+        actorHighlight.SetActive(true);
+        Glow glow = actorHighlight.GetComponent<Glow>();
+        if (glow)
+        {
+            glow.Refresh();
+        }
+    }
+
+    public void Unhighlight()
+    {
+        actorHighlight.SetActive(false);
+    }
+
+    public void DisplayCursor()
+    {
+        isSelected = true;
+        selectedCursor.SetActive(true);
+    }
+
+    public void HideCursor() 
+    {
+        isSelected = false;
+        selectedCursor.SetActive(false);
+    }
+
+    public void CursorCheck(bool isOnscreen)
+    {
+        if (isSelected && isOnscreen)
+        {
+            selectedCursor.SetActive(true);
+        }
+        else
+        {
+            selectedCursor.SetActive(false);
+        }
+    }
+
+    public void ToggleKOFilter(bool isActive)
+    {
+        koFilter.SetActive(isActive);
+    }
+
+    public void ToggleStunFilter(bool isStunned)
+    {
+        stunFilter.SetActive(isStunned);
     }
 }

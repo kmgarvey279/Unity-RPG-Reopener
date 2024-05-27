@@ -9,7 +9,7 @@ public class CutsceneState : OverworldState
     public override void OnEnter()
     {
         base.OnEnter();
-        overworldData.lockInput = true;
+        overworldManager.PauseStart();
     }
 
     public override void StateUpdate()
@@ -25,11 +25,6 @@ public class CutsceneState : OverworldState
     public override void OnExit()
     {
         base.OnExit();
-        overworldData.lockInput = false;
-    }
-
-    public void OnUnlockInput()
-    {
-        stateMachine.ChangeState((int)OverworldStateType.FreeMove);
+        overworldManager.PauseEnd();
     }
 }

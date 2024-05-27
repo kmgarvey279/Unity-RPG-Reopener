@@ -47,7 +47,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -213,8 +213,8 @@ TextureImporter:
     nameFileIdTable:
       Cast_0: -1817209039
       Cast_1: 1717782817
-      Cast_3: 1971657691
       Cast_2: 147094065
+      Cast_3: 1971657691
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

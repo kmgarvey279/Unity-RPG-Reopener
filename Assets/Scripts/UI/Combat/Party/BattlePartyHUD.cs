@@ -18,5 +18,53 @@ public class BattlePartyHUD : MonoBehaviour
 
         playableCombatant.AssignBattlePartyPanel(partyPanel);
     }
+
+    public void ApplyFilter(PlayableCharacterID playableCharacterID)
+    {
+        foreach (BattlePartyPanel battlePartyPanel in panels)
+        {
+            if (battlePartyPanel.PlayableCombatant.PlayableCharacterID != playableCharacterID)
+            {
+                battlePartyPanel.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public void RemoveFilters()
+    {
+        foreach (BattlePartyPanel battlePartyPanel in panels)
+        {
+            battlePartyPanel.gameObject.SetActive(true);
+        }
+    }
+
+    public BattlePartyPanel GetPanel(PlayableCharacterID playableCharacterID)
+    {
+        foreach (BattlePartyPanel battlePartyPanel in panels)
+        {
+            if (battlePartyPanel.PlayableCombatant.PlayableCharacterID == playableCharacterID)
+            {
+                return battlePartyPanel;
+            }
+        }
+        return null;
+    }
+
+    public void Clear()
+    {
+        for (int i = panels.Count - 1; i >= 0; i--)
+        {
+            Destroy(panels[i].gameObject);
+        }
+        panels.Clear();
+    }
+
+    public void ClearAllHighlights()
+    {
+        foreach (BattlePartyPanel battlePartyPanel in panels)
+        {
+            battlePartyPanel.OnTurnEnd();
+        }
+    }
 }
 

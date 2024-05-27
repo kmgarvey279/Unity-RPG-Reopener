@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1551791496919091433}
+  - component: {fileID: 286086847487520250}
   - component: {fileID: 9162378335613687245}
   - component: {fileID: 5183047096671656518}
-  - component: {fileID: 286086847487520250}
   m_Layer: 0
   m_Name: Slash
   m_TagString: Untagged
@@ -34,6 +34,21 @@ Transform:
   m_Father: {fileID: 6448339373710438158}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &286086847487520250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2553910336445448102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c288bd5f6ef11ec469b9f315fb614702, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  delay: 0
+  duration: 0.4
+  loop: 0
 --- !u!212 &9162378335613687245
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -41,7 +56,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2553910336445448102}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -94,7 +109,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2553910336445448102}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 378f68523ee1b5b469e2a9e9cc77e549, type: 2}
   m_CullingMode: 0
@@ -106,21 +121,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &286086847487520250
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2553910336445448102}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c288bd5f6ef11ec469b9f315fb614702, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  delay: 0
-  duration: 0.4
-  loop: 0
 --- !u!1 &6448339373710438155
 GameObject:
   m_ObjectHideFlags: 0
@@ -168,10 +168,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vfxChildren:
   - {fileID: 286086847487520250}
-  delay: 0
+  vfxMasks: []
+  delay: 0.2
   duration: 0.4
   moveDuration: 0
   loop: 0
   canFlip: 1
-  defaultMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  greyscaleMaterial: {fileID: 2100000, guid: 10d5b82fa9833a24490e5d8dbe93930b, type: 2}

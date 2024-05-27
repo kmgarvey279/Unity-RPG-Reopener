@@ -5,8 +5,8 @@ using UnityEngine;
 [System.Serializable]
 public class BattleCondition : ScriptableObject 
 {
-    public virtual bool CheckCondition(Combatant actor, Combatant target, ActionSummary actionSummary = null)
+    public virtual bool CheckCondition(Combatant combatantToCheck, float value, ActionSummary actionSummary)
     {
-        return true;
+        return false;
     }
 }

@@ -1,0 +1,90 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cd574f477f4b6449b1c41ffadc5405f, type: 3}
+  m_Name: Shiver
+  m_EditorClassIdentifier: 
+  <ActionName>k__BackingField: Shiver
+  <ActionType>k__BackingField: 5
+  <Icon>k__BackingField: {fileID: 21300000, guid: 5727bed22a2e5d947855b4c215cc02b5,
+    type: 3}
+  <Description>k__BackingField: "Deals low Ice damage 2 times. \n\n50% chance of
+    inflicting Freeze (100% when under the effect of Trenchancy)."
+  <ActorConditionalModifier>k__BackingField:
+    <TurnModifier>k__BackingField: 0
+    <ApplyToNextTurnOnly>k__BackingField: 0
+    modifierConditions: []
+  <TargetConditionalModifier>k__BackingField:
+    <TurnModifier>k__BackingField: 0
+    <ApplyToNextTurnOnly>k__BackingField: 0
+    modifierConditions:
+    - <Conditional>k__BackingField: 0
+      <BattleConditionCombatant>k__BackingField: 0
+      isNot: 1
+      battleCondition: {fileID: 11400000, guid: b89cdfe01d0de7d40a31b1c5bfdb084a,
+        type: 2}
+      value: 0
+  <MPCost>k__BackingField: 0
+  <ConsumeAllMP>k__BackingField: 0
+  <HPPercentCost>k__BackingField: 0
+  <HitCount>k__BackingField: 2
+  <TargetingType>k__BackingField: 0
+  <AOEType>k__BackingField: 0
+  <IsMelee>k__BackingField: 0
+  <IsBackAttack>k__BackingField: 0
+  <UseConditions>k__BackingField: []
+  ActionModifiers: []
+  CustomActionModifiers: []
+  <BattleEventTriggers>k__BackingField: []
+  <StatusEffectTags>k__BackingField:
+  - {fileID: 11400000, guid: be66718aeb0de0341bf86236bf942f93, type: 2}
+  <ExecutePosition>k__BackingField: 0
+  <ActionAnimations>k__BackingField:
+  - <BattleAnimatorTrigger>k__BackingField: 2
+    <CustomAnimatorTrigger>k__BackingField: 
+    <ChangeActorOpacity>k__BackingField: 0
+    <NewActorOpacity>k__BackingField: 0
+    <VFXPrefab>k__BackingField: {fileID: 2800566603869771945, guid: 55c95f3739540bf47ace9237abbcbaff,
+      type: 3}
+    <BattlefieldSpawnPosition>k__BackingField: 1
+    <CombatantSpawnPosition>k__BackingField: 3
+    <BindVFXToCombatant>k__BackingField: 0
+    <SpawnPositionOffset>k__BackingField: {x: 0, y: 0}
+    <SpawnForEachTarget>k__BackingField: 1
+    <IsProjectile>k__BackingField: 1
+    <ReverseProjectile>k__BackingField: 0
+    <AnimationTriggerFrequency>k__BackingField: 0
+    <XHit>k__BackingField: 0
+    <Delay>k__BackingField: 0
+    <Duration>k__BackingField: 0.25
+  - <BattleAnimatorTrigger>k__BackingField: 0
+    <CustomAnimatorTrigger>k__BackingField: 
+    <ChangeActorOpacity>k__BackingField: 0
+    <NewActorOpacity>k__BackingField: 0
+    <VFXPrefab>k__BackingField: {fileID: 8471122963141425442, guid: e0ce44838f3e0ca43a607d3a37b8b038,
+      type: 3}
+    <BattlefieldSpawnPosition>k__BackingField: 0
+    <CombatantSpawnPosition>k__BackingField: 0
+    <BindVFXToCombatant>k__BackingField: 0
+    <SpawnPositionOffset>k__BackingField: {x: 0, y: 0}
+    <SpawnForEachTarget>k__BackingField: 1
+    <IsProjectile>k__BackingField: 0
+    <ReverseProjectile>k__BackingField: 0
+    <AnimationTriggerFrequency>k__BackingField: 0
+    <XHit>k__BackingField: 0
+    <Delay>k__BackingField: 0
+    <Duration>k__BackingField: 0.25
+  <Power>k__BackingField: 0.7
+  <Break>k__BackingField: 1
+  <ElementalProperty>k__BackingField: 2
+  <HitRate>k__BackingField: 95
+  <GuaranteedHit>k__BackingField: 0
+  <CritRateMultiplier>k__BackingField: 1

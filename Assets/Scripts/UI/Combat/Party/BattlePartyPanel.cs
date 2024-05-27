@@ -8,19 +8,20 @@ using System.Linq.Expressions;
 public class BattlePartyPanel : MonoBehaviour
 {
     private int index;
-    [Header("Character Icon")]
-    [SerializeField] private Image icon;
+    //[Header("Character Icon")]
+    //[SerializeField] private Image icon;
     [SerializeField] protected Material defaultMaterial;
     [SerializeField] protected Material greyscaleMaterial;
     [Header("Panel Display")]
-    private bool isActive = false;
-    [SerializeField] private Image panel;
-    [SerializeField] private Color defaultColor;
-    [SerializeField] private Color highlightedColor;
+    [SerializeField] private GameObject glow;
+    [SerializeField] private GameObject activeBorder;
     [SerializeField] private Animator animator;
-    [Header("Character Info")]
-    private PlayableCombatant playableCombatant;
+    [field: Header("Character Info")]
+    public PlayableCombatant PlayableCombatant { get; private set; }
     [SerializeField] private OutlinedText characterName;
+    [field: Header("Character Icon")]
+    [SerializeField] private Image characterIcon;
+    [SerializeField] private Image characterBorder;
     [Header("HP Bar")]
     [SerializeField] private OutlinedText hpNum;
     [SerializeField] private AnimatedBar hpBar;
@@ -28,105 +29,161 @@ public class BattlePartyPanel : MonoBehaviour
     [Header("MP Bar")]
     [SerializeField] private OutlinedText mpNum;
     [SerializeField] private AnimatedBar mpBar;
-    [Header("Intervention Trigger")]
-    [SerializeField] private GameObject triggerAvailable;
-    [SerializeField] private OutlinedText availableButtonPrompt;
-    [SerializeField] private GameObject triggerUnavailable;
-    [SerializeField] private OutlinedText unavailableButtonPrompt;
-    private string button1 = "1";
-    private string button2 = "2";
-    private string button3 = "3";
-    private List<string> buttons = new List<string>();
-    [Header("Linked Party Member")]
-    [SerializeField] private BattlePartyPanel linkPanel;
+    //[Header("Guard Stacks")]
+    //[SerializeField] private List<GameObject> guardSlots = new List<GameObject>();
+    //[SerializeField] private List<GuardIcon> guardIcons = new List<GuardIcon>();
+    [Header("Intervention")]
+    [SerializeField] private InterventionPointsDisplay interventionPointsDisplay;
+    [SerializeField] private List<InterventionReadyIcon> interventionIcons = new List<InterventionReadyIcon>();
+
+    //[SerializeField] private OutlinedText interventionButtonPrompt;
+    //private string button1 = "1";
+    //private string button2 = "2";
+    //private string button3 = "3";
+    //private List<string> buttons = new List<string>();
+
 
     private void OnEnable()
     {
-        buttons.Add(button1);
-        buttons.Add(button2);
-        buttons.Add(button3);
         animator = GetComponent<Animator>();
     }
 
     public void SetIndex(int _index)
     {
         index = _index;
-        availableButtonPrompt.SetText(buttons[index]);
-        unavailableButtonPrompt.SetText(buttons[index]);
+        //interventionButtonPrompt.SetText(buttons[index]);
     }
 
     public void AssignCombatant(PlayableCombatant _playableCombatant)
     {
-        playableCombatant = _playableCombatant;
+        PlayableCombatant = _playableCombatant;
         //set up name 
-        characterName.SetText(playableCombatant.CharacterName);
+        characterName.SetText(PlayableCombatant.CharacterName);
         //set up icon
-        icon.sprite = playableCombatant.TurnIcon;
+        characterIcon.sprite = PlayableCombatant.TurnIcon;
         //set hp bar
-        hpBar.SetInitialValue(playableCombatant.HP.MaxValue, playableCombatant.HP.Value);
-        hpNum.SetText(playableCombatant.HP.Value.ToString());
+        hpBar.SetInitialValue(PlayableCombatant.MaxHP, PlayableCombatant.HP);
+        hpNum.SetText(PlayableCombatant.HP.ToString());
         //set barrier 
-        barrierBar.SetInitialValue(playableCombatant.Barrier.MaxValue, 0);
+        barrierBar.SetInitialValue(PlayableCombatant.MaxHP, 0);
         //set mp bar
-        mpBar.SetInitialValue(playableCombatant.MP.MaxValue, playableCombatant.MP.Value);
-        mpNum.SetText(playableCombatant.MP.Value.ToString());
+        mpBar.SetInitialValue(PlayableCombatant.MaxMP, PlayableCombatant.MP);
+        mpNum.SetText(PlayableCombatant.MP.ToString());
+
+        interventionPointsDisplay.UpdatePoints(PlayableCombatant.IP, false, false);
     }
 
-    public void UpdateHP()
+    public void DisplayChanges()
     {
-        hpNum.SetText(playableCombatant.HP.Value.ToString());
-        hpBar.DisplayChange(playableCombatant.HP.Value);
-        barrierBar.DisplayChange(playableCombatant.Barrier.Value);
+        barrierBar.DisplayChange(PlayableCombatant.Barrier);
+        barrierBar.ResolveChange(PlayableCombatant.Barrier);
+
+        hpNum.SetText(PlayableCombatant.HP.ToString());
+        hpBar.DisplayChange(PlayableCombatant.HP);
+
+        mpNum.SetText(PlayableCombatant.MP.ToString());
+        mpBar.DisplayChange(PlayableCombatant.MP);
     }
 
-    public void ResolveHP()
+    public void ResolveChanges()
     {
-        hpBar.ResolveChange(playableCombatant.HP.Value);
-        barrierBar.ResolveChange(playableCombatant.Barrier.Value);
+        hpBar.ResolveChange(PlayableCombatant.HP);
+        mpBar.ResolveChange(PlayableCombatant.MP);
     }
 
-    public void UpdateMP()
+    public void DisplayInterventionChanges()
     {
-        mpBar.DisplayChange(playableCombatant.MP.Value);
+        interventionPointsDisplay.UpdatePoints(PlayableCombatant.IP, PlayableCombatant.InterventionQueued, PlayableCombatant.InterventionSpent);
     }
 
-    public void ResolveMP()
+    //public void UpdateGuard()
+    //{
+    //    for (int i = 0; i < guardIcons.Count; i++)
+    //    {
+    //        if (PlayableCombatant.Guard.CurrentValue > i)
+    //        {
+    //            guardIcons[i].GetComponent<GuardIcon>().ToggleActive(true);
+    //        }
+    //        else
+    //        {
+    //            guardIcons[i].GetComponent<GuardIcon>().ToggleActive(false);
+    //        }
+    //    }
+    //}
+
+    public void UpdateInterventions()
     {
-        mpBar.ResolveChange(playableCombatant.MP.Value);
+        //for (int i = 0; i < interventionIcons.Count; i++)
+        //{
+        //    if (PlayableCombatant.AvailableInterventions.CurrentValue > i)
+        //    {
+        //        interventionIcons[i].GetComponent<InterventionReadyIcon>().ToggleActive(true);
+        //    }
+        //    else
+        //    {
+        //        interventionIcons[i].GetComponent<InterventionReadyIcon>().ToggleActive(false);
+        //    }
+
+        //    if (PlayableCombatant.QueuedInterventions.CurrentValue > i)
+        //    {
+        //        interventionIcons[i].GetComponent<InterventionReadyIcon>().ToggleQueued(true);
+        //    }
+        //    else
+        //    {
+        //        interventionIcons[i].GetComponent<InterventionReadyIcon>().ToggleQueued(false);
+        //    }
+        //}
     }
 
-    public void Highlight(bool isHighlighted)
+
+    public void OnTurnStart()
     {
-        if(isActive != isHighlighted)
-        {
-            if (isHighlighted)
-            {
-                panel.color = highlightedColor;
-                //animator.SetTrigger("Out");
-            }
-            else
-            {
-                panel.color = defaultColor;
-                //animator.SetTrigger("In");
-            }
-            isActive = isHighlighted;
-        }
+        activeBorder.SetActive(true);
+        //characterName.SetTextColor(highlightedColor);
+        //panel.color = highlightedColor;
+        //animator.SetTrigger("Out");
+    }
+
+    public void OnTurnEnd()
+    {
+        activeBorder.SetActive(false);
+        //characterName.SetTextColor(new Color(0, 0, 0));
+        //panel.color = defaultColor;
+        //animator.SetTrigger("In");
+    }
+
+    public void OnTarget()
+    {
+        //if (!targetedBorder.activeInHierarchy)
+        //{
+            //targetedBorder.SetActive(true);
+            //glow.SetActive(true);
+        //}
+    }
+
+    public void OnUntarget()
+    {
+        //if (targetedBorder.activeInHierarchy)
+        //{
+        //    targetedBorder.SetActive(false);
+            //glow.SetActive(false);
+        //}
     }
 
     public void OnKO()
     {
-        icon.material = greyscaleMaterial;
-        triggerUnavailable.SetActive(true);
+        characterIcon.material = greyscaleMaterial;
+        //triggerUnavailable.SetActive(true);
     }
 
     public void OnRevive()
     {
-        icon.material = defaultMaterial;
-        triggerUnavailable.SetActive(false);
+        characterIcon.material = defaultMaterial;
+        //triggerUnavailable.SetActive(false);
     }
 
-    public void LockInterventionTriggerIcon(bool isLocked)
-    {
-        triggerUnavailable.SetActive(isLocked);
-    }
+    //public void LockInterventionTriggerIcon(bool isLocked)
+    //{
+    //    triggerUnavailable.SetActive(isLocked);
+    //}
 }

@@ -5,11 +5,22 @@ using UnityEngine.UI;
 
 public class ScreenTransition : MonoBehaviour
 {
-    private Animator animator;
+    [SerializeField] private Animator animator;
+    [SerializeField] private Image image;
 
-    private void Start()
+    private void OnEnable()
     {
-        animator = GetComponent<Animator>();
+        image.enabled = true;
+    }
+
+    public void TriggerOff()
+    {
+        animator.SetTrigger("Off");
+    }
+
+    public void TriggerOn()
+    {
+        animator.SetTrigger("On");
     }
 
     public void TriggerFadeOut()

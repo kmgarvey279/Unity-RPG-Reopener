@@ -1,139 +1,109 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UIElements;
 
 [System.Serializable]
 public class TargetSelectState : BattleState
 {
+    [SerializeField] private CommandMenuManager commandMenuManager;
     [SerializeField] private TargetInfo targetInfo;
     [SerializeField] private SignalSender onCameraUnfollow;
+    [SerializeField] private StatusEffect coldStatus;
+    [SerializeField] private StatusEffect freezeStatus;
     //temp values
     private Turn currentTurn;
-    private Turn castTemp = null;
-    private List<Combatant> targets = new List<Combatant>();    
+    private Combatant selectedTarget;
+    private List<Combatant> validTargets = new List<Combatant>();
+    private List<Combatant> targets = new List<Combatant>();
+    private bool targetInfoSelected;
+
+    private void EnableListeners()
+    {
+        InputManager.Instance.OnPressSubmit.AddListener(Submit);
+        InputManager.Instance.OnPressCancel.AddListener(Cancel);
+        InputManager.Instance.OnPressTabUI.AddListener(TabUI);
+        InputManager.Instance.OnPressTabTarget.AddListener(TabTarget);
+    }
+
+    private void DisableListeners()
+    {
+        InputManager.Instance.OnPressSubmit.RemoveListener(Submit);
+        InputManager.Instance.OnPressCancel.RemoveListener(Cancel);
+        InputManager.Instance.OnPressTabUI.RemoveListener(TabUI);
+        InputManager.Instance.OnPressTabTarget.RemoveListener(TabTarget);
+    }
 
     public override void OnEnter()
     {
         base.OnEnter();
         Debug.Log("entering target select state");
+
+        //onCameraUnfollow.Raise
+
+        EnableListeners();
+
         //set temp values
         currentTurn = battleTimeline.CurrentTurn;
+        selectedTarget = null;
+        validTargets = new List<Combatant>();
         targets = new List<Combatant>();
-
-        //display cast preview
-        if (currentTurn.TurnType != TurnType.Intervention && currentTurn.TurnType != TurnType.Cast && currentTurn.Action.HasCastTime)
-        {
-            castTemp = battleTimeline.AddCastToQueue(currentTurn.Actor, currentTurn.Action, new List<Combatant>());
-            currentTurn.Actor.OnCastStart();
-        }
-
-        //display time cost preview (ignore if intervention, don't apply to own casts)
-        if (currentTurn.TurnType != TurnType.Intervention && currentTurn.Action.ActorTurnModifier != 0)
-        {
-            bool ignoreCasts = false;
-            if (castTemp != null)
-            {
-                ignoreCasts = true;
-            }
-            battleTimeline.ApplyTurnModifier(currentTurn.Actor, currentTurn.Action.ActorTurnModifier, true, ignoreCasts, 0);
-        }
 
         //store copy of relative positions
         battleTimeline.TakeSnapshot();
 
         //activate buttons on valid targets and select default target
-        gridManager.DisplaySelectableTargets(currentTurn.Action.TargetingType, currentTurn.Actor, currentTurn.Action.IsMelee);
+        validTargets = gridManager.GetSelectableTargets(currentTurn.Action.TargetingType, currentTurn.Actor, currentTurn.Action.IsMelee, currentTurn.Action.IsBackAttack);
+        if (validTargets.Count > 0)
+        {
+            validTargets[0].Select();
+        }
+    }
+
+    private void Submit(bool isPressed)
+    {
+        Debug.Log("On Click Submit");
+        if (targets.Count > 0)
+        {
+            currentTurn.SetTargets(targets);
+            battleTimeline.RemoveTempTurnModifier(currentTurn.Actor);
+
+            //reset previews
+            ClearEffectPreviews();
+
+            //reset menu "memory"
+            commandMenuManager.ResetMenu();
+
+            //move to execution state
+            stateMachine.ChangeState((int)BattleStateType.Execute);
+        }
+        else
+        {
+            Debug.Log("No target selected");
+        }
+    }
+
+    private void Cancel(bool isPressed)
+    {
+        CancelAction();
+
+        stateMachine.ChangeState((int)BattleStateType.PlayerTurn);
+    }
+
+    private void TabTarget(bool isPressed)
+    {
+        Debug.Log("Cycle Targets Pressed");
+        CycleTargets();
+    }
+
+    private void TabUI(bool isPressed)
+    {
+        ToggleTargetInfo();
     }
 
     public override void StateUpdate()
     {
-        if (Input.GetButtonDown("Submit"))
-        {
-            if (targets.Count > 0)
-            {
-                //don't apply modifier to own cast
-                bool ignoreCasts = false;
-                if (castTemp != null)
-                {
-                    battleTimeline.UpdateTurnTargets(castTemp, targets);
-                    castTemp = null;
-                    ignoreCasts = true;
-                }
-                else
-                {
-                    battleTimeline.UpdateTurnTargets(currentTurn, targets);
-                }
-
-                //publish changes to actor's turn cost (ignore if intervention)
-                if (currentTurn.TurnType != TurnType.Intervention && currentTurn.Action.ActorTurnModifier != 0)
-                {
-                    battleTimeline.RemoveTempTurnModifier(currentTurn.Actor);
-                    battleTimeline.ApplyTurnModifier(currentTurn.Actor, currentTurn.Action.ActorTurnModifier, false, ignoreCasts, 0);
-                }
-
-                //reset previews
-                ClearEffectPreviews();
-                
-                //move to execution state
-                stateMachine.ChangeState((int)BattleStateType.Execute);
-            }
-            else
-            {
-                Debug.Log("No target selected");
-            }
-        }
-        else if (Input.GetButtonDown("Cancel"))
-        {
-            CancelAction();
-            
-            stateMachine.ChangeState((int)BattleStateType.Menu);
-        }
-        else if (Input.GetButtonDown("QueueIntervention1"))
-        {
-            if (battleManager.InterventionCheck(0))
-            {
-                if (Input.GetButton("Shift"))
-                {
-                    battleTimeline.RemoveLastIntervention(battleManager.PlayableCombatants[0]);
-                }
-                else
-                {
-                    battleTimeline.AddInterventionToQueue(battleManager.PlayableCombatants[0]);
-                }
-            }
-        }
-        else if (Input.GetButtonDown("QueueIntervention2"))
-        {
-            if (battleManager.InterventionCheck(1))
-            {
-                if (Input.GetButton("Shift"))
-                {
-                    battleTimeline.RemoveLastIntervention(battleManager.PlayableCombatants[1]);
-                }
-                else
-                {
-                    battleTimeline.AddInterventionToQueue(battleManager.PlayableCombatants[1]);
-                }
-            }
-        }
-        else if (Input.GetButtonDown("QueueIntervention3"))
-        {
-            if (battleManager.InterventionCheck(2))
-            {
-                if (Input.GetButton("Shift"))
-                {
-                    battleTimeline.RemoveLastIntervention(battleManager.PlayableCombatants[2]);
-                }
-                else
-                {
-                    battleTimeline.AddInterventionToQueue(battleManager.PlayableCombatants[2]);
-                }
-            }
-        }
     }
        
     public override void StateFixedUpdate()
@@ -145,11 +115,13 @@ public class TargetSelectState : BattleState
     {
         base.OnExit();
 
+        DisableListeners();
+
         //unhighlight targets and make them unselectable
         foreach (Combatant target in battleManager.GetCombatants(CombatantType.All))
         {
-            target.ToggleTargeted(false);
-            battleTimeline.HighlightTarget(target, false);
+            target.ToggleHighlight(false);
+            battleTimeline.UnhighlightTarget(target);
 
             target.ChangeSelectState(CombatantTargetState.Default);
         }
@@ -161,52 +133,152 @@ public class TargetSelectState : BattleState
         battleTimeline.ClearSnapshot();
     }
 
+    private void ToggleTargetInfo()
+    {
+        //deselect info ui
+        if (targetInfoSelected)
+        {
+            targetInfo.Deselect();
+            targetInfoSelected = false;
+
+            //reactivate target buttons
+            gridManager.GetSelectableTargets(currentTurn.Action.TargetingType, currentTurn.Actor, currentTurn.Action.IsMelee, currentTurn.Action.IsBackAttack);
+            
+            //reselect target
+            EventSystem.current.SetSelectedGameObject(null);
+            if (selectedTarget != null)
+            {
+                selectedTarget.Select();
+            }
+            else if (validTargets.Count > 0)
+            {
+                validTargets[0].Select();
+            }
+        }
+        //select target info ui
+        else
+        {
+            SelectTargetInfo();
+        }
+    }
+
+    private void SelectTargetInfo()
+    {
+        targetInfo.Select();
+        targetInfoSelected = true;
+
+        //unhighlight all targets apart from the selected one
+        foreach (Combatant target in validTargets)
+        {
+            target.ChangeSelectState(CombatantTargetState.Default);
+        }
+        foreach (Combatant target in targets)
+        {
+            if (selectedTarget && target != selectedTarget)
+            {
+                target.ToggleHighlight(false);
+                battleTimeline.UnhighlightTarget(target);
+            }
+        }
+    }
+
+    private void CycleTargets()
+    {
+        Debug.Log("Cycle Targets Triggered");
+        if (validTargets.Count > 1 && selectedTarget != null && validTargets.Contains(selectedTarget))
+        {
+            int targetIndex = validTargets.IndexOf(selectedTarget) + 1;
+            if (targetIndex >= validTargets.Count)
+            {
+                targetIndex = 0;
+            }
+            validTargets[targetIndex].Select();
+
+            if (targetInfoSelected)
+            {
+                SelectTargetInfo();
+            }
+        }
+    }
+
     private void CancelAction()
     {
         //remove actor's turn cost modifier
-        if (currentTurn.TurnType != TurnType.Intervention && currentTurn.Action.ActorTurnModifier != 0)
-        {
-            battleTimeline.RemoveTempTurnModifier(currentTurn.Actor);
-        }
-
-        //remove cast temp
-        if (castTemp != null)
-        {
-            battleTimeline.RemoveTurn(castTemp, false);
-            currentTurn.Actor.OnCastEnd();
-        }
-
+        battleTimeline.RemoveTempTurnModifier(currentTurn.Actor);
+        
         //reset action effects previews
         ClearEffectPreviews();
 
-        battleTimeline.CancelAction(currentTurn);
+        battleTimeline.CurrentTurn.CancelAction();
 
         //hide health bars
-        foreach (Combatant target in targets)
-        {
-            target.DisplayHealthBar(false);
-        }
+        battleManager.HideHealthBars();
     }
 
     public void OnSelectTarget(GameObject combatantObject)
     {
-        //clear previous target previews
-        if (targets.Count > 0)
-        {
-            foreach (Combatant target in targets)
-            {
-                target.DisplayHealthBar(false);
-            }
-            ClearEffectPreviews();
-        }
+        //get new selected target
+        Combatant previousTarget = selectedTarget;
+        Combatant newTarget = combatantObject.GetComponent<Combatant>();
         
-        Combatant selectedTarget = combatantObject.GetComponent<Combatant>();
+        //compare to previous selected target
+        bool didChangeTarget = false;
+        if (previousTarget != newTarget)
+            didChangeTarget = true;
 
-        //set targets
-        targets = gridManager.GetTargets(selectedTarget.Tile, currentTurn.Action.AOEType, currentTurn.Action.IsMelee, currentTurn.TargetedCombatantType);
+        if (didChangeTarget)
+        {
+            //don't update previews for AoE skills when cycling primary targets
+            if (previousTarget != null && currentTurn.Action.AOEType == AOEType.All)
+            {
+                battleTimeline.UnselectTarget(selectedTarget);
+                battleTimeline.SelectTarget(newTarget);
+                selectedTarget = newTarget;
+                return;
+            }
 
-        //display preview
-        DisplayPreviews();
+            //clear old previews
+            if (targets.Count > 0)
+            {
+                foreach (Combatant target in targets)
+                {
+                    target.HideHealthInfo();
+
+                    //if (target is EnemyCombatant)
+                    //{
+                    //    EnemyCombatant enemyCombatant = (EnemyCombatant)target;
+                    //    enemyCombatant.HideVulnerability();
+                    //}
+                }
+                ClearEffectPreviews();
+            }
+
+            if (newTarget != null)
+            {
+                if (currentTurn.Action.TargetingType == TargetingType.TargetHostile)
+                {
+                    targets = gridManager.GetEnemyTargets(newTarget.Tile, currentTurn.Action.AOEType, currentTurn.Action.IsMelee);
+                }
+                else
+                {
+                    if (currentTurn.Action.AOEType == AOEType.Single)
+                    {
+                        targets = new List<Combatant>() { newTarget };
+                    }
+                    else
+                    {
+                        targets = validTargets;
+                    }
+                }
+            }
+            
+            //reassign selected target
+            selectedTarget = newTarget;
+            if (selectedTarget != null && didChangeTarget)
+            {
+                DisplayPreviews();
+            }
+        }
     }
 
     private void DisplayPreviews()
@@ -217,55 +289,72 @@ public class TargetSelectState : BattleState
             return;
         }
 
-        foreach (Combatant target in targets)
+        battleTimeline.SelectTarget(selectedTarget);
+        
+        ActionSummary actionSummary = new ActionSummary(currentTurn.Action, currentTurn.IsIntervention);
+
+        //actor turn modifier preview
+        if (currentTurn.Action.ActorConditionalModifier.TurnModifier != 0)
         {
-            //highlight sprites
-            target.ToggleTargeted(true);
-            target.DisplayHealthBar(true);
-
-            //highlight turn panels
-            battleTimeline.HighlightTarget(target, true);
-
-            //display turn changes
-            if (currentTurn.Action.TargetTurnModifier != 0)
+            foreach (Combatant target in targets)
             {
-                int actionIndex = 0;
-                if (castTemp != null)
+                if (currentTurn.Action.ActorConditionalModifier.ConditionsCheck(currentTurn.Actor, target, actionSummary))
                 {
-                    actionIndex = battleTimeline.TurnQueue.IndexOf(castTemp);
+                    battleTimeline.ApplyTurnModifier(currentTurn.Actor, currentTurn.Action.ActorConditionalModifier.TurnModifier, true, currentTurn.Action.TargetConditionalModifier.ApplyToNextTurnOnly);
+                    break;
                 }
-                battleTimeline.ApplyTurnModifier(target, currentTurn.Action.TargetTurnModifier, true, false, actionIndex);
             }
         }
 
-        //action preview
-        if (castTemp != null)
+        //target previews
+        foreach (Combatant target in targets)
         {
-            battleTimeline.DisplayActionPreview(castTemp, castTemp.Action, targets, false);
+            //highlight sprites
+            target.ToggleHighlight(true);
+            target.DisplayHealthInfo();
+            //highlight turn panels
+            battleTimeline.HighlightTarget(target);
+
+            if (currentTurn.Action.TargetConditionalModifier.TurnModifier != 0 && currentTurn.Action.TargetConditionalModifier.ConditionsCheck(currentTurn.Actor, target, actionSummary))
+            {
+                battleTimeline.ApplyTurnModifier(target, currentTurn.Action.TargetConditionalModifier.TurnModifier, true, currentTurn.Action.TargetConditionalModifier.ApplyToNextTurnOnly);
+            }
+
+            if (actionSummary.Action is Attack && target is EnemyCombatant)
+            {
+                Attack attack = (Attack)actionSummary.Action;
+                EnemyCombatant enemyCombatant = (EnemyCombatant)target;
+                EnemyInfo enemyInfo = enemyCombatant.EnemyInfo;
+
+                bool isRevealed = SaveManager.Instance.LoadedData.PlayerData.EnemyLog.EnemyEntries[enemyInfo].RevealedElements.Contains(attack.ElementalProperty);
+                enemyCombatant.DisplayVulnerability(isRevealed, attack.ElementalProperty);
+            }
         }
-        else
-        {
-            battleTimeline.DisplayActionPreview(currentTurn, currentTurn.Action, targets, false);
-        }
+        battleTimeline.DisplayTurnOrder();
     }
 
     private void ClearEffectPreviews()
     {
+        //clear selected target
+        if (selectedTarget != null)
+        {
+            battleTimeline.UnselectTarget(selectedTarget);
+        }
+
+        //remove turn modifiers
+        battleTimeline.RemoveTempTurnModifier(currentTurn.Actor);
+
         foreach (Combatant target in targets)
         {
-            if (currentTurn.Action.TargetTurnModifier != 0)
-            {
-                //remove turn modifiers
-                battleTimeline.RemoveTempTurnModifier(target);
-            }
-            
+            //remove turn modifiers
+            battleTimeline.RemoveTempTurnModifier(target);
+
             //unhighlight sprites
-            target.ToggleTargeted(false);
+            target.ToggleHighlight(false);
 
             //unhighlight turn panels
-            battleTimeline.HighlightTarget(target, false);
+            battleTimeline.UnhighlightTarget(target);
         }
         battleTimeline.LoadSnapshot();
     }
-    
 }

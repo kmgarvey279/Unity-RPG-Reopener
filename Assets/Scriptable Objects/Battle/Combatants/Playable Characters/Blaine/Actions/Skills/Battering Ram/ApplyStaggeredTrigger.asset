@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ef4468d3e80b1d4e9b7b1be0e961f2d, type: 3}
+  m_Name: ApplyStaggeredTrigger
+  m_EditorClassIdentifier: 
+  <BattleEventType>k__BackingField: 0
+  <TriggerableEffectType>k__BackingField: 0
+  triggerConditions: []
+  triggerRate: 1
+  onlyTriggerOnHit: 1
+  <UseTargetOverride>k__BackingField: 0
+  <TargetOverride>k__BackingField: 0
+  <PickRandomTarget>k__BackingField: 0
+  <EventName>k__BackingField: 'Status: Staggered'
+  <TriggerableEffectContainers>k__BackingField:
+  - <TriggerableEffect>k__BackingField: {fileID: 11400000, guid: ef2291a928481be489c5425a7e54614a,
+      type: 2}
+    <Value>k__BackingField: 0
+    useValueOverride: 0
+    valueOverrideMultiplier: 0
+  <ActionAnimations>k__BackingField:
+  - <BattleAnimatorTrigger>k__BackingField: 0
+    <CustomAnimatorTrigger>k__BackingField: 
+    <ChangeActorOpacity>k__BackingField: 0
+    <NewActorOpacity>k__BackingField: 0
+    <VFXPrefab>k__BackingField: {fileID: 0}
+    <BattlefieldSpawnPosition>k__BackingField: 0
+    <CombatantSpawnPosition>k__BackingField: 0
+    <BindVFXToCombatant>k__BackingField: 0
+    <SpawnPositionOffset>k__BackingField: {x: 0, y: 0}
+    <SpawnForEachTarget>k__BackingField: 0
+    <IsProjectile>k__BackingField: 0
+    <ReverseProjectile>k__BackingField: 0
+    <AnimationTriggerFrequency>k__BackingField: 0
+    <XHit>k__BackingField: 0
+    <Delay>k__BackingField: 0
+    <Duration>k__BackingField: 0

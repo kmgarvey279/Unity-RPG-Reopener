@@ -5,15 +5,17 @@ using UnityEngine.Events;
 
 public class ItemPickup : Interactable
 {
-    [Header("Item")]
-    [SerializeField] private Inventory inventory;
-    [SerializeField] private Item item;
-    [SerializeField] private SignalSenderString itemGet;
+    private ItemContainer itemContainer;
+    [field: Header("Item")]
+    [field: SerializeField] public Item Item { get; private set; }
+
+    private void Start()
+    {
+        itemContainer = GetComponentInParent<ItemContainer>();
+    }
 
     public override void Interact()
     {
-        //inventory.AddItem(item);
-        //itemGet.Raise(item.itemId);   
-        //Destroy(this.gameObject);
+        itemContainer.OnGetItem();
     }
 }

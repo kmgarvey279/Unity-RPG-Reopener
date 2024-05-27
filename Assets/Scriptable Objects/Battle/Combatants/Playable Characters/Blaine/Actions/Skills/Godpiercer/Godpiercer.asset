@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cd574f477f4b6449b1c41ffadc5405f, type: 3}
+  m_Name: Godpiercer
+  m_EditorClassIdentifier: 
+  <ActionName>k__BackingField: Godpiercer
+  <ActionType>k__BackingField: 0
+  <Icon>k__BackingField: {fileID: 21300000, guid: ccc8c5aeda05edc49a8c284bf09ba46c,
+    type: 3}
+  <Description>k__BackingField: "Deals massive Non-Elemental damage and reduces the
+    target's Guard by 3. \n\nYou cannot act on your next turn. You cannot trigger
+    an Intervention until your next turn. "
+  <ActorConditionalModifier>k__BackingField:
+    <TurnModifier>k__BackingField: 0
+    <ApplyToNextTurnOnly>k__BackingField: 0
+    modifierConditions: []
+  <TargetConditionalModifier>k__BackingField:
+    <TurnModifier>k__BackingField: 0
+    <ApplyToNextTurnOnly>k__BackingField: 0
+    modifierConditions: []
+  <MPCost>k__BackingField: 30
+  <ConsumeAllMP>k__BackingField: 0
+  <HPPercentCost>k__BackingField: 0
+  <HitCount>k__BackingField: 1
+  <TargetingType>k__BackingField: 0
+  <AOEType>k__BackingField: 1
+  <IsMelee>k__BackingField: 0
+  <IsBackAttack>k__BackingField: 0
+  <UseConditions>k__BackingField: []
+  ActionModifiers: []
+  CustomActionModifiers: []
+  <BattleEventTriggers>k__BackingField:
+  - {fileID: 11400000, guid: f18fbe23cf8bfc54cb2e34cc1904a790, type: 2}
+  <StatusEffectTags>k__BackingField:
+  - {fileID: 11400000, guid: c29325e87fb379743a596822ae09fd7b, type: 2}
+  <ExecutePosition>k__BackingField: 1
+  <ActionAnimations>k__BackingField: []
+  <Power>k__BackingField: 4
+  <Break>k__BackingField: 3
+  <ElementalProperty>k__BackingField: 7
+  <HitRate>k__BackingField: 100
+  <GuaranteedHit>k__BackingField: 0
+  <CritRateMultiplier>k__BackingField: 1

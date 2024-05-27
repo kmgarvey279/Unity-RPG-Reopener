@@ -8,61 +8,14 @@ public class TurnEndState : BattleState
 {
     [SerializeField] private BattleEventQueue battleEventQueue;
     [SerializeField] private SignalSender onInterventionEnd;
-    private WaitForSeconds waitZeroPointTwoFive = new WaitForSeconds(0.25f);
+    private WaitForSeconds wait025 = new WaitForSeconds(0.25f);
+    private WaitForSeconds wait1 = new WaitForSeconds(1f);
     public override void OnEnter()
     {
         Debug.Log("Entering Turn End State");
         base.OnEnter();
         StartCoroutine(EndTurnCo());
     }
-
-    public override void StateUpdate()
-    {
-        if (Input.GetButtonDown("QueueIntervention1"))
-        {
-            if (battleManager.InterventionCheck(0))
-            {
-                if (Input.GetButton("Shift"))
-                {
-                    battleTimeline.RemoveLastIntervention(battleManager.PlayableCombatants[0]);
-                }
-                else
-                {
-                    battleTimeline.AddInterventionToQueue(battleManager.PlayableCombatants[0]);
-                }
-            }
-        }
-        else if (Input.GetButtonDown("QueueIntervention2"))
-        {
-            if (battleManager.InterventionCheck(1))
-            {
-                if (Input.GetButton("Shift"))
-                {
-                    battleTimeline.RemoveLastIntervention(battleManager.PlayableCombatants[1]);
-                }
-                else
-                {
-                    battleTimeline.AddInterventionToQueue(battleManager.PlayableCombatants[1]);
-                }
-            }
-        }
-        else if (Input.GetButtonDown("QueueIntervention3"))
-        {
-            if (battleManager.InterventionCheck(2))
-            {
-                if (Input.GetButton("Shift"))
-                {
-                    battleTimeline.RemoveLastIntervention(battleManager.PlayableCombatants[2]);
-                }
-                else
-                {
-                    battleTimeline.AddInterventionToQueue(battleManager.PlayableCombatants[2]);
-                }
-            }
-        }
-    }
-
-
     public override void StateFixedUpdate()
     {
 
@@ -75,30 +28,27 @@ public class TurnEndState : BattleState
     
     public IEnumerator EndTurnCo()
     {
-        yield return waitZeroPointTwoFive;
-
         //trigger turn end effects
-        if (battleTimeline.CurrentTurn.TurnType != TurnType.Intervention && battleTimeline.CurrentTurn.Actor.CombatantState != CombatantState.KO)
+        if (!battleTimeline.CurrentTurn.IsIntervention && battleTimeline.CurrentTurn.Actor.CombatantState != CombatantState.KO)
         {
-            //add turn start effects to queue
-            yield return StartCoroutine(battleTimeline.CurrentTurn.Actor.OnTurnEndCo());
-
-            //execute any turn end effects
+            //add turn end effects to queue and trigger
+            battleTimeline.CurrentTurn.Actor.OnTurnEnd();
             yield return StartCoroutine(battleEventQueue.ExhaustQueueCo());
-            yield return waitZeroPointTwoFive;
+
+            //display any timeline changes
+            battleTimeline.DisplayTurnOrder();
+
+            //reset positions
+            battleManager.ResetCombatantPositions();
+
+            //clear status effects
+            yield return StartCoroutine(battleTimeline.CurrentTurn.Actor.ClearExpiredStatusEffectsCo(TurnEventType.OnEnd));
+
+            //resolve health changes
+            yield return StartCoroutine(battleManager.ResolveBarChanges());
 
             //check combatants for ko
-            List<Combatant> allCombatants = battleManager.GetCombatants(CombatantType.All);
-            for (int i = allCombatants.Count - 1; i >= 0; i--)
-            {
-                //resolve health change
-                allCombatants[i].ResolveHealthChange();
-                if (allCombatants[i].CombatantState == CombatantState.KO)
-                {
-                    battleManager.KOCombatant(allCombatants[i]);
-                }
-            }
-            yield return waitZeroPointTwoFive;
+            yield return StartCoroutine(battleManager.ResolveKOs());
         }
 
         if (battleTimeline.CurrentTurn.Actor.CombatantState != CombatantState.KO)
@@ -107,12 +57,20 @@ public class TurnEndState : BattleState
             if (battleTimeline.CurrentTurn.Actor is PlayableCombatant)
             {
                 PlayableCombatant playableCombatant = (PlayableCombatant)battleTimeline.CurrentTurn.Actor;
-                playableCombatant.BattlePartyPanel.Highlight(false);
+                playableCombatant.BattlePartyPanel.OnTurnEnd();
             }
 
             //destroy previous turn panel
             battleTimeline.RemoveTurn(battleTimeline.CurrentTurn, false);
         }
+
+        yield return wait025;
+
+        battleManager.ResetCombatantAnimations();
+        battleManager.HideHealthBars();
+
+        //reset menu
+        //battleManager.BattleData.SetLastCommandMenuStateType(CommandMenuStateType.Main);
 
         //switch to change turn state
         stateMachine.ChangeState((int)BattleStateType.ChangeTurn);

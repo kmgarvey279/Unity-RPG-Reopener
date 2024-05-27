@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae13e52848a500a489d9535b3fcb7ccf, type: 3}
+  m_Name: ProjectionTrait
+  m_EditorClassIdentifier: 
+  <TraitName>k__BackingField: Projection
+  <TraitType>k__BackingField: Trigger
+  <TraitDescription>k__BackingField: Your standard attack restores 5 MP to your ally(s).
+  <AdditionalDescriptions>k__BackingField: []
+  <Icon>k__BackingField: {fileID: 0}
+  <BoolsToModify>k__BackingField: 
+  <UniversalModifiers>k__BackingField: []
+  <ActionModifiers>k__BackingField: []
+  <BattleStartStatusEffects>k__BackingField: []
+  <PreemptiveBattleEventTriggers>k__BackingField: []
+  <BattleEventTriggers>k__BackingField:
+  - {fileID: 11400000, guid: d99b2b5610ca6664d9f9baa441493e2f, type: 2}

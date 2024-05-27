@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6be137f697e5804428fd4db0b1bdf0ac, type: 3}
+  m_Name: FreezeStatus
+  m_EditorClassIdentifier: 
+  <DisplayIcon>k__BackingField: 1
+  <Icon>k__BackingField: {fileID: 21300000, guid: d23a4f3a8b360cf4eb30332772ddfb11,
+    type: 3}
+  <EffectName>k__BackingField: Freeze
+  <EffectDescription>k__BackingField: 'The target''s upcoming turns are delayed by
+    25%
+
+
+    The next attack inflicted on the target deals 2x damage and removes
+    this status.
+
+
+    If this status is removed before the start of the target''s
+    next turn, their upcoming turns are accelerated by 25%.'
+  <AdditionalDescriptions>k__BackingField:
+  - Fire attacks apply Damp.
+  <StatusEffectType>k__BackingField: 1
+  <AnimatorOverride>k__BackingField: 0
+  <CustomAnimatorOverride>k__BackingField: 
+  TargetSpeedChange: 0
+  <PersistentVFX>k__BackingField: {fileID: 3803686903523112795, guid: 7c1d23ebeec9ee847a3044accafe1856,
+    type: 3}
+  <PersistentVFXPosition>k__BackingField: 0
+  <PersistentTileVFX>k__BackingField: {fileID: 0}
+  <SetTranparent>k__BackingField: 0
+  <HasDuration>k__BackingField: 1
+  <DurationToApply>k__BackingField: 1
+  <DurationMax>k__BackingField: 1
+  <CanRefreshDuration>k__BackingField: 0
+  <HasStacks>k__BackingField: 0
+  <StacksToApply>k__BackingField: 1
+  <StacksMax>k__BackingField: 1
+  <CanRefreshStacks>k__BackingField: 0
+  <RemovalCheckTurnEventType>k__BackingField: 0
+  <CanPurge>k__BackingField: 1
+  <DoNotRemoveOnKO>k__BackingField: 0
+  <ApplyPotencyAsBreach>k__BackingField: 0
+  <PotencyTurnMultiplier>k__BackingField: 1
+  CarryoverPotencyMultiplier: 0
+  <TriggerTurnEventType>k__BackingField: 0
+  TurnEventTriggers: []
+  <TurnModifier>k__BackingField: 0
+  <OverrideAttack>k__BackingField: {fileID: 0}
+  <BoolsToModify>k__BackingField: 
+  <IntStatModifiers>k__BackingField: []
+  <FloatStatModifiers>k__BackingField: []
+  <UniversalModifiers>k__BackingField: []
+  <ActionModifiers>k__BackingField:
+  - <BattleEventType>k__BackingField: 1
+    <ActionModifierType>k__BackingField: 0
+    modifierType: 1
+    modifierValue: 2
+    conditionList: []
+  <PreemptiveBattleEventTriggers>k__BackingField: []
+  <BattleEventTriggers>k__BackingField: []
+  <EffectsToRemove>k__BackingField:
+  - {fileID: 11400000, guid: db2225193ac66c548bf234612062ca0a, type: 2}

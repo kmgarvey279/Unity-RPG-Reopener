@@ -8,7 +8,8 @@ TagManager:
   - Combatant
   - Tile
   - Interactable
-  - Playable Character
+  - PlayerInteract
+  - PlayerChangeRoom
   layers:
   - Default
   - TransparentFX
@@ -19,9 +20,9 @@ TagManager:
   - HUD
   - Ground
   - Collision
-  - Boundary
-  - 
-  - 
+  - Enemy
+  - Enemy Bounds
+  - Player
   - 
   - 
   - 
@@ -43,6 +44,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Invisible
+    uniqueID: 1412999899
+    locked: 0
   - name: Environment 1
     uniqueID: 3939006881
     locked: 0

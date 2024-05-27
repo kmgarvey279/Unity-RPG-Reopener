@@ -14,6 +14,7 @@ namespace StateMachineNamespace
             public StateMachine stateMachine;
             [HideInInspector]
             public int id;
+
             //initialize variables
             public abstract void OnEnter();
             //perform logic/physics

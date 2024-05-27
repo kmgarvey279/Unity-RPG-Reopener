@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class SignalListenerGOInt : MonoBehaviour
+public class SignalListenerGOInt : SignalListenerBase
 {
     public SignalSenderGOInt signalSender;
 

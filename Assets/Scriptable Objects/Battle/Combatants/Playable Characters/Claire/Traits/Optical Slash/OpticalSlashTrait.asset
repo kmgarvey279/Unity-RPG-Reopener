@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae13e52848a500a489d9535b3fcb7ccf, type: 3}
+  m_Name: OpticalSlashTrait
+  m_EditorClassIdentifier: 
+  <TraitName>k__BackingField: Optical Slash
+  <TraitType>k__BackingField: Passive
+  <TraitDescription>k__BackingField: Your standard attack decreases the hit rate
+    of the target's next attack by 15%.
+  <AdditionalDescriptions>k__BackingField: []
+  <Icon>k__BackingField: {fileID: 0}
+  <BoolsToModify>k__BackingField: 
+  <UniversalModifiers>k__BackingField: []
+  <ActionModifiers>k__BackingField: []
+  <BattleStartStatusEffects>k__BackingField: []
+  <PreemptiveBattleEventTriggers>k__BackingField: []
+  <BattleEventTriggers>k__BackingField: []

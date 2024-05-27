@@ -1,25 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
-using UnityEngine.Rendering;
-using System;
 
-public enum TurnType
-{
-    Standard,
-    Cast,
-    Intervention,
-    Paused
-}
+//public enum TurnType
+//{
+//    Standard,
+//    Cast,
+//    Intervention,
+//    Paused
+//}
 
 //stores information related to combatant's place in turn queue
 [System.Serializable]
 public class Turn
 {
     private float defaultTurnCost = 200f;
-    private float DelayTotal = 0;
-    [field: SerializeField] public TurnType TurnType { get; private set; }
+    //private float DelayTotal = 0;
+    private int oneTurnModifierTotal;
+
+    //[field: SerializeField] public TurnType TurnType { get; private set; }
     [field: SerializeField] public Combatant Actor { get; private set; }
     [field: SerializeField] public string ActorName { get; private set; } = "";
     [field: SerializeField] public Action Action { get; private set; }
@@ -28,21 +27,25 @@ public class Turn
     [field: SerializeField] public int Counter { get; protected set; }
     [field: SerializeField] public TurnPanel TurnPanel { get; protected set; }
     public int TempModifier { get; private set; }
+    public bool IsIntervention { get; private set; } = false;
     public bool IsTargeted { get; private set; } = false;
     public bool WasChanged { get; private set; } = false;
-    public bool ReselectTargets { get; private set; } = false;
+    public bool WasSwappedOut { get; private set; } = false;
+    public bool SwappedThisTurn { get; private set; } = false;
+    public Item ItemToUse { get; private set; }
     [field: SerializeField] public int QueueIndex { get; private set; } = -1;
 
-    public Turn(TurnType turnType, Combatant actor, float turnMultiplier)
+    public Turn(Combatant actor, float turnMultiplier, bool isIntervention)
     {
-        TurnType = turnType;
         Actor = actor;
-        if(Actor != null)
+        
+        if (Actor != null)
         {
             ActorName = Actor.CharacterName + " " +  Actor.CharacterLetter;
         }
-        if(turnType is TurnType.Intervention)
+        if (isIntervention)
         {
+            IsIntervention = true;
             Counter = -8888;
         }
         else
@@ -60,7 +63,6 @@ public class Turn
     {
         Actor = actor;
     }
-
 
     public void SetAction(Action action)
     {
@@ -81,6 +83,11 @@ public class Turn
         Targets = targets;
     }
 
+    public void SetItemToUse(Item item)
+    {
+        ItemToUse = item;
+    }
+
     public void SetTurnPanel(TurnPanel turnPanel)
     {
         TurnPanel = turnPanel;
@@ -89,20 +96,15 @@ public class Turn
     public void CancelAction()
     {
         Action = null;
+        ItemToUse = null;
         Targets.Clear();
     }
 
-    public void SetReselectTargets(bool reselectTargets)
-    {
-        ReselectTargets = reselectTargets;
-    }
-
-
     public float GetSpeed()
     {
-        if(Actor)
+        if (Actor)
         {
-            return Actor.Stats[StatType.Agility].CurrentValue;
+            return Actor.Stats[IntStatType.Agility];
         }
         else
         {
@@ -113,57 +115,68 @@ public class Turn
     public void SetAsCurrentTurn()
     {
         Counter = -9999;
+        TurnPanel.SetAsCurrentTurn();
     }
 
-    public void PauseTurn()
-    {
-        TurnType = TurnType.Paused;
-        Counter = -7777;
-    }
+    //public void PauseTurn()
+    //{
+    //    TurnType = TurnType.Paused;
+    //    Counter = -7777;
+    //}
 
-    public void ApplyModifier(float modifierToAdd, bool isTemp)
+    public void ApplyModifier(float modifierToAdd, bool isTemp, bool appliedToThisTurnOnly)
     {
         //cap delay at 100%
-        if (modifierToAdd > 0 && DelayTotal + modifierToAdd >= 1f)
-        {
-            modifierToAdd = 1f - DelayTotal;
-        }
+        //if (modifierToAdd > 0 && DelayTotal + modifierToAdd >= 1f)
+        //{
+        //    modifierToAdd = 1f - DelayTotal;
+        //}
         
-        int amountToAdd = Mathf.FloorToInt(modifierToAdd * (defaultTurnCost - GetSpeed()));
+        int amountToAdd = Mathf.RoundToInt(modifierToAdd * (defaultTurnCost - GetSpeed()));
         
         //prevent counter from going negative
-        if(amountToAdd + Counter < 0) 
-        {
-            amountToAdd = -Counter;
-        }
+        //if(amountToAdd + Counter < 0) 
+        //{
+        //    amountToAdd = -Counter;
+        //}
 
         Counter = Counter + amountToAdd;
 
-        if(isTemp)
+        if (isTemp)
         {
-            TempModifier = amountToAdd;
+            TempModifier += amountToAdd;
         }
-        else if (modifierToAdd > 0) 
+        else if (appliedToThisTurnOnly)
         {
-            DelayTotal += modifierToAdd;
+            oneTurnModifierTotal += amountToAdd;
         }
-        //if it had an effect
-        if (amountToAdd != 0 && isTemp)
+        //else if (modifierToAdd > 0) 
+        //{
+        //    DelayTotal += modifierToAdd;
+        //}
+        if (amountToAdd != 0)
         {
-            TurnPanel.DisplayTurnModifier(amountToAdd);
+            WasChanged = true;
         }
-
-        WasChanged = true;
     }
 
     public void RemoveTempModifier()
     {
-        if(TempModifier != 0)
+        if (TempModifier != 0)
         {
             Counter -= TempModifier;
             TempModifier = 0;
 
             WasChanged = true;
+        }
+    }
+
+    public void RemoveOneTurnModifiers()
+    {
+        if (oneTurnModifierTotal != 0)
+        {
+            Counter -= oneTurnModifierTotal;
+            oneTurnModifierTotal = 0;
         }
     }
 
@@ -178,6 +191,22 @@ public class Turn
         {
             Counter--;
         }
+    }
+
+    public void OnSwapOut()
+    {
+        WasChanged = true;
+        WasSwappedOut = true;
+    }
+
+    public void RemoveSwappedState()
+    { 
+        WasSwappedOut = false;
+    }
+
+    public void OnSwapIn()
+    {
+        SwappedThisTurn = true;
     }
 
     //public void SetTargeted(bool isTargeted)

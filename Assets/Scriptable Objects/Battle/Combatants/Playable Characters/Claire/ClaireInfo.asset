@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbd7c3aa6ce019147804e90e0136ea53, type: 3}
+  m_Name: ClaireInfo
+  m_EditorClassIdentifier: 
+  baseHP: 200
+  currentHP: 200
+  baseMP: 40
+  currentMP: 40
+  baseAttack: 8
+  baseDefense: 8
+  baseMAttack: 7
+  baseMDefense: 6
+  baseHealing: 8
+  baseAgility: 12
+  baseCritRate: 5
+  baseEvadeRate: 5
+  <TurnIcon>k__BackingField: {fileID: 21300000, guid: 0c1e140b13eca134eb9867fbe42b0b28,
+    type: 3}
+  <CharacterName>k__BackingField: Claire
+  <Level>k__BackingField: 1
+  <Traits>k__BackingField:
+  - {fileID: 11400000, guid: faa493c403d5e65409a1be474348ec19, type: 2}
+  - {fileID: 11400000, guid: 9dbe556e802b56f4a8289edda28cdded, type: 2}
+  - {fileID: 11400000, guid: 8943b911fb46ceb468736d780fa07d5a, type: 2}
+  - {fileID: 11400000, guid: 2577d338d0dec3c4ea6d1b7a973befe7, type: 2}
+  - {fileID: 11400000, guid: f48c027798635f747a30d561d54bd256, type: 2}
+  <InterventionLimit>k__BackingField: 1
+  <EXP>k__BackingField: 0
+  defaultWeapon: {fileID: 11400000, guid: d0a410d1899000241923db3013ff56bd, type: 2}
+  defaultArmor: {fileID: 11400000, guid: 6dfc5d1ea37457b42ad9d71cd41b1e8e, type: 2}
+  defaultAccessory: {fileID: 11400000, guid: c2702f32c9041474c8b969635e5ec632, type: 2}
+  <PlayableCharacterID>k__BackingField: 0
+  <CharacterColor>k__BackingField: {r: 0.58878726, g: 0, b: 0.7264151, a: 1}
+  <Attack>k__BackingField: {fileID: 11400000, guid: 9e806f8b2539ed34c83a4c9c620da944,
+    type: 2}
+  <Defend>k__BackingField: {fileID: 11400000, guid: 4e9b23d31e4b8b640be03e7be638ee44,
+    type: 2}
+  <Skills>k__BackingField:
+  - {fileID: 11400000, guid: 22abfc55fc3932049ba5b980d06fd7dd, type: 2}
+  - {fileID: 11400000, guid: 897cf7c174a39064e9ef26f6cc34d75d, type: 2}
+  - {fileID: 11400000, guid: 1296fc34c4fd29d4b997ea9790c77c23, type: 2}
+  - {fileID: 11400000, guid: 6cd4df52a3be8c14d983c17095725741, type: 2}
+  - {fileID: 11400000, guid: bc90577b930edba468d6d36c765d5af5, type: 2}
+  - {fileID: 11400000, guid: 84e6bfab6b79d0649979c8271797fae1, type: 2}
+  - {fileID: 11400000, guid: 0344ea6343adc2046bf12e654612040d, type: 2}

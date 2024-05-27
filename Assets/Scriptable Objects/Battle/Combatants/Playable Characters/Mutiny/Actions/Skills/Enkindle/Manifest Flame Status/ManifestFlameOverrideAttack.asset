@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cd574f477f4b6449b1c41ffadc5405f, type: 3}
+  m_Name: ManifestFlameOverrideAttack
+  m_EditorClassIdentifier: 
+  <ActionName>k__BackingField: Manifest Flame
+  <Icon>k__BackingField: {fileID: 21300000, guid: c0abe8991049b4144b563496d490b67c,
+    type: 3}
+  <Description>k__BackingField: 
+  <ActionType>k__BackingField: 0
+  <ActorConditionalModifier>k__BackingField:
+    <TurnModifier>k__BackingField: 0
+    <ApplyToNextTurnOnly>k__BackingField: 0
+    modifierConditions: []
+  <TargetConditionalModifier>k__BackingField:
+    <TurnModifier>k__BackingField: 0
+    <ApplyToNextTurnOnly>k__BackingField: 0
+    modifierConditions: []
+  <ActionCostType>k__BackingField: 0
+  <Cost>k__BackingField: 0
+  <HitCount>k__BackingField: 1
+  <TargetingType>k__BackingField: 0
+  <AOEType>k__BackingField: 0
+  <IsMelee>k__BackingField: 0
+  <IsBackAttack>k__BackingField: 0
+  <UseConditions>k__BackingField: []
+  ActionModifiers: []
+  <BattleEventTriggers>k__BackingField: []
+  <StatusEffectTags>k__BackingField: []
+  <ExecutePosition>k__BackingField: 0
+  <ActionAnimations>k__BackingField:
+  - <BattleAnimatorTrigger>k__BackingField: 2
+    <CustomAnimatorTrigger>k__BackingField: 
+    <ChangeActorOpacity>k__BackingField: 0
+    <NewActorOpacity>k__BackingField: 0
+    <VFXPrefab>k__BackingField: {fileID: 8774343237413151715, guid: 669b5666b902f5c418adfe896a735a5e,
+      type: 3}
+    <BattlefieldSpawnPosition>k__BackingField: 0
+    <CombatantSpawnPosition>k__BackingField: 0
+    <BindVFXToCombatant>k__BackingField: 0
+    <SpawnPositionOffset>k__BackingField: {x: 0, y: 0}
+    <SpawnForEachTarget>k__BackingField: 0
+    <IsProjectile>k__BackingField: 0
+    <AnimationTriggerFrequency>k__BackingField: 0
+    <XHit>k__BackingField: 0
+    <Delay>k__BackingField: 0
+    <Duration>k__BackingField: 1
+  <Power>k__BackingField: 1
+  <ElementalProperty>k__BackingField: 1
+  <UseBothStats>k__BackingField: 1
+  <Unguardable>k__BackingField: 0
+  <HitRate>k__BackingField: 100
+  <GuaranteedHit>k__BackingField: 0
+  <CritRateMultiplier>k__BackingField: 1

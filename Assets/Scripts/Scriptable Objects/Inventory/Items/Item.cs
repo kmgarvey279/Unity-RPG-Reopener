@@ -5,20 +5,22 @@ using UnityEngine.UI;
 
 public enum ItemType
 {
-    Key,
     Usable,
-    Weapon, 
-    Accessory
+    Equipment,
+    Key
 }
 
-[CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Items/Generic Item")]
 public class Item: ScriptableObject
 {
+    public string ItemID { private set; get; } = System.Guid.NewGuid().ToString();
+
     [HideInInspector] public ItemType ItemType { get; protected set; }
-    public string ItemName { get; protected set; } = "Item Name";
-    public string ItemDescription { get; protected set; } = "Item Description";
-    public Sprite ItemIcon { get; protected set; } = null;
-    public bool CanSell { get; protected set; } = false;
-    public int SellValue { get; protected set; } = 0;
-    public bool CanDiscard { get; protected set; } = false;
+    [field: SerializeField] public string ItemName { get; protected set; } = "Item Name";
+    [field: SerializeField, TextArea(2, 6)] public string Description { get; protected set; }
+    [field: SerializeField, TextArea(2, 6)] public string SecondaryDescription { get; protected set; }
+    [field: SerializeField] public Sprite ItemIcon { get; protected set; } = null;
+    [field: SerializeField] public bool CanSell { get; protected set; } = false;
+    [field: SerializeField] public int SellValue { get; protected set; } = 0;
+    [field: SerializeField] public bool CanDiscard { get; protected set; } = false;
+    [field: SerializeField] public int CarryMax { get; protected set; } = 99;
 }

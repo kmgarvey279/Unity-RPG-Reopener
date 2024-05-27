@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ef4468d3e80b1d4e9b7b1be0e961f2d, type: 3}
+  m_Name: ApplyOpenTrigger
+  m_EditorClassIdentifier: 
+  <BattleEventType>k__BackingField: 0
+  <TriggerableEffectType>k__BackingField: 2
+  triggerConditions:
+  - <Conditional>k__BackingField: 0
+    <BattleConditionCombatant>k__BackingField: 1
+    isNot: 0
+    battleCondition: {fileID: 11400000, guid: c202a31c3041a2443a37fa0c70e8b0e4, type: 2}
+    value: 0
+  - <Conditional>k__BackingField: 1
+    <BattleConditionCombatant>k__BackingField: 1
+    isNot: 0
+    battleCondition: {fileID: 11400000, guid: ca99e6ad4b5c76642833680d81568632, type: 2}
+    value: 0
+  - <Conditional>k__BackingField: 1
+    <BattleConditionCombatant>k__BackingField: 1
+    isNot: 1
+    battleCondition: {fileID: 11400000, guid: 334d13dcabfc1d240815bc38187b124c, type: 2}
+    value: 0
+  triggerRate: 1
+  onlyTriggerOnHit: 0
+  <UseTargetOverride>k__BackingField: 0
+  <TargetOverride>k__BackingField: 0
+  <PickRandomTarget>k__BackingField: 0
+  <EventName>k__BackingField: 'Status: Open'
+  <TriggerableEffectContainers>k__BackingField:
+  - <TriggerableEffect>k__BackingField: {fileID: 11400000, guid: bfb253f15f9033543aaf5664ad281995,
+      type: 2}
+    <Value>k__BackingField: 0
+    useValueOverride: 0
+    valueOverrideMultiplier: 0
+  <ActionAnimations>k__BackingField:
+  - <BattleAnimatorTrigger>k__BackingField: 0
+    <CustomAnimatorTrigger>k__BackingField: 
+    <ChangeActorOpacity>k__BackingField: 0
+    <NewActorOpacity>k__BackingField: 0
+    <VFXPrefab>k__BackingField: {fileID: 3287725913822870396, guid: ab44e1c44ae141049a1372d2a354692e,
+      type: 3}
+    <BattlefieldSpawnPosition>k__BackingField: 0
+    <CombatantSpawnPosition>k__BackingField: 0
+    <BindVFXToCombatant>k__BackingField: 0
+    <SpawnPositionOffset>k__BackingField: {x: 0, y: 0}
+    <SpawnForEachTarget>k__BackingField: 1
+    <IsProjectile>k__BackingField: 0
+    <ReverseProjectile>k__BackingField: 0
+    <AnimationTriggerFrequency>k__BackingField: 0
+    <XHit>k__BackingField: 0
+    <Delay>k__BackingField: 0
+    <Duration>k__BackingField: 1

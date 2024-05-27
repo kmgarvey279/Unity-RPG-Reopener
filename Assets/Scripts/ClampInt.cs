@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class ClampInt
 {
-    public int Value { get; private set; }
-    public int MinValue { get; private set; }
-    public int MaxValue { get; private set; }
+    [field: SerializeField] public int CurrentValue { get; private set; }
+    [field: SerializeField] public int MinValue { get; private set; }
+    [field: SerializeField] public int MaxValue { get; private set; }
 
     public ClampInt(int _value, int _minValue, int _maxValue)
     {
@@ -20,11 +21,11 @@ public class ClampInt
         }
         MinValue = _minValue;
         MaxValue = _maxValue;
-        Value = Mathf.Clamp(_value, MinValue, MaxValue);
+        CurrentValue = Mathf.Clamp(_value, MinValue, MaxValue);
     }
 
     public void UpdateValue(int newValue)
     {
-        Value = Mathf.Clamp(newValue, MinValue, MaxValue);
+        CurrentValue = Mathf.Clamp(newValue, MinValue, MaxValue);
     }
 }

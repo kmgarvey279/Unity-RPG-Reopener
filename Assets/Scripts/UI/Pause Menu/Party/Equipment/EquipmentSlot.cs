@@ -3,41 +3,81 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
-public class EquipmentSlot : MonoBehaviour
+public class EquipmentSlot : MonoBehaviour, ISelectHandler, IDeselectHandler
 {
     //PlayableCharacterInfo playableCharacterInfo;
-    //[Header("Equipment Type")]
-    //public EquipmentType EquipmentType { get; private set; }
-    //[SerializeField] private string emptyText;
-    //[SerializeField] private Image emptyImage;
-    //[Header("UI Display")]
-    //[SerializeField] private Image slotImage;
-    //[SerializeField] private TextMeshProUGUI nameText;
-    //[Header("Equipment In Slot")]
-    //[SerializeField] private Item item;
+    [field: Header("Equipment Type")]
+    [field: SerializeField] public EquipmentType EquipmentType { get; private set; }
+    [SerializeField] private Color assignedColor;
+    [SerializeField] private Color emptyColor;
+    [SerializeField] private Image panel;
+    [SerializeField] private GameObject border;
+    [SerializeField] private GameObject glow;
+    private Button button;
+    [Header("UI Display")]
+    //[SerializeField] private Image icon;
+    [SerializeField] private TextMeshProUGUI nameValue;
+    [field: Header("Equipment In Slot")]
+    [SerializeField] public EquipmentItem EquipmentItem { get; private set; }
     //[SerializeField] private GameObject equipmentPopup;
+    private PauseMenuStateEquip pauseMenuEquip;
 
-    //private void Start()
-    //{
-    //    playableCharacterInfo = GetComponentInParent<CharacterInfoUI>().playableCharacterInfo;
-    //    AssignSlot(playableCharacterInfo.equipmentDict[equipmentType]);
-    //}
+    [SerializeField] private ItemInfo itemInfo;
 
-    ////assign equipment SO to this slot
-    //public void AssignSlot(ItemObject newItem)
+    private void Awake()
+    {
+        button = GetComponent<Button>();
+        pauseMenuEquip = GetComponentInParent<PauseMenuStateEquip>();
+    }
+
+
+    public void AssignSlot (EquipmentItem equipmentItem)
+    {
+        if (equipmentItem != null)
+        {
+            nameValue.text = equipmentItem.ItemName;
+            panel.color = assignedColor;
+        }
+        else
+        {
+            nameValue.text = "-----";
+            panel.color = emptyColor;
+
+        }
+        EquipmentItem = equipmentItem;
+    }
+
+    public void OnSelect(BaseEventData eventData)
+    {
+        //if (pauseMenuEquip != null)
+        //{
+        //    pauseMenuEquip.OnSelectEquipmentSlot(this);
+        //}
+        border.SetActive(true);
+
+        itemInfo.DisplayItem(EquipmentItem);
+    }
+
+    public void OnDeselect(BaseEventData eventData)
+    {
+        border.SetActive(false);
+    }
+
+    public void OnClick()
+    {
+        pauseMenuEquip.OnClickEquipmentSlot(this);
+    }
+
+    public void ToggleButton(bool isActive)
+    {
+        button.interactable = isActive;
+    }
+
+    //public void SetAsOpenSlot(bool isOpenSlot)
     //{
-    //    if(newItem != null)
-    //    {
-    //        item = newItem;
-    //        slotImage = item.icon;
-    //        nameText.text = item.name;
-    //    }
-    //    else
-    //    {
-    //        slotImage = emptyImage;  
-    //        nameText.text = emptyText;  
-    //    }
+    //    glow.SetActive(isOpenSlot);
     //}
 
     ////remove equipment SO from this slot

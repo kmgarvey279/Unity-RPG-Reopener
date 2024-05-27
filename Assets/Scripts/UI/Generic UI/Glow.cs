@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class Glow : MonoBehaviour
 {
-    [SerializeField] private Animator animator;
-    public void ToggleGlow(bool isOn)
+    private Animator animator;
+
+    private void OnEnable()
     {
-        animator.SetBool("On", isOn);
+        animator = GetComponent<Animator>();
+    }
+
+    public void Refresh()
+    {
+        animator.SetTrigger("Refresh");
     }
 }

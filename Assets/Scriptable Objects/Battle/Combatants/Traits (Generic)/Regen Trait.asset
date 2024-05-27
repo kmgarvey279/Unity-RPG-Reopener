@@ -13,8 +13,18 @@ MonoBehaviour:
   m_Name: Regen Trait
   m_EditorClassIdentifier: 
   <TraitName>k__BackingField: Regen
-  <TraitInfo>k__BackingField: Restore 5% of max hp at the start of your turn.
-  <StatModifiers>k__BackingField: []
+  <TraitType>k__BackingField: Turn
+  <TraitDescription>k__BackingField: Restores 10% of your max HP at the beginning
+    of each turn.
+  <AdditionalDescriptions>k__BackingField: []
+  <Icon>k__BackingField: {fileID: 21300000, guid: b89d41ae5ac0ef44cb3032426d1345a4,
+    type: 3}
+  <BoolsToModify>k__BackingField: 
+  <IntStatModifiers>k__BackingField: []
+  <FloatStatModifiers>k__BackingField: []
+  <UniversalModifiers>k__BackingField: []
   <ActionModifiers>k__BackingField: []
-  <TriggerableBattleEffects>k__BackingField:
-  - {fileID: 11400000, guid: d8eba733ffcd8e04a81139d521922899, type: 2}
+  <BattleStartStatusEffects>k__BackingField:
+  - {fileID: 11400000, guid: 807f479df20789048927d7e59dfbfee1, type: 2}
+  <PreemptiveBattleEventTriggers>k__BackingField: []
+  <BattleEventTriggers>k__BackingField: []

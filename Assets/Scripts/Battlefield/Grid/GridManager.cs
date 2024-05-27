@@ -8,32 +8,44 @@ using UnityEngine.WSA;
 
 public class GridManager : MonoBehaviour
 {
-    [SerializeField] private BattleManager battleManager;    
-    [Header("Array of tiles")]
-    [SerializeField] private List<Tile> playerTiles = new List<Tile>();
+    [SerializeField] private BattleManager battleManager;
+    private Canvas canvas;
+    [field: Header("Array of tiles")]
+    [field: SerializeField] public List<Tile> PlayerTiles { get; private set; } = new List<Tile>();
     private Tile[,] playerTileArray;
-    public List<Tile> enemyTiles = new List<Tile>();
+    [field: SerializeField] public List<Tile> EnemyTiles { get; private set; } = new List<Tile>();
     private Tile[,] enemyTileArray;
     [Header("Center Positions")]
     [SerializeField] private List<Transform> playerCenterTiles = new List<Transform>();
     [SerializeField] private List<Transform> enemyCenterTiles = new List<Transform>();
-    [field: SerializeField] public List<Tile> linkTiles = new List<Tile>();
+    [field: SerializeField] public List<Tile> SwapTiles = new List<Tile>();
     public Dictionary<CombatantType, List<Transform>> CenterTiles { get; private set; } = new Dictionary<CombatantType, List<Transform>>();
 
     private void Awake()
     {
+        canvas = GetComponent<Canvas>();
+        Camera camera = FindFirstObjectByType<Camera>();
+        if (camera)
+        {
+            canvas.worldCamera = camera;
+        }
+        else
+        {
+            Debug.LogError("Unable to find camera for grid");
+        }
         GenerateGrid();
     }
 
     private void GenerateGrid()
     {
         playerTileArray = new Tile[1, 3];
-        foreach(Tile tile in playerTiles)
+        foreach(Tile tile in PlayerTiles)
         {
             playerTileArray[tile.X, tile.Y] = tile;
         }
+
         enemyTileArray = new Tile[3, 3];
-        foreach(Tile tile in enemyTiles)
+        foreach(Tile tile in EnemyTiles)
         {
             enemyTileArray[tile.X, tile.Y] = tile;
         }
@@ -41,93 +53,132 @@ public class GridManager : MonoBehaviour
         CenterTiles.Add(CombatantType.Enemy, enemyCenterTiles);
     }
 
-    public void DisplaySelectableTargets(TargetingType targetingType, Combatant actor, bool isMelee)
+    public List<Combatant> GetSelectableTargets(TargetingType targetingType, Combatant actor, bool isMelee, bool isBackAttack)
     {
         Debug.Log("displaying selectable targets");
-        if (targetingType == TargetingType.TargetSelf)
+        List<Combatant> targetableCombatants = new List<Combatant>();
+        switch (targetingType)
         {
-            foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.All))
-            {
-                combatant.ChangeSelectState(CombatantTargetState.Untargetable);
-            }
-            actor.ChangeSelectState(CombatantTargetState.Targetable);
-            actor.Select();
-        }
-        else if(targetingType == TargetingType.TargetHostile)
-        {
-            foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.Player))
-            {
-                combatant.ChangeSelectState(CombatantTargetState.Untargetable);
-            }
-
-            Combatant firstSelectedCombatant = null;
-            int highestValue = 0;
-
-            foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.Enemy))
-            {
-                bool isBlocked = false;
-                if (isMelee && combatant.Tile.X != 2)
-                {
-                    for (int i = combatant.Tile.X + 1; i < 3; i++)
-                    {
-                        if (enemyTileArray[i, combatant.Tile.Y].Occupier != null)
-                        {
-                            isBlocked = true;
-                        }
-                    }
-                }
-                if (!isBlocked)
-                {
-                    combatant.ChangeSelectState(CombatantTargetState.Targetable);
-                    int thisValue = combatant.Tile.X + combatant.Tile.Y;
-                    if (thisValue >= highestValue)
-                    {
-                        firstSelectedCombatant = combatant.Tile.Occupier;
-                        highestValue = thisValue;
-                    }
-                }
-                else
+            case TargetingType.TargetSelf:
+                foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.All))
                 {
                     combatant.ChangeSelectState(CombatantTargetState.Untargetable);
                 }
-            }
-            if (firstSelectedCombatant != null)
-            {
-                firstSelectedCombatant.Select();
-            }
-        }
-        else
-        {
-            bool targetKO = false;
-            if (targetingType == TargetingType.TargetKOAllies)
-            {
-                targetKO = true;
-            }
-            List<Combatant> targetableCombatants = new List<Combatant>();
-            foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.Enemy, false))
-            {
-                combatant.ChangeSelectState(CombatantTargetState.Untargetable);
-            }
-            foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.Player, targetKO))
-            {
-                if (targetingType == TargetingType.TargetFriendly || combatant != actor)
+                actor.ChangeSelectState(CombatantTargetState.Targetable);
+                targetableCombatants.Add(actor);
+                //actor.Select();
+                break;
+            case TargetingType.TargetAllies:
+                foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.Enemy))
+                {
+                    combatant.ChangeSelectState(CombatantTargetState.Untargetable);
+                }
+                foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.Player))
+                {
+                    if (combatant == actor)
+                    {
+                        combatant.ChangeSelectState(CombatantTargetState.Untargetable);
+                    }
+                    else
+                    {
+                        targetableCombatants.Add(combatant);
+                        combatant.ChangeSelectState(CombatantTargetState.Targetable);
+                    }
+                }
+                //if (targetableCombatants.Count > 0)
+                //{
+                //    targetableCombatants[0].Select();
+                //}
+                break;
+            case TargetingType.TargetFriendly:
+                foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.Enemy))
+                {
+                    combatant.ChangeSelectState(CombatantTargetState.Untargetable);
+                }
+                foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.Player))
                 {
                     targetableCombatants.Add(combatant);
                     combatant.ChangeSelectState(CombatantTargetState.Targetable);
                 }
-            }
-            if (targetingType == TargetingType.TargetFriendly)
-            {
-                actor.Select();
-            } 
-            else if (targetableCombatants.Count > 0)
-            {
-                targetableCombatants[0].Select();
-            }
+                //if (targetableCombatants.Count > 0)
+                //{
+                //    targetableCombatants[0].Select();
+                //}
+                break;
+            case TargetingType.TargetKOAllies:
+                foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.Enemy))
+                {
+                    combatant.ChangeSelectState(CombatantTargetState.Untargetable);
+                }
+                foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.Player))
+                {
+                    combatant.ChangeSelectState(CombatantTargetState.Untargetable);
+                }
+                foreach (Combatant combatant in battleManager.GetKOedCombatants())
+                {
+                    targetableCombatants.Add(combatant);
+                    combatant.ChangeSelectState(CombatantTargetState.Targetable);
+                }
+                //if (targetableCombatants.Count > 0)
+                //{
+                //    targetableCombatants[0].Select();
+                //}
+                break;
+            case TargetingType.TargetHostile:
+                foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.Player))
+                {
+                    combatant.ChangeSelectState(CombatantTargetState.Untargetable);
+                }
+                foreach (Combatant combatant in battleManager.GetCombatants(CombatantType.Enemy))
+                {
+                    bool isBlocked = false;
+                    if (isMelee)
+                    {
+                        if (isBackAttack)
+                        {
+                            for (int i = combatant.Tile.X - 1; i >= 0; i--)
+                            {
+                                if (enemyTileArray[i, combatant.Tile.Y].Occupier != null)
+                                {
+                                    isBlocked = true;
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            for (int i = combatant.Tile.X + 1; i < 3; i++)
+                            {
+                                if (enemyTileArray[i, combatant.Tile.Y].Occupier != null)
+                                {
+                                    isBlocked = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (!isBlocked)
+                    {
+                        targetableCombatants.Add(combatant);
+                        combatant.ChangeSelectState(CombatantTargetState.Targetable);
+                    }
+                    else
+                    {
+                        combatant.ChangeSelectState(CombatantTargetState.Untargetable);
+                    }
+                }
+                //if (targetableCombatants.Count > 0)
+                //{
+                //    targetableCombatants[0].Select();
+                //}
+                break;
+            default:
+                break;
         }
+        return targetableCombatants;
     }
 
-        public Tile[,] GetTileArray(CombatantType combatantType)
+    public Tile[,] GetTileArray(CombatantType combatantType)
     {
         if(combatantType == CombatantType.Player)
         {
@@ -139,7 +190,7 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    public List<Combatant> GetTargets(Tile start, AOEType aoeType, bool isMelee, CombatantType combatantType)
+    public List<Combatant> GetEnemyTargets(Tile start, AOEType aoeType, bool isMelee)
     {
         List<Combatant> targets = new List<Combatant>();
         List<Tile> tiles = new List<Tile>();
@@ -147,16 +198,16 @@ public class GridManager : MonoBehaviour
         tiles.Add(start);
         if (aoeType == AOEType.Row)
         {
-            tiles.AddRange(GetRow(start, combatantType));
+            tiles.AddRange(GetRow(start));
         }
-        else if (aoeType == AOEType.All)
+        else if (aoeType == AOEType.All || aoeType == AOEType.Random)
         {
-            tiles.AddRange(GetAll(isMelee, combatantType));
+            tiles.AddRange(GetAll(isMelee));
         }
 
-        foreach(Tile tile in tiles)
+        foreach (Tile tile in tiles)
         {
-            if(tile.Occupier && !targets.Contains(tile.Occupier))
+            if (tile.Occupier && !targets.Contains(tile.Occupier))
             {
                 targets.Add(tile.Occupier);
             }
@@ -164,15 +215,10 @@ public class GridManager : MonoBehaviour
         return targets;
     }
 
-    public List<Tile> GetRow(Tile start, CombatantType combatantType)
+    public List<Tile> GetRow(Tile start)
     {
         List<Tile> row = new List<Tile>();
 
-        if (combatantType == CombatantType.Player)
-        {
-            row.Add(start);
-            return row;
-        }
         for (int i = 0; i < 3; i++)
         {
             row.Add(GetTileArray(CombatantType.Enemy)[i, start.Y]);
@@ -180,16 +226,21 @@ public class GridManager : MonoBehaviour
         return row;
     }
 
-    public List<Tile> GetAll(bool isMelee, CombatantType combatantType)
+    //public void GetRowAttackPosition(List<ActionSubevent> actionSubevents)
+    //{
+    //    if (actionSubevents.Count > 0)
+    //}
+
+    public List<Tile> GetAll(bool isMelee)
     {
         List<Tile> all = new List<Tile>();
-        Tile[,] tileArray = GetTileArray(combatantType);
+        Tile[,] tileArray = GetTileArray(CombatantType.Enemy);
         foreach(Tile tile in tileArray)
         {
             if (tile.Occupier)
             {
                 bool isBlocked = false;
-                if (combatantType == CombatantType.Enemy && isMelee && tile.X != 2)
+                if (isMelee && tile.X != 2)
                 {
                     for (int i = tile.X + 1; i < 3; i++)
                     {

@@ -5,135 +5,129 @@ using UnityEngine.SceneManagement;
 using UnityEditor;
 using Pathfinding;
 
+public enum EmoteType
+{
+    Exclamation,
+    Question
+}
+
+
 public class OverworldEnemy : MonoBehaviour
 {
-    public OverworldData overworldData;
-    public Vector3 lookDirection;
-    public float wanderSpeed;
-    public float chaseSpeed;
-    public GameObject player;
-    [SerializeField] private GameObject alertIcon;
+    private Transform target;
+    private NPCMovement enemyMovement;
+    [SerializeField] private GameObject battleTrigger;
+    [SerializeField] private GameObject chaseTrigger;
+    [SerializeField] private Animator spriteAnimator;
+    public LayerMask layerToCheck;
+
+    [SerializeField] private GameObject exclamationEmote;
+    [SerializeField] private GameObject questionEmote;
+    private Dictionary<EmoteType, GameObject> emotes;
     // public float visionRadius;
     // public float visionAngle = 5.0f;
-    [Header("GameObject Components")]
-    public Animator animator;
-    [Header("A* Pathfinding")]
-    public AIPath aiPath;
-    public AIDestinationSetter setter;
 
-    public enum EnemyState
+    //[SerializeField] private Animator animator;
+    //private AIPath aiPath;
+    //private AIDestinationSetter setter;
+    //private Seeker seeker;
+
+    private EnemyContainer enemyContainer;
+    private bool canInteract = true;
+
+
+    public void Awake()
     {
-        Wander,
-        Chase
-    }
-    public EnemyState currentState;
-
-    public void Start()
-    {   
-        lookDirection = new Vector3(0, -1, 0);
-
-        animator = GetComponent<Animator>();
-        
-        aiPath = GetComponent<AIPath>();
-        setter = GetComponent<AIDestinationSetter>();
-
-        currentState = EnemyState.Wander;
-        aiPath.maxSpeed = wanderSpeed;
-
-        StartCoroutine(SetDestination());
+        enemyMovement = GetComponent<NPCMovement>();
+        enemyContainer = GetComponentInParent<EnemyContainer>();
+        emotes = new Dictionary<EmoteType, GameObject>()
+        { 
+            { EmoteType.Exclamation, exclamationEmote },
+            { EmoteType.Question, questionEmote }
+        };
     }
 
-    public void Update()
+    private void OnEnable()
     {
-        if(player != null)
+        if (!canInteract)
         {
-            if(setter.target != player.transform)
-            {
-                setter.target = player.transform;
-            }
-            if(currentState != EnemyState.Chase)
-            {
-                currentState = EnemyState.Chase;
-                aiPath.maxSpeed = chaseSpeed;
-            } 
-            return;
-        }
-        if(aiPath.canMove)
-        {
-            if(!Mathf.Approximately(aiPath.desiredVelocity.x, 0.0f) || !Mathf.Approximately(aiPath.desiredVelocity.y, 0.0f))
-            {
-                lookDirection = aiPath.desiredVelocity;
-                animator.SetFloat("Look X", Mathf.Round(lookDirection.x));
-                animator.SetFloat("Look Y", Mathf.Round(lookDirection.y));
-            }
-        
-            if(aiPath.reachedEndOfPath)
-            {
-                StartCoroutine(SetDestination());
-            }
+            spriteAnimator.SetTrigger("FlashOn");
         }
     }
 
-    private IEnumerator SetDestination()
+    private void OnDisable()
     {
-        float delay = Random.Range(0.5f, 2f);
-
-        float speedTemp = aiPath.maxSpeed;
-        aiPath.canMove = false;
-
-        aiPath.destination = Random.insideUnitSphere * 5;
-
-        yield return new WaitForSeconds(delay);
-        aiPath.canMove = true;
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if(other.gameObject.CompareTag("Player"))
+        foreach(KeyValuePair<EmoteType, GameObject> entry in emotes)
         {
-            StartCoroutine(AlertCo());
-            player = other.gameObject;
+            entry.Value.SetActive(false);
         }
     }
 
-    private IEnumerator AlertCo()
+    public void OnPlayerEnterPursuitRadius(Collider2D other)
     {
-        alertIcon.SetActive(true);
+        if (target == null)
+        {
+            target = other.gameObject.transform;
+        }
+
+        if (other && enemyMovement.CurrentState != NPCMovement.NPCMoveState.Chase)
+        {
+            Vector2 directionToCheck = target.position - transform.position;
+            float rangeToCheck = 5f;
+
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, directionToCheck, rangeToCheck, layerToCheck);
+            Debug.DrawRay(transform.position, directionToCheck, Color.red);
+            if (hit.collider && hit.collider.CompareTag("PlayerInteract"))
+            {
+
+                Debug.DrawRay(transform.position, directionToCheck, Color.yellow);
+                StartCoroutine(DisplayEmote(EmoteType.Exclamation));
+                enemyMovement.SwitchToChaseState(target);
+            }
+        }
+    }
+
+    public void OnPlayerExitPursuitRadius(Collider2D other)
+    {
+        if (enemyMovement.CurrentState == NPCMovement.NPCMoveState.Chase)
+        {
+            Debug.Log("end chase");
+            StartCoroutine(DisplayEmote(EmoteType.Question));
+            enemyMovement.ReturnToStartPoint();
+        }
+    }
+
+    public void OnPlayerEnterBattleTriggerRadius()
+    {
+        Debug.Log("trigger battle");
+        SceneSetupManagerOverworld sceneSetupManager = FindObjectOfType<SceneSetupManagerOverworld>();
+        StartCoroutine(sceneSetupManager.OnEnterBattle(enemyContainer));
+    }
+
+    private IEnumerator DisplayEmote(EmoteType emoteType)
+    {
+        emotes[emoteType].SetActive(true);
         yield return new WaitForSeconds(1f);
-        alertIcon.SetActive(false);
+        emotes[emoteType].SetActive(false);
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    public void DisableInteractions()
     {
-        if(other.gameObject.CompareTag("Player"))
-        {
-            player = null;
-        }
+        canInteract = false;
+        spriteAnimator.SetTrigger("FlashOn");
+
+        enemyMovement.LockMovement(true);
+        battleTrigger.SetActive(false);
+        chaseTrigger.SetActive(false);
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
+    public void EnableInteractions()
     {
-        if(other.gameObject.CompareTag("Player"))
-        {
-            Debug.Log("Battle Start");
-            overworldData.lockInput = true;
-            StartCoroutine(LoadBattleCo());
-        }
+        canInteract = true;
+        spriteAnimator.SetTrigger("FlashOff");
+
+        enemyMovement.LockMovement(false);
+        battleTrigger.SetActive(true);
+        chaseTrigger.SetActive(true);
     }
-
-    private IEnumerator LoadBattleCo()
-    {
-        // onScreenFadeOut.Raise();
-        SceneManager.LoadScene("SampleBattleScene");
-        yield return new WaitForSeconds(1f); 
-        Scene scene = SceneManager.GetSceneByName("SampleBattleScene");
-        SceneManager.SetActiveScene(scene);
-    }
-
-    // private void OnDrawGizmos()
-    // {
-    //     Handles.color = Color.blue;
-    //     Handles.DrawWireArc(transform.position, lookDirection, transform.position, visionAngle, visionRadius); 
-    // }
-
 }

@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d60841806187fe7448bdd835df63eadb, type: 3}
+  m_Name: EvadeAccessory
+  m_EditorClassIdentifier: 
+  <ItemName>k__BackingField: Evade Accessory
+  <EffectDescription>k__BackingField: Increases your evade rate by +7 percentage
+    points.
+  <ItemIcon>k__BackingField: {fileID: 0}
+  <CanSell>k__BackingField: 0
+  <SellValue>k__BackingField: 0
+  <CanDiscard>k__BackingField: 0
+  <EquipmentType>k__BackingField: 2
+  CharacterExclusive: 0
+  <ExclusiveCharacters>k__BackingField: 
+  <IntStatModifiers>k__BackingField:
+  - <IntStatType>k__BackingField: 9
+    <ModifierType>k__BackingField: 0
+    <Modifier>k__BackingField: 7
+  <FloatStatModifiers>k__BackingField: []
+  physicalResistance: 0
+  fireResistance: 0
+  iceResistance: 0
+  electricResistance: 0
+  darkResistance: 0

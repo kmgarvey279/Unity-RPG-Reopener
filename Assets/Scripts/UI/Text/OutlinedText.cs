@@ -5,10 +5,10 @@ using TMPro;
 
 public class OutlinedText : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI mainText;
-    [SerializeField] private List<TextMeshProUGUI> outline = new List<TextMeshProUGUI>();
+    [SerializeField] protected TextMeshProUGUI mainText;
+    [SerializeField] protected List<TextMeshProUGUI> outline = new List<TextMeshProUGUI>();
 
-    public void SetText(string newText)
+    public virtual void SetText(string newText)
     {
         mainText.text = newText;
         foreach(TextMeshProUGUI tmp in outline)

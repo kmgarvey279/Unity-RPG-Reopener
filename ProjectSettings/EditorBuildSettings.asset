@@ -14,6 +14,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SampleBattleScene.unity
     guid: a423675c5ba4bf34d8f46e7982d4c428
+  - enabled: 1
+    path: Assets/Scenes/SampleOverworld2.unity
+    guid: 27e1fbce4350efd41933bcd5d6592038
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 5c2fcdbc9b88e9a40bfdcd851b7efb36,
       type: 2}

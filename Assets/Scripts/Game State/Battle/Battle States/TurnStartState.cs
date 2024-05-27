@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using StateMachineNamespace;
+using JetBrains.Annotations;
 
 [System.Serializable]
 public class TurnStartState : BattleState
@@ -9,8 +10,9 @@ public class TurnStartState : BattleState
     [SerializeField] private BattlePartyHUD battlePartyHUD;
     [SerializeField] private BattleEventQueue battleEventQueue;
     //cache wait for seconds
-    private WaitForSeconds waitZeroPointTwoFive = new WaitForSeconds(0.25f);
+    private WaitForSeconds wait025 = new WaitForSeconds(0.25f);
     private WaitForSeconds waitZeroPointFive = new WaitForSeconds(0.5f);
+    [SerializeField] private Action wait;
 
     public override void OnEnter()
     {
@@ -18,53 +20,6 @@ public class TurnStartState : BattleState
         base.OnEnter();
         StartCoroutine(StartTurnCo());
     }
-
-    public override void StateUpdate()
-    {
-        if (Input.GetButtonDown("QueueIntervention1"))
-        {
-            if (battleManager.InterventionCheck(0))
-            {
-                if (Input.GetButton("Shift"))
-                {
-                    battleTimeline.RemoveLastIntervention(battleManager.PlayableCombatants[0]);
-                }
-                else
-                {
-                    battleTimeline.AddInterventionToQueue(battleManager.PlayableCombatants[0]);
-                }
-            }
-        }
-        else if (Input.GetButtonDown("QueueIntervention2"))
-        {
-            if (battleManager.InterventionCheck(1))
-            {
-                if (Input.GetButton("Shift"))
-                {
-                    battleTimeline.RemoveLastIntervention(battleManager.PlayableCombatants[1]);
-                }
-                else
-                {
-                    battleTimeline.AddInterventionToQueue(battleManager.PlayableCombatants[1]);
-                }
-            }
-        }
-        else if (Input.GetButtonDown("QueueIntervention3"))
-        {
-            if (battleManager.InterventionCheck(2))
-            {
-                if (Input.GetButton("Shift"))
-                {
-                    battleTimeline.RemoveLastIntervention(battleManager.PlayableCombatants[2]);
-                }
-                else
-                {
-                    battleTimeline.AddInterventionToQueue(battleManager.PlayableCombatants[2]);
-                }
-            }
-        }
-    }
-
 
     public override void StateFixedUpdate()
     {
@@ -78,18 +33,39 @@ public class TurnStartState : BattleState
 
     private IEnumerator StartTurnCo()
     {
-        yield return waitZeroPointTwoFive;
-        //update chain value
-        //battleManager.ChainCheck();
-        //add turn start effects to queue
-        yield return StartCoroutine(battleTimeline.CurrentTurn.Actor.OnTurnStartCo());
-        //execute any turn start effects
-        yield return StartCoroutine(battleEventQueue.ExhaustQueueCo());
-        yield return waitZeroPointTwoFive;
+        yield return wait025;
 
-        if (battleTimeline.CurrentTurn.Actor is PlayableCombatant)
+        //add turn start effects to queue + trigger
+        battleTimeline.CurrentTurn.Actor.OnTurnStart();
+        yield return StartCoroutine(battleEventQueue.ExhaustQueueCo());
+
+        //display any timeline changes
+        battleTimeline.DisplayTurnOrder();
+
+        //clear status effects
+        yield return StartCoroutine(battleTimeline.CurrentTurn.Actor.ClearExpiredStatusEffectsCo(TurnEventType.OnStart));
+        
+        //refresh guard
+        //battleTimeline.CurrentTurn.Actor.RefreshGuard();
+        
+        //resolve health changes
+        yield return StartCoroutine(battleManager.ResolveBarChanges());
+
+        yield return wait025;
+
+        battleManager.HideHealthBars();
+
+        //if actor cannot act
+        if (battleTimeline.CurrentTurn.Actor.CheckBool(CombatantBool.CannotActOnTurn))
         {
-            stateMachine.ChangeState((int)BattleStateType.Menu);
+            battleTimeline.CurrentTurn.SetAction(wait);
+            battleTimeline.CurrentTurn.SetTargets(new List<Combatant>() { battleTimeline.CurrentTurn.Actor });
+            stateMachine.ChangeState((int)BattleStateType.Execute);
+        }
+        //otherwise, act like normal
+        else if (battleTimeline.CurrentTurn.Actor is PlayableCombatant)
+        {
+            stateMachine.ChangeState((int)BattleStateType.PlayerTurn);
         }
         else if (battleTimeline.CurrentTurn.Actor is EnemyCombatant)
         {

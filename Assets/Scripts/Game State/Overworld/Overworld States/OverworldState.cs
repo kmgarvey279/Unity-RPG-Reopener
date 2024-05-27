@@ -5,21 +5,26 @@ using StateMachineNamespace;
 
 public enum OverworldStateType
 {
+    LoadArea,
     FreeMove,
     Cutscene,
-    Menu,
-    Dialogue
+    Paused,
+    Dialogue,
+    EnterBattle,
+    ExitBattle
 }
 
 public class OverworldState : StateMachine.State
 {
     [SerializeField] protected OverworldStateType overworldStateType;
+    protected OverworldManager overworldManager;
     [SerializeField] protected OverworldData overworldData;
     [Header("Signal Listeners")]
     public List<MonoBehaviour> signalListeners;
 
     public void Awake()
     {
+        overworldManager = GetComponentInParent<OverworldManager>();
         //state machine
         stateMachine = GetComponentInParent<StateMachine>(); 
         id = (int)overworldStateType;  

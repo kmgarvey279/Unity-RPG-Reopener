@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6be137f697e5804428fd4db0b1bdf0ac, type: 3}
+  m_Name: BurnStatus
+  m_EditorClassIdentifier: 
+  <DisplayIcon>k__BackingField: 1
+  <Icon>k__BackingField: {fileID: 21300000, guid: 501a15d11e9f1de4aa0735efec0329a7,
+    type: 3}
+  <EffectName>k__BackingField: Burn
+  <EffectDescription>k__BackingField: 'Deals damage at the end of the target''s next
+    turn.
+
+
+    This status can be applied multiple times, but its total damage cannot
+    exceed 80% of the target''s maximum HP.  '
+  <AdditionalDescriptions>k__BackingField:
+  - '<color="orange">Fire</color> attacks are <color="white>50%</color> more likely
+    to apply additional burns. '
+  - '<color="lightblue">Ice</color> attacks will remove this status, immediatly deal
+    damage equal to 75% of the burn''s potency, reduce the target''s Guard by 1,
+    and apply Damp. '
+  <StatusEffectType>k__BackingField: 1
+  <AnimatorOverride>k__BackingField: 0
+  <CustomAnimatorOverride>k__BackingField: 
+  TargetSpeedChange: 0
+  <PersistentVFX>k__BackingField: {fileID: 9080666042281402454, guid: 84b59e64c89e997459885927e95ae0cd,
+    type: 3}
+  <PersistentVFXPosition>k__BackingField: 0
+  <PersistentTileVFX>k__BackingField: {fileID: 0}
+  <SetTranparent>k__BackingField: 0
+  <HasDuration>k__BackingField: 1
+  <DurationToApply>k__BackingField: 1
+  <DurationMax>k__BackingField: 1
+  <CanIncreaseDuration>k__BackingField: 1
+  <CanDecreaseDuration>k__BackingField: 1
+  <HasStacks>k__BackingField: 0
+  <StacksToApply>k__BackingField: 1
+  <StacksMax>k__BackingField: 1
+  <CanIncreaseStacks>k__BackingField: 1
+  <RemovalCheckTurnEventType>k__BackingField: 1
+  <CanPurge>k__BackingField: 1
+  <DoNotRemoveOnKO>k__BackingField: 0
+  <ApplyPotencyAsBreach>k__BackingField: 0
+  <PotencyTurnMultiplier>k__BackingField: 1
+  CarryoverPotencyMultiplier: 0.75
+  <TriggerTurnEventType>k__BackingField: 1
+  TurnEventTriggers:
+  - {fileID: 11400000, guid: db7e3cd6fc9384c4bad600e9209c1fd0, type: 2}
+  <TurnModifier>k__BackingField: 0
+  <OverrideAttack>k__BackingField: {fileID: 0}
+  <BoolsToModify>k__BackingField: 
+  <IntStatModifiers>k__BackingField: []
+  <FloatStatModifiers>k__BackingField: []
+  <UniversalModifiers>k__BackingField: []
+  <ActionModifiers>k__BackingField: []
+  <PreemptiveBattleEventTriggers>k__BackingField: []
+  <BattleEventTriggers>k__BackingField: []
+  <EffectsToRemove>k__BackingField:
+  - {fileID: 11400000, guid: db2225193ac66c548bf234612062ca0a, type: 2}

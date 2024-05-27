@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7b120134dfe3ff49bbedaed78e48971, type: 3}
+  m_Name: ShadStaticInfo
+  m_EditorClassIdentifier: 
+  <CharacterName>k__BackingField: Shad
+  <TurnIcon>k__BackingField: {fileID: 21300000, guid: 82fbab012f3520e4aa0acee694f6d48c,
+    type: 3}
+  <Traits>k__BackingField: []
+  <PlayableCharacterID>k__BackingField: 3
+  <CharacterColor>k__BackingField: {r: 0.052658107, g: 0.23584908, b: 0.09646466,
+    a: 1}
+  <Attack>k__BackingField: {fileID: 11400000, guid: 3ea64f3f664001d448226a78e134908a,
+    type: 2}
+  <Defend>k__BackingField: {fileID: 11400000, guid: 4e9b23d31e4b8b640be03e7be638ee44,
+    type: 2}
+  <Skills>k__BackingField: []

@@ -13,7 +13,10 @@ public class FreeMoveState : OverworldState
 
     public override void StateUpdate()
     {
-
+        //if (Input.GetButtonDown("Pause"))
+        //{
+        //    stateMachine.ChangeState((int)OverworldStateType.Paused);
+        //}
     }
 
     public override void StateFixedUpdate()

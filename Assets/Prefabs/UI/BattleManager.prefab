@@ -408,6 +408,10 @@ MonoBehaviour:
   gridManager: {fileID: 0}
   battleTimeline: {fileID: 0}
   signalListeners: []
+  onScreenFadeIn: {fileID: 11400000, guid: 596713b2036a5774c9548dd438b8c0a7, type: 2}
+  onInterventionStart: {fileID: 11400000, guid: c421700ae55ccd74a9e346123d336182,
+    type: 2}
+  onInterventionEnd: {fileID: 11400000, guid: 416636233610cc54aa03b5542d9d20bc, type: 2}
 --- !u!1 &1255800023
 GameObject:
   m_ObjectHideFlags: 0
@@ -502,10 +506,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1360154139}
   - component: {fileID: 1360154140}
-  - component: {fileID: 504466050}
-  - component: {fileID: 504466051}
-  - component: {fileID: 504466052}
-  - component: {fileID: 504466053}
   m_Layer: 0
   m_Name: Execute
   m_TagString: Untagged
@@ -545,127 +545,24 @@ MonoBehaviour:
   battleStateType: 4
   gridManager: {fileID: 0}
   battleTimeline: {fileID: 0}
-  signalListeners:
-  - {fileID: 504466051}
-  - {fileID: 504466052}
-  - {fileID: 504466050}
+  signalListeners: []
+  playerData: {fileID: 11400000, guid: 839fb81b0c282454397d2057ecda21e6, type: 2}
   actionPopup: {fileID: 0}
   onInterventionEnd: {fileID: 11400000, guid: 416636233610cc54aa03b5542d9d20bc, type: 2}
   inventory: {fileID: 11400000, guid: a51431b0d76038d40940c59dec71a7fb, type: 2}
+  actionEventToExecute:
+    <Action>k__BackingField: {fileID: 0}
+    <Actor>k__BackingField: {fileID: 0}
+    <ActionSubevents>k__BackingField: []
+  universalTriggers:
+  - {fileID: 11400000, guid: 8981c87783af69641b85d58d339bfe43, type: 2}
+  - {fileID: 11400000, guid: 4a410bf311df8324cbf00d4c4eb5265c, type: 2}
+  - {fileID: 11400000, guid: 554551c0ae4da0e45b6239763403d54e, type: 2}
+  - {fileID: 11400000, guid: 8779a8ed683832941b80666344aa6001, type: 2}
+  - {fileID: 11400000, guid: 2ac917e3ac235f249b1169c3aff0ae77, type: 2}
+  - {fileID: 11400000, guid: 3ea48ead94ce0034887f1c33e9c3b28e, type: 2}
+  - {fileID: 11400000, guid: a16d401b5e12b1d4f90e80c6712c0b88, type: 2}
   battleEventQueue: {fileID: 451647476}
-  castingStatus: {fileID: 11400000, guid: 2aa60d4bb6c5db74abb6cfaad23bc92e, type: 2}
---- !u!114 &504466050
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1360154138}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 272a739046db15849909a4cabd8041cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  signalSender: {fileID: 11400000, guid: 1a33abae39a8b9c4793ef971f834a175, type: 2}
-  signalEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1360154138}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &504466051
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1360154138}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: faede1329d31fda408276a04fe601429, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  signalSender: {fileID: 11400000, guid: 5de10394159d98e4587cff57b6041964, type: 2}
-  signalEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1360154140}
-        m_TargetAssemblyTypeName: ExecuteActionState, Assembly-CSharp
-        m_MethodName: OnProjectileEnd
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &504466052
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1360154138}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 272a739046db15849909a4cabd8041cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  signalSender: {fileID: 11400000, guid: 28cbdabb858de644f939cf0318a8a708, type: 2}
-  signalEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1360154140}
-        m_TargetAssemblyTypeName: ExecuteActionState, Assembly-CSharp
-        m_MethodName: OnMoveEnd
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &504466053
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1360154138}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 272a739046db15849909a4cabd8041cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  signalSender: {fileID: 11400000, guid: 1a33abae39a8b9c4793ef971f834a175, type: 2}
-  signalEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1360154140}
-        m_TargetAssemblyTypeName: ExecuteActionState, Assembly-CSharp
-        m_MethodName: OnKnockbackEnd
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &1385212920
 GameObject:
   m_ObjectHideFlags: 0
@@ -710,7 +607,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1408779867}
   m_Layer: 0
-  m_Name: Linked Playable Combants
+  m_Name: Reserve Playable Combants
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -773,7 +670,7 @@ GameObject:
   - component: {fileID: 1522742266}
   - component: {fileID: 1522742267}
   m_Layer: 0
-  m_Name: Menu
+  m_Name: Player Turn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -813,8 +710,8 @@ MonoBehaviour:
   battleTimeline: {fileID: 0}
   signalListeners: []
   commandMenuMain: {fileID: 0}
-  battleLog: {fileID: 0}
   onCameraFollow: {fileID: 11400000, guid: 1b526e957c88b6e40aa2172d13ee6bf3, type: 2}
+  commandMenuManager: {fileID: 0}
 --- !u!1 &1600802480
 GameObject:
   m_ObjectHideFlags: 0
@@ -827,7 +724,7 @@ GameObject:
   - component: {fileID: 1600802482}
   - component: {fileID: 645807481}
   m_Layer: 0
-  m_Name: TargetSelect
+  m_Name: Target Select
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -867,8 +764,12 @@ MonoBehaviour:
   battleTimeline: {fileID: 0}
   signalListeners:
   - {fileID: 645807481}
+  commandMenuManager: {fileID: 0}
+  playerData: {fileID: 11400000, guid: 839fb81b0c282454397d2057ecda21e6, type: 2}
   targetInfo: {fileID: 0}
   onCameraUnfollow: {fileID: 11400000, guid: 316cff9380dbcd94b9e8e92f4ea2ed55, type: 2}
+  coldStatus: {fileID: 11400000, guid: 91c605729b44b8a428fc1799f417f752, type: 2}
+  freezeStatus: {fileID: 11400000, guid: be66718aeb0de0341bf86236bf942f93, type: 2}
 --- !u!114 &645807481
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -944,8 +845,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7812e0711bdcbfc479cf4d1d6fb6ea11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inventory: {fileID: 11400000, guid: a51431b0d76038d40940c59dec71a7fb, type: 2}
-  partyData: {fileID: 11400000, guid: 0056b2932c628e7458ae67b746239176, type: 2}
+  playerData: {fileID: 11400000, guid: 839fb81b0c282454397d2057ecda21e6, type: 2}
   enemyPartyData: {fileID: 11400000, guid: ca3cd966c2e391d4a93bb7fba9bd8266, type: 2}
   claire: {fileID: 7887917972336964174, guid: 61f78bef9429dc1469d0edf2ca4ed0d5, type: 3}
   mutiny: {fileID: 7887917972336964174, guid: 61f78bef9429dc1469d0edf2ca4ed0d5, type: 3}
@@ -956,6 +856,7 @@ MonoBehaviour:
   enemyPrefab: {fileID: 193216028098152511, guid: 4e96c45283b05614e8cf967d906da496,
     type: 3}
   playerParent: {fileID: 990743667}
+  reservePlayerParent: {fileID: 1408779866}
   enemyParent: {fileID: 1421601336}
   mainCamera: {fileID: 0}
   battlePartyHUD: {fileID: 0}
@@ -963,10 +864,9 @@ MonoBehaviour:
   battleTimeline: {fileID: 0}
   battleEventQueue: {fileID: 451647476}
   stateMachine: {fileID: 692242123}
-  onScreenFadeIn: {fileID: 11400000, guid: 596713b2036a5774c9548dd438b8c0a7, type: 2}
-  onScreenFadeOut: {fileID: 11400000, guid: bae10d15d5deb1f4e8c8344536085e59, type: 2}
   onInterventionEnd: {fileID: 11400000, guid: 416636233610cc54aa03b5542d9d20bc, type: 2}
   <PlayableCombatants>k__BackingField: []
+  <ReservePlayableCombatants>k__BackingField: []
   <EnemyCombatants>k__BackingField: []
 --- !u!1 &4929225038856883274
 GameObject:
@@ -1122,3 +1022,4 @@ MonoBehaviour:
   signalListeners: []
   battlePartyHUD: {fileID: 0}
   battleEventQueue: {fileID: 451647476}
+  wait: {fileID: 11400000, guid: 87818ae46e5748c45afe5f916dd34148, type: 2}

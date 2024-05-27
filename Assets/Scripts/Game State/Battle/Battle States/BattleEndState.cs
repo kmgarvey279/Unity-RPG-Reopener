@@ -9,7 +9,7 @@ public class BattleEndState : BattleState
     public override void OnEnter()
     {
         base.OnEnter();
-        battleManager.LockInterventionTriggerIcons(true);
+        battleManager.ToggleCanQueueInterventions(false);
     }
 
     public override void StateUpdate()

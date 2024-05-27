@@ -5,7 +5,7 @@ using TMPro;
 
 public class StatInfo : MonoBehaviour
 {
-    [SerializeField] private StatType statType;
+    [SerializeField] private IntStatType statType;
     private CharacterInfoUI characterInfoUI;
     private int stat;
     [SerializeField] private TextMeshProUGUI valueText;
@@ -17,7 +17,7 @@ public class StatInfo : MonoBehaviour
     private void Start()
     {
         characterInfoUI = GetComponentInParent<CharacterInfoUI>();
-        stat = characterInfoUI.playableCharacterInfo.Stats[statType].CurrentValue;
+        stat = characterInfoUI.playableCharacterInfo.IntStats[statType].CurrentValue;
         valueText.text = stat.ToString("n0");
     }
 

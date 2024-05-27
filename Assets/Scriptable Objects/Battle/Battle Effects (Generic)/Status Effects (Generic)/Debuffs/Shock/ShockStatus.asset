@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6be137f697e5804428fd4db0b1bdf0ac, type: 3}
+  m_Name: ShockStatus
+  m_EditorClassIdentifier: 
+  <DisplayOnTargetInfo>k__BackingField: 1
+  <Icon>k__BackingField: {fileID: 0}
+  <EffectName>k__BackingField: Shock
+  <EffectDescriptions>k__BackingField:
+  - Delays the target by <color="white">-25%</color>.
+  - The target cannot <color="white">counter</color>.
+  <StatusEffectType>k__BackingField: 0
+  <CanRemove>k__BackingField: 1
+  <RemoveOnKO>k__BackingField: 1
+  <AnimatorOverride>k__BackingField: 0
+  <CustomAnimatorOverride>k__BackingField: 
+  TargetSpeedChange: 0
+  <PersistentVFX>k__BackingField: {fileID: 0}
+  <SetTranparent>k__BackingField: 0
+  <StatusCounterType>k__BackingField: 0
+  <CounterMax>k__BackingField: 4
+  <CanRefresh>k__BackingField: 0
+  <HealthEffectType>k__BackingField: 2
+  <Power>k__BackingField: 1
+  <ActorStat>k__BackingField: 1
+  <PotencyTurnMultiplier>k__BackingField: 1
+  <TurnEventType>k__BackingField: 1
+  <TurnTriggerRate>k__BackingField: 1
+  TurnEffectContainers:
+  - <TriggerableEffect>k__BackingField: {fileID: 11400000, guid: f3f8bd236eaab3b4692f5aab1b232f46,
+      type: 2}
+    <Value>k__BackingField: 0
+    <UseInstanceValue>k__BackingField: 1
+    <UseTargetOverride>k__BackingField: 0
+    <TargetOverride>k__BackingField: 0
+    <PickRandomTarget>k__BackingField: 0
+    <ActionAnimations>k__BackingField:
+    - <BattleAnimatorTrigger>k__BackingField: 6
+      <CustomAnimatorTrigger>k__BackingField: 
+      <ChangeActorOpacity>k__BackingField: 0
+      <NewActorOpacity>k__BackingField: 0
+      <VFXPrefab>k__BackingField: {fileID: 6921752281566512423, guid: 94b6db2e48f00a1498279f0f70275aed,
+        type: 3}
+      <BattlefieldSpawnPosition>k__BackingField: 0
+      <CombatantSpawnPosition>k__BackingField: 0
+      <BindVFXToCombatant>k__BackingField: 0
+      <SpawnPositionOffset>k__BackingField: {x: 0, y: 0}
+      <SpawnForEachTarget>k__BackingField: 0
+      <IsProjectile>k__BackingField: 0
+      <OnlyPlayOnXHit>k__BackingField: 0
+      <XHit>k__BackingField: 0
+      <Delay>k__BackingField: 0
+      <Duration>k__BackingField: 0.5
+  - <TriggerableEffect>k__BackingField: {fileID: 11400000, guid: 655820f6b6141a946b5840a098cc88ae,
+      type: 2}
+    <Value>k__BackingField: 0.3
+    <UseInstanceValue>k__BackingField: 0
+    <UseTargetOverride>k__BackingField: 0
+    <TargetOverride>k__BackingField: 0
+    <PickRandomTarget>k__BackingField: 0
+    <ActionAnimations>k__BackingField: []
+  <TurnModifier>k__BackingField: 0
+  <ApplyModifierToNextTurnOnly>k__BackingField: 0
+  <SubtractOnExternalRemoval>k__BackingField: 0
+  <BoolsToModify>k__BackingField: 16000000
+  <IntStatModifiers>k__BackingField: []
+  <FloatStatModifiers>k__BackingField: []
+  <ActionModifiers>k__BackingField: []
+  <TriggerableEffectContainers>k__BackingField: []
+  <EffectsToRemove>k__BackingField: []

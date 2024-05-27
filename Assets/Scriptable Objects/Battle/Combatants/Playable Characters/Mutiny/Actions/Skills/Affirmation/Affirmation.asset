@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d626c53d9b643cd449cf8f33030a213e, type: 3}
+  m_Name: Affirmation
+  m_EditorClassIdentifier: 
+  <ActionName>k__BackingField: Affirmation
+  <ActionType>k__BackingField: 1
+  <Icon>k__BackingField: {fileID: 21300000, guid: e7fca1c559ab0504eb64ebea5dbbf944,
+    type: 3}
+  <Description>k__BackingField: Restores a large amount of HP to one party member.
+  <ActorConditionalModifier>k__BackingField:
+    <TurnModifier>k__BackingField: 0
+    <ApplyToNextTurnOnly>k__BackingField: 0
+    modifierConditions: []
+  <TargetConditionalModifier>k__BackingField:
+    <TurnModifier>k__BackingField: 0
+    <ApplyToNextTurnOnly>k__BackingField: 0
+    modifierConditions: []
+  <MPCost>k__BackingField: 20
+  <ConsumeAllMP>k__BackingField: 0
+  <HPPercentCost>k__BackingField: 0
+  <HitCount>k__BackingField: 1
+  <TargetingType>k__BackingField: 1
+  <AOEType>k__BackingField: 0
+  <IsMelee>k__BackingField: 0
+  <IsBackAttack>k__BackingField: 0
+  <UseConditions>k__BackingField: []
+  ActionModifiers: []
+  CustomActionModifiers: []
+  <BattleEventTriggers>k__BackingField: []
+  <StatusEffectTags>k__BackingField: []
+  <ExecutePosition>k__BackingField: 0
+  <ActionAnimations>k__BackingField:
+  - <BattleAnimatorTrigger>k__BackingField: 5
+    <CustomAnimatorTrigger>k__BackingField: 
+    <ChangeActorOpacity>k__BackingField: 0
+    <NewActorOpacity>k__BackingField: 0
+    <VFXPrefab>k__BackingField: {fileID: 7632167461649959297, guid: caa36e580427ad34bb77d465bcc6065f,
+      type: 3}
+    <BattlefieldSpawnPosition>k__BackingField: 0
+    <CombatantSpawnPosition>k__BackingField: 0
+    <BindVFXToCombatant>k__BackingField: 1
+    <SpawnPositionOffset>k__BackingField: {x: 0, y: 0}
+    <SpawnForEachTarget>k__BackingField: 1
+    <IsProjectile>k__BackingField: 0
+    <ReverseProjectile>k__BackingField: 0
+    <AnimationTriggerFrequency>k__BackingField: 0
+    <XHit>k__BackingField: 0
+    <Delay>k__BackingField: 0
+    <Duration>k__BackingField: 1
+  <Power>k__BackingField: 1.8

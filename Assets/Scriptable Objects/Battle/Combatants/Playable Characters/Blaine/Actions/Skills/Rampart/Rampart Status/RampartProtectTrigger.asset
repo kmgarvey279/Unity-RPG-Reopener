@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3576bcfef2f6d5244b9b59dea174fc93, type: 3}
+  m_Name: RampartProtectTrigger
+  m_EditorClassIdentifier: 
+  userTriggerConditions: []
+  actionTriggerConditions:
+  - <Conditional>k__BackingField: 0
+    <BattleConditionCombatant>k__BackingField: 0
+    isNot: 0
+    battleCondition: {fileID: 11400000, guid: 80404cf801d90074fb699a612c772299, type: 2}
+    value: 0
+  triggerRate: 1
+  <EventName>k__BackingField: Rampart
+  <TriggerableEffectType>k__BackingField: 5
+  <TriggerableEffectContainers>k__BackingField: []
+  ActionEventModifiers:
+  - {fileID: 11400000, guid: 8b3d8702cada0be44b7fc3279fc85229, type: 2}
+  IsProtect: 1
+  ProtectPriority: 1
+  <PreemptiveTriggerCombatantType>k__BackingField: 1
+  <PreemptiveTriggerTargetingType>k__BackingField: 2
+  <ActionAnimations>k__BackingField:
+  - <BattleAnimatorTrigger>k__BackingField: 7
+    <CustomAnimatorTrigger>k__BackingField: 
+    <ChangeActorOpacity>k__BackingField: 0
+    <NewActorOpacity>k__BackingField: 0
+    <VFXPrefab>k__BackingField: {fileID: 0}
+    <BattlefieldSpawnPosition>k__BackingField: 2
+    <CombatantSpawnPosition>k__BackingField: 0
+    <BindVFXToCombatant>k__BackingField: 0
+    <SpawnPositionOffset>k__BackingField: {x: 0, y: 0}
+    <SpawnForEachTarget>k__BackingField: 0
+    <IsProjectile>k__BackingField: 0
+    <ReverseProjectile>k__BackingField: 0
+    <AnimationTriggerFrequency>k__BackingField: 0
+    <XHit>k__BackingField: 0
+    <Delay>k__BackingField: 0
+    <Duration>k__BackingField: 1
+  <ExecutePosition>k__BackingField: 3

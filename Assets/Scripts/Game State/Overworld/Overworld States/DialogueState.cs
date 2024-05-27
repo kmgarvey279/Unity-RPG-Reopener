@@ -6,19 +6,21 @@ using StateMachineNamespace;
 [System.Serializable]
 public class DialogueState : OverworldState
 {
-    [SerializeField] private TextBox textBox;
+    [SerializeField] private DialogueBox dialogueBox;
+    [SerializeField] private SignalSender onPauseStart;
+    [SerializeField] private SignalSender onPauseEnd;
 
     public override void OnEnter()
     {
         base.OnEnter();
-        overworldData.lockInput = true;
+        overworldManager.PauseStart();
     }
 
     public override void StateUpdate()
     {
-        if(Input.GetButtonDown("Select"))
+        if (Input.GetButtonDown("Select"))
         {
-            textBox.AdvanceText();
+            dialogueBox.AdvanceText();
         }
     }
 
@@ -30,19 +32,6 @@ public class DialogueState : OverworldState
     public override void OnExit()
     {
         base.OnExit();
-        overworldData.lockInput = false;
-        StartCoroutine(DialogueTriggerCooldown());
-    }
-
-    public void OnUnlockInput()
-    {
-        stateMachine.ChangeState((int)OverworldStateType.FreeMove);
-    }
-
-    private IEnumerator DialogueTriggerCooldown()
-    {
-        overworldData.interactTriggerCooldown = true;
-        yield return new WaitForSeconds(0.5f);
-        overworldData.interactTriggerCooldown = false;
+        overworldManager.PauseEnd();
     }
 }

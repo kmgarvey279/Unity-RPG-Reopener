@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6be137f697e5804428fd4db0b1bdf0ac, type: 3}
+  m_Name: OpticalSlashStatus
+  m_EditorClassIdentifier: 
+  <DisplayIcon>k__BackingField: 1
+  <Icon>k__BackingField: {fileID: 21300000, guid: f3369c94eadd23143b93f6b09595b936,
+    type: 3}
+  <EffectName>k__BackingField: Optical Slash
+  <EffectDescription>k__BackingField: Decreases the hit % of this combatant's next
+    attack by 15%.
+  <AdditionalDescriptions>k__BackingField: []
+  <StatusEffectType>k__BackingField: 1
+  <AnimatorOverride>k__BackingField: 0
+  <CustomAnimatorOverride>k__BackingField: 
+  TargetSpeedChange: 0
+  <PersistentVFX>k__BackingField: {fileID: 0}
+  <PersistentVFXPosition>k__BackingField: 0
+  <PersistentTileVFX>k__BackingField: {fileID: 0}
+  <SetTranparent>k__BackingField: 0
+  <HasDuration>k__BackingField: 0
+  <DurationToApply>k__BackingField: 1
+  <DurationMax>k__BackingField: 1
+  <CanIncreaseDuration>k__BackingField: 0
+  <CanDecreaseDuration>k__BackingField: 0
+  <HasStacks>k__BackingField: 0
+  <StacksToApply>k__BackingField: 1
+  <StacksMax>k__BackingField: 1
+  <CanIncreaseStacks>k__BackingField: 0
+  <RemovalCheckTurnEventType>k__BackingField: 0
+  <CanPurge>k__BackingField: 0
+  <DoNotRemoveOnKO>k__BackingField: 0
+  <ApplyPotencyAsBreach>k__BackingField: 0
+  <PotencyTurnMultiplier>k__BackingField: 1
+  CarryoverPotencyMultiplier: 0
+  <TriggerTurnEventType>k__BackingField: 0
+  TurnEventTriggers: []
+  <TurnModifier>k__BackingField: 0
+  <OverrideAttack>k__BackingField: {fileID: 0}
+  <BoolsToModify>k__BackingField: 
+  <IntStatModifiers>k__BackingField: []
+  <FloatStatModifiers>k__BackingField: []
+  <UniversalModifiers>k__BackingField: []
+  <ActionModifiers>k__BackingField:
+  - <BattleEventType>k__BackingField: 0
+    <ActionModifierType>k__BackingField: 2
+    modifierType: 1
+    modifierValue: 0.75
+    conditionList:
+    - <Conditional>k__BackingField: 0
+      <BattleConditionCombatant>k__BackingField: 0
+      isNot: 0
+      battleCondition: {fileID: 11400000, guid: de35d898a6ac5b84bb6b2f8cdf102b02,
+        type: 2}
+      value: 0
+  <PreemptiveBattleEventTriggers>k__BackingField: []
+  <BattleEventTriggers>k__BackingField:
+  - {fileID: 11400000, guid: f3ee9de979f970d458f12165e6b1f071, type: 2}
+  <EffectsToRemove>k__BackingField: []

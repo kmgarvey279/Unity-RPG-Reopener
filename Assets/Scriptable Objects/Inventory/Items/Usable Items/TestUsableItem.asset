@@ -12,35 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 745030f2470b7f24999d8ce79e770542, type: 3}
   m_Name: TestUsableItem
   m_EditorClassIdentifier: 
-  itemType: 1
-  itemId: TestItem1
-  itemName: Test Item
-  itemDescription: 'It''s a test item! Use it to recover 25% of your HP. '
-  icon: {fileID: 0}
-  canSell: 0
-  sellValue: 0
-  canDiscard: 0
-  useInOverworld: 0
-  subEffectHealth: {fileID: 0}
-  subEffectMana: {fileID: 0}
-  useActionTemplate: {fileID: 0}
-  actionEffectsDamage: []
-  actionEffectsHeal:
-  - successRate: 100
-    conditionList: []
-    applyToSelf: 0
-    doPercentageAmount: 1
-    percentageAmount: 0.25
-    basePower: 0
-    baseCritRate: 0
-  actionEffectsAddStatus: []
-  actionEffectsRemoveStatus: []
-  actionEffectsTurnModifier: []
-  actionEffectsCustom: []
-  targetingType: 0
-  aoeType: 0
-  actionAnimations:
-  - animationSpawnPosition: 4
-    spawnForEachTarget: 0
-    effectPrefab: {fileID: 9080087516260223380, guid: d54f66c98898c7e42991b859b29c1c77,
-      type: 3}
+  <ItemName>k__BackingField: Test Usable Item 2
+  <Description>k__BackingField: It's an item...
+  <ItemIcon>k__BackingField: {fileID: 0}
+  <CanSell>k__BackingField: 0
+  <SellValue>k__BackingField: 0
+  <CanDiscard>k__BackingField: 0

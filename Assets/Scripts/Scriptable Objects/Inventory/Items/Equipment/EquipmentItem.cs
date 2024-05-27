@@ -9,28 +9,37 @@ public enum EquipmentType
     Accessory
 }
 
+[CreateAssetMenu(fileName = "New Equipment Item", menuName = "Inventory/Items/Equipment")]
 public class EquipmentItem : Item
 {
+    [field: SerializeField ] public EquipmentType EquipmentType { get; protected set; }
+    
+    [field: Header("Characters")]
+    [field: SerializeField] public bool CharacterExclusive;
+    [field: SerializeField] public List<PlayableCharacterID> ExclusiveCharacters { get; protected set; } = new List<PlayableCharacterID>();
+
+    [field: Header("Stats")]
+    [field: SerializeField] public List<IntStatModifier> IntStatModifiers { get; protected set; } = new List<IntStatModifier>();
+
     [Header("Elemental Resistances")]
+    [SerializeField] protected int slashResistance = 0;
+    [SerializeField] protected int strikeResistance = 0;
+    [SerializeField] protected int pierceResistance = 0;
     [SerializeField] protected int fireResistance = 0;
     [SerializeField] protected int iceResistance = 0;
     [SerializeField] protected int electricResistance = 0;
     [SerializeField] protected int darkResistance = 0;
+    public Dictionary<ElementalProperty, int> ResistanceModifiers { get; protected set; } = new Dictionary<ElementalProperty, int>();
 
-    [field: SerializeField] public int HPModifier { get; private set; }
-    [field: SerializeField] public int MPModifier { get; private set; }
-    [field: SerializeField] public EquipmentType EquipmentType { get; private set; }
-    [field: SerializeField] public bool CharacterExclusive { get; private set; }
-    [field: SerializeField] public List<PlayableCharacterID> ExclusiveCharacters { get; private set; }
-    [field: SerializeField] public List<StatModifier> StatModifiers { get; private set; } = new List<StatModifier>();
-    [field: SerializeField] public List<SecondaryStatModifier> SecondaryStatModifiers { get; protected set; } = new List<SecondaryStatModifier>();
-    public Dictionary<ElementalProperty, int> ResistanceModifiers { get; protected set; }
-    
-    public virtual void OnEnable()
+    public void OnEnable()
     {
-        //elemental resistance
+        ItemType = ItemType.Equipment;
+
         ResistanceModifiers = new Dictionary<ElementalProperty, int>();
         ResistanceModifiers.Add(ElementalProperty.None, 0);
+        ResistanceModifiers.Add(ElementalProperty.Slash, slashResistance);
+        ResistanceModifiers.Add(ElementalProperty.Strike, strikeResistance);
+        ResistanceModifiers.Add(ElementalProperty.Pierce, pierceResistance);
         ResistanceModifiers.Add(ElementalProperty.Fire, fireResistance);
         ResistanceModifiers.Add(ElementalProperty.Ice, iceResistance);
         ResistanceModifiers.Add(ElementalProperty.Electric, electricResistance);

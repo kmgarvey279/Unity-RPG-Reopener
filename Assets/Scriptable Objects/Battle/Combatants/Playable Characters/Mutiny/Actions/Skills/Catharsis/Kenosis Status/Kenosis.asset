@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6be137f697e5804428fd4db0b1bdf0ac, type: 3}
+  m_Name: Kenosis
+  m_EditorClassIdentifier: 
+  <DisplayIcon>k__BackingField: 1
+  <Icon>k__BackingField: {fileID: 0}
+  <EffectName>k__BackingField: 
+  <EffectDescription>k__BackingField: 'Doubles the amount of MP restored by your
+    standard attack. '
+  <AdditionalDescriptions>k__BackingField: []
+  <StatusEffectType>k__BackingField: 0
+  <AnimatorOverride>k__BackingField: 0
+  <CustomAnimatorOverride>k__BackingField: 
+  TargetSpeedChange: 0
+  <PersistentVFX>k__BackingField: {fileID: 0}
+  <PersistentVFXPosition>k__BackingField: 0
+  <PersistentTileVFX>k__BackingField: {fileID: 0}
+  <SetTranparent>k__BackingField: 0
+  <HasDuration>k__BackingField: 1
+  <DurationToApply>k__BackingField: 3
+  <DurationMax>k__BackingField: 3
+  <CanIncreaseDuration>k__BackingField: 1
+  <CanDecreaseDuration>k__BackingField: 0
+  <HasStacks>k__BackingField: 0
+  <StacksToApply>k__BackingField: 1
+  <StacksMax>k__BackingField: 1
+  <CanIncreaseStacks>k__BackingField: 0
+  <RemovalCheckTurnEventType>k__BackingField: 1
+  <CanPurge>k__BackingField: 0
+  <DoNotRemoveOnKO>k__BackingField: 0
+  <PotencyTurnMultiplier>k__BackingField: 1
+  <CanIncreasePotency>k__BackingField: 0
+  <TriggerTurnEventType>k__BackingField: 0
+  TurnEventTriggers: []
+  <TurnModifier>k__BackingField: 0
+  <BoolsToModify>k__BackingField: 
+  <UniversalModifiers>k__BackingField:
+  - <BattleEventType>k__BackingField: 0
+    <UniversalModifierType>k__BackingField: 2
+    <ModifierValue>k__BackingField: 2
+  <ActionModifiers>k__BackingField: []
+  <PreemptiveBattleEventTriggers>k__BackingField: []
+  <BattleEventTriggers>k__BackingField: []
+  <EffectsToRemove>k__BackingField: []

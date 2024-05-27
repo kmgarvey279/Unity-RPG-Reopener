@@ -17,12 +17,12 @@ public class SwapCombatantsState : BattleState
     {
         if (Input.GetButtonDown("Submit"))
         {
-            battleManager.SwapPlayableCombatants((PlayableCombatant)battleTimeline.CurrentTurn.Actor);
-            stateMachine.ChangeState((int)BattleStateType.Menu);
+            //battleManager.SwapPlayableCombatants((PlayableCombatant)battleTimeline.CurrentTurn.Actor);
+            stateMachine.ChangeState((int)BattleStateType.PlayerTurn);
         }
         else if (Input.GetButton("Cancel"))
         {
-            stateMachine.ChangeState((int)BattleStateType.Menu);
+            stateMachine.ChangeState((int)BattleStateType.PlayerTurn);
         }
     }
 

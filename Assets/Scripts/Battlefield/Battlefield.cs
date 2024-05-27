@@ -8,6 +8,7 @@ public class Battlefield : MonoBehaviour
     public CameraManager cameraManager;
     public GridManager gridManager;
     [SerializeField] private List<TilemapRenderer> spriteRenderers = new List<TilemapRenderer>();
+    [SerializeField] private GameObject filter;
     [SerializeField] private Material defaultMaterial;
     [SerializeField] private Material greyscaleMaterial;
 
@@ -19,7 +20,7 @@ public class Battlefield : MonoBehaviour
 
     public void StartTimeStop()
     {
-        foreach(TilemapRenderer tilemapRenderer in spriteRenderers)
+        foreach (TilemapRenderer tilemapRenderer in spriteRenderers)
         {
             tilemapRenderer.material = greyscaleMaterial;
         }

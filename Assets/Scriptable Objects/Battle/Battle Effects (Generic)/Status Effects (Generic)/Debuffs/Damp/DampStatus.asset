@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6be137f697e5804428fd4db0b1bdf0ac, type: 3}
+  m_Name: DampStatus
+  m_EditorClassIdentifier: 
+  <DisplayIcon>k__BackingField: 1
+  <Icon>k__BackingField: {fileID: 0}
+  <EffectName>k__BackingField: Damp
+  <EffectDescription>k__BackingField: 'The next electric attack deals +25% damage
+    and delays the target by -20%. '
+  <AdditionalDescriptions>k__BackingField: []
+  <StatusEffectType>k__BackingField: 1
+  <AnimatorOverride>k__BackingField: 0
+  <CustomAnimatorOverride>k__BackingField: 
+  TargetSpeedChange: 0
+  <PersistentVFX>k__BackingField: {fileID: 3803686903523112795, guid: 4c3651e5cf961f64e816c689f27c6632,
+    type: 3}
+  <PersistentVFXPosition>k__BackingField: 0
+  <PersistentTileVFX>k__BackingField: {fileID: 3803686903523112795, guid: 351f0d42635ce4749967db53e87e366a,
+    type: 3}
+  <SetTranparent>k__BackingField: 0
+  <StatusCounterType>k__BackingField: 0
+  <CounterStart>k__BackingField: 1
+  <CounterMax>k__BackingField: 1
+  <CanRefresh>k__BackingField: 1
+  <CanRemove>k__BackingField: 1
+  <DoNotRemoveOnKO>k__BackingField: 0
+  <RemoveOnTurnStart>k__BackingField: 1
+  <ApplyPotencyAsBreach>k__BackingField: 0
+  <PotencyTurnMultiplier>k__BackingField: 1
+  CarryoverPotencyMultiplier: 0
+  <TriggerTurnEventType>k__BackingField: 0
+  TurnEventTriggers: []
+  <TurnModifier>k__BackingField: 0
+  <ApplyModifierToNextTurnOnly>k__BackingField: 0
+  <SubtractOnExternalRemoval>k__BackingField: 0
+  <BoolsToModify>k__BackingField: 
+  <IntStatModifiers>k__BackingField: []
+  <FloatStatModifiers>k__BackingField: []
+  <UniversalModifiers>k__BackingField: []
+  <ActionModifiers>k__BackingField:
+  - <BattleEventType>k__BackingField: 1
+    <ActionModifierType>k__BackingField: 0
+    modifierType: 1
+    modifierValue: 1.25
+    conditionList:
+    - <Conditional>k__BackingField: 0
+      <BattleEventType>k__BackingField: 0
+      isNot: 0
+      battleCondition: {fileID: 11400000, guid: 2d23262e745c4c045826f03e45327e82,
+        type: 2}
+      value: 0
+  <PreemptiveBattleEventTriggers>k__BackingField: []
+  <BattleEventTriggers>k__BackingField:
+  - {fileID: 11400000, guid: 4a410bf311df8324cbf00d4c4eb5265c, type: 2}
+  <EffectsToRemove>k__BackingField:
+  - {fileID: 11400000, guid: a50d596899ec9c24b8e0fda58bbfc2c8, type: 2}
+  - {fileID: 11400000, guid: be66718aeb0de0341bf86236bf942f93, type: 2}

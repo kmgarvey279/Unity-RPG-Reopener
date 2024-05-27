@@ -1,20 +1,107 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class PlayableCombatant : Combatant
 {
-    public Action Attack { get; private set; }
-    public Action Defend { get; private set; }
-    public List<Action> Skills { get; private set; } = new List<Action>();
-    public BattlePartyPanel BattlePartyPanel { get; private set; }
-    public PlayableCharacterID PlayableCharacterID { get; private set; }
-    public PlayableCharacterID LinkedCharacterID { get; private set; }
+    [field: SerializeField] public BattlePartyPanel BattlePartyPanel { get; private set; }
+
+    [SerializeField] private SignalSenderInt onChangeInterventionPoints;
+    private readonly int interventionCost = 25;
+
+    #region Data Get/Set
+    private PlayableCombatantBattleData playableCombatantBattleData
+    {
+        get
+        {
+            return (PlayableCombatantBattleData)combatantBattleData;
+        }
+    }
+    public PlayableCharacterID PlayableCharacterID 
+    { 
+        get
+        {
+            return playableCombatantBattleData.PlayableCharacterID;
+        }
+    }
+    public Color CharacterColor
+    {
+        get
+        {
+            return playableCombatantBattleData.CharacterColor;
+        }
+    }
+    public Action Attack
+    {
+        get
+        {
+            return playableCombatantBattleData.Attack;
+        }
+    }
+    public Action Defend
+    {
+        get
+        {
+            return playableCombatantBattleData.Defend;
+        }
+    }
+    public List<Action> Skills
+    {
+        get
+        {
+            return playableCombatantBattleData.Skills;
+        }
+    }
+    public int IP
+    {
+        get
+        {
+            return playableCombatantBattleData.IP.CurrentValue;
+        }
+        private set
+        {
+            playableCombatantBattleData.IP.UpdateValue(value);
+        }
+    }
+    public int MaxIP
+    {
+        get
+        {
+            return playableCombatantBattleData.IP.MaxValue;
+        }
+    }
+
+    public bool InterventionQueued
+    {
+        get
+        {
+            return playableCombatantBattleData.InterventionQueued;
+        }
+        private set
+        {
+            playableCombatantBattleData.InterventionQueued = value;
+        }
+    }
+
+    public bool InterventionSpent
+    {
+        get
+        {
+            return playableCombatantBattleData.InterventionUsed;
+        }
+        private set
+        {
+            playableCombatantBattleData.InterventionUsed = value;
+        }
+    }
+    #endregion
 
     protected override void Awake()
     {
         base.Awake();
-        CombatantType = CombatantType.Player;  
+        CombatantType = CombatantType.Player;
     }
 
     public void AssignBattlePartyPanel(BattlePartyPanel battlePartyPanel)
@@ -22,62 +109,97 @@ public class PlayableCombatant : Combatant
         this.BattlePartyPanel = battlePartyPanel;
     }
 
-    public override IEnumerator SetCharacterData(CharacterInfo characterInfo, PlayableCharacterID linkedCharacterID)
+    public void SetCharacterData(PlayableCombatantRuntimeData combatantData)
     {
-        yield return StartCoroutine(base.SetCharacterData(characterInfo));
+        combatantBattleData = new PlayableCombatantBattleData(combatantData);
+
+        healthDisplay.SetValues();
         
-        PlayableCharacterInfo playableCharacterInfo = (PlayableCharacterInfo)characterInfo;
-        Attack = playableCharacterInfo.Attack;
-        Defend = playableCharacterInfo.Defend;
-        PlayableCharacterID = playableCharacterInfo.PlayableCharacterID;
-        LinkedCharacterID = linkedCharacterID;
-        Skills.AddRange(playableCharacterInfo.Skills);
-        
-        yield return null;
+        IsLoaded = true;
     }
 
-    public override void OnDamaged(int amount, bool isCrit = false, ElementalProperty elementalProperty = ElementalProperty.None)
+    #region Interventions
+    public void SetInterventionPoints(int value)
     {
-        base.OnDamaged(amount, isCrit, elementalProperty);
-        BattlePartyPanel.UpdateHP();
-    }
-    public override void OnHealed(int amount, bool isCrit = false)
-    {
-        base.OnHealed(amount, isCrit);
-        BattlePartyPanel.UpdateHP();
+        IP = value;
+
+        BattlePartyPanel.DisplayInterventionChanges();
     }
 
-    public override void OnCastStart()
+    public void GainInterventionPoints(int value)
     {
-        base.OnCastStart();
-        BattlePartyPanel.LockInterventionTriggerIcon(true);
+        IP += value;
+
+        BattlePartyPanel.DisplayInterventionChanges();
     }
 
-    public override void OnCastEnd()
+    public void SpendInterventionNode()
     {
-        base.OnCastEnd();
-        BattlePartyPanel.LockInterventionTriggerIcon(false);
+        IP -= interventionCost;
+        InterventionSpent = true;
+        InterventionQueued = false;
+
+        BattlePartyPanel.DisplayInterventionChanges();
     }
 
-    //public override void SetCombatantState(CombatantState newState)
-    //{
-    //    base.SetCombatantState(newState);
-    //    if (newState == CombatantState.Default)
-    //    {
-    //        BattlePartyPanel.LockInterventionTriggerIcon(false);
-    //    }
-    //    else
-    //    {
-    //        BattlePartyPanel.LockInterventionTriggerIcon(true);
-    //    }
-    //}
-
-    public void OnChangeMana(int change)
+    public bool InterventionCheck()
     {
-        int newValue = MP.Value + change;
-        MP.UpdateValue(newValue);
+        if (CombatantState == CombatantState.Default 
+            && !CheckBool(CombatantBool.CannotQueueIntervention) 
+            && !InterventionQueued)
+        {
+            return true;
+        }
+        return false;
+    }
 
-        ResolveManaChange();
+    public void QueueIntervention()
+    {
+        InterventionQueued = true;
+
+        BattlePartyPanel.DisplayInterventionChanges();
+    }
+
+    public void UnqueueIntervention()
+    {
+        InterventionQueued = false;
+
+        BattlePartyPanel.DisplayInterventionChanges();
+    }
+    #endregion
+
+    #region Events
+    public override void OnTurnStart()
+    { 
+        base.OnTurnStart();
+    }
+
+    public override void OnAttacked(int amount, bool isCrit, bool isVulnerable)
+    {
+        //if (Guard.CurrentValue > 0)
+        //{
+        //    TriggerAnimation("Guard", false);
+        //}
+        //else
+        //{
+        TriggerAnimation("Hit", false);
+
+        OnDamaged(amount, isCrit, false);
+    }
+
+    public void OnGainMana(int change)
+    {
+        MP += change;
+
+        BattlePartyPanel.DisplayChanges();
+        healthDisplay.DisplayNumberPopup(PopupType.Mana, CombatantType.Player, change);
+    }
+
+    public void OnSpendMana(int change)
+    {
+        MP -= change;
+
+        BattlePartyPanel.DisplayChanges();
     }
 
     public override void OnKO()
@@ -86,9 +208,9 @@ public class PlayableCombatant : Combatant
         for (int i = StatusEffectInstances.Count - 1; i >= 0; i--)
         {
             StatusEffectInstance statusEffectInstance = StatusEffectInstances[i];
-            if (statusEffectInstance.StatusEffect.RemoveOnKO)
+            if (!statusEffectInstance.StatusEffect.DoNotRemoveOnKO)
             {
-                RemoveStatusEffectInstance(statusEffectInstance);
+                RemoveStatusEffectInstance(statusEffectInstance, false);
             }
         }
         BattlePartyPanel.OnKO();
@@ -99,25 +221,78 @@ public class PlayableCombatant : Combatant
         base.OnRevive(percentOfHPToRestore);
         BattlePartyPanel.OnRevive();
     }
+    #endregion
 
-    public override void ResolveHealthChange()
+    #region HP/MP
+    protected override void DisplayBarChanges()
     {
-        base.ResolveHealthChange();
-        BattlePartyPanel.ResolveHP();
+        base.DisplayBarChanges();
+        BattlePartyPanel.DisplayChanges();
     }
 
-    public void ResolveManaChange()
+    public override void ResolveBarChanges()
     {
-        BattlePartyPanel.UpdateMP();
-        BattlePartyPanel.ResolveMP();
+        base.ResolveBarChanges();
+        BattlePartyPanel.ResolveChanges();
     }
 
-    public override void ApplyActionCost(ActionCostType actionCostType, int cost)
+    public override void ApplyActionHPCost(float percentageCost)
     {
-        base.ApplyActionCost(actionCostType, cost);
-        if (actionCostType == ActionCostType.MP)
+        base.ApplyActionHPCost(percentageCost);
+    }
+    #endregion
+
+    #region Status Effects
+    public override void HandleNewStatus(StatusEffect newStatusEffect, int potency)
+    {
+        base.HandleNewStatus(newStatusEffect, potency);
+
+        if (newStatusEffect.BoolsToModify.Contains(CombatantBool.CannotQueueIntervention))
         {
-            OnChangeMana(-cost);
+            bool isTrue = combatantBattleData.CheckBool(CombatantBool.CannotQueueIntervention);
+            if (isTrue)
+            {
+                battleTimeline.RemoveAllInterventions(this);
+                //BattlePartyPanel.LockInterventionTriggerIcon(true);
+            }
+            else if (InterventionCheck())
+            {
+                //BattlePartyPanel.LockInterventionTriggerIcon(false);
+            }
         }
     }
+
+    protected override void RemoveStatusEffectInstance(StatusEffectInstance statusEffectInstance, bool wasRemovedExternally)
+    {
+        base.RemoveStatusEffectInstance(statusEffectInstance, wasRemovedExternally);
+        
+        if (statusEffectInstance.StatusEffect.BoolsToModify.Contains(CombatantBool.CannotQueueIntervention))
+        {
+            //BattlePartyPanel.LockInterventionTriggerIcon(false);
+        }
+
+    }
+    #endregion
+
+    #region State/Bools
+    public override void ChangeCombatantState(CombatantState newState)
+    {
+        base.ChangeCombatantState(newState);
+    }
+    #endregion
+
+    #region Status Panel
+    public override void ToggleHighlight(bool isHighlighted)
+    {
+        base.ToggleHighlight(isHighlighted);
+        if (isHighlighted)
+        {
+            BattlePartyPanel.OnTarget();
+        }
+        else
+        {
+            BattlePartyPanel.OnUntarget();
+        }
+    }
+    #endregion
 }

@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6be137f697e5804428fd4db0b1bdf0ac, type: 3}
+  m_Name: HotStatus
+  m_EditorClassIdentifier: 
+  <DisplayOnTargetInfo>k__BackingField: 1
+  <Icon>k__BackingField: {fileID: 0}
+  <EffectName>k__BackingField: Hot
+  <EffectDescriptions>k__BackingField:
+  - 
+  <StatusEffectType>k__BackingField: 1
+  <CanRemove>k__BackingField: 1
+  <RemoveOnKO>k__BackingField: 1
+  <AnimatorOverride>k__BackingField: 0
+  <CustomAnimatorOverride>k__BackingField: 
+  TargetSpeedChange: 0
+  <PersistentVFX>k__BackingField: {fileID: 0}
+  <SetTranparent>k__BackingField: 0
+  <StatusCounterType>k__BackingField: 0
+  <CounterMax>k__BackingField: 2
+  <CanRefresh>k__BackingField: 0
+  <HealthEffectType>k__BackingField: 0
+  <Power>k__BackingField: 0
+  <ActorStat>k__BackingField: 0
+  <PotencyTurnMultiplier>k__BackingField: 1
+  <TurnEventType>k__BackingField: 0
+  <TurnTriggerRate>k__BackingField: 0
+  TurnEffectContainers: []
+  <TurnModifier>k__BackingField: 0
+  <ApplyModifierToNextTurnOnly>k__BackingField: 0
+  <SubtractOnExternalRemoval>k__BackingField: 0
+  <BoolsToModify>k__BackingField: 
+  <IntStatModifiers>k__BackingField: []
+  <FloatStatModifiers>k__BackingField: []
+  <ActionModifiers>k__BackingField:
+  - <BattleEventType>k__BackingField: 1
+    <ActionModifierType>k__BackingField: 0
+    modifierType: 1
+    modifierValue: 1.2
+    conditionList:
+    - <Conditional>k__BackingField: 0
+      <BattleEventType>k__BackingField: 0
+      isNot: 0
+      battleCondition: {fileID: 11400000, guid: cc2b43a8124234d44960caf51bc0529a,
+        type: 2}
+      value: 0
+  <TriggerableEffectContainers>k__BackingField: []
+  <EffectsToRemove>k__BackingField:
+  - {fileID: 11400000, guid: db2225193ac66c548bf234612062ca0a, type: 2}
+  - {fileID: 11400000, guid: 91c605729b44b8a428fc1799f417f752, type: 2}

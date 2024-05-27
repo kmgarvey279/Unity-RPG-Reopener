@@ -47,13 +47,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vfxChildren:
   - {fileID: 6173292553732234418}
-  delay: 0
+  vfxMasks: []
+  delay: 0.1
   duration: 0.4
-  moveDuration: 0.5
+  moveDuration: 0.4
   loop: 0
   canFlip: 1
-  defaultMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  greyscaleMaterial: {fileID: 2100000, guid: 10d5b82fa9833a24490e5d8dbe93930b, type: 2}
 --- !u!1 &8440551974707318510
 GameObject:
   m_ObjectHideFlags: 0

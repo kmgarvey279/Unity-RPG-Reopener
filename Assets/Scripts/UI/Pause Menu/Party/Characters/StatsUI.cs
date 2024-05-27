@@ -4,18 +4,17 @@ using UnityEngine;
 
 public class StatsUI : MonoBehaviour
 {
-    public Dictionary<StatType, int> equipmentComparison = new Dictionary<StatType, int>();
+    public Dictionary<IntStatType, int> equipmentComparison = new Dictionary<IntStatType, int>();
     public Dictionary<ElementalProperty, int> resistanceComparison = new Dictionary<ElementalProperty, int>();
 
     private void Start()
     {
-        equipmentComparison.Add(StatType.Attack, 0);
-        equipmentComparison.Add(StatType.Defense, 0);
-        equipmentComparison.Add(StatType.MAttack, 0);
-        equipmentComparison.Add(StatType.MDefense, 0);
-        equipmentComparison.Add(StatType.Agility, 0);
-        equipmentComparison.Add(StatType.HP, 0);
-        equipmentComparison.Add(StatType.MP, 0);
+        equipmentComparison.Add(IntStatType.Attack, 0);
+        equipmentComparison.Add(IntStatType.Defense, 0);
+        equipmentComparison.Add(IntStatType.MAttack, 0);
+        equipmentComparison.Add(IntStatType.MDefense, 0);
+        equipmentComparison.Add(IntStatType.Agility, 0);
+        equipmentComparison.Add(IntStatType.Healing, 0);
 
         resistanceComparison.Add(ElementalProperty.Fire, 0);
         resistanceComparison.Add(ElementalProperty.Ice, 0);

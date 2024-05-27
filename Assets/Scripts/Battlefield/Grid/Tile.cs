@@ -12,7 +12,7 @@ public class Tile : MonoBehaviour
 
     public void AssignOccupier(Combatant occupier)
     {
-        if(Occupier)
+        if (Occupier)
         {
             return;
         }

@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using StateMachineNamespace;
+using System.Linq;
 
 public enum BattleStateType
 {
     BattleStart,
     TurnStart,
-    Menu,
+    PlayerTurn,
     TargetSelect,
     Execute,
     EnemyTurn,
@@ -15,7 +16,7 @@ public enum BattleStateType
     BattleEnd,
     InterventionStart,
     ChangeTurn,
-    SwapCombatants
+    Setup
 }
 
 public class BattleState : StateMachine.State
@@ -24,8 +25,8 @@ public class BattleState : StateMachine.State
     protected BattleManager battleManager;
     [SerializeField] protected GridManager gridManager;
     [SerializeField] protected BattleTimeline battleTimeline;
-    [Header("Unity Events (Listeners)")]
-    [SerializeField] protected List<MonoBehaviour> signalListeners = new List<MonoBehaviour>();
+
+    protected List<SignalListenerBase> signalListeners = new List<SignalListenerBase>();
 
     public void Awake()
     {
@@ -33,17 +34,22 @@ public class BattleState : StateMachine.State
         stateMachine = GetComponentInParent<StateMachine>(); 
         id = (int)battleStateType; 
         //battle manager
-        battleManager = GetComponentInParent<BattleManager>();  
+        battleManager = GetComponentInParent<BattleManager>();
+
+        //signal listeners
+        signalListeners = GetComponentsInChildren<SignalListenerBase>().ToList();
+        foreach (MonoBehaviour script in signalListeners)
+        {
+            script.enabled = false;
+        }
     }
 
     public override void OnEnter()
     {
-        if(signalListeners.Count > 0)
+        foreach (MonoBehaviour script in signalListeners)
         {
-            foreach (MonoBehaviour script in signalListeners)
-            {
+            if (script != null)
                 script.enabled = true;
-            }
         }
     }
 
@@ -57,12 +63,9 @@ public class BattleState : StateMachine.State
 
     public override void OnExit()
     {
-        if(signalListeners.Count > 0)
+        foreach (MonoBehaviour script in signalListeners)
         {
-            foreach (MonoBehaviour script in signalListeners)
-            {
-                script.enabled = false;
-            }
+            script.enabled = false;
         }
     }
 }

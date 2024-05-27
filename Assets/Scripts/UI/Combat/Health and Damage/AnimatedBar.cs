@@ -4,35 +4,27 @@ using UnityEngine;
 
 public class AnimatedBar : MonoBehaviour
 {
-    private GameObject display;
+    [SerializeField] private GameObject display;
     [SerializeField] private SliderBar valueBar;
     [SerializeField] private SliderBar changeBar;
-    private float barTickDuration = 0.2f;
-    private bool valueAnimationActive = false;
-    private bool changeAnimationActive = false;
-    private bool queueHide = false;
+    private float barTickDuration = 0.25f;
 
-    public void ToggleDisplay(bool show)
+
+    public void SetInitialValue(int maxValue, int currentValue)
     {
-        if(!show && (changeAnimationActive || valueAnimationActive))
-        {
-            queueHide = true;
-        }
-        else
-        {
-            display.SetActive(show);
-        }
+        valueBar.SetMaxValue(maxValue);
+        valueBar.SetCurrentValue(currentValue);
+        changeBar.SetMaxValue(maxValue);
+        changeBar.SetCurrentValue(currentValue);
     }
 
-    public void SetInitialValue(float maxValue, float currentValue)
+    public void SetValue(int currentValue)
     {
-        valueBar.SetMaxValue((int)maxValue);
-        valueBar.SetCurrentValue((int)currentValue);
-        changeBar.SetMaxValue((int)maxValue);
-        changeBar.SetCurrentValue((int)currentValue);
+        valueBar.SetCurrentValue(currentValue);
+        changeBar.SetCurrentValue(currentValue);
     }
 
-    public void DisplayChange(float newValue)
+    public void DisplayChange(int newValue)
     {
         //display amount gained
         if (newValue > valueBar.GetCurrentValue())
@@ -46,29 +38,20 @@ public class AnimatedBar : MonoBehaviour
         }
     }
 
-    public void ResolveChange(float newValue)
+    public void ResolveChange(int newValue)
     {
-        if(newValue > valueBar.GetCurrentValue())
+        if (newValue > valueBar.GetCurrentValue())
         {
             StartCoroutine(BarTickCo(valueBar, newValue));
         }
-        else if(newValue < changeBar.GetCurrentValue())
+        else if (newValue < changeBar.GetCurrentValue())
         {
             StartCoroutine(BarTickCo(changeBar, newValue));
         }
     }
 
-    private IEnumerator BarTickCo(SliderBar barToChange, float end)
+    private IEnumerator BarTickCo(SliderBar barToChange, int end)
     {
-        if (barToChange == valueBar)
-        {
-            valueAnimationActive = true;
-        }
-        else if (barToChange == changeBar)
-        {
-            changeAnimationActive = true;
-        }
-
         float timer = 0f;
         float start = barToChange.GetCurrentValue();
 
@@ -82,47 +65,5 @@ public class AnimatedBar : MonoBehaviour
             yield return null;
         }
         barToChange.SetCurrentValue(end);
-
-        if (barToChange == valueBar)
-        {
-            valueAnimationActive = false;
-        }
-        else if (barToChange == changeBar)
-        {
-            changeAnimationActive = false;
-        }
-
-        if (queueHide)
-        {
-            queueHide = false;
-            display.SetActive(false);
-        }
     }
-
-    //private IEnumerator TickDownCo(SliderBar barToChange)
-    //{
-    //    animationActive = true;
-
-    //    float timer = 0f;
-    //    float start = changeBar.GetCurrentValue();
-    //    float end = valueBar.GetCurrentValue();
-
-    //    while (timer < barTickDuration)
-    //    {
-    //        float newValue = Mathf.Lerp(start, end, timer / barTickDuration);
-    //        changeBar.SetCurrentValue(newValue);
-
-    //        timer += Time.deltaTime;
-
-    //        yield return null;
-    //    }
-    //    changeBar.SetCurrentValue(end);
-
-    //    animationActive = false;
-    //    if (queueHide)
-    //    {
-    //        queueHide = false;
-    //        display.SetActive(false);
-    //    }
-    //}
 }

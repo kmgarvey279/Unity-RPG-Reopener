@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3576bcfef2f6d5244b9b59dea174fc93, type: 3}
+  m_Name: BodyguardProtectTrigger
+  m_EditorClassIdentifier: 
+  userTriggerConditions:
+  - <Conditional>k__BackingField: 0
+    <BattleConditionCombatant>k__BackingField: 0
+    isNot: 0
+    battleCondition: {fileID: 11400000, guid: c544c268b0bed384a81c8c3a9cc1fe3a, type: 2}
+    value: 0.3
+  actionTriggerConditions:
+  - <Conditional>k__BackingField: 0
+    <BattleConditionCombatant>k__BackingField: 0
+    isNot: 0
+    battleCondition: {fileID: 11400000, guid: de35d898a6ac5b84bb6b2f8cdf102b02, type: 2}
+    value: 0
+  - <Conditional>k__BackingField: 1
+    <BattleConditionCombatant>k__BackingField: 0
+    isNot: 0
+    battleCondition: {fileID: 11400000, guid: ba76c43ed3a7d2e40926ac68f38c11fa, type: 2}
+    value: 0
+  - <Conditional>k__BackingField: 1
+    <BattleConditionCombatant>k__BackingField: 1
+    isNot: 0
+    battleCondition: {fileID: 11400000, guid: 4b1c358856ee53f4097027bffa9ef420, type: 2}
+    value: 0
+  - <Conditional>k__BackingField: 1
+    <BattleConditionCombatant>k__BackingField: 1
+    isNot: 0
+    battleCondition: {fileID: 11400000, guid: e002175fad8e56041ae4e14047f3f471, type: 2}
+    value: 0.3
+  triggerRate: 1
+  <EventName>k__BackingField: Bodyguard
+  <TriggerableEffectType>k__BackingField: 5
+  <TriggerableEffectContainers>k__BackingField: []
+  ActionEventModifiers:
+  - {fileID: 11400000, guid: da0532942fdae6e48b3bcfef53aef818, type: 2}
+  IsProtect: 1
+  ProtectPriority: 0
+  <PreemptiveTriggerCombatantType>k__BackingField: 1
+  <PreemptiveTriggerTargetingType>k__BackingField: 1
+  <ActionAnimations>k__BackingField:
+  - <BattleAnimatorTrigger>k__BackingField: 7
+    <CustomAnimatorTrigger>k__BackingField: 
+    <ChangeActorOpacity>k__BackingField: 0
+    <NewActorOpacity>k__BackingField: 0
+    <VFXPrefab>k__BackingField: {fileID: 0}
+    <BattlefieldSpawnPosition>k__BackingField: 0
+    <CombatantSpawnPosition>k__BackingField: 0
+    <BindVFXToCombatant>k__BackingField: 0
+    <SpawnPositionOffset>k__BackingField: {x: 0, y: 0}
+    <SpawnForEachTarget>k__BackingField: 0
+    <IsProjectile>k__BackingField: 0
+    <ReverseProjectile>k__BackingField: 0
+    <AnimationTriggerFrequency>k__BackingField: 0
+    <XHit>k__BackingField: 0
+    <Delay>k__BackingField: 0
+    <Duration>k__BackingField: 1
+  <ExecutePosition>k__BackingField: 2

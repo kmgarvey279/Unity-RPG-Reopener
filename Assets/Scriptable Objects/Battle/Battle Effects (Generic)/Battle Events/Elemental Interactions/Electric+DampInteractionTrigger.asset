@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ef4468d3e80b1d4e9b7b1be0e961f2d, type: 3}
+  m_Name: Electric+DampInteractionTrigger
+  m_EditorClassIdentifier: 
+  <BattleEventType>k__BackingField: 0
+  <TriggerableEffectType>k__BackingField: 0
+  triggerConditions:
+  - <Conditional>k__BackingField: 0
+    <BattleEventType>k__BackingField: 0
+    isNot: 0
+    battleCondition: {fileID: 11400000, guid: 2d23262e745c4c045826f03e45327e82, type: 2}
+    value: 0
+  - <Conditional>k__BackingField: 1
+    <BattleEventType>k__BackingField: 1
+    isNot: 0
+    battleCondition: {fileID: 11400000, guid: a7607ef07e4edd9478f30012efd6f15b, type: 2}
+    value: 0
+  triggerRate: 1
+  onlyTriggerOnHit: 1
+  <UseTargetOverride>k__BackingField: 0
+  <TargetOverride>k__BackingField: 0
+  <PickRandomTarget>k__BackingField: 0
+  <EventName>k__BackingField: 
+  <TriggerableEffectContainers>k__BackingField:
+  - <TriggerableEffect>k__BackingField: {fileID: 11400000, guid: 655820f6b6141a946b5840a098cc88ae,
+      type: 2}
+    <Value>k__BackingField: 0.2
+    useValueOverride: 0
+    valueOverrideMultiplier: 0
+  - <TriggerableEffect>k__BackingField: {fileID: 11400000, guid: e1af067455ccfae4caf237b79bfae6d1,
+      type: 2}
+    <Value>k__BackingField: 0
+    useValueOverride: 0
+    valueOverrideMultiplier: 0
+  <ActionAnimations>k__BackingField:
+  - <BattleAnimatorTrigger>k__BackingField: 0
+    <CustomAnimatorTrigger>k__BackingField: 
+    <ChangeActorOpacity>k__BackingField: 0
+    <NewActorOpacity>k__BackingField: 0
+    <VFXPrefab>k__BackingField: {fileID: 6921752281566512423, guid: 94b6db2e48f00a1498279f0f70275aed,
+      type: 3}
+    <BattlefieldSpawnPosition>k__BackingField: 0
+    <CombatantSpawnPosition>k__BackingField: 0
+    <BindVFXToCombatant>k__BackingField: 0
+    <SpawnPositionOffset>k__BackingField: {x: 0, y: 0}
+    <SpawnForEachTarget>k__BackingField: 0
+    <IsProjectile>k__BackingField: 0
+    <AnimationTriggerFrequency>k__BackingField: 0
+    <XHit>k__BackingField: 0
+    <Delay>k__BackingField: 0
+    <Duration>k__BackingField: 1

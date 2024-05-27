@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ClampFloat
 {
-    public float Value { get; private set; }
+    public float CurrentValue { get; private set; }
     public float MinValue { get; private set; }
     public float MaxValue { get; private set; }
 
@@ -18,11 +18,13 @@ public class ClampFloat
         {
             _maxValue = _minValue;
         }
-        Value = Mathf.Clamp(_value, MinValue, MaxValue);
+        MinValue = _minValue;
+        MaxValue = _maxValue;
+        CurrentValue = Mathf.Clamp(_value, MinValue, MaxValue);
     }
 
     public void UpdateValue(float newValue)
     {
-        Value = Mathf.Clamp(newValue, MinValue, MaxValue);
+        CurrentValue = Mathf.Clamp(newValue, MinValue, MaxValue);
     }
 }

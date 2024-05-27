@@ -1,84 +1,63 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
-{
-    [Header("Movement")]
-    private Vector3 moveDirection;
+{    
+    [Header("Movement/Collision")]
+    private Rigidbody2D rb;
+    private BoxCollider2D boxCollider2D;
+    private Vector2 moveDirection;
     private bool isRunning;
-    private float walkSpeed = 3f;
-    private float runSpeed = 5f;
+    private readonly float walkSpeed = 6f;
+    private readonly float runSpeed = 20f;
+    private bool isSwitchingRooms;
     
-    [Header("Sprite/Animation")]
-    [SerializeField] private SpriteRenderer actionPrompt;
+    [Header("Sprite")]
     [SerializeField] private Animator animator;
     [SerializeField] private SpriteRenderer sprite;
 
     [Header("Interactable")]
-    private Interactable interactable;
+    private PlayerInteractionController playerInteractionController;
+    private PlayerItemPickupController playerItemPickupController;
 
     [Header("Game state info")]
     [SerializeField] private OverworldData overworldData;
-    
-    // private class JumpData
-    // {
-    //     public JumpType jumpType;
-    //     public Vector3 start; 
-    //     public Vector3 end; 
-    //     public float duration = 0.15f;
-    //     public float timer = 0f;
 
-    //     public JumpData(JumpType jumpType, Vector3 start, Vector3 end)
-    //     {
-    //         this.start = start; 
-    //         this.end = end;
-    //         this.jumpType = jumpType;
-    //     }
-    // }
-    // private JumpData jumpData;
+    [Header("Sound FX")]
+    [SerializeField] private AudioClip testSoundFX;
+
+    [Header("Signals")]
+    [SerializeField] private SignalSender OnChangeRoomStart;
+    [SerializeField] private SignalSender OnChangeRoomEnd;
+
+    private WaitForSeconds wait025 = new WaitForSeconds(0.25f);
+
+    private void OnEnable()
+    {
+        InputManager.Instance.OnPressMove.AddListener(Move);
+        InputManager.Instance.OnPressInteract.AddListener(Interact);
+        InputManager.Instance.OnPressRun.AddListener(Run);
+        //InputManager.onReleaseRun.AddListener(RunStop);
+    }
+
+    private void OnDisable()
+    {
+        InputManager.Instance.OnPressMove.RemoveListener(Move);
+        InputManager.Instance.OnPressInteract.RemoveListener(Interact);
+        InputManager.Instance.OnPressRun.RemoveListener(Run);
+    }   
 
     private void Start()
     {
-        animator = GetComponentInChildren<Animator>();
+        rb = GetComponent<Rigidbody2D>();
+        boxCollider2D = GetComponent<BoxCollider2D>();
+        playerItemPickupController = GetComponent<PlayerItemPickupController>();
+        playerInteractionController = GetComponentInChildren<PlayerInteractionController>();
         moveDirection = new Vector3(0, 0);
-    }
-
-    private void Update()
-    {
-        if(!overworldData.lockInput)
-        {
-            if(Input.GetButtonDown("Select") && interactable != null && !overworldData.interactTriggerCooldown)
-            {
-                if(interactable.faceObject)
-                {
-                    Vector2 direction = (interactable.transform.position - transform.position).normalized;
-                    SetDirection(direction);
-                }
-                interactable.Interact(); 
-            }
-            else
-            {
-                if(Input.GetButton("Run"))
-                {
-                    isRunning = true;
-                }
-                else
-                {
-                    isRunning = false;
-                }
-
-                float moveX = Input.GetAxisRaw("Horizontal");
-                float moveY = Input.GetAxisRaw("Vertical");
-                moveDirection = new Vector3(moveX, moveY).normalized;
-
-                if(!Mathf.Approximately(moveDirection.x, 0.0f) || !Mathf.Approximately(moveDirection.y, 0.0f))
-                {
-                    Vector2 tempDirection = new Vector2(Mathf.Round(moveDirection.x), Mathf.Round(moveDirection.y));
-                    SetDirection(tempDirection);
-                }
-            }
-        }
     }
 
     public void SetDirection(Vector2 newDirection)
@@ -87,121 +66,96 @@ public class Player : MonoBehaviour
         animator.SetFloat("Look Y", newDirection.y);
     }
 
-    public Vector3 LookDirection()
+    private void Update()
     {
-        return new Vector3(animator.GetFloat("Look X"), animator.GetFloat("Look Y"));
-    }
-
-    public void FixedUpdate()
-    {      
-        if(!overworldData.lockInput)
+        if (InputManager.Instance.InputLocked)
         {
-            float currentSpeed = 0;
-            if(isRunning)
-            {
-                currentSpeed = runSpeed;
-            }
-            else 
-            {
-                currentSpeed = walkSpeed;
-            }
-            GetComponent<Rigidbody>().velocity = new Vector3(moveDirection.x * currentSpeed, moveDirection.y * currentSpeed);
+            rb.velocity = Vector2.zero;
+            return;
+        }
 
-            //update animation
-            animator.SetFloat("Speed", GetComponent<Rigidbody>().velocity.sqrMagnitude);
+        if (moveDirection.x != 0 || moveDirection.y != 0)
+        {
+            SetDirection(moveDirection);
+            animator.SetBool("Walking", true);
         }
         else
         {
-            GetComponent<Rigidbody>().velocity = Vector2.zero;
-            animator.SetFloat("Speed", 0);
+            animator.SetBool("Walking", false);
+        }
+        if (isRunning)
+        {
+            rb.velocity = moveDirection * runSpeed;
+        }
+        else
+        {
+            rb.velocity = moveDirection * walkSpeed;
         }
     }
 
-    // public void Jump(JumpType jumpType, Vector3 jumpDestination)
-    // {
-    //     if(jumpData == null)
-    //     {
-    //         disableControl = true;
-    //         if(actionPrompt.enabled == true)
-    //             actionPrompt.enabled = false;
-            
-    //         jumpData = new JumpData(jumpType, transform.position, jumpDestination);
-    //         rigidbody.velocity = Vector3.zero;
-
-    //         switch ((int)jumpType)
-    //         {
-    //             case 0:        
-    //                 gameObject.layer = gameObject.layer - 1;
-    //                 animator.SetBool("Jump", true);
-    //                 break;
-    //             case 1:
-    //                 sprite.sortingOrder = sprite.sortingOrder + 1;
-    //                 gameObject.layer = gameObject.layer + 1;
-    //                 animator.SetBool("Jump", true);
-    //                 break;
-    //             case 2:
-    //                 animator.SetBool("Jump", true);
-    //                 break;
-    //             default:
-    //                 break;
-    //         }
-    //         GetComponent<BoxCollider2D>().enabled = false;
-    //     }
-    // }
-
-    // public void EndJump()
-    // {
-    //     switch ((int)jumpData.jumpType)
-    //     {
-    //         case 0:    
-    //             sprite.sortingOrder = sprite.sortingOrder - 1;    
-    //             animator.SetBool("Jump", false);
-    //             break;
-    //         case 1:
-    //             animator.SetBool("Jump", false);
-    //             break;
-    //         case 2:
-    //             animator.SetBool("Jump", false);
-    //             break;
-    //         default:
-    //             break;
-    //     }
-    //     jumpData = null;
-    //     GetComponent<BoxCollider2D>().enabled = true;
-    //     disableControl = false;
-    // }
-
-    public void OnTriggerEnter2D(Collider2D other)
+    private void Move(Vector2 vectorInput)
     {
-        if(other.gameObject.CompareTag("Interactable"))
-        {
-            interactable = other.gameObject.GetComponent<Interactable>();
-            DisplayActionPrompt();
-        }
+        moveDirection.Set(vectorInput.x, vectorInput.y);
     }
 
-    public void OnTriggerExit2D(Collider2D other)
+    private void Run(bool isPressed)
     {
-        if(other.gameObject.CompareTag("Interactable"))
+        isRunning = isPressed;
+        Debug.Log("Is running: " + isRunning);
+    }
+
+    private void Interact(bool isPressed)
+    {
+        if (playerInteractionController.Interactable != null)
         {
-            if(interactable)
+            if (playerInteractionController.Interactable.FaceOnInteract)
             {
-                interactable = null; 
+                SetDirection((playerInteractionController.Interactable.transform.position - transform.position).normalized);
             }
-            HideActionPrompt();
+            playerInteractionController.Interactable.Interact();
         }
     }
 
-
-    public void DisplayActionPrompt()
+    public void ChangeRoom()
     {
-        if(actionPrompt.enabled == false)
-            actionPrompt.enabled = true;
+
     }
 
-    public void HideActionPrompt()
+    public IEnumerator ChangeRoomCo(Vector2 direction)
     {
-        if(actionPrompt.enabled == true)
-            actionPrompt.enabled = false;
+        if (!isSwitchingRooms)
+        {
+            isSwitchingRooms = true;
+            InputManager.Instance.LockInput();
+
+            SetDirection(direction);
+            animator.SetBool("Walking", true);
+
+            yield return wait025;
+
+            Vector3 destination = new Vector3(transform.position.x + direction.x, transform.position.y + direction.y);
+            Vector3 start = transform.position;
+            float moveDuration = 0.25f;
+            float timer = 0;
+            while (transform.position != destination)
+            {
+                transform.position = Vector3.Lerp(start, destination, timer / moveDuration);
+                timer += Time.deltaTime;
+
+                yield return null;
+            }
+            animator.SetBool("Walking", false);
+
+            InputManager.Instance.UnlockInput();
+            isSwitchingRooms = false;
+        }
+    }
+
+    public void OnPauseStart()
+    {
+    }
+
+    public void OnPauseEnd()
+    {
     }
 }

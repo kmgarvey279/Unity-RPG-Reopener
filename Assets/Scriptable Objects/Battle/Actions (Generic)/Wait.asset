@@ -12,31 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67c563eadf57fc4eb294c73923cb174, type: 3}
   m_Name: Wait
   m_EditorClassIdentifier: 
-  healthEffectType: 3
-  power: 0
-  primaryTargetBonus: 0
-  offensiveStat: 0
-  defensiveStat: 2
   <ActionName>k__BackingField: Unable to act!
-  <Icon>k__BackingField: {fileID: 0}
+  <Icon>k__BackingField: {fileID: 21300000, guid: d59354c768115bb42bbd986120bcf945,
+    type: 3}
   <Description>k__BackingField: 
   <ActionType>k__BackingField: 4
-  <AttackType>k__BackingField: 3
-  <RecoveryTimeModifier>k__BackingField: 0
+  <ActorConditionalModifier>k__BackingField:
+    <TurnModifier>k__BackingField: 0
+    <ApplyToNextTurnOnly>k__BackingField: 0
+    modifierConditions: []
+  <TargetConditionalModifier>k__BackingField:
+    <TurnModifier>k__BackingField: 0
+    <ApplyToNextTurnOnly>k__BackingField: 0
+    modifierConditions: []
   <ActionCostType>k__BackingField: 0
   <Cost>k__BackingField: 0
-  <ElementalProperty>k__BackingField: 0
-  <Pierce>k__BackingField: 0
-  Knockback: 0
-  <HasCastTime>k__BackingField: 0
-  <HitCount>k__BackingField: 0
-  <HitRate>k__BackingField: 100
-  <GuaranteedHit>k__BackingField: 0
-  <CritRateMultiplier>k__BackingField: 1
+  <HitCount>k__BackingField: 1
   <TargetingType>k__BackingField: 2
   <AOEType>k__BackingField: 0
-  <HitRandomTarget>k__BackingField: 0
-  <ActionModifiers>k__BackingField: []
-  <TriggerableBattleEffects>k__BackingField: []
+  <IsMelee>k__BackingField: 0
+  <IsBackAttack>k__BackingField: 0
+  <UseConditions>k__BackingField: []
+  ActionModifiers: []
+  <BattleEventTriggers>k__BackingField: []
+  <StatusEffectTags>k__BackingField: []
   <ExecutePosition>k__BackingField: 0
   <ActionAnimations>k__BackingField: []

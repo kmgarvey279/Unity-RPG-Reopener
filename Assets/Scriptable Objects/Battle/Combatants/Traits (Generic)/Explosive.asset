@@ -13,7 +13,11 @@ MonoBehaviour:
   m_Name: Explosive
   m_EditorClassIdentifier: 
   <TraitName>k__BackingField: Explosive
-  <TraitInfo>k__BackingField: 'Deals damage to all opposing combatants on KO. '
-  <StatModifiers>k__BackingField: []
-  <TriggerableBattleEffects>k__BackingField:
-  - {fileID: 11400000, guid: a5f0880f74ca20649af36b5ff0747813, type: 2}
+  <EffectDescriptions>k__BackingField:
+  - On KO, deals damage (x1.0 power) to all opponents.
+  <Icon>k__BackingField: {fileID: 0}
+  <BoolsToModify>k__BackingField: 
+  <IntStatModifiers>k__BackingField: []
+  <FloatStatModifiers>k__BackingField: []
+  <ActionModifiers>k__BackingField: []
+  <TriggerableEffectContainers>k__BackingField: []

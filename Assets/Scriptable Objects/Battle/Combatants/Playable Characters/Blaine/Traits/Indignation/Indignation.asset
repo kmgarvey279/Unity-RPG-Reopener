@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae13e52848a500a489d9535b3fcb7ccf, type: 3}
+  m_Name: Indignation
+  m_EditorClassIdentifier: 
+  <TraitName>k__BackingField: Indignation
+  <TraitType>k__BackingField: Passive
+  <TraitDescription>k__BackingField: 'Increases outgoing damage by 10% and decreases
+    incoming damage by 20% when your HP is at 30% or less. '
+  <AdditionalDescriptions>k__BackingField: []
+  <Icon>k__BackingField: {fileID: 0}
+  <BoolsToModify>k__BackingField: 
+  <UniversalModifiers>k__BackingField: []
+  <ActionModifiers>k__BackingField:
+  - <BattleEventType>k__BackingField: 0
+    <ActionModifierType>k__BackingField: 0
+    modifierType: 1
+    modifierValue: 1.1
+    conditionList:
+    - <Conditional>k__BackingField: 0
+      <BattleConditionCombatant>k__BackingField: 0
+      isNot: 0
+      battleCondition: {fileID: 11400000, guid: e002175fad8e56041ae4e14047f3f471,
+        type: 2}
+      value: 0.3
+  - <BattleEventType>k__BackingField: 1
+    <ActionModifierType>k__BackingField: 0
+    modifierType: 1
+    modifierValue: 0.8
+    conditionList:
+    - <Conditional>k__BackingField: 0
+      <BattleConditionCombatant>k__BackingField: 0
+      isNot: 0
+      battleCondition: {fileID: 11400000, guid: e002175fad8e56041ae4e14047f3f471,
+        type: 2}
+      value: 0.3
+  <BattleStartStatusEffects>k__BackingField: []
+  <PreemptiveBattleEventTriggers>k__BackingField: []
+  <BattleEventTriggers>k__BackingField: []

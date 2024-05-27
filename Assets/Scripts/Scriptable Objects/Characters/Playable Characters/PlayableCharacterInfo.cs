@@ -6,90 +6,88 @@ public enum PlayableCharacterID
 {
     Claire,
     Mutiny,
-    Shad,
     Blaine,
+    Shad,
     Lucy,
-    Oshi,
-    None
+    Oshi
 }
 
 [CreateAssetMenu(fileName = "New Playable Character Info", menuName = "Character Info/Playable")]
 public class PlayableCharacterInfo : CharacterInfo
 {
-    [field: SerializeField] private EquipmentItem weapon;
-    [field: SerializeField] private EquipmentItem armor;
-    [field: SerializeField] private EquipmentItem accessory;
+    //[field: SerializeField] public int GuardLimit { get; protected set; }
+    [field: SerializeField] public int InterventionLimit { get; private set; }
+    //private List<int> expToNextLookupPlaceholder = new List<int>();
+    [field: SerializeField] public int EXP { get; protected set; } 
+    private int placeholderExpToNext = 10;
+
+    [SerializeField] private EquipmentItem defaultWeapon;
+    [SerializeField] private EquipmentItem defaultArmor;
+    [SerializeField] private EquipmentItem defaultAccessory;
+    public Dictionary<EquipmentType, EquipmentItem> EquipDict;
     [field: SerializeField] public PlayableCharacterID PlayableCharacterID { get; private set; }
-    public Dictionary<EquipmentType, EquipmentItem> Equipment { get; private set; }
-    [field: SerializeField] public Action Attack { get; private set; }
+    [field: SerializeField] public Color CharacterColor { get; private set; }
+    [field: SerializeField] public Attack Attack { get; private set; }
     [field: SerializeField] public Action Defend { get; private set; }
     [field: SerializeField] public List<Action> Skills { get; private set; }
-
-    private float baseCritRate = 0.07f;
-    private float baseCritPower = 0.5f;
-    private float baseEvadeRate = 0.07f;
-    private float baseBlockPower = 0.2f;
 
     protected override void OnEnable()
     {
         base.OnEnable();
 
-        SecondaryStats[SecondaryStatType.CritRate].UpdateBaseValue(baseCritRate);
-        SecondaryStats[SecondaryStatType.CritPower].UpdateBaseValue(baseCritPower);
-        SecondaryStats[SecondaryStatType.EvadeRate].UpdateBaseValue(baseEvadeRate);
-        SecondaryStats[SecondaryStatType.BlockPower].UpdateBaseValue(baseBlockPower);
-
-        Equipment = new Dictionary<EquipmentType, EquipmentItem>();
-        foreach (EquipmentType equipmentType in System.Enum.GetValues(typeof(EquipmentType)))
+        EquipDict = new Dictionary<EquipmentType, EquipmentItem>()
         {
-            Equipment.Add(equipmentType, null);
+            { EquipmentType.Weapon, null},
+            { EquipmentType.Armor, null},
+            { EquipmentType.Accessory, null}
+        };
+
+        if (defaultWeapon != null)
+        {
+            ChangeEquipment(EquipmentType.Weapon, defaultWeapon);
         }
-        if(weapon)
-            ChangeEquipment(EquipmentType.Weapon, weapon);
-        if(armor)
-            ChangeEquipment(EquipmentType.Armor, armor);
-        if (accessory)
-            ChangeEquipment(EquipmentType.Accessory, accessory);
+        if (defaultArmor != null)
+        {
+            ChangeEquipment(EquipmentType.Armor, defaultArmor);
+        }
+        if (defaultAccessory != null)
+        {
+            ChangeEquipment(EquipmentType.Accessory, defaultAccessory);
+        }
+        //int expForThisLevel = baseExpToNext;
+        //for (int i = 0 i < 100; i++)
+        //{
+
+        //    expForThisLevel =  Mathf.CeilToInt(expForThisLevel + (expForThisLevel * 1.5f));
+        //}
     }
 
-    public void ChangeEquipment(EquipmentType equipmentType, EquipmentItem newEquipment)
+    public int GetEXPToNextLevel()
     {
-        //return if equipment is wrong type
-        if(newEquipment.EquipmentType != equipmentType || (newEquipment.CharacterExclusive && !newEquipment.ExclusiveCharacters.Contains(PlayableCharacterID))) 
-        {
-            return;
-        }
-        //update stat modifiers
-        if(Equipment[equipmentType] != null)
-        {
-            //clear modifiers from old equipment
-            foreach(StatModifier statModifier in Equipment[equipmentType].StatModifiers)
-            {
-                Stats[statModifier.StatType].RemoveModifier(statModifier.Modifier, statModifier.ModifierType);
-            }
-            foreach (SecondaryStatModifier secondaryStatModifier in Equipment[equipmentType].SecondaryStatModifiers)
-            {
-                SecondaryStats[secondaryStatModifier.SecondaryStatType].RemoveModifier(secondaryStatModifier.Modifier, secondaryStatModifier.ModifierType);
-            }
-            foreach (KeyValuePair<ElementalProperty, int> modifier in Equipment[equipmentType].ResistanceModifiers)
-            {
-                ResistanceModifiers[modifier.Key].Remove(modifier.Value);
-            }
-        }
-        //add equipment to dictionary
-        Equipment[equipmentType] = newEquipment;
-        //add modifiers from new equipment
-        foreach (StatModifier statModifier in Equipment[equipmentType].StatModifiers)
-        {
-            Stats[statModifier.StatType].AddModifier(statModifier.Modifier, statModifier.ModifierType);
-        }
-        foreach (SecondaryStatModifier secondaryStatModifier in Equipment[equipmentType].SecondaryStatModifiers)
-        {
-            SecondaryStats[secondaryStatModifier.SecondaryStatType].AddModifier(secondaryStatModifier.Modifier, secondaryStatModifier.ModifierType);
-        }
-        foreach (KeyValuePair<ElementalProperty,int> modifier in Equipment[equipmentType].ResistanceModifiers)
-        {
-            ResistanceModifiers[modifier.Key].Add(modifier.Value);
-        }
+        return Mathf.Clamp(placeholderExpToNext - EXP, 0, placeholderExpToNext);
+    }
+
+    public void ChangeEquipment(EquipmentType slotType, EquipmentItem newEquipment)
+    {
+        //clear previous
+        //if (EquipDict[slotType] != null)
+        //{
+        //    foreach (IntStatModifier intStatModifier in EquipDict[slotType].IntStatModifiers)
+        //    {
+        //        RemoveIntStatModifier(intStatModifier.IntStatType, intStatModifier.Modifier, intStatModifier.ModifierType);
+        //    }
+        //}
+
+        //if (newEquipment != null)
+        //{
+        //    //add new
+        //    foreach (IntStatModifier intStatModifier in newEquipment.IntStatModifiers)
+        //    {
+        //        ApplyIntStatModifier(intStatModifier.IntStatType, intStatModifier.Modifier, intStatModifier.ModifierType);
+        //    }
+        //}
+
+        ////assign to slot
+        //EquipDict[slotType] = newEquipment;
     }
 }

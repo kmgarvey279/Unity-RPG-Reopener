@@ -2,16 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ModifierType
-{
-    Addend,
-    Multiplier
-}
+//public enum ModifierType
+//{
+//    Addend,
+//    Multiplier
+//}
 
 [System.Serializable]
-public class StatModifier
+public class IntStatModifier
 {
-    [field: SerializeField] public StatType StatType { get; private set; }
-    [field: SerializeField] public ModifierType ModifierType { get; private set; }
-    [field: SerializeField] public float Modifier { get; private set; }
+    [field: SerializeField] public IntStatType IntStatType { get; private set; }
+    //[field: SerializeField] public ModifierType ModifierType { get; private set; }
+    [field: SerializeField] public int Modifier { get; private set; }
 }
