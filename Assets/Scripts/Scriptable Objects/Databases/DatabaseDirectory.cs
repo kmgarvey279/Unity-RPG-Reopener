@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Burst.CompilerServices;
 using UnityEngine;
-using static Cinemachine.DocumentationSortingAttribute;
 
 public class GeneralConsts
 {
-    public int LevelCap = 99;
-    public int[] EXPRequirements;
+    public int LevelCap { get; private set; } = 99;
+    public int[] EXPRequirements { get; private set; }
+    public int StatCap { get; private set; } = 99;
+
     public const int baseEXPRequirement = 20;
     public const float perLevelEXPMultiplier = 1.5f;
 
-    public int StatCap = 99;
 
     public GeneralConsts()
     {
@@ -35,6 +35,7 @@ public class DatabaseDirectory : MonoBehaviour
 
     [field: SerializeField] public ItemDatabase ItemDatabase { get; private set; }
     [field: SerializeField] public PlayableCombatantDatabase PlayableCombatantDatabase { get; private set; }
+    [field: SerializeField] public EnemyDatabase EnemyDatabase { get; private set; }
     [field: SerializeField] public GeneralConsts GeneralConsts { get; private set; }
 
     public void Awake()

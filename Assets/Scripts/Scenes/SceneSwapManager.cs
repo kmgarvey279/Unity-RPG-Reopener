@@ -28,7 +28,7 @@ public class SceneSwapManager : MonoBehaviour
             Instance = this;
         }
 
-        loadContainer.SetActive(false);
+        //loadContainer.SetActive(false);
     }
 
     private void OnEnable()
@@ -45,8 +45,8 @@ public class SceneSwapManager : MonoBehaviour
     {
         Debug.Log("changing current scene");
 
-        loadContainer.SetActive(true);
-        loadBar.SetCurrentValue(0);
+        //loadContainer.SetActive(true);
+        //loadBar.SetCurrentValue(0);
 
         AsyncOperation asyncLoadOperation = SceneManager.LoadSceneAsync(sceneName);
         asyncLoadOperation.allowSceneActivation = false;
@@ -54,37 +54,38 @@ public class SceneSwapManager : MonoBehaviour
 
         while (asyncLoadOperation.progress < 0.9f)
         {
-            float progress = Mathf.Clamp01(asyncLoadOperation.progress / 0.9f);
-            loadProgress = progress;
+            //float progress = Mathf.Clamp01(asyncLoadOperation.progress / 0.9f);
+            //loadProgress = progress;
 
-            yield return new WaitForEndOfFrame();
-        }
-
-        loadProgress = 1f;
-        while (isLoading)
-        {
+            //yield return new WaitForEndOfFrame();
             yield return null;
         }
+
+        //loadProgress = 1f;
+        //while (isLoading)
+        //{
+        //    yield return null;
+        //}
         
         asyncLoadOperation.allowSceneActivation = true;
     }
 
     private void OnSceneChanged(Scene scene1, Scene scene2)
     {
-        loadContainer.SetActive(false);
+        //loadContainer.SetActive(false);
         onLoadComplete.Invoke();
     }
-    private void Update()
-    {
-        if (isLoading)
-        {
-            float currentValue = loadBar.GetCurrentValue();
-            float valueToDisplay = Mathf.MoveTowards(currentValue, loadProgress, 3f * Time.deltaTime);
-            loadBar.SetCurrentValue(valueToDisplay);
-            if (loadBar.GetCurrentValue() == 1f)
-            {
-                isLoading = false;
-            }
-        }
-    }
+    //private void Update()
+    //{
+    //    if (isLoading)
+    //    {
+    //        float currentValue = loadBar.GetCurrentValue();
+    //        float valueToDisplay = Mathf.MoveTowards(currentValue, loadProgress, 3f * Time.deltaTime);
+    //        loadBar.SetCurrentValue(valueToDisplay);
+    //        if (loadBar.GetCurrentValue() == 1f)
+    //        {
+    //            isLoading = false;
+    //        }
+    //    }
+    //}
 }

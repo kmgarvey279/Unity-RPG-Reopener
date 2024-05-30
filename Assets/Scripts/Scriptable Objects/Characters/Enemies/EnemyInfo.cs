@@ -51,6 +51,9 @@ public class WeightedAction
 [CreateAssetMenu(fileName = "New Enemy Info", menuName = "Enemy Info")]
 public class EnemyInfo : ScriptableObject
 {
+    public string EnemyID { private set; get; }
+    public string enemyIDCopy;
+
     [field: Header("Primary Info")]
     [field: SerializeField] public string CharacterName { get; private set; } = "";
     [field: SerializeField] public GameObject Prefab { get; private set; }
@@ -76,7 +79,16 @@ public class EnemyInfo : ScriptableObject
     [field: Header("Vulnerabilities")]
     [field: SerializeField] public List<ElementalProperty> Vulnerabilities { get; protected set; } = new List<ElementalProperty>();
 
-    protected virtual void OnEnable()
+    private void Awake()
+    {
+        if (EnemyID == "")
+        {
+            EnemyID = System.Guid.NewGuid().ToString();
+        }
+        enemyIDCopy = EnemyID;
+    }
+
+    private void OnEnable()
     {
         StatGrowth = new Dictionary<IntStatType, float>()
         {

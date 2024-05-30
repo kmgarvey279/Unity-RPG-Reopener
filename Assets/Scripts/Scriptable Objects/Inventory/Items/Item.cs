@@ -13,6 +13,7 @@ public enum ItemType
 public class Item: ScriptableObject
 {
     public string ItemID { private set; get; } = System.Guid.NewGuid().ToString();
+    public string itemIDCopy;
 
     [HideInInspector] public ItemType ItemType { get; protected set; }
     [field: SerializeField] public string ItemName { get; protected set; } = "Item Name";
@@ -23,4 +24,13 @@ public class Item: ScriptableObject
     [field: SerializeField] public int SellValue { get; protected set; } = 0;
     [field: SerializeField] public bool CanDiscard { get; protected set; } = false;
     [field: SerializeField] public int CarryMax { get; protected set; } = 99;
+
+    private void Awake()
+    {
+        if (ItemID == "")
+        {
+            ItemID = System.Guid.NewGuid().ToString();
+        }
+        itemIDCopy = ItemID;
+    }
 }

@@ -51,11 +51,12 @@ public class WeaknessDisplay : MonoBehaviour
 
     public void DisplayWeaknesses(EnemyInfo enemyInfo)
     {
-        if (!SaveManager.Instance.LoadedData.PlayerData.EnemyLog.EnemyEntries.ContainsKey(enemyInfo))
+        if (!SaveManager.Instance.LoadedData.PlayerData.EnemyLog.EnemyEntries.ContainsKey(enemyInfo.EnemyID))
         {
             return;
         }
-        EnemyLogEntry enemyLogEntry = SaveManager.Instance.LoadedData.PlayerData.EnemyLog.EnemyEntries[enemyInfo];
+        EnemyLogEntry enemyLogEntry = SaveManager.Instance.LoadedData.PlayerData.EnemyLog.EnemyEntries[enemyInfo.EnemyID];
+
         //display weaknesses
         foreach (KeyValuePair<ElementalProperty, WeaknessIcon> iconEntry in weaknesses)
         {

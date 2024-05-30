@@ -326,7 +326,14 @@ public class TargetSelectState : BattleState
                 EnemyCombatant enemyCombatant = (EnemyCombatant)target;
                 EnemyInfo enemyInfo = enemyCombatant.EnemyInfo;
 
-                bool isRevealed = SaveManager.Instance.LoadedData.PlayerData.EnemyLog.EnemyEntries[enemyInfo].RevealedElements.Contains(attack.ElementalProperty);
+                bool isRevealed = false;
+                if (SaveManager.Instance.LoadedData.PlayerData.EnemyLog.EnemyEntries.ContainsKey(enemyInfo.EnemyID))
+                {
+                    if (SaveManager.Instance.LoadedData.PlayerData.EnemyLog.EnemyEntries[enemyInfo.EnemyID].RevealedElements.Contains(attack.ElementalProperty))
+                    {
+                        isRevealed = true;
+                    }
+                }
                 enemyCombatant.DisplayVulnerability(isRevealed, attack.ElementalProperty);
             }
         }

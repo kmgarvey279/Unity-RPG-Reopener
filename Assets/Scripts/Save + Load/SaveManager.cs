@@ -28,6 +28,7 @@ public class SaveManager : MonoBehaviour
     [field: SerializeField] public float sessionTimer = 0;
 
     #if UNITY_EDITOR
+    [Header("Editor")]
     [SerializeField] private DebugData debugData;
 
     public void LoadDebugData()
@@ -58,7 +59,7 @@ public class SaveManager : MonoBehaviour
             SaveData = new SaveData();
             SaveData.PopulateFiles();
 
-            SaveGeneric<SaveData>(SaveData);
+            SaveGeneric(SaveData);
         }
     }
 

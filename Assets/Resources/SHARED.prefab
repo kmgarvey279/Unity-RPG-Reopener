@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &282943172
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1157,6 +1157,8 @@ MonoBehaviour:
     type: 2}
   <PlayableCombatantDatabase>k__BackingField: {fileID: 11400000, guid: cd727f79fc8dbaf4d9df47edbc6d8d3e,
     type: 2}
+  <EnemyDatabase>k__BackingField: {fileID: 11400000, guid: f7638471edc4e464e899a525cbfa4e66,
+    type: 2}
 --- !u!1 &4161687709271118782
 GameObject:
   m_ObjectHideFlags: 0
@@ -1505,7 +1507,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0.496, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
