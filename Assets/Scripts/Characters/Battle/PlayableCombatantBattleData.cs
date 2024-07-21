@@ -27,6 +27,7 @@ public class PlayableCombatantBattleData : CombatantBattleData
         CharacterLetter = "";
         TurnIcon = data.StaticInfo.TurnIcon;
         CharacterColor = data.StaticInfo.CharacterColor;
+        Level = data.Level;
 
         //hp/mp/IP
         HP = new ClampInt(data.CurrentHP, 0, data.GetStat(IntStatType.MaxHP));

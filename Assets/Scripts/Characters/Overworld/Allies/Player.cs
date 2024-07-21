@@ -28,13 +28,16 @@ public class Player : MonoBehaviour
     [SerializeField] private OverworldData overworldData;
 
     [Header("Sound FX")]
-    [SerializeField] private AudioClip testSoundFX;
+    [SerializeField] private AudioClip step1SFX;
+    [SerializeField] private AudioClip step2SFX;
 
     [Header("Signals")]
     [SerializeField] private SignalSender OnChangeRoomStart;
     [SerializeField] private SignalSender OnChangeRoomEnd;
 
+    private WaitForSeconds wait005 = new WaitForSeconds(0.05f);
     private WaitForSeconds wait025 = new WaitForSeconds(0.25f);
+    private WaitForSeconds wait05 = new WaitForSeconds(0.5f);
 
     private void OnEnable()
     {
@@ -58,6 +61,8 @@ public class Player : MonoBehaviour
         playerItemPickupController = GetComponent<PlayerItemPickupController>();
         playerInteractionController = GetComponentInChildren<PlayerInteractionController>();
         moveDirection = new Vector3(0, 0);
+
+        StartCoroutine(TriggerWalkSFX());
     }
 
     public void SetDirection(Vector2 newDirection)
@@ -102,6 +107,34 @@ public class Player : MonoBehaviour
     {
         isRunning = isPressed;
         Debug.Log("Is running: " + isRunning);
+    }
+
+    private IEnumerator TriggerWalkSFX()
+    {
+        bool isEvenTick = false;
+        WaitForEndOfFrame wait = new WaitForEndOfFrame();
+
+        while (true)
+        {
+            if (moveDirection.x != 0 || moveDirection.y != 0)
+            {
+                if (isEvenTick)
+                {
+                    SoundFXManager.Instance.PlayClipInWorld(step2SFX, transform, 0.5f);
+
+                }
+                else
+                {
+                    SoundFXManager.Instance.PlayClipInWorld(step1SFX, transform, 0.5f);
+
+                }
+                isEvenTick = !isEvenTick;
+                yield return wait05;
+            }
+            yield return wait;
+        }
+
+        yield return null;
     }
 
     private void Interact(bool isPressed)

@@ -15,7 +15,7 @@ public class PauseMenuStateInactive : PauseMenuState
         background.SetActive(false);
 
         Time.timeScale = 1.0f;
-        InputManager.Instance.ChangeActionMap("Overworld");
+        InputManager.Instance.ChangeActionMap(ActionMapType.Overworld);
 
         InputManager.Instance.OnPressPause.AddListener(Pause);
     }
@@ -36,7 +36,7 @@ public class PauseMenuStateInactive : PauseMenuState
         background.SetActive(true);
 
         Time.timeScale = 0;
-        InputManager.Instance.ChangeActionMap("UI");
+        InputManager.Instance.ChangeActionMap(ActionMapType.UI);
 
         InputManager.Instance.OnPressPause.RemoveListener(Pause);
     }

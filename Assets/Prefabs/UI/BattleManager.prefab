@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 451647473}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2036527992414714682}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &451647476
 MonoBehaviour:
@@ -50,6 +50,11 @@ MonoBehaviour:
   gridManager: {fileID: 0}
   effectPopup: {fileID: 0}
   <Events>k__BackingField: []
+  playerTriggerIcon: {fileID: 0}
+  enemyTriggerIcon: {fileID: 0}
+  turnIcon: {fileID: 0}
+  buffIcon: {fileID: 0}
+  debuffIcon: {fileID: 0}
 --- !u!114 &451647475
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -103,6 +108,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 692242122}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -120,7 +126,6 @@ Transform:
   - {fileID: 905993646}
   - {fileID: 2223181051230426039}
   m_Father: {fileID: 2036527992414714682}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &692242123
 MonoBehaviour:
@@ -200,13 +205,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 871918600}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
-  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &871918601
 MonoBehaviour:
@@ -225,7 +230,6 @@ MonoBehaviour:
   battleStateType: 7
   gridManager: {fileID: 0}
   battleTimeline: {fileID: 0}
-  signalListeners: []
 --- !u!1 &905993645
 GameObject:
   m_ObjectHideFlags: 0
@@ -250,13 +254,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 905993645}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
-  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &905993647
 MonoBehaviour:
@@ -275,7 +279,6 @@ MonoBehaviour:
   battleStateType: 9
   gridManager: {fileID: 0}
   battleTimeline: {fileID: 0}
-  signalListeners: []
 --- !u!1 &990743667
 GameObject:
   m_ObjectHideFlags: 0
@@ -299,13 +302,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 990743667}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1385212921}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1068160556
 GameObject:
@@ -331,13 +334,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1068160556}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
-  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1068160558
 MonoBehaviour:
@@ -356,7 +359,6 @@ MonoBehaviour:
   battleStateType: 5
   gridManager: {fileID: 0}
   battleTimeline: {fileID: 0}
-  signalListeners: []
   wait: {fileID: 11400000, guid: 87818ae46e5748c45afe5f916dd34148, type: 2}
 --- !u!1 &1104867728
 GameObject:
@@ -382,13 +384,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1104867728}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1104867730
 MonoBehaviour:
@@ -407,11 +409,6 @@ MonoBehaviour:
   battleStateType: 0
   gridManager: {fileID: 0}
   battleTimeline: {fileID: 0}
-  signalListeners: []
-  onScreenFadeIn: {fileID: 11400000, guid: 596713b2036a5774c9548dd438b8c0a7, type: 2}
-  onInterventionStart: {fileID: 11400000, guid: c421700ae55ccd74a9e346123d336182,
-    type: 2}
-  onInterventionEnd: {fileID: 11400000, guid: 416636233610cc54aa03b5542d9d20bc, type: 2}
 --- !u!1 &1255800023
 GameObject:
   m_ObjectHideFlags: 0
@@ -437,13 +434,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1255800023}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
-  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1255800025
 MonoBehaviour:
@@ -462,8 +459,6 @@ MonoBehaviour:
   battleStateType: 8
   gridManager: {fileID: 0}
   battleTimeline: {fileID: 0}
-  signalListeners:
-  - {fileID: 1255800026}
   targetInfo: {fileID: 0}
   onInterventionStart: {fileID: 11400000, guid: c421700ae55ccd74a9e346123d336182,
     type: 2}
@@ -520,13 +515,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1360154138}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
-  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1360154140
 MonoBehaviour:
@@ -545,11 +540,8 @@ MonoBehaviour:
   battleStateType: 4
   gridManager: {fileID: 0}
   battleTimeline: {fileID: 0}
-  signalListeners: []
-  playerData: {fileID: 11400000, guid: 839fb81b0c282454397d2057ecda21e6, type: 2}
   actionPopup: {fileID: 0}
   onInterventionEnd: {fileID: 11400000, guid: 416636233610cc54aa03b5542d9d20bc, type: 2}
-  inventory: {fileID: 11400000, guid: a51431b0d76038d40940c59dec71a7fb, type: 2}
   actionEventToExecute:
     <Action>k__BackingField: {fileID: 0}
     <Actor>k__BackingField: {fileID: 0}
@@ -586,6 +578,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1385212920}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -595,7 +588,6 @@ Transform:
   - {fileID: 1408779867}
   - {fileID: 1421601337}
   m_Father: {fileID: 2036527992414714682}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1408779866
 GameObject:
@@ -620,13 +612,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1408779866}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1385212921}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1421601336
 GameObject:
@@ -651,13 +643,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1421601336}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1385212921}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1522742265
 GameObject:
@@ -683,13 +675,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1522742265}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1522742267
 MonoBehaviour:
@@ -708,8 +700,6 @@ MonoBehaviour:
   battleStateType: 2
   gridManager: {fileID: 0}
   battleTimeline: {fileID: 0}
-  signalListeners: []
-  commandMenuMain: {fileID: 0}
   onCameraFollow: {fileID: 11400000, guid: 1b526e957c88b6e40aa2172d13ee6bf3, type: 2}
   commandMenuManager: {fileID: 0}
 --- !u!1 &1600802480
@@ -737,13 +727,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1600802480}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
-  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1600802482
 MonoBehaviour:
@@ -762,10 +752,7 @@ MonoBehaviour:
   battleStateType: 3
   gridManager: {fileID: 0}
   battleTimeline: {fileID: 0}
-  signalListeners:
-  - {fileID: 645807481}
   commandMenuManager: {fileID: 0}
-  playerData: {fileID: 11400000, guid: 839fb81b0c282454397d2057ecda21e6, type: 2}
   targetInfo: {fileID: 0}
   onCameraUnfollow: {fileID: 11400000, guid: 316cff9380dbcd94b9e8e92f4ea2ed55, type: 2}
   coldStatus: {fileID: 11400000, guid: 91c605729b44b8a428fc1799f417f752, type: 2}
@@ -822,6 +809,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2036527992414714683}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -831,7 +819,6 @@ Transform:
   - {fileID: 451647474}
   - {fileID: 1385212921}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2036527992414714679
 MonoBehaviour:
@@ -845,26 +832,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7812e0711bdcbfc479cf4d1d6fb6ea11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerData: {fileID: 11400000, guid: 839fb81b0c282454397d2057ecda21e6, type: 2}
-  enemyPartyData: {fileID: 11400000, guid: ca3cd966c2e391d4a93bb7fba9bd8266, type: 2}
-  claire: {fileID: 7887917972336964174, guid: 61f78bef9429dc1469d0edf2ca4ed0d5, type: 3}
-  mutiny: {fileID: 7887917972336964174, guid: 61f78bef9429dc1469d0edf2ca4ed0d5, type: 3}
-  shad: {fileID: 7887917972336964174, guid: 61f78bef9429dc1469d0edf2ca4ed0d5, type: 3}
-  blaine: {fileID: 7887917972336964174, guid: 61f78bef9429dc1469d0edf2ca4ed0d5, type: 3}
-  lucy: {fileID: 7887917972336964174, guid: 61f78bef9429dc1469d0edf2ca4ed0d5, type: 3}
-  oshi: {fileID: 7887917972336964174, guid: 61f78bef9429dc1469d0edf2ca4ed0d5, type: 3}
-  enemyPrefab: {fileID: 193216028098152511, guid: 4e96c45283b05614e8cf967d906da496,
-    type: 3}
   playerParent: {fileID: 990743667}
   reservePlayerParent: {fileID: 1408779866}
   enemyParent: {fileID: 1421601336}
   mainCamera: {fileID: 0}
+  battleCanvas: {fileID: 0}
   battlePartyHUD: {fileID: 0}
   gridManager: {fileID: 0}
   battleTimeline: {fileID: 0}
+  startingActionMap: 
   battleEventQueue: {fileID: 451647476}
   stateMachine: {fileID: 692242123}
-  onInterventionEnd: {fileID: 11400000, guid: 416636233610cc54aa03b5542d9d20bc, type: 2}
+  onFadeIn: {fileID: 0}
+  onFadeOut: {fileID: 0}
+  onExitBattle: {fileID: 0}
   <PlayableCombatants>k__BackingField: []
   <ReservePlayableCombatants>k__BackingField: []
   <EnemyCombatants>k__BackingField: []
@@ -892,13 +873,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4929225038856883274}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
-  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5331352290605721043
 MonoBehaviour:
@@ -917,7 +898,6 @@ MonoBehaviour:
   battleStateType: 6
   gridManager: {fileID: 0}
   battleTimeline: {fileID: 0}
-  signalListeners: []
   battleEventQueue: {fileID: 451647476}
   onInterventionEnd: {fileID: 11400000, guid: 416636233610cc54aa03b5542d9d20bc, type: 2}
 --- !u!1 &5963231172399548223
@@ -944,13 +924,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5963231172399548223}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
-  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4818587476516272156
 MonoBehaviour:
@@ -969,7 +949,6 @@ MonoBehaviour:
   battleStateType: 10
   gridManager: {fileID: 0}
   battleTimeline: {fileID: 0}
-  signalListeners: []
 --- !u!1 &7913752417119186372
 GameObject:
   m_ObjectHideFlags: 0
@@ -994,13 +973,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7913752417119186372}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 692242124}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4967431981776623237
 MonoBehaviour:
@@ -1019,7 +998,6 @@ MonoBehaviour:
   battleStateType: 1
   gridManager: {fileID: 0}
   battleTimeline: {fileID: 0}
-  signalListeners: []
   battlePartyHUD: {fileID: 0}
   battleEventQueue: {fileID: 451647476}
   wait: {fileID: 11400000, guid: 87818ae46e5748c45afe5f916dd34148, type: 2}

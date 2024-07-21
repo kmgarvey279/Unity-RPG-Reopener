@@ -75,15 +75,7 @@ public class TitleMenuStateMain : TitleMenuState
     {
         SaveManager.Instance.StartNewGame();
 
-        SceneSetupManager sceneSetupManager = FindObjectOfType<SceneSetupManager>();
-        if (sceneSetupManager)
-        {
-            StartCoroutine(sceneSetupManager.OnExitSceneCo(firstScene));
-        }
-        else
-        {
-            Debug.Log("Setup manager not found!");
-        }
+        StartCoroutine(titleMenu.ExitTitleCo(firstScene.SceneName));
     }
 
     public void OnClickLoad()

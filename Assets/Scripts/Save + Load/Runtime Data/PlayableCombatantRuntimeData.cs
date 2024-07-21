@@ -135,9 +135,9 @@ public class PlayableCombatantRuntimeData
 
     private int GetDerivedStatValue(IntStatType statType)
     {
-        int hpBaseValue = 200;
-        int mpBaseValue = 50;
-        int standardBaseValue = 5;
+        const int hpBaseValue = 200;
+        const int mpBaseValue = 50;
+        const int standardBaseValue = 5;
 
         int baseValueToUse = standardBaseValue;
         if (statType == IntStatType.MaxHP)
@@ -219,5 +219,10 @@ public class PlayableCombatantRuntimeData
             }
         }
         CurrentEXP = totalEXP;
+    }
+
+    public int GetNextLevelRequirement()
+    {
+        return DatabaseDirectory.Instance.GeneralConsts.EXPRequirements[Level];
     }
 }

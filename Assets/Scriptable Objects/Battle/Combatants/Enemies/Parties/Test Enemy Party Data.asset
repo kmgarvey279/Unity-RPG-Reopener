@@ -16,9 +16,14 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 387b9d4002489044893783b49fe833a3, type: 2}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 11400000, guid: 387b9d4002489044893783b49fe833a3, type: 2}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 11400000, guid: 387b9d4002489044893783b49fe833a3, type: 2}
   - {fileID: 0}
-  - {fileID: 11400000, guid: 387b9d4002489044893783b49fe833a3, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  <EXP>k__BackingField: 500
+  <BGM>k__BackingField: {fileID: 8300000, guid: 38092e4da7e649647a44a02717325927,
+    type: 3}
+  <EnvironmentPrefab>k__BackingField: {fileID: 2892762085927042598, guid: e82a6e9a341a7d546948b5c050dc1eeb,
+    type: 3}

@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SceneSetupManagerBattle : SceneSetupManager
-{
+//public class SceneSetupManagerBattle : SceneSetupManager
+//{
     //[SerializeField] private BattleManager battleManager;
     //[SerializeField] private EnemyPartyData testEnemyParty;
     //[SerializeField] private SignalSenderInt onChangeBattleState;
@@ -32,4 +32,4 @@ public class SceneSetupManagerBattle : SceneSetupManager
     //{
     //    yield return null;
     //}
-}
+//}

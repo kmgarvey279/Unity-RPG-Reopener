@@ -62,6 +62,7 @@ public class TurnEndState : BattleState
 
             //destroy previous turn panel
             battleTimeline.RemoveTurn(battleTimeline.CurrentTurn, false);
+            //yield return wait1;
         }
 
         yield return wait025;

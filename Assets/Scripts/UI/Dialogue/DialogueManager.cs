@@ -6,8 +6,6 @@ using UnityEngine.EventSystems;
 
 public class DialogueManager : MonoBehaviour
 {
-    public static DialogueManager Instance;
-
     [SerializeField] private GameObject display;
 
     [SerializeField] private TextMeshProUGUI dialogueTMP;
@@ -30,11 +28,6 @@ public class DialogueManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-
         if (display.activeInHierarchy)
         {
             display.SetActive(false);
@@ -60,7 +53,7 @@ public class DialogueManager : MonoBehaviour
     public void SetDialogueData(DialogueData _dialogueData)
     {
         Time.timeScale = 0;
-        InputManager.Instance.ChangeActionMap("Dialogue");
+        InputManager.Instance.ChangeActionMap(ActionMapType.Dialogue);
 
         display.SetActive(true);
 
@@ -120,6 +113,6 @@ public class DialogueManager : MonoBehaviour
         display.SetActive(false);
 
         Time.timeScale = 1;
-        InputManager.Instance.ChangeActionMap("Overworld");
+        InputManager.Instance.ChangeActionMap(ActionMapType.Overworld);
     }
 }

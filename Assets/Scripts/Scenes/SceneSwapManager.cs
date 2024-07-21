@@ -49,17 +49,17 @@ public class SceneSwapManager : MonoBehaviour
         //loadBar.SetCurrentValue(0);
 
         AsyncOperation asyncLoadOperation = SceneManager.LoadSceneAsync(sceneName);
-        asyncLoadOperation.allowSceneActivation = false;
-        isLoading = true;
+        //asyncLoadOperation.allowSceneActivation = false;
+        //isLoading = true;
 
-        while (asyncLoadOperation.progress < 0.9f)
-        {
+        //while (asyncLoadOperation.progress < 0.9f)
+        //{
             //float progress = Mathf.Clamp01(asyncLoadOperation.progress / 0.9f);
             //loadProgress = progress;
 
             //yield return new WaitForEndOfFrame();
             yield return null;
-        }
+        //}
 
         //loadProgress = 1f;
         //while (isLoading)

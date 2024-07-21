@@ -18,6 +18,7 @@ public class ScrollableListSlotSave : ScrollableListSlot
     [SerializeField] private Image background;
     [SerializeField] private Color emptyColor;
     [SerializeField] private Color savedColor;
+    [SerializeField] private Color emptyAutoColor;
     [SerializeField] private Color autoColor;
     [SerializeField] private Color autoTextColor;
     [SerializeField] private GameObject glow;
@@ -66,7 +67,14 @@ public class ScrollableListSlotSave : ScrollableListSlot
         }
         else
         {
-            background.color = emptyColor;
+            if (saveFile.FileNum == 0)
+            {
+                background.color = emptyAutoColor;
+            }
+            else
+            {
+                background.color = emptyColor;
+            }
         }
 
         FileNum = saveFile.FileNum;

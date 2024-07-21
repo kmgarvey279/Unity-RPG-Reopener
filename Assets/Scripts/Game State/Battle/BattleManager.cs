@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using StateMachineNamespace;
 using System;
+using System.Linq;
 using Random = UnityEngine.Random;
 
 public enum CombatantType
@@ -11,6 +12,24 @@ public enum CombatantType
     Enemy,
     None,
     All
+}
+
+public class ExpData
+{
+    [SerializeField] public Sprite Icon { get; private set; }
+    [SerializeField] public int LevelStart { get; private set; }
+    [SerializeField] public int LevelEnd { get; private set; }
+    [SerializeField] public int CurrentEXP { get; private set; }
+    [SerializeField] public int NextLevelRequirement { get; private set; }
+
+    public ExpData(Sprite icon, int levelStart, int levelEnd, int currentEXP, int nextLevelRequirement)
+    {
+        Icon = icon;
+        LevelStart = levelStart;
+        LevelEnd = levelEnd;
+        CurrentEXP = currentEXP;
+        NextLevelRequirement = nextLevelRequirement;
+    }
 }
 
 public class BattleManager : MonoBehaviour
@@ -23,14 +42,15 @@ public class BattleManager : MonoBehaviour
     [field: Header("Battlefield")]
     [SerializeField] private Camera mainCamera;
     [SerializeField] private Canvas battleCanvas;
-    [SerializeField] private BattlePartyHUD battlePartyHUD;
+    [SerializeField] private Battlefield battlefield;
     [SerializeField] private GridManager gridManager;
 
-    [Header("Turn Order Display")]
+    [Header("HUD")]
+    [SerializeField] private BattleHUD battleHUD;
+    [SerializeField] private BattlePartyHUD battlePartyHUD;
     [SerializeField] private BattleTimeline battleTimeline;
 
     [Header("Input")]
-    [SerializeField] protected string startingActionMap;
     private bool canQueueIntervention = false;
 
     [Header("Battle Event Queue")]
@@ -47,21 +67,27 @@ public class BattleManager : MonoBehaviour
     [field: Header("Data")]
     //battle data
     [field: SerializeField] public BattleData BattleData { get; private set; } = new BattleData();
+
+    [field: SerializeField] private EnemyPartyData enemyPartyData;
     //active combatants
-    [field: SerializeField] public List<Combatant> PlayableCombatants { get; private set; } = new List<Combatant>();
+    [field: SerializeField] public List<PlayableCombatant> PlayableCombatants { get; private set; } = new List<PlayableCombatant>();
     [field: SerializeField] public List<PlayableCombatant> ReservePlayableCombatants { get; private set; } = new List<PlayableCombatant>();
-    [field: SerializeField] public List<Combatant> EnemyCombatants { get; private set; } = new List<Combatant>();
+    [field: SerializeField] public List<EnemyCombatant> EnemyCombatants { get; private set; } = new List<EnemyCombatant>();
 
     //cache wait for seconds
     private WaitForSeconds wait025 = new WaitForSeconds(0.25f);
     private WaitForSeconds wait05 = new WaitForSeconds(0.5f);
     private WaitForSeconds wait1 = new WaitForSeconds(1f);
 
+    private bool canExitVictoryScreen;
+
     private void OnEnable()
     {
         InputManager.Instance.OnPressIntervention1.AddListener(PressIntervention1);
         InputManager.Instance.OnPressIntervention2.AddListener(PressIntervention2);
         InputManager.Instance.OnPressIntervention3.AddListener(PressIntervention3);
+
+        InputManager.Instance.OnPressSubmit.AddListener(PressSubmit);
 
         mainCamera = FindFirstObjectByType<Camera>();
         //battleCanvas.
@@ -72,6 +98,8 @@ public class BattleManager : MonoBehaviour
         InputManager.Instance.OnPressIntervention1.RemoveListener(PressIntervention1);
         InputManager.Instance.OnPressIntervention2.RemoveListener(PressIntervention2);
         InputManager.Instance.OnPressIntervention3.RemoveListener(PressIntervention3);
+
+        InputManager.Instance.OnPressSubmit.RemoveListener(PressSubmit);
     }
 
     #region Input
@@ -95,13 +123,22 @@ public class BattleManager : MonoBehaviour
 
         OnPressIntervention(2);
     }
+
+    private void PressSubmit(bool isPressed)
+    {
+        if (canExitVictoryScreen)
+        {
+            ExitVictoryScreen();
+        }
+    }
     #endregion
 
-    #region Enter/Exit
+    #region Start/End
 
-    public IEnumerator EnterBattleCo(EnemyPartyData enemyPartyData)
+    public IEnumerator EnterBattleCo(EnemyPartyData _enemyPartyData)
     {
-        yield return StartCoroutine(SetupBattleCo(enemyPartyData));
+        enemyPartyData = _enemyPartyData;
+        yield return StartCoroutine(SetupBattleCo());
 
         onFadeIn.Raise();
         yield return new WaitForSeconds(1f);
@@ -111,10 +148,60 @@ public class BattleManager : MonoBehaviour
 
     public void StartBattle()
     {
-        InputManager.Instance.ChangeActionMap(startingActionMap);
+        InputManager.Instance.ChangeActionMap(ActionMapType.Battle);
         InputManager.Instance.UnlockInput();
 
         stateMachine.ChangeState((int)BattleStateType.BattleStart);
+    }
+
+    public void OnVictory()
+    {
+        List<ExpData> activeEXPData = new List<ExpData>();
+        List<ExpData> reserveEXPData = new List<ExpData>();
+
+        List<PlayableCharacterID> activeIDs = PlayableCombatants.Select(combatant => combatant.PlayableCharacterID).ToList();
+        foreach (PlayableCharacterID id in activeIDs)
+        {
+            PlayableCombatantRuntimeData charData = SaveManager.Instance.LoadedData.GetPlayableCombatantRuntimeData(id);
+            int levelStart = charData.Level;
+
+            charData.GainEXP(enemyPartyData.EXP);
+
+            int levelEnd = charData.Level;
+            int currentEXP = charData.CurrentEXP;
+            int nextLevelRequirement = charData.GetNextLevelRequirement();
+
+            activeEXPData.Add(new ExpData(charData.StaticInfo.TurnIcon, levelStart, levelEnd, currentEXP, nextLevelRequirement));
+        }
+
+        List<PlayableCharacterID> reserveIDs = ReservePlayableCombatants.Select(combatant => combatant.PlayableCharacterID).ToList();
+        foreach (PlayableCharacterID id in reserveIDs)
+        {
+            PlayableCombatantRuntimeData charData = SaveManager.Instance.LoadedData.GetPlayableCombatantRuntimeData(id);
+            int levelStart = charData.Level;
+
+            charData.GainEXP(enemyPartyData.EXP);
+
+            int levelEnd = charData.Level;
+            int currentEXP = charData.CurrentEXP;
+            int nextLevelRequirement = charData.GetNextLevelRequirement();
+
+            reserveEXPData.Add(new ExpData(charData.StaticInfo.TurnIcon, levelStart, levelEnd, currentEXP, nextLevelRequirement));
+        }
+        battleHUD.DisplayVictoryScreen(activeEXPData, reserveEXPData, enemyPartyData.EXP);
+        StartCoroutine(VictoryScreenDurationCo());
+    }
+
+    private IEnumerator VictoryScreenDurationCo()
+    {
+        yield return wait1;
+
+        canExitVictoryScreen = true;
+    }
+
+    private void ExitVictoryScreen()
+    {
+        ExitBattle(false);
     }
 
     public void ExitBattle(bool didRun)
@@ -126,15 +213,18 @@ public class BattleManager : MonoBehaviour
 
     #region Setup
 
-    public IEnumerator SetupBattleCo(EnemyPartyData enemyPartyData)
+    public IEnumerator SetupBattleCo()
     {
         ToggleCanQueueInterventions(false);
         
-        yield return StartCoroutine(SpawnCombatants(enemyPartyData));
+        battlefield.LoadEnvironment(enemyPartyData.EnvironmentPrefab);
+        MusicManager.Instance.PlayClip(enemyPartyData.BGM, 1);
+
+        yield return StartCoroutine(SpawnCombatants());
     }
 
 
-    public IEnumerator SpawnCombatants(EnemyPartyData enemyPartyData)
+    public IEnumerator SpawnCombatants()
     {
         PartyData partyData = SaveManager.Instance.LoadedData.PlayerData.PartyData;
         List<PlayableCharacterID> spawnedPlayableCharacterIDs = new List<PlayableCharacterID>();
@@ -301,11 +391,11 @@ public class BattleManager : MonoBehaviour
         {
             char letter = (char)(listIndex + 65);
             combatant.SetName(combatant.CharacterName, letter.ToString());
-            EnemyCombatants.Add(combatant);
+            EnemyCombatants.Add((EnemyCombatant)combatant);
         }
         else if (combatant is PlayableCombatant)
         {
-            PlayableCombatants.Insert(listIndex, combatant);
+            PlayableCombatants.Insert(listIndex, (PlayableCombatant)combatant);
         }
         battleTimeline.AddCombatant(combatant);
     }
@@ -517,18 +607,18 @@ public class BattleManager : MonoBehaviour
                 {
                     if (EnemyCombatants.Contains(combatant))
                     {
-                        EnemyCombatants.Remove(combatant);
+                        EnemyCombatants.Remove((EnemyCombatant)combatant);
                     }
                     battleTimeline.RemoveCombatant(combatant, true);
                 }
                 //battleTimeline.UpdateCasts();
             }
         }
-        battleTimeline.DisplayTurnOrder();
+        //battleTimeline.DisplayTurnOrder();
 
         if (waitForKO)
         {
-            yield return wait025;
+            yield return wait05;
         }
         yield return null;
     }

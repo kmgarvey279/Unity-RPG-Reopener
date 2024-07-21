@@ -23,11 +23,7 @@ public class SceneConnector : MonoBehaviour
     {
         if (other.CompareTag("PlayerChangeRoom"))
         {
-            SceneSetupManager sceneSetupManager = FindObjectOfType<SceneSetupManager>();
-            if (sceneSetupManager)
-            {
-                StartCoroutine(sceneSetupManager.OnExitSceneCo(LinkedScene.SceneName, LinkedConnectorIndex));
-            }
+            StartCoroutine(LevelManager.Instance.OnExitSceneCo(LinkedScene.SceneName, LinkedConnectorIndex));
         }
     }
 }

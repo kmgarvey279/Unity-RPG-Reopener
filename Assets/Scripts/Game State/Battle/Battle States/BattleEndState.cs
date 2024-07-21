@@ -8,8 +8,13 @@ public class BattleEndState : BattleState
 {
     public override void OnEnter()
     {
+        Debug.Log("Entering Battle End State");
+
         base.OnEnter();
+
+
         battleManager.ToggleCanQueueInterventions(false);
+        battleManager.OnVictory();
     }
 
     public override void StateUpdate()

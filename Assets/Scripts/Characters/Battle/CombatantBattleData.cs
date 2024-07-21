@@ -57,6 +57,7 @@ public class CombatantBattleData
     [field: SerializeField] public string CharacterLetter { get; set; } = "";
     public Sprite TurnIcon { get; set; }
 
+    [field: SerializeField] public int Level { get; set; }
     [field: SerializeField] public ClampInt HP { get; set; }
     [field: SerializeField] public ClampInt Barrier { get; set; }
     [field: SerializeField] public ClampInt MP { get; set; }

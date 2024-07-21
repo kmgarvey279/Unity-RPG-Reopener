@@ -10,6 +10,7 @@ public class TitleMenuStateLoad : TitleMenuState
     [SerializeField] private GameObject display;
     [Header("List")]
     [SerializeField] private ScrollableList saveList;
+    [SerializeField] private SignalSender onFadeOut;
 
     private void OnEnable()
     {
@@ -106,15 +107,8 @@ public class TitleMenuStateLoad : TitleMenuState
 
             if (SceneUtility.GetBuildIndexByScenePath(sceneToLoad) != -1)
             {
-                SceneSetupManager sceneSetupManager = FindObjectOfType<SceneSetupManager>();
-                if (sceneSetupManager)
-                {
-                    StartCoroutine(sceneSetupManager.OnExitSceneCo(sceneToLoad));
-                }
-                else
-                {
-                    Debug.LogError("Setup manager not found!");
-                }
+ 
+                    StartCoroutine(titleMenu.ExitTitleCo(sceneToLoad));
             }
             else
             {

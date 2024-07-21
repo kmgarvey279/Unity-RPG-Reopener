@@ -12,13 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 622987f3fd980c04fb94f3589b51ab64, type: 3}
   m_Name: Test Enemy
   m_EditorClassIdentifier: 
+  enemyIDCopy: a0c9f827-6d33-4e92-a0c7-2ef2faaf35c1
   <CharacterName>k__BackingField: Enemy
   <Prefab>k__BackingField: {fileID: 193216028098152511, guid: 4e96c45283b05614e8cf967d906da496,
     type: 3}
   <TurnIcon>k__BackingField: {fileID: 21300000, guid: 406ecd72d938dc646aa4e173164934ed,
     type: 3}
   <IsBoss>k__BackingField: 0
-  hpGrowth: 100
+  hpGrowth: 1
   mpGrowth: 0
   attackGrowth: 1
   defenseGrowth: 1
@@ -31,7 +32,7 @@ MonoBehaviour:
   <Traits>k__BackingField:
   - {fileID: 11400000, guid: fea99f6baf91dad40977197dbe1228e2, type: 2}
   - {fileID: 11400000, guid: c584353db7a7e8044860fdfbb11d1582, type: 2}
-  - {fileID: 11400000, guid: 85cea3c67dddea847b0a9b8f2662795d, type: 2}
+  - {fileID: 11400000, guid: f48c027798635f747a30d561d54bd256, type: 2}
   - {fileID: 11400000, guid: e09545026c74ac041994fb3b77bb650c, type: 2}
   <WeightedActions>k__BackingField:
   - weightType: 2

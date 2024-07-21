@@ -14,17 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <TraitName>k__BackingField: 'Debug: Apply Debuff'
   <TraitType>k__BackingField: Apply Status
-  <TraitDescription>k__BackingField: Applies a debuff at the start of the fight.
-  <AdditionalDescriptions>k__BackingField: []
+  <Description>k__BackingField: 
+  <SecondaryDescription>k__BackingField: 
   <Icon>k__BackingField: {fileID: 21300000, guid: f3369c94eadd23143b93f6b09595b936,
     type: 3}
   <BoolsToModify>k__BackingField: 
   <IntStatModifiers>k__BackingField: []
-  <FloatStatModifiers>k__BackingField: []
   <UniversalModifiers>k__BackingField: []
   <ActionModifiers>k__BackingField: []
   <BattleStartStatusEffects>k__BackingField:
   - {fileID: 11400000, guid: 5308b652b3ed48c44a80fa8b32f46392, type: 2}
-  - {fileID: 11400000, guid: 39b7dd265f3906e42893f57690f97ee9, type: 2}
   <PreemptiveBattleEventTriggers>k__BackingField: []
   <BattleEventTriggers>k__BackingField: []

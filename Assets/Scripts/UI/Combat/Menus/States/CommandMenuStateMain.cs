@@ -89,6 +89,8 @@ public class CommandMenuStateMain : CommandMenuState
             EventSystem.current.SetSelectedGameObject(null);
             EventSystem.current.SetSelectedGameObject(attackButton.gameObject);
         }
+
+        Debug.Log(EventSystem.current);
     }
 
     private void Hide()

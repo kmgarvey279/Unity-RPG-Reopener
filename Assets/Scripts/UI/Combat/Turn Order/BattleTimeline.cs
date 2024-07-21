@@ -157,15 +157,16 @@ public class BattleTimeline : MonoBehaviour
 
             if (turn != null)
             {
-                if (wasChanged)
-                {
-                    turn.TurnPanel.TriggerActorAnimation("Enter");
-                }
                 if (turn.TurnPanel.IsNew)
                 {
                     turn.TurnPanel.TriggerActorAnimation("Enter");
                     turn.TurnPanel.RemoveNewStatus();
                 }
+                else if (wasChanged)
+                {
+                    turn.TurnPanel.TriggerActorAnimation("Enter");
+                }
+
                 yield return null;
             }
         }
@@ -181,7 +182,7 @@ public class BattleTimeline : MonoBehaviour
             //add additional turn for each actor
             foreach (Combatant actor in actors)
             {
-                AddTurn(actor, multiplier, false);
+                Turn turn = AddTurn(actor, multiplier, false);
             }
             multiplier++;
         }
@@ -303,6 +304,11 @@ public class BattleTimeline : MonoBehaviour
             RemoveTurn(combatantTurns[combatant][i], isDead);
         }
         combatantTurns.Remove(combatant);
+
+        if (isDead)
+        {
+            PopulateToMax();
+        }
     }
     #endregion
 

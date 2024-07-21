@@ -191,7 +191,7 @@ public class NPCMovement : MonoBehaviour
                 stuckCounter = 0;
                 lastPosition = transform.position;
             }
-            Debug.Log("Stuck counter: " + stuckCounter);
+            //Debug.Log("Stuck counter: " + stuckCounter);
             yield return new WaitForEndOfFrame();
         }
         aiPath.canSearch = true;

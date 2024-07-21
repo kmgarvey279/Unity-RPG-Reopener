@@ -100,8 +100,7 @@ public class OverworldEnemy : MonoBehaviour
     public void OnPlayerEnterBattleTriggerRadius()
     {
         Debug.Log("trigger battle");
-        SceneSetupManagerOverworld sceneSetupManager = FindObjectOfType<SceneSetupManagerOverworld>();
-        StartCoroutine(sceneSetupManager.OnEnterBattle(enemyContainer));
+        StartCoroutine(LevelManager.Instance.OnEnterBattle(enemyContainer));
     }
 
     private IEnumerator DisplayEmote(EmoteType emoteType)

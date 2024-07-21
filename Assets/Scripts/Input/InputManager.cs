@@ -4,6 +4,14 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
+public enum ActionMapType
+{
+    Overworld,
+    UI,
+    Battle,
+    Dialogue
+}
+
 public class Vector2Event : UnityEvent<Vector2>
 {
 }
@@ -150,10 +158,10 @@ public class InputManager : MonoBehaviour
         InputLocked = false;
     }
 
-    public void ChangeActionMap(string newActionMap)
+    public void ChangeActionMap(ActionMapType newActionMap)
     {
-        PlayerInput.SwitchCurrentActionMap(newActionMap);
-        if (PlayerInput.currentActionMap.name == newActionMap)
+        PlayerInput.SwitchCurrentActionMap(newActionMap.ToString());
+        if (PlayerInput.currentActionMap.name == newActionMap.ToString())
         {
             actionMap = PlayerInput.currentActionMap.name;
         }

@@ -16,11 +16,14 @@ public class TitleMenuState : StateMachine.State
     [SerializeField] protected TitleMenuStateType titleMenuStateType;
     [SerializeField] protected GameObject defaultButton;
     protected GameObject lastButton;
+    protected TitleMenu titleMenu;
 
     protected List<SignalListenerBase> signalListeners = new List<SignalListenerBase>();
 
     public virtual void Awake()
     {
+        titleMenu = GetComponentInParent<TitleMenu>();
+
         //state machine
         stateMachine = GetComponentInParent<StateMachine>();
         id = (int)titleMenuStateType;

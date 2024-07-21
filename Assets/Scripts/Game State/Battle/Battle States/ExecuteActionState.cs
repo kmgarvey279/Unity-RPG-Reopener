@@ -62,6 +62,7 @@ public class ExecuteActionState : BattleState
         base.OnExit();
     }
 
+    #region Battle Loop
     public IEnumerator PreparationPhase()
     {
         //start next phase
@@ -477,7 +478,6 @@ public class ExecuteActionState : BattleState
             playableCombatant.GainInterventionPoints(points);
         }
 
-        //resolve KOs
         yield return StartCoroutine(battleManager.ResolveKOs());
 
         battleManager.ResetCombatantPositions();
@@ -497,9 +497,10 @@ public class ExecuteActionState : BattleState
         //change to turn end state
         stateMachine.ChangeState((int)BattleStateType.TurnEnd);
     }
-
+    #endregion
     /////////////////////////////////////////////////////////
 
+    #region Functions
     private void TriggerGuardEffects()
     {
         //reduce guard
@@ -719,4 +720,5 @@ public class ExecuteActionState : BattleState
         }
         return baseValue;
     }
+    #endregion
 }

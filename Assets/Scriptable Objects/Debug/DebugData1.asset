@@ -13,71 +13,39 @@ MonoBehaviour:
   m_Name: DebugData1
   m_EditorClassIdentifier: 
   <Data>k__BackingField:
-    <LastInteractedFileNum>k__BackingField: 0
-    <PlayerData>k__BackingField:
-      CurrentSceneName: 
-      CurrentLocationName: New
-      SystemData:
-        rid: 8475017092366598173
-      PartyData:
-        rid: 8475017092366598174
-      InventoryData:
-        rid: 8475017092366598175
-      WorldData:
-        rid: 8475017092366598176
-      EnemyData:
-        rid: 8475017092366598177
-    combatantRuntimeData:
-    - <PlayableCharacterID>k__BackingField: 0
-      <StaticInfo>k__BackingField: {fileID: 11400000, guid: 819d1f85f941b6646bd7104cf66cacb0,
-        type: 2}
-      <Level>k__BackingField: 1
-      <CurrentEXP>k__BackingField: 0
-      <CurrentHP>k__BackingField: 9999
-      <CurrentMP>k__BackingField: 99
-      <CurrentIP>k__BackingField: 45
-      EquippedWeapon: {fileID: 0}
-      EquippedArmor: {fileID: 0}
-      EquippedAccessory: {fileID: 0}
-      <UnlockedSkills>k__BackingField:
-      - {fileID: 11400000, guid: 897cf7c174a39064e9ef26f6cc34d75d, type: 2}
-      <UnlockedTraits>k__BackingField: []
-    - <PlayableCharacterID>k__BackingField: 1
-      <StaticInfo>k__BackingField: {fileID: 11400000, guid: 019cb0df943b4814aa066be05eb9e3b2,
-        type: 2}
-      <Level>k__BackingField: 1
-      <CurrentEXP>k__BackingField: 0
-      <CurrentHP>k__BackingField: 9999
-      <CurrentMP>k__BackingField: 99
-      <CurrentIP>k__BackingField: 99
-      EquippedWeapon: {fileID: 0}
-      EquippedArmor: {fileID: 0}
-      EquippedAccessory: {fileID: 0}
-      <UnlockedSkills>k__BackingField:
-      - {fileID: 11400000, guid: 82b5d8eb9861e5a488eb00b28f4267f4, type: 2}
-      <UnlockedTraits>k__BackingField: []
-    <NextSceneEntryPoint>k__BackingField: 0
-    <EnemyPartyData>k__BackingField: {fileID: 11400000, guid: ca3cd966c2e391d4a93bb7fba9bd8266,
-      type: 2}
+    CurrentSceneName: SampleOverworld1
+    CurrentLocationName: Test Area 1
+    SystemData:
+      rid: 6251591158436462850
+    PartyData:
+      rid: 6251591158436462851
+    InventoryData:
+      rid: 6251591158436462852
+    WorldData:
+      rid: 6251591158436462853
+    EnemyLog:
+      rid: 6251591158436462854
   references:
     version: 2
     RefIds:
-    - rid: 8475017092366598173
+    - rid: 6251591158436462850
       type: {class: SystemData, ns: , asm: Assembly-CSharp}
       data:
         Playtime: 0
-    - rid: 8475017092366598174
+    - rid: 6251591158436462851
       type: {class: PartyData, ns: , asm: Assembly-CSharp}
       data:
         PartyMembers: 0000000001000000
         ActivePartyMembers: 0000000001000000
-    - rid: 8475017092366598175
+    - rid: 6251591158436462852
       type: {class: InventoryData, ns: , asm: Assembly-CSharp}
       data:
         EquipmentItems: []
         KeyItems: []
         UsableItems: []
-    - rid: 8475017092366598176
+    - rid: 6251591158436462853
       type: {class: WorldData, ns: , asm: Assembly-CSharp}
-    - rid: 8475017092366598177
-      type: {class: EnemyData, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 6251591158436462854
+      type: {class: EnemyLog, ns: , asm: Assembly-CSharp}
+      data: 

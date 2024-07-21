@@ -33,7 +33,7 @@ public class SaveManager : MonoBehaviour
 
     public void LoadDebugData()
     {
-        LoadedData = debugData.Data;
+        LoadedData = new LoadedData(1, debugData.Data);
         SessionData = new SessionData();
 
         StartSessionTimer(0);

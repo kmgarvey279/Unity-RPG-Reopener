@@ -68,20 +68,23 @@ public class PauseMenuStateSystem : PauseMenuState
     {
         display.SetActive(true);
 
-        DisplaySubmenu(SystemSubmenuType.Save);
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(defaultButton);
+
+        //DisplaySubmenu(SystemSubmenuType.Save);
     }
 
 
-    private void DisplaySubmenu(SystemSubmenuType systemSubmenuType)
-    {
-        foreach (KeyValuePair<SystemSubmenuType, GameObject> submenu in submenus)
-        {
-            submenu.Value.SetActive(false);
-        }
+    //private void DisplaySubmenu(SystemSubmenuType systemSubmenuType)
+    //{
+    //    foreach (KeyValuePair<SystemSubmenuType, GameObject> submenu in submenus)
+    //    {
+    //        submenu.Value.SetActive(false);
+    //    }
 
-        currentSubmenu = systemSubmenuType;
-        submenus[systemSubmenuType].SetActive(true);
-    }
+    //    currentSubmenu = systemSubmenuType;
+    //    submenus[systemSubmenuType].SetActive(true);
+    //}
 
     private void Hide()
     {
@@ -91,5 +94,10 @@ public class PauseMenuStateSystem : PauseMenuState
         //}
 
         display.SetActive(false);
+    }
+
+    public void OnReturnToTitle()
+    {
+        
     }
 }

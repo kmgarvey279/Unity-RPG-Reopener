@@ -16,12 +16,11 @@ MonoBehaviour:
   <Icon>k__BackingField: {fileID: 21300000, guid: f3369c94eadd23143b93f6b09595b936,
     type: 3}
   <EffectName>k__BackingField: Debug Debuff
-  <EffectDescription>k__BackingField: This is a test debuff.
-  <AdditionalDescriptions>k__BackingField: []
+  <Description>k__BackingField: 
+  <SecondaryDescription>k__BackingField: 
   <StatusEffectType>k__BackingField: 1
   <AnimatorOverride>k__BackingField: 0
   <CustomAnimatorOverride>k__BackingField: 
-  TargetSpeedChange: 0
   <PersistentVFX>k__BackingField: {fileID: 0}
   <PersistentVFXPosition>k__BackingField: 0
   <PersistentTileVFX>k__BackingField: {fileID: 0}
@@ -29,24 +28,22 @@ MonoBehaviour:
   <HasDuration>k__BackingField: 1
   <DurationToApply>k__BackingField: 2
   <DurationMax>k__BackingField: 2
-  <CanRefreshDuration>k__BackingField: 1
+  <CanIncreaseDuration>k__BackingField: 1
+  <CanDecreaseDuration>k__BackingField: 1
   <HasStacks>k__BackingField: 0
   <StacksToApply>k__BackingField: 1
   <StacksMax>k__BackingField: 1
-  <CanRefreshStacks>k__BackingField: 0
+  <CanIncreaseStacks>k__BackingField: 1
   <RemovalCheckTurnEventType>k__BackingField: 0
   <CanPurge>k__BackingField: 1
   <DoNotRemoveOnKO>k__BackingField: 0
-  <ApplyPotencyAsBreach>k__BackingField: 0
   <PotencyTurnMultiplier>k__BackingField: 1
-  CarryoverPotencyMultiplier: 0
-  <TriggerTurnEventType>k__BackingField: 0
-  TurnEventTriggers: []
+  <CanIncreasePotency>k__BackingField: 0
+  <TriggerTurnEventType>k__BackingField: 1
+  TurnEventTriggers:
+  - {fileID: 11400000, guid: 080e5180b530a02419def197b043dcf6, type: 2}
   <TurnModifier>k__BackingField: 0
-  <OverrideAttack>k__BackingField: {fileID: 0}
   <BoolsToModify>k__BackingField: 
-  <IntStatModifiers>k__BackingField: []
-  <FloatStatModifiers>k__BackingField: []
   <UniversalModifiers>k__BackingField: []
   <ActionModifiers>k__BackingField: []
   <PreemptiveBattleEventTriggers>k__BackingField: []

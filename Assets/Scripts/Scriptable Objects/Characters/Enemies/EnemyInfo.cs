@@ -127,7 +127,7 @@ public class EnemyInfo : ScriptableObject
             return 0;
         }
 
-        int hpBaseValue = 400;
+        int hpBaseValue = 5;
         int standardBaseValue = 5;
 
         int baseValueToUse = standardBaseValue;

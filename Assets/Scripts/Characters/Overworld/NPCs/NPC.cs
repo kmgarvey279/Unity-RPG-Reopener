@@ -27,7 +27,7 @@ public class NPC : Interactable
 
         if (dialogueData != null && dialogueData.Speakers.Count > 0)
         {
-            DialogueManager.Instance.SetDialogueData(dialogueData);
+            //DialogueManager.Instance.SetDialogueData(dialogueData);
         }
     }
 }

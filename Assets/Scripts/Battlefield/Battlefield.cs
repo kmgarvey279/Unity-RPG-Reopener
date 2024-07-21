@@ -7,10 +7,11 @@ public class Battlefield : MonoBehaviour
 {
     public CameraManager cameraManager;
     public GridManager gridManager;
-    [SerializeField] private List<TilemapRenderer> spriteRenderers = new List<TilemapRenderer>();
+
+    [Header("Environment")]
+    [SerializeField] private GameObject environmentContainer;
     [SerializeField] private GameObject filter;
-    [SerializeField] private Material defaultMaterial;
-    [SerializeField] private Material greyscaleMaterial;
+
 
     private void Awake()
     {
@@ -18,19 +19,9 @@ public class Battlefield : MonoBehaviour
         gridManager = GetComponentInChildren<GridManager>();
     }
 
-    public void StartTimeStop()
+    public void LoadEnvironment(GameObject prefab)
     {
-        foreach (TilemapRenderer tilemapRenderer in spriteRenderers)
-        {
-            tilemapRenderer.material = greyscaleMaterial;
-        }
-    }
-
-    public void EndTimeStop()
-    {
-        foreach (TilemapRenderer tilemapRenderer in spriteRenderers)
-        {
-            tilemapRenderer.material = defaultMaterial;
-        }
+        GameObject environmentObject = Instantiate(prefab, environmentContainer.transform.position, Quaternion.identity);
+        environmentObject.transform.parent = environmentContainer.transform;
     }
 }

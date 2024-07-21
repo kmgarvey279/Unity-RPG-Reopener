@@ -28,14 +28,8 @@ public abstract class Combatant : MonoBehaviour
     #region Data Get/Set
     public string CharacterName
     {
-        get
-        {
-            return combatantBattleData.CharacterName;
-        }
-        private set
-        {
-            combatantBattleData.CharacterName = value;
-        }
+        get => combatantBattleData.CharacterName;
+        private set => combatantBattleData.CharacterName = value;
     }
     public string CharacterLetter
     {
@@ -54,6 +48,11 @@ public abstract class Combatant : MonoBehaviour
         {
             return combatantBattleData.TurnIcon;
         }
+    }
+
+    public int Level
+    {
+        get => combatantBattleData.Level;
     }
     public int HP
     {

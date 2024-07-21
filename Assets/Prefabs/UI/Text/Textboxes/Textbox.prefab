@@ -32,7 +32,6 @@ RectTransform:
   m_Children:
   - {fileID: 2396322483839004833}
   m_Father: {fileID: 5112962793504202641}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -105,7 +104,6 @@ RectTransform:
   m_Children:
   - {fileID: 7727042434524442361}
   m_Father: {fileID: 5112962793504202641}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -180,7 +178,6 @@ RectTransform:
   - {fileID: 8182869910619092624}
   - {fileID: 6768825862651034805}
   m_Father: {fileID: 6426932214356245366}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -238,12 +235,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
+    m_Left: 8
+    m_Right: 8
+    m_Top: 8
+    m_Bottom: 8
   m_ChildAlignment: 0
-  m_Spacing: 0
+  m_Spacing: 8
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
@@ -283,7 +280,6 @@ RectTransform:
   - {fileID: 1529623848485357779}
   - {fileID: 6426932214356245366}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
@@ -340,7 +336,6 @@ RectTransform:
   - {fileID: 7495264531817620447}
   - {fileID: 2666274534227517569}
   m_Father: {fileID: 1529623848485357779}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -398,12 +393,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
+    m_Left: 8
+    m_Right: 8
+    m_Top: 8
+    m_Bottom: 8
   m_ChildAlignment: 0
-  m_Spacing: 0
+  m_Spacing: 8
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
@@ -416,6 +411,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 7727042434524442361}
     m_Modifications:
     - target: {fileID: 1471390516433652427, guid: f62b272e8b690354cbfcc7a478413d6b,
@@ -536,22 +532,22 @@ PrefabInstance:
     - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
         type: 3}
       propertyPath: m_margin.w
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
         type: 3}
       propertyPath: m_margin.x
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
         type: 3}
       propertyPath: m_margin.y
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
         type: 3}
       propertyPath: m_margin.z
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
         type: 3}
@@ -574,6 +570,9 @@ PrefabInstance:
       value: 4290559164
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f62b272e8b690354cbfcc7a478413d6b, type: 3}
 --- !u!114 &2666274534227517568 stripped
 MonoBehaviour:
@@ -598,6 +597,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 2396322483839004833}
     m_Modifications:
     - target: {fileID: 1471390516433652427, guid: f62b272e8b690354cbfcc7a478413d6b,
@@ -718,22 +718,22 @@ PrefabInstance:
     - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
         type: 3}
       propertyPath: m_margin.w
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
         type: 3}
       propertyPath: m_margin.x
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
         type: 3}
       propertyPath: m_margin.y
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
         type: 3}
       propertyPath: m_margin.z
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
         type: 3}
@@ -761,6 +761,9 @@ PrefabInstance:
       value: 12369084
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f62b272e8b690354cbfcc7a478413d6b, type: 3}
 --- !u!114 &6768825862651034804 stripped
 MonoBehaviour:
@@ -785,6 +788,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 2396322483839004833}
     m_Modifications:
     - target: {fileID: 1471390516433652427, guid: f62b272e8b690354cbfcc7a478413d6b,
@@ -907,22 +911,22 @@ PrefabInstance:
     - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
         type: 3}
       propertyPath: m_margin.w
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
         type: 3}
       propertyPath: m_margin.x
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
         type: 3}
       propertyPath: m_margin.y
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
         type: 3}
       propertyPath: m_margin.z
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
         type: 3}
@@ -950,6 +954,9 @@ PrefabInstance:
       value: 16777215
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f62b272e8b690354cbfcc7a478413d6b, type: 3}
 --- !u!224 &8182869910619092624 stripped
 RectTransform:
@@ -974,6 +981,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 7727042434524442361}
     m_Modifications:
     - target: {fileID: 1471390516433652427, guid: f62b272e8b690354cbfcc7a478413d6b,
@@ -1086,7 +1094,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
+        type: 3}
+      propertyPath: m_margin.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
+        type: 3}
+      propertyPath: m_margin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
+        type: 3}
+      propertyPath: m_margin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1471390516433652429, guid: f62b272e8b690354cbfcc7a478413d6b,
+        type: 3}
+      propertyPath: m_margin.z
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f62b272e8b690354cbfcc7a478413d6b, type: 3}
 --- !u!114 &7495264531817620446 stripped
 MonoBehaviour:

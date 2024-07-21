@@ -16,7 +16,8 @@ public enum BattleStateType
     BattleEnd,
     InterventionStart,
     ChangeTurn,
-    Setup
+    Setup,
+    GameOver
 }
 
 public class BattleState : StateMachine.State
